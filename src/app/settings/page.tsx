@@ -16,6 +16,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useTheme } from 'next-themes';
 import { Sun, Moon, Laptop } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { cn } from '@/lib/utils';
 
 export default function SettingsPage() {
   const { language, setLanguage, t } = useLanguage();
@@ -57,7 +58,7 @@ export default function SettingsPage() {
               <RadioGroup
                 value={theme}
                 onValueChange={setTheme}
-                className="grid grid-cols-3 gap-4"
+                className="grid grid-cols-1 sm:grid-cols-3 gap-6"
               >
                 <div>
                   <RadioGroupItem
@@ -67,9 +68,14 @@ export default function SettingsPage() {
                   />
                   <Label
                     htmlFor="light"
-                    className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-transparent p-6 text-lg transition-colors hover:border-primary/50 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                    className={cn(
+                      'flex flex-col items-center justify-center rounded-xl p-8 text-lg font-semibold transition-all cursor-pointer',
+                      'bg-slate-200 text-slate-800 border-4 border-transparent',
+                      'hover:bg-slate-300 hover:scale-105',
+                      'peer-data-[state=checked]:border-primary peer-data-[state=checked]:ring-4 peer-data-[state=checked]:ring-primary/20'
+                    )}
                   >
-                    <Sun className="mb-2 h-7 w-7" />
+                    <Sun className="mb-3 h-8 w-8" />
                     {t('light')}
                   </Label>
                 </div>
@@ -81,9 +87,14 @@ export default function SettingsPage() {
                   />
                   <Label
                     htmlFor="dark"
-                    className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-transparent p-6 text-lg transition-colors hover:border-primary/50 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                    className={cn(
+                      'flex flex-col items-center justify-center rounded-xl p-8 text-lg font-semibold transition-all cursor-pointer',
+                      'bg-gray-800 text-white border-4 border-transparent',
+                      'hover:bg-gray-700 hover:scale-105',
+                      'peer-data-[state=checked]:border-primary peer-data-[state=checked]:ring-4 peer-data-[state=checked]:ring-primary/20'
+                    )}
                   >
-                    <Moon className="mb-2 h-7 w-7" />
+                    <Moon className="mb-3 h-8 w-8" />
                     {t('dark')}
                   </Label>
                 </div>
@@ -95,9 +106,14 @@ export default function SettingsPage() {
                   />
                   <Label
                     htmlFor="system"
-                    className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-transparent p-6 text-lg transition-colors hover:border-primary/50 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                    className={cn(
+                      'flex flex-col items-center justify-center rounded-xl p-8 text-lg font-semibold transition-all cursor-pointer',
+                      'bg-gray-500 text-white border-4 border-transparent',
+                      'hover:bg-gray-600 hover:scale-105',
+                      'peer-data-[state=checked]:border-primary peer-data-[state=checked]:ring-4 peer-data-[state=checked]:ring-primary/20'
+                    )}
                   >
-                    <Laptop className="mb-2 h-7 w-7" />
+                    <Laptop className="mb-3 h-8 w-8" />
                     {t('system')}
                   </Label>
                 </div>
