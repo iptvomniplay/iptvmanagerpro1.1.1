@@ -25,16 +25,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import { ServerForm } from './components/server-form';
 
 export default function ServersPage() {
@@ -45,6 +35,11 @@ export default function ServersPage() {
 
   const handleAddServer = () => {
     setEditingServer(null);
+    setIsFormOpen(true);
+  };
+
+  const handleEditServer = (server: Server) => {
+    setEditingServer(server);
     setIsFormOpen(true);
   };
 
@@ -142,11 +137,9 @@ export default function ServersPage() {
                 </div>
               </CardContent>
               <CardFooter className="px-6 pb-6">
-                <Button variant="outline" className="w-full" asChild size="lg">
-                  <Link href="/servers/configure">
+                 <Button variant="outline" className="w-full" onClick={() => handleEditServer(server)} size="lg">
                     <Settings className="mr-2 h-5 w-5" />
-                    {t('configure')}
-                  </Link>
+                    {t('edit')}
                 </Button>
               </CardFooter>
             </Card>
