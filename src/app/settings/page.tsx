@@ -68,10 +68,9 @@ export default function SettingsPage() {
                   <Label
                     htmlFor="light"
                     className={cn(
-                      'flex flex-col items-center justify-center gap-3 rounded-lg p-6 text-lg font-semibold transition-all cursor-pointer',
-                      'border-2 border-transparent',
-                      'hover:bg-accent hover:text-accent-foreground',
-                      'peer-data-[state=checked]:bg-accent peer-data-[state=checked]:text-accent-foreground'
+                      'flex flex-col items-center justify-center gap-4 rounded-lg p-4 text-lg font-semibold transition-all cursor-pointer',
+                      'hover:text-primary',
+                      'peer-data-[state=checked]:text-primary'
                     )}
                   >
                     <svg
@@ -107,10 +106,9 @@ export default function SettingsPage() {
                   <Label
                     htmlFor="dark"
                     className={cn(
-                      'flex flex-col items-center justify-center gap-3 rounded-lg p-6 text-lg font-semibold transition-all cursor-pointer',
-                      'border-2 border-transparent',
-                      'hover:bg-accent hover:text-accent-foreground',
-                      'peer-data-[state=checked]:bg-accent peer-data-[state=checked]:text-accent-foreground'
+                      'flex flex-col items-center justify-center gap-4 rounded-lg p-4 text-lg font-semibold transition-all cursor-pointer',
+                      'hover:text-primary',
+                      'peer-data-[state=checked]:text-primary'
                     )}
                   >
                     <svg
@@ -138,10 +136,9 @@ export default function SettingsPage() {
                   <Label
                     htmlFor="system"
                     className={cn(
-                      'flex flex-col items-center justify-center gap-3 rounded-lg p-6 text-lg font-semibold transition-all cursor-pointer',
-                      'border-2 border-transparent',
-                      'hover:bg-accent hover:text-accent-foreground',
-                      'peer-data-[state=checked]:bg-accent peer-data-[state=checked]:text-accent-foreground'
+                      'flex flex-col items-center justify-center gap-4 rounded-lg p-4 text-lg font-semibold transition-all cursor-pointer',
+                      'hover:text-primary',
+                      'peer-data-[state=checked]:text-primary'
                     )}
                   >
                     <svg
