@@ -9,7 +9,7 @@ export default function NewServerPage() {
 
   return (
     <div className="space-y-8">
-      <div>
+      <div className="rounded-xl border bg-card text-card-foreground p-6 shadow-sm">
         <h1 className="text-3xl font-bold tracking-tight">{t('panelAndServerRegistration')}</h1>
       </div>
       <Card>
