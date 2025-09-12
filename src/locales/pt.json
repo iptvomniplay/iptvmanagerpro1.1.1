@@ -119,5 +119,15 @@
     "nicknamePlaceholder": "Possui Apelido?",
     "phone": "Telefone",
     "login": "Login",
-    "password": "Senha"
+    "password": "Senha",
+    "paymentMethod": "Forma de Pagamento",
+    "prepaid": "Pré-pago",
+    "postpaid": "Pós-pago",
+    "quantityOfCredits": "Quantidade de Créditos",
+    "totalPurchaseValue": "Valor Total da Compra",
+    "unitValue": "Valor Unitário",
+    "panelValue": "Valor do Painel",
+    "dueDate": "Dia do Vencimento",
+    "panelCreditStock": "Estoque de Créditos do Painel",
+    "panelCreditStockDescription": "Total de créditos disponíveis neste painel."
 }

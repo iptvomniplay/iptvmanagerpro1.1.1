@@ -119,5 +119,15 @@
     "nicknamePlaceholder": "Do you have a nickname?",
     "phone": "Phone",
     "login": "Login",
-    "password": "Password"
+    "password": "Password",
+    "paymentMethod": "Payment Method",
+    "prepaid": "Pre-paid",
+    "postpaid": "Post-paid",
+    "quantityOfCredits": "Quantity of Credits",
+    "totalPurchaseValue": "Total Purchase Value",
+    "unitValue": "Unit Value",
+    "panelValue": "Panel Value",
+    "dueDate": "Due Date",
+    "panelCreditStock": "Panel Credit Stock",
+    "panelCreditStockDescription": "Total credits available on this panel."
 }

@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -23,23 +24,47 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
 import { PlusCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Label } from '@/components/ui/label';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   url: z.string().url({ message: 'Please enter a valid URL.' }),
+  login: z.string().min(1, { message: 'Login is required.' }),
+  password: z.string().min(1, { message: 'Password is required.' }),
   responsibleName: z.string().min(2, { message: 'Responsible name is required.' }),
   nickname: z.string().optional(),
   phone: z.string().optional(),
-  login: z.string().min(1, { message: 'Login is required.' }),
-  password: z.string().min(1, { message: 'Password is required.' }),
+  paymentType: z.enum(['prepaid', 'postpaid']).default('prepaid'),
+  quantityOfCredits: z.coerce.number().optional(),
+  totalPurchaseValue: z.string().optional(),
+  panelValue: z.string().optional(),
+  dueDate: z.coerce.number().optional(),
+  panelCreditStock: z.coerce.number().optional(),
   status: z.enum(['Online', 'Offline']),
   connections: z.coerce.number().min(0),
   maxConnections: z.coerce.number().min(1),
   cpuLoad: z.coerce.number().min(0).max(100),
+}).refine(data => {
+    if (data.paymentType === 'prepaid') {
+        return data.quantityOfCredits !== undefined && data.totalPurchaseValue !== undefined;
+    }
+    return true;
+}, {
+    message: "Prepaid fields are required.",
+    path: ["quantityOfCredits"], 
+}).refine(data => {
+    if (data.paymentType === 'postpaid') {
+        return data.panelValue !== undefined && data.dueDate !== undefined;
+    }
+    return true;
+}, {
+    message: "Postpaid fields are required.",
+    path: ["panelValue"],
 });
 
 type ServerFormValues = z.infer<typeof formSchema>;
@@ -49,20 +74,21 @@ interface ServerFormProps {
 }
 
 export function ServerForm({ server }: ServerFormProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const router = useRouter();
   const [isPanelFormVisible, setIsPanelFormVisible] = React.useState(false);
-
+  
   const form = useForm<ServerFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: server?.name || '',
       url: server?.url || '',
+      login: '',
+      password: '',
       responsibleName: '',
       nickname: '',
       phone: '',
-      login: '',
-      password: '',
+      paymentType: 'prepaid',
       status: server?.status || 'Online',
       connections: server?.connections || 0,
       maxConnections: server?.maxConnections || 1000,
@@ -70,8 +96,33 @@ export function ServerForm({ server }: ServerFormProps) {
     },
   });
 
+  const { watch, setValue } = form;
+  const paymentType = watch('paymentType');
+  const quantityOfCredits = watch('quantityOfCredits');
+  const totalPurchaseValue = watch('totalPurchaseValue');
+
+  const unitValue = React.useMemo(() => {
+    const total = parseFloat((totalPurchaseValue || '0').replace(/[^0-9,]/g, '').replace(',', '.'));
+    if (quantityOfCredits && total > 0 && quantityOfCredits > 0) {
+      return (total / quantityOfCredits).toFixed(2);
+    }
+    return '0.00';
+  }, [quantityOfCredits, totalPurchaseValue]);
+
+  const handleCurrencyChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof ServerFormValues) => {
+    let value = e.target.value;
+    value = value.replace(/\D/g, '');
+    value = (parseInt(value, 10) / 100).toFixed(2);
+    
+    const formatter = new Intl.NumberFormat(language, {
+      style: 'currency',
+      currency: language === 'pt-BR' ? 'BRL' : 'USD',
+    });
+    
+    setValue(fieldName, formatter.format(parseFloat(value)));
+  };
+
   const handleSubmit = (values: ServerFormValues) => {
-    // Action removed as requested.
     console.log('Form values:', values);
   };
   
@@ -83,7 +134,7 @@ export function ServerForm({ server }: ServerFormProps) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 py-4">
         <div className="mb-6">
-            <Button type="button" onClick={() => setIsPanelFormVisible(true)}>
+            <Button type="button" onClick={() => setIsPanelFormVisible(!isPanelFormVisible)}>
                 <PlusCircle className="mr-2 h-5 w-5" />
                 {t('addNewPanel')}
             </Button>
@@ -111,6 +162,32 @@ export function ServerForm({ server }: ServerFormProps) {
                 <FormLabel>{t('panelUrl')}</FormLabel>
                 <FormControl>
                   <Input placeholder={t('serverUrlPlaceholder')} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="login"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('login')}</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('password')}</FormLabel>
+                <FormControl>
+                  <Input type="password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -157,30 +234,124 @@ export function ServerForm({ server }: ServerFormProps) {
           />
           <FormField
             control={form.control}
-            name="login"
+            name="paymentType"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('login')}</FormLabel>
+              <FormItem className="space-y-3">
+                <FormLabel>{t('paymentMethod')}</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="flex space-x-4"
+                  >
+                    <FormItem className="flex items-center space-x-2 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="prepaid" />
+                      </FormControl>
+                      <FormLabel className="font-normal">{t('prepaid')}</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-2 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="postpaid" />
+                      </FormControl>
+                      <FormLabel className="font-normal">{t('postpaid')}</FormLabel>
+                    </FormItem>
+                  </RadioGroup>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
+
+          {paymentType === 'prepaid' && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <FormField
+                control={form.control}
+                name="quantityOfCredits"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('quantityOfCredits')}</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="totalPurchaseValue"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('totalPurchaseValue')}</FormLabel>
+                    <FormControl>
+                      <Input 
+                        {...field} 
+                        onChange={(e) => handleCurrencyChange(e, 'totalPurchaseValue')}
+                        placeholder={language === 'pt-BR' ? 'R$ 0,00' : '$ 0.00'}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormItem>
-                <FormLabel>{t('password')}</FormLabel>
+                <FormLabel>{t('unitValue')}</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                    <Input value={new Intl.NumberFormat(language, { style: 'currency', currency: language === 'pt-BR' ? 'BRL' : 'USD' }).format(parseFloat(unitValue))} disabled />
                 </FormControl>
-                <FormMessage />
               </FormItem>
-            )}
-          />
+            </div>
+          )}
+
+          {paymentType === 'postpaid' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FormField
+                control={form.control}
+                name="panelValue"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('panelValue')}</FormLabel>
+                     <FormControl>
+                      <Input 
+                        {...field}
+                        onChange={(e) => handleCurrencyChange(e, 'panelValue')}
+                        placeholder={language === 'pt-BR' ? 'R$ 0,00' : '$ 0.00'}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="dueDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('dueDate')}</FormLabel>
+                    <FormControl>
+                      <Input type="number" min="1" max="31" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
+             <FormField
+                control={form.control}
+                name="panelCreditStock"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('panelCreditStock')}</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                     <FormDescription>{t('panelCreditStockDescription')}</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
         </div>
 
         <div className="grid grid-cols-2 gap-6">
@@ -254,7 +425,7 @@ export function ServerForm({ server }: ServerFormProps) {
             <Button type="button" variant="outline" onClick={handleCancel}>
                 {t('cancel')}
             </Button>
-            <Button type="button" onClick={() => handleSubmit(form.getValues())}>
+            <Button type="submit">
                 {t('next')}
             </Button>
         </div>
