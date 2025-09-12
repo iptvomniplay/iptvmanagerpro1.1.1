@@ -112,5 +112,10 @@
     "panelAndServerRegistration": "Panel and Server(s) Registration",
     "save": "Save",
     "next": "Next",
-    "addNewPanel": "Add Panel"
+    "addNewPanel": "Add Panel",
+    "responsibleName": "Responsible Name",
+    "responsibleNamePlaceholder": "Enter the responsible name",
+    "nickname": "Nickname",
+    "nicknamePlaceholder": "Do you have a nickname?",
+    "phone": "Phone"
 }

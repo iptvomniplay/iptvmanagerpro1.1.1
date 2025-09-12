@@ -112,5 +112,10 @@
     "panelAndServerRegistration": "Cadastro de Painel e Servidor(es)",
     "save": "Salvar",
     "next": "Próximo",
-    "addNewPanel": "Add Painel"
+    "addNewPanel": "Add Painel",
+    "responsibleName": "Nome do Responsável",
+    "responsibleNamePlaceholder": "Digite o nome do responsável",
+    "nickname": "Apelido",
+    "nicknamePlaceholder": "Possui Apelido?",
+    "phone": "Telefone"
 }

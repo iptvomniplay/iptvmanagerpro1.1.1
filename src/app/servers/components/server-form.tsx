@@ -29,6 +29,9 @@ import { PlusCircle } from 'lucide-react';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+  responsibleName: z.string().min(2, { message: 'Responsible name must be at least 2 characters.' }),
+  nickname: z.string().optional(),
+  phone: z.string().min(1, { message: 'Phone number is required.' }),
   url: z.string().url({ message: 'Please enter a valid URL.' }),
   status: z.enum(['Online', 'Offline']),
   connections: z.coerce.number().min(0),
@@ -40,17 +43,20 @@ type ServerFormValues = z.infer<typeof formSchema>;
 
 interface ServerFormProps {
   server: Server | null;
-  // onSubmit: (values: ServerFormValues) => void;
-  // onCancel: () => void;
 }
 
 export function ServerForm({ server }: ServerFormProps) {
   const { t } = useLanguage();
   const router = useRouter();
+  const [isPanelVisible, setIsPanelVisible] = React.useState(false);
+
   const form = useForm<ServerFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: server?.name || '',
+      responsibleName: '',
+      nickname: '',
+      phone: '',
       url: server?.url || '',
       status: server?.status || 'Online',
       connections: server?.connections || 0,
@@ -69,120 +75,167 @@ export function ServerForm({ server }: ServerFormProps) {
   };
 
   const handleAddPanel = () => {
-    // Functional action to be implemented later
-    console.log('Add Panel button clicked');
+    setIsPanelVisible(true);
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 py-4">
-        <div className="mb-6">
-          <Button type="button" onClick={handleAddPanel}>
-            <PlusCircle className="mr-2 h-5 w-5" />
-            {t('addNewPanel')}
-          </Button>
-        </div>
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('serverName')}</FormLabel>
-              <FormControl>
-                <Input placeholder={t('serverNamePlaceholder')} {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="url"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('serverUrl')}</FormLabel>
-              <FormControl>
-                <Input placeholder={t('serverUrlPlaceholder')} {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="grid grid-cols-2 gap-6">
-          <FormField
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('status')}</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+        {!isPanelVisible && (
+            <div className="mb-6">
+                <Button type="button" onClick={handleAddPanel}>
+                    <PlusCircle className="mr-2 h-5 w-5" />
+                    {t('addNewPanel')}
+                </Button>
+            </div>
+        )}
+
+        {isPanelVisible && (
+          <>
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('serverName')}</FormLabel>
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder={t('selectStatus')} />
-                    </SelectTrigger>
+                    <Input placeholder={t('serverNamePlaceholder')} {...field} />
                   </FormControl>
-                  <SelectContent>
-                    <SelectItem value="Online">{t('online')}</SelectItem>
-                    <SelectItem value="Offline">{t('offline')}</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <div className="grid grid-cols-3 gap-6">
-           <FormField
-            control={form.control}
-            name="connections"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('connections')}</FormLabel>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="maxConnections"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('maxConnections')}</FormLabel>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-           <FormField
-            control={form.control}
-            name="cpuLoad"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('cpuLoad')}</FormLabel>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <div className="flex justify-end gap-4 pt-6">
-            <Button type="button" variant="outline" onClick={handleCancel}>
-                {t('cancel')}
-            </Button>
-            <Button type="button" onClick={() => handleSubmit(form.getValues())}>
-                {t('next')}
-            </Button>
-        </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+             <FormField
+                control={form.control}
+                name="responsibleName"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>{t('responsibleName')}</FormLabel>
+                    <FormControl>
+                        <Input placeholder={t('responsibleNamePlaceholder')} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                control={form.control}
+                name="nickname"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>{t('nickname')}</FormLabel>
+                    <FormControl>
+                        <Input placeholder={t('nicknamePlaceholder')} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>{t('phone')}</FormLabel>
+                    <FormControl>
+                        <Input placeholder="+55 (11) 91234-5678" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            </div>
+            <FormField
+              control={form.control}
+              name="url"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('serverUrl')}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t('serverUrlPlaceholder')} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="grid grid-cols-2 gap-6">
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('status')}</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t('selectStatus')} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Online">{t('online')}</SelectItem>
+                        <SelectItem value="Offline">{t('offline')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-6">
+              <FormField
+                control={form.control}
+                name="connections"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('connections')}</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="maxConnections"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('maxConnections')}</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="cpuLoad"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('cpuLoad')}</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="flex justify-end gap-4 pt-6">
+                <Button type="button" variant="outline" onClick={handleCancel}>
+                    {t('cancel')}
+                </Button>
+                <Button type="button" onClick={() => handleSubmit(form.getValues())}>
+                    {t('next')}
+                </Button>
+            </div>
+          </>
+        )}
       </form>
     </Form>
   );
