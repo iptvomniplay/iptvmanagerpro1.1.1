@@ -17,11 +17,11 @@ import { useLanguage } from '@/hooks/use-language';
 export default function Header() {
   const { t } = useLanguage();
   return (
-    <header className={cn("sticky top-0 z-10 flex h-14 items-center gap-4 border-b px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6", "bg-background ")}>
+    <header className={cn("sticky top-0 z-10 flex h-16 items-center gap-4 border-b px-6 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-8", "bg-background ")}>
       <SidebarTrigger className="md:hidden" />
       <div className="ml-auto flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="rounded-full">
-          <Bell className="h-5 w-5" />
+        <Button variant="ghost" size="icon" className="rounded-full h-10 w-10">
+          <Bell className="h-6 w-6" />
           <span className="sr-only">{t('toggleNotifications')}</span>
         </Button>
         <DropdownMenu>
@@ -29,9 +29,9 @@ export default function Header() {
             <Button
               variant="outline"
               size="icon"
-              className="overflow-hidden rounded-full"
+              className="overflow-hidden rounded-full h-10 w-10"
             >
-              <User className="h-5 w-5" />
+              <User className="h-6 w-6" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">

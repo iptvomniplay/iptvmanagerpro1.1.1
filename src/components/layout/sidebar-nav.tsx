@@ -28,29 +28,30 @@ export default function SidebarNav() {
   return (
     <>
       <SidebarHeader>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 rounded-lg"
+            className="h-12 w-12 rounded-lg"
             asChild
           >
             <Link href="/">
-              <Tv2 className="h-6 w-6 text-primary" />
+              <Tv2 className="h-7 w-7 text-primary" />
               <span className="sr-only">IPTV Manager Pro</span>
             </Link>
           </Button>
-          <h1 className="text-lg font-semibold tracking-tight">
+          <h1 className="text-xl font-semibold tracking-tight">
             IPTV Manager Pro
           </h1>
         </div>
       </SidebarHeader>
-      <SidebarContent className="p-2">
+      <SidebarContent className="p-4">
         <SidebarMenu>
           {links.map((link) => (
             <SidebarMenuItem key={link.href}>
               <SidebarMenuButton
                 asChild
+                size="lg"
                 isActive={pathname === link.href}
                 tooltip={{ children: link.label }}
               >

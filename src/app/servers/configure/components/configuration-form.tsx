@@ -39,10 +39,10 @@ function SubmitButton() {
   const { pending } = useFormStatus();
   const { t } = useLanguage();
   return (
-    <Button type="submit" disabled={pending} className="w-full sm:w-auto">
+    <Button type="submit" disabled={pending} className="w-full sm:w-auto" size="lg">
       {pending ? (
         <>
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('validating')}...
+          <Loader2 className="mr-2 h-5 w-5 animate-spin" /> {t('validating')}...
         </>
       ) : (
         t('validateConfiguration')
@@ -63,23 +63,24 @@ export function ConfigurationForm() {
   }, [state])
 
   return (
-    <div className="grid gap-8 lg:grid-cols-2">
+    <div className="grid gap-10 lg:grid-cols-2">
       <form ref={formRef} action={formAction} className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="parameters">{t('serverParameters')}</Label>
+        <div className="space-y-3">
+          <Label htmlFor="parameters" className="text-base">{t('serverParameters')}</Label>
           <Textarea
             id="parameters"
             name="parameters"
             placeholder='{ "bitrate": "5000kbps" }'
-            rows={10}
+            rows={12}
             required
             defaultValue={defaultJson}
+            className="text-base"
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="contentType">{t('contentType')}</Label>
+        <div className="space-y-3">
+          <Label htmlFor="contentType" className="text-base">{t('contentType')}</Label>
           <Select name="contentType" defaultValue="Live TV">
-            <SelectTrigger id="contentType">
+            <SelectTrigger id="contentType" className="text-base">
               <SelectValue placeholder={t('selectContentType')} />
             </SelectTrigger>
             <SelectContent>
@@ -93,24 +94,24 @@ export function ConfigurationForm() {
       </form>
 
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">{t('validationResult')}</h3>
-        <Card className="min-h-[200px]">
+        <h3 className="text-xl font-semibold">{t('validationResult')}</h3>
+        <Card className="min-h-[240px]">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                    {state.error && <><AlertCircle className="text-destructive"/> <span>{t('validationFailed')}</span></>}
-                    {state.report && <><CheckCircle className="text-green-500"/> <span>{t('validationReport')}</span></>}
-                    {!state.error && !state.report && <span>{t('awaitingInput')}</span>}
+                <CardTitle className="flex items-center gap-3 text-lg">
+                    {state.error && <><AlertCircle className="text-destructive h-6 w-6"/> <span>{t('validationFailed')}</span></>}
+                    {state.report && <><CheckCircle className="text-green-500 h-6 w-6"/> <span>{t('validationReport')}</span></>}
+                    {!state.error && !state.report && <span className="text-muted-foreground">{t('awaitingInput')}</span>}
                 </CardTitle>
             </CardHeader>
           <CardContent>
             {state.error && (
-              <p className="text-sm text-destructive">{state.error}</p>
+              <p className="text-base text-destructive">{state.error}</p>
             )}
             {state.report && (
-              <p className="whitespace-pre-wrap text-sm text-muted-foreground">{state.report}</p>
+              <p className="whitespace-pre-wrap text-base text-muted-foreground">{state.report}</p>
             )}
             {!state.error && !state.report && (
-                <p className="text-sm text-muted-foreground">{t('validationReportMessage')}</p>
+                <p className="text-base text-muted-foreground">{t('validationReportMessage')}</p>
             )}
           </CardContent>
         </Card>

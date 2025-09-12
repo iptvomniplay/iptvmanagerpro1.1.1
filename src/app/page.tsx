@@ -36,74 +36,74 @@ export default function Dashboard() {
   const totalClients = clients.length;
 
   return (
-    <div className="flex flex-1 flex-col gap-4 md:gap-8">
-      <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+    <div className="flex flex-1 flex-col gap-6 md:gap-10">
+      <div className="grid gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('totalClients')}</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-base font-medium">{t('totalClients')}</CardTitle>
+            <Users className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalClients}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-3xl font-bold">{totalClients}</div>
+            <p className="text-sm text-muted-foreground">
               {t('lastMonth.plus10')}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-base font-medium">
               {t('serversOnline')}
             </CardTitle>
-            <Server className="h-4 w-4 text-muted-foreground" />
+            <Server className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-3xl font-bold">
               {onlineServers} / {servers.length}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               {t('allSystemsOperational')}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-base font-medium">
               {t('newSubscriptions')}
             </CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+25</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-3xl font-bold">+25</div>
+            <p className="text-sm text-muted-foreground">
               {t('lastMonth.plus12')}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('recentAlerts')}</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-base font-medium">{t('recentAlerts')}</CardTitle>
+            <Activity className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-3xl font-bold">3</div>
+            <p className="text-sm text-muted-foreground">
               {t('highCPU')}
             </p>
           </CardContent>
         </Card>
       </div>
-      <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
-        <div className="grid auto-rows-fr gap-4">
+      <div className="grid gap-6 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
+        <div className="grid auto-rows-fr gap-6">
           <Card>
-            <CardHeader className="pb-3">
+            <CardHeader className="pb-4">
               <CardTitle>{t('welcome')}</CardTitle>
-              <CardDescription className="max-w-lg text-balance leading-relaxed">
+              <CardDescription className="max-w-lg text-balance leading-relaxed text-base">
                 {t('welcomeMessage')}
               </CardDescription>
             </CardHeader>
             <CardFooter>
-              <Button asChild>
+              <Button asChild size="lg">
                 <Link href="/clients">
                   {t('manageClients')} <PlusCircle />
                 </Link>
@@ -111,14 +111,14 @@ export default function Dashboard() {
             </CardFooter>
           </Card>
           <Card>
-            <CardHeader className="pb-3">
+            <CardHeader className="pb-4">
               <CardTitle>{t('configureServers')}</CardTitle>
-              <CardDescription className="max-w-lg text-balance leading-relaxed">
+              <CardDescription className="max-w-lg text-balance leading-relaxed text-base">
                 {t('configureServersMessage')}
               </CardDescription>
             </CardHeader>
             <CardFooter>
-              <Button asChild>
+              <Button asChild size="lg">
                 <Link href="/servers/configure">
                   {t('validateConfiguration')} <ArrowRight />
                 </Link>
@@ -128,9 +128,9 @@ export default function Dashboard() {
         </div>
 
         <Card className="overflow-hidden xl:col-span-2">
-          <CardHeader className="flex flex-row items-start bg-muted/50">
-            <div className="grid gap-0.5">
-              <CardTitle className="group flex items-center gap-2 text-lg">
+          <CardHeader className="flex flex-row items-start bg-muted/50 p-6">
+            <div className="grid gap-1">
+              <CardTitle className="group flex items-center gap-2 text-xl">
                 {t('quickManagement')}
               </CardTitle>
               <CardDescription>
@@ -138,7 +138,7 @@ export default function Dashboard() {
               </CardDescription>
             </div>
           </CardHeader>
-          <CardContent className="grid gap-8 p-6 sm:grid-cols-2">
+          <CardContent className="grid gap-8 p-8 sm:grid-cols-2">
             <div className="group relative">
               {clientImage && (
                 <Image
@@ -150,11 +150,11 @@ export default function Dashboard() {
                   className="rounded-lg object-cover transition-transform group-hover:scale-105"
                 />
               )}
-              <div className="absolute inset-0 rounded-lg bg-black/40" />
-              <div className="absolute bottom-4 left-4">
-                <h3 className="text-xl font-bold text-white">{t('clients')}</h3>
-                <p className="text-sm text-white/90">{t('viewAndManageClients')}</p>
-                <Button asChild size="sm" className="mt-2">
+              <div className="absolute inset-0 rounded-lg bg-black/50" />
+              <div className="absolute bottom-6 left-6">
+                <h3 className="text-2xl font-bold text-white">{t('clients')}</h3>
+                <p className="text-base text-white/90">{t('viewAndManageClients')}</p>
+                <Button asChild className="mt-3">
                   <Link href="/clients">
                     {t('goToClients')} <ArrowRight />
                   </Link>
@@ -173,11 +173,11 @@ export default function Dashboard() {
                   className="rounded-lg object-cover transition-transform group-hover:scale-105"
                 />
               )}
-              <div className="absolute inset-0 rounded-lg bg-black/40" />
-              <div className="absolute bottom-4 left-4">
-                <h3 className="text-xl font-bold text-white">{t('servers')}</h3>
-                <p className="text-sm text-white/90">{t('monitorServerStatus')}</p>
-                 <Button asChild size="sm" className="mt-2">
+              <div className="absolute inset-0 rounded-lg bg-black/50" />
+              <div className="absolute bottom-6 left-6">
+                <h3 className="text-2xl font-bold text-white">{t('servers')}</h3>
+                <p className="text-base text-white/90">{t('monitorServerStatus')}</p>
+                 <Button asChild className="mt-3">
                   <Link href="/servers">
                     {t('goToServers')} <ArrowRight />
                   </Link>

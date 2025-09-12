@@ -15,7 +15,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       </Sidebar>
       <SidebarInset>
         <Header />
-        <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background">{children}</main>
+        <main className="flex-1 p-6 md:p-8 lg:p-10 bg-background">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );

@@ -14,6 +14,17 @@ export default {
         headline: ['"PT Sans"', 'sans-serif'],
         code: ['monospace'],
       },
+      fontSize: {
+        xs: '0.8rem',
+        sm: '0.9rem',
+        base: '1rem',
+        lg: '1.125rem',
+        xl: '1.25rem',
+        '2xl': '1.5rem',
+        '3xl': '1.875rem',
+        '4xl': '2.25rem',
+        '5xl': '3rem',
+      },
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
@@ -68,8 +79,8 @@ export default {
       },
       borderRadius: {
         lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
+        md: 'calc(var(--radius) - 4px)',
+        sm: 'calc(var(--radius) - 6px)',
       },
       keyframes: {
         'accordion-down': {

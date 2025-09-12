@@ -61,7 +61,7 @@ export function ClientForm({ client, onSubmit, onCancel }: ClientFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 py-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 py-4">
         <FormField
           control={form.control}
           name="name"
@@ -88,7 +88,7 @@ export function ClientForm({ client, onSubmit, onCancel }: ClientFormProps) {
             </FormItem>
           )}
         />
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-6">
           <FormField
             control={form.control}
             name="status"
@@ -128,7 +128,7 @@ export function ClientForm({ client, onSubmit, onCancel }: ClientFormProps) {
             )}
           />
         </div>
-        <div className="flex justify-end gap-2 pt-4">
+        <div className="flex justify-end gap-4 pt-6">
             <Button type="button" variant="outline" onClick={onCancel}>
                 {t('cancel')}
             </Button>

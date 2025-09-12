@@ -9,30 +9,30 @@ import { useLanguage } from '@/hooks/use-language';
 export default function ConfigureServerPage() {
   const { t } = useLanguage();
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">
+        <h1 className="text-3xl font-bold tracking-tight">
           {t('serverParameterValidator')}
         </h1>
-        <p className="text-muted-foreground">
+        <p className="mt-2 text-lg text-muted-foreground">
           {t('serverParameterValidatorDescription')}
         </p>
       </div>
 
-       <Alert>
-          <Terminal className="h-4 w-4" />
-          <AlertTitle>{t('howItWorks')}</AlertTitle>
-          <AlertDescription>
+       <Alert className="p-6">
+          <Terminal className="h-5 w-5" />
+          <AlertTitle className="text-lg">{t('howItWorks')}</AlertTitle>
+          <AlertDescription className="text-base">
             {t('howItWorksDescription')}
           </AlertDescription>
         </Alert>
 
       <Card>
-        <CardHeader>
-            <CardTitle>{t('configurationValidator')}</CardTitle>
-            <CardDescription>{t('configurationValidatorDescription')}</CardDescription>
+        <CardHeader className="p-8">
+            <CardTitle className="text-2xl">{t('configurationValidator')}</CardTitle>
+            <CardDescription className="text-base">{t('configurationValidatorDescription')}</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-8 pt-0">
             <ConfigurationForm />
         </CardContent>
       </Card>

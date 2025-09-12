@@ -20,37 +20,37 @@ import { useLanguage } from '@/hooks/use-language';
 export default function ServersPage() {
   const { t } = useLanguage();
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">
+          <h1 className="text-3xl font-bold tracking-tight">
             {t('serverManagement')}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="mt-2 text-lg text-muted-foreground">
             {t('serverManagementDescription')}
           </p>
         </div>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" />
+        <Button size="lg">
+          <PlusCircle className="mr-2 h-5 w-5" />
           {t('registerServer')}
         </Button>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {servers.map((server) => (
           <Card key={server.id}>
-            <CardHeader>
+            <CardHeader className="p-6">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">{server.name}</CardTitle>
+                <CardTitle className="text-xl">{server.name}</CardTitle>
                 <Badge
                   variant={
                     server.status === 'Online' ? 'default' : 'destructive'
                   }
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 text-sm"
                 >
                   <span
                     className={cn(
-                      'h-2 w-2 rounded-full',
+                      'h-2.5 w-2.5 rounded-full',
                       server.status === 'Online'
                         ? 'bg-green-500'
                         : 'bg-red-500'
@@ -59,11 +59,11 @@ export default function ServersPage() {
                   {t(server.status.toLowerCase() as 'online' | 'offline')}
                 </Badge>
               </div>
-              <CardDescription>{server.url}</CardDescription>
+              <CardDescription className="pt-1 text-base">{server.url}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6 px-6 pb-6">
               <div>
-                <div className="mb-1 flex justify-between text-sm">
+                <div className="mb-2 flex justify-between text-base">
                   <span className="font-medium">{t('connections')}</span>
                   <span className="text-muted-foreground">
                     {server.connections} / {server.maxConnections}
@@ -74,7 +74,7 @@ export default function ServersPage() {
                 />
               </div>
               <div>
-                <div className="mb-1 flex justify-between text-sm">
+                <div className="mb-2 flex justify-between text-base">
                   <span className="font-medium">{t('cpuLoad')}</span>
                   <span className="text-muted-foreground">
                     {server.cpuLoad}%
@@ -92,10 +92,10 @@ export default function ServersPage() {
                 />
               </div>
             </CardContent>
-            <CardFooter>
-              <Button variant="outline" className="w-full" asChild>
+            <CardFooter className="px-6 pb-6">
+              <Button variant="outline" className="w-full" asChild size="lg">
                 <Link href="/servers/configure">
-                  <Settings className="mr-2 h-4 w-4" />
+                  <Settings className="mr-2 h-5 w-5" />
                   {t('configure')}
                 </Link>
               </Button>

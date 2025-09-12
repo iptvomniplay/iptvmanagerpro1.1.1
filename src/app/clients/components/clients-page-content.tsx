@@ -128,23 +128,23 @@ export default function ClientsPageContent({
   return (
     <>
       <div className="flex items-center justify-between gap-4">
-        <div className="relative w-full max-w-sm">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+        <div className="relative w-full max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
             type="search"
             placeholder={t('searchClientPlaceholder')}
-            className="pl-9"
+            className="pl-10"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Button onClick={handleAddClient}>
-          <PlusCircle className="mr-2 h-4 w-4" />
+        <Button onClick={handleAddClient} size="lg">
+          <PlusCircle className="mr-2 h-5 w-5" />
           {t('registerClient')}
         </Button>
       </div>
 
-      <div className="rounded-lg border shadow-sm">
+      <div className="rounded-xl border shadow-sm">
         <Table>
           <TableHeader>
             <TableRow>
@@ -174,9 +174,9 @@ export default function ClientsPageContent({
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
+                        <Button variant="ghost" className="h-9 w-9 p-0">
                           <span className="sr-only">{t('openMenu')}</span>
-                          <MoreHorizontal className="h-4 w-4" />
+                          <MoreHorizontal className="h-5 w-5" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
@@ -198,7 +198,7 @@ export default function ClientsPageContent({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
+                <TableCell colSpan={6} className="h-28 text-center text-lg">
                   {t('noClientsFound')}
                 </TableCell>
               </TableRow>
@@ -208,9 +208,9 @@ export default function ClientsPageContent({
       </div>
 
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-xl">
               {editingClient ? t('editClient') : t('registerNewClient')}
             </DialogTitle>
             <DialogDescription>
@@ -230,7 +230,7 @@ export default function ClientsPageContent({
       <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('areYouSure')}</AlertDialogTitle>
+            <AlertDialogTitle className="text-xl">{t('areYouSure')}</AlertDialogTitle>
             <AlertDialogDescription>
               {t('deleteClientWarning')}{' '}
               <span className="font-semibold">{clientToDelete?.name}</span>.
