@@ -70,9 +70,9 @@ export default function SettingsPage() {
                     htmlFor="light"
                     className={cn(
                       'flex flex-col items-center justify-center rounded-xl p-8 text-lg font-semibold transition-all cursor-pointer',
-                      'bg-slate-200 text-slate-800 border-4 border-transparent',
-                      'hover:bg-slate-300 hover:scale-105',
-                      'peer-data-[state=checked]:border-primary peer-data-[state=checked]:ring-4 peer-data-[state=checked]:ring-primary/20'
+                      'border-2 border-muted bg-transparent',
+                      'hover:bg-accent hover:text-accent-foreground',
+                      'peer-data-[state=checked]:border-primary peer-data-[state=checked]:ring-2 peer-data-[state=checked]:ring-primary/50'
                     )}
                   >
                     <Sun className="mb-3 h-8 w-8" />
@@ -89,9 +89,9 @@ export default function SettingsPage() {
                     htmlFor="dark"
                     className={cn(
                       'flex flex-col items-center justify-center rounded-xl p-8 text-lg font-semibold transition-all cursor-pointer',
-                      'bg-gray-800 text-white border-4 border-transparent',
-                      'hover:bg-gray-700 hover:scale-105',
-                      'peer-data-[state=checked]:border-primary peer-data-[state=checked]:ring-4 peer-data-[state=checked]:ring-primary/20'
+                      'border-2 border-muted bg-transparent',
+                      'hover:bg-accent hover:text-accent-foreground',
+                      'peer-data-[state=checked]:border-primary peer-data-[state=checked]:ring-2 peer-data-[state=checked]:ring-primary/50'
                     )}
                   >
                     <Moon className="mb-3 h-8 w-8" />
@@ -108,9 +108,9 @@ export default function SettingsPage() {
                     htmlFor="system"
                     className={cn(
                       'flex flex-col items-center justify-center rounded-xl p-8 text-lg font-semibold transition-all cursor-pointer',
-                      'bg-gray-500 text-white border-4 border-transparent',
-                      'hover:bg-gray-600 hover:scale-105',
-                      'peer-data-[state=checked]:border-primary peer-data-[state=checked]:ring-4 peer-data-[state=checked]:ring-primary/20'
+                      'border-2 border-muted bg-transparent',
+                      'hover:bg-accent hover:text-accent-foreground',
+                      'peer-data-[state=checked]:border-primary peer-data-[state=checked]:ring-2 peer-data-[state=checked]:ring-primary/50'
                     )}
                   >
                     <Laptop className="mb-3 h-8 w-8" />
