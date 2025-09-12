@@ -17,6 +17,7 @@ const links = [
   { href: '/', label: 'Início', icon: Home },
   { href: '/clients', label: 'Clientes', icon: Users },
   { href: '/servers', label: 'Servidores', icon: Server },
+  { href: '/settings', label: 'Configurações', icon: Settings },
 ];
 
 export default function SidebarNav() {
@@ -61,20 +62,6 @@ export default function SidebarNav() {
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              isActive={pathname === '/settings'}
-              tooltip={{ children: 'Configurações' }}
-            >
-              <Link href="/settings">
-                <Settings />
-                <span>Configurações</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
       </SidebarFooter>
     </>
   );
