@@ -30,6 +30,7 @@ import { useRouter } from 'next/navigation';
 import { PlusCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
+import { TelefoneGlobal } from '@/components/ui/telefone-global';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -251,9 +252,8 @@ export function ServerForm({ server }: ServerFormProps) {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('phone')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="+55 (11) 91234-5678" {...field} />
+                  <TelefoneGlobal {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -458,3 +458,5 @@ export function ServerForm({ server }: ServerFormProps) {
     </Form>
   );
 }
+
+    

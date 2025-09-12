@@ -129,5 +129,10 @@
     "panelValue": "Valor do Painel",
     "dueDate": "Dia do Vencimento",
     "panelCreditStock": "Estoque de Créditos do Painel",
-    "panelCreditStockDescription": "Total de créditos disponíveis neste painel."
+    "panelCreditStockDescription": "Total de créditos disponíveis neste painel.",
+    "phoneLabel": "Telefone (obrigatório)",
+    "phoneInvalid": "DDI inválido ou formato incorreto",
+    "phoneValid": "Número válido"
 }
+
+    
