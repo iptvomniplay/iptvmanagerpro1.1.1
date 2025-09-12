@@ -105,6 +105,7 @@
     "serverName": "Nome do Painel",
     "serverNamePlaceholder": "Digite aqui o nome do Painel",
     "serverUrl": "URL do Servidor",
+    "panelUrl": "URL do Painel",
     "serverUrlPlaceholder": "ue.principal.iptv.com",
     "maxConnections": "Conexões Máximas",
     "editServer": "Editar Servidor",
@@ -112,5 +113,11 @@
     "panelAndServerRegistration": "Cadastro de Painel e Servidor(es)",
     "save": "Salvar",
     "next": "Próximo",
-    "addNewPanel": "Add Painel"
+    "addNewPanel": "Add Painel",
+    "responsibleName": "Nome do Responsável",
+    "nickname": "Apelido",
+    "nicknamePlaceholder": "Possui Apelido?",
+    "phone": "Telefone",
+    "login": "Login",
+    "password": "Senha"
 }
