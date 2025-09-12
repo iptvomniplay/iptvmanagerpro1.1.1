@@ -28,27 +28,26 @@ export default function ServersPage() {
   return (
     <>
       <div className="space-y-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight">
-                    {t('serverManagement')}
-                </h1>
-                <p className="mt-2 text-lg text-muted-foreground">
-                    {t('serverManagementDescription')}
-                </p>
-            </div>
-            <div className="flex items-center gap-4">
-                <Button asChild size="lg">
-                    <Link href="/servers/configure">
-                        <Settings className="mr-2 h-5 w-5" />
-                        {t('validateConfiguration')}
-                    </Link>
-                </Button>
-                <Button size="lg" onClick={() => router.push('/servers/new')}>
-                    <PlusCircle className="mr-2 h-5 w-5" />
-                    {t('addPanel')}
-                </Button>
-            </div>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {t('serverManagement')}
+          </h1>
+          <p className="mt-2 text-lg text-muted-foreground">
+            {t('serverManagementDescription')}
+          </p>
+        </div>
+
+        <div className="flex items-center justify-end gap-4">
+          <Button asChild size="lg">
+            <Link href="/servers/configure">
+              <Settings className="mr-2 h-5 w-5" />
+              {t('validateConfiguration')}
+            </Link>
+          </Button>
+          <Button size="lg" onClick={() => router.push('/servers/new')}>
+            <PlusCircle className="mr-2 h-5 w-5" />
+            {t('addPanel')}
+          </Button>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
