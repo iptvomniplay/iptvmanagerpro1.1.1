@@ -30,6 +30,7 @@ import { useRouter } from 'next/navigation';
 import { PlusCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
+import { MaskedInput } from '@/components/ui/masked-input';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -167,7 +168,7 @@ export function ServerForm({ server }: ServerFormProps) {
               </FormItem>
             )}
           />
-          <FormField
+           <FormField
             control={form.control}
             name="login"
             render={({ field }) => (
@@ -226,7 +227,11 @@ export function ServerForm({ server }: ServerFormProps) {
               <FormItem>
                 <FormLabel>{t('phone')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="+55 (11) 91234-5678" {...field} />
+                    <MaskedInput 
+                        mask="+_ (__) _____-____" 
+                        placeholder="+55 (11) 91234-5678" 
+                        {...field} 
+                    />
                 </FormControl>
                 <FormMessage />
               </FormItem>
