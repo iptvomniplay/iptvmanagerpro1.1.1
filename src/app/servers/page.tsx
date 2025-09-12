@@ -72,10 +72,18 @@ export default function ServersPage() {
               {t('serverManagementDescription')}
             </p>
           </div>
-          <Button size="lg" onClick={handleAddServer}>
-            <PlusCircle className="mr-2 h-5 w-5" />
-            {t('addPanel')}
-          </Button>
+          <div className="flex items-center gap-4">
+            <Button asChild size="lg">
+              <Link href="/servers/configure">
+                <Settings className="mr-2 h-5 w-5" />
+                {t('validateConfiguration')}
+              </Link>
+            </Button>
+            <Button size="lg" onClick={handleAddServer}>
+              <PlusCircle className="mr-2 h-5 w-5" />
+              {t('addPanel')}
+            </Button>
+          </div>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
