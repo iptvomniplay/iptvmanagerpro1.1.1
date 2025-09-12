@@ -55,7 +55,7 @@
     "createClient": "Criar Cliente",
     "serverManagement": "Gerenciamento de Servidores",
     "serverManagementDescription": "Monitore o status do servidor e gerencie as configurações.",
-    "registerServer": "Registrar Servidor",
+    "registerServer": "Add Painéis",
     "online": "Online",
     "offline": "Offline",
     "connections": "Conexões",
