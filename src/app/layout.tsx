@@ -4,6 +4,7 @@ import AppLayout from '@/components/layout/app-layout';
 import { Toaster } from '@/components/ui/toaster';
 import { LanguageProvider } from '@/hooks/use-language';
 import { ThemeProvider } from '@/components/theme-provider';
+import ClientOnly from '@/components/client-only';
 
 export const metadata: Metadata = {
   title: 'IPTV Manager Pro',
@@ -37,7 +38,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <LanguageProvider>
-            <AppLayout>{children}</AppLayout>
+            <ClientOnly>
+              <AppLayout>{children}</AppLayout>
+            </ClientOnly>
           </LanguageProvider>
           <Toaster />
         </ThemeProvider>
