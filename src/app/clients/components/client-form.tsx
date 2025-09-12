@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useLanguage } from '@/hooks/use-language';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -42,6 +43,7 @@ interface ClientFormProps {
 }
 
 export function ClientForm({ client, onSubmit, onCancel }: ClientFormProps) {
+  const { t } = useLanguage();
   const form = useForm<ClientFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -65,7 +67,7 @@ export function ClientForm({ client, onSubmit, onCancel }: ClientFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Full Name</FormLabel>
+              <FormLabel>{t('fullName')}</FormLabel>
               <FormControl>
                 <Input placeholder="John Doe" {...field} />
               </FormControl>
@@ -78,7 +80,7 @@ export function ClientForm({ client, onSubmit, onCancel }: ClientFormProps) {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email Address</FormLabel>
+              <FormLabel>{t('emailAddress')}</FormLabel>
               <FormControl>
                 <Input placeholder="name@example.com" {...field} />
               </FormControl>
@@ -92,20 +94,20 @@ export function ClientForm({ client, onSubmit, onCancel }: ClientFormProps) {
             name="status"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Status</FormLabel>
+                <FormLabel>{t('status')}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a status" />
+                      <SelectValue placeholder={t('selectStatus')} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Inactive">Inactive</SelectItem>
-                    <SelectItem value="Expired">Expired</SelectItem>
+                    <SelectItem value="Active">{t('active')}</SelectItem>
+                    <SelectItem value="Inactive">{t('inactive')}</SelectItem>
+                    <SelectItem value="Expired">{t('expired')}</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -117,7 +119,7 @@ export function ClientForm({ client, onSubmit, onCancel }: ClientFormProps) {
             name="expiryDate"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Expiry Date</FormLabel>
+                <FormLabel>{t('expiryDate')}</FormLabel>
                 <FormControl>
                   <Input type="date" {...field} />
                 </FormControl>
@@ -128,10 +130,10 @@ export function ClientForm({ client, onSubmit, onCancel }: ClientFormProps) {
         </div>
         <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={onCancel}>
-                Cancel
+                {t('cancel')}
             </Button>
             <Button type="submit">
-                {client ? 'Save Changes' : 'Create Client'}
+                {client ? t('saveChanges') : t('createClient')}
             </Button>
         </div>
       </form>

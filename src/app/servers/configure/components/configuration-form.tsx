@@ -15,6 +15,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 import { useEffect, useRef } from 'react';
+import { useLanguage } from '@/hooks/use-language';
 
 const initialState = {
   report: undefined,
@@ -36,20 +37,22 @@ const defaultJson = JSON.stringify(
 
 function SubmitButton() {
   const { pending } = useFormStatus();
+  const { t } = useLanguage();
   return (
     <Button type="submit" disabled={pending} className="w-full sm:w-auto">
       {pending ? (
         <>
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Validating...
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('validating')}...
         </>
       ) : (
-        'Validate Configuration'
+        t('validateConfiguration')
       )}
     </Button>
   );
 }
 
 export function ConfigurationForm() {
+  const { t } = useLanguage();
   const [state, formAction] = useFormState(validateConfiguration, initialState);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -63,7 +66,7 @@ export function ConfigurationForm() {
     <div className="grid gap-8 lg:grid-cols-2">
       <form ref={formRef} action={formAction} className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="parameters">Server Parameters (JSON)</Label>
+          <Label htmlFor="parameters">{t('serverParameters')}</Label>
           <Textarea
             id="parameters"
             name="parameters"
@@ -74,15 +77,15 @@ export function ConfigurationForm() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="contentType">Content Type</Label>
+          <Label htmlFor="contentType">{t('contentType')}</Label>
           <Select name="contentType" defaultValue="Live TV">
             <SelectTrigger id="contentType">
-              <SelectValue placeholder="Select content type" />
+              <SelectValue placeholder={t('selectContentType')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Live TV">Live TV</SelectItem>
-              <SelectItem value="VOD">VOD (Video on Demand)</SelectItem>
-              <SelectItem value="4K Streaming">4K Streaming</SelectItem>
+              <SelectItem value="Live TV">{t('liveTV')}</SelectItem>
+              <SelectItem value="VOD">{t('vod')}</SelectItem>
+              <SelectItem value="4K Streaming">{t('fourKStreaming')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -90,13 +93,13 @@ export function ConfigurationForm() {
       </form>
 
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Validation Result</h3>
+        <h3 className="text-lg font-semibold">{t('validationResult')}</h3>
         <Card className="min-h-[200px]">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
-                    {state.error && <><AlertCircle className="text-destructive"/> <span>Validation Failed</span></>}
-                    {state.report && <><CheckCircle className="text-green-500"/> <span>Validation Report</span></>}
-                    {!state.error && !state.report && <span>Awaiting Input...</span>}
+                    {state.error && <><AlertCircle className="text-destructive"/> <span>{t('validationFailed')}</span></>}
+                    {state.report && <><CheckCircle className="text-green-500"/> <span>{t('validationReport')}</span></>}
+                    {!state.error && !state.report && <span>{t('awaitingInput')}</span>}
                 </CardTitle>
             </CardHeader>
           <CardContent>
@@ -107,7 +110,7 @@ export function ConfigurationForm() {
               <p className="whitespace-pre-wrap text-sm text-muted-foreground">{state.report}</p>
             )}
             {!state.error && !state.report && (
-                <p className="text-sm text-muted-foreground">The validation report from the AI will appear here once you submit the configuration.</p>
+                <p className="text-sm text-muted-foreground">{t('validationReportMessage')}</p>
             )}
           </CardContent>
         </Card>

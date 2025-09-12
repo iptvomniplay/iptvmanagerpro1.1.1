@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import AppLayout from '@/components/layout/app-layout';
 import { Toaster } from '@/components/ui/toaster';
+import { LanguageProvider } from '@/hooks/use-language';
 
 export const metadata: Metadata = {
   title: 'IPTV Manager Pro',
@@ -28,7 +29,9 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <AppLayout>{children}</AppLayout>
+        <LanguageProvider>
+          <AppLayout>{children}</AppLayout>
+        </LanguageProvider>
         <Toaster />
       </body>
     </html>

@@ -24,9 +24,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-  DialogClose,
 } from '@/components/ui/dialog';
 import {
   AlertDialog,
@@ -48,12 +45,14 @@ import {
 } from 'lucide-react';
 import { ClientForm } from './client-form';
 import { format, parseISO } from 'date-fns';
+import { useLanguage } from '@/hooks/use-language';
 
 export default function ClientsPageContent({
   initialClients,
 }: {
   initialClients: Client[];
 }) {
+  const { t } = useLanguage();
   const [clients, setClients] = React.useState<Client[]>(initialClients);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [editingClient, setEditingClient] = React.useState<Client | null>(
@@ -133,7 +132,7 @@ export default function ClientsPageContent({
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Search by name, ID, or status..."
+            placeholder={t('searchClientPlaceholder')}
             className="pl-9"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -141,7 +140,7 @@ export default function ClientsPageContent({
         </div>
         <Button onClick={handleAddClient}>
           <PlusCircle className="mr-2 h-4 w-4" />
-          Register Client
+          {t('registerClient')}
         </Button>
       </div>
 
@@ -149,12 +148,12 @@ export default function ClientsPageContent({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Client ID</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Expiry Date</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{t('clientID')}</TableHead>
+              <TableHead>{t('name')}</TableHead>
+              <TableHead>{t('status')}</TableHead>
+              <TableHead>{t('email')}</TableHead>
+              <TableHead>{t('expiryDate')}</TableHead>
+              <TableHead className="text-right">{t('actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -165,7 +164,7 @@ export default function ClientsPageContent({
                   <TableCell>{client.name}</TableCell>
                   <TableCell>
                     <Badge variant={getStatusVariant(client.status)}>
-                      {client.status}
+                      {t(client.status.toLowerCase() as any)}
                     </Badge>
                   </TableCell>
                   <TableCell>{client.email}</TableCell>
@@ -176,21 +175,21 @@ export default function ClientsPageContent({
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
-                          <span className="sr-only">Open menu</span>
+                          <span className="sr-only">{t('openMenu')}</span>
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => handleEditClient(client)}>
                           <FilePenLine className="mr-2 h-4 w-4" />
-                          Edit
+                          {t('edit')}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => handleDeleteConfirm(client)}
                           className="text-destructive focus:text-destructive"
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
-                          Delete
+                          {t('delete')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -200,7 +199,7 @@ export default function ClientsPageContent({
             ) : (
               <TableRow>
                 <TableCell colSpan={6} className="h-24 text-center">
-                  No clients found.
+                  {t('noClientsFound')}
                 </TableCell>
               </TableRow>
             )}
@@ -212,12 +211,12 @@ export default function ClientsPageContent({
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>
-              {editingClient ? 'Edit Client' : 'Register New Client'}
+              {editingClient ? t('editClient') : t('registerNewClient')}
             </DialogTitle>
             <DialogDescription>
               {editingClient
-                ? 'Update the details for this client.'
-                : 'Fill in the form to add a new client to the system.'}
+                ? t('editClientDescription')
+                : t('registerNewClientDescription')}
             </DialogDescription>
           </DialogHeader>
           <ClientForm
@@ -231,15 +230,15 @@ export default function ClientsPageContent({
       <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle>{t('areYouSure')}</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the client record for{' '}
+              {t('deleteClientWarning')}{' '}
               <span className="font-semibold">{clientToDelete?.name}</span>.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>Continue</AlertDialogAction>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>{t('continue')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

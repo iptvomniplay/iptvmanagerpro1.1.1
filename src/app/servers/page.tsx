@@ -1,3 +1,5 @@
+'use client';
+
 import { servers } from '@/lib/data';
 import {
   Card,
@@ -13,22 +15,24 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { PlusCircle, Settings } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { useLanguage } from '@/hooks/use-language';
 
 export default function ServersPage() {
+  const { t } = useLanguage();
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">
-            Server Management
+            {t('serverManagement')}
           </h1>
           <p className="text-muted-foreground">
-            Monitor server status and manage configurations.
+            {t('serverManagementDescription')}
           </p>
         </div>
         <Button>
           <PlusCircle className="mr-2 h-4 w-4" />
-          Register Server
+          {t('registerServer')}
         </Button>
       </div>
 
@@ -52,7 +56,7 @@ export default function ServersPage() {
                         : 'bg-red-500'
                     )}
                   />
-                  {server.status}
+                  {t(server.status.toLowerCase() as 'online' | 'offline')}
                 </Badge>
               </div>
               <CardDescription>{server.url}</CardDescription>
@@ -60,7 +64,7 @@ export default function ServersPage() {
             <CardContent className="space-y-4">
               <div>
                 <div className="mb-1 flex justify-between text-sm">
-                  <span className="font-medium">Connections</span>
+                  <span className="font-medium">{t('connections')}</span>
                   <span className="text-muted-foreground">
                     {server.connections} / {server.maxConnections}
                   </span>
@@ -71,7 +75,7 @@ export default function ServersPage() {
               </div>
               <div>
                 <div className="mb-1 flex justify-between text-sm">
-                  <span className="font-medium">CPU Load</span>
+                  <span className="font-medium">{t('cpuLoad')}</span>
                   <span className="text-muted-foreground">
                     {server.cpuLoad}%
                   </span>
@@ -92,7 +96,7 @@ export default function ServersPage() {
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/servers/configure">
                   <Settings className="mr-2 h-4 w-4" />
-                  Configure
+                  {t('configure')}
                 </Link>
               </Button>
             </CardFooter>

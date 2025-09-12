@@ -12,16 +12,18 @@ import {
 } from '@/components/ui/sidebar';
 import { Home, Users, Server, Settings, Tv2 } from 'lucide-react';
 import { Button } from '../ui/button';
-
-const links = [
-  { href: '/', label: 'Dashboard', icon: Home },
-  { href: '/clients', label: 'Clients', icon: Users },
-  { href: '/servers', label: 'Servers', icon: Server },
-  { href: '/settings', label: 'Settings', icon: Settings },
-];
+import { useLanguage } from '@/hooks/use-language';
 
 export default function SidebarNav() {
   const pathname = usePathname();
+  const { t } = useLanguage();
+
+  const links = [
+    { href: '/', label: t('dashboard'), icon: Home },
+    { href: '/clients', label: t('clients'), icon: Users },
+    { href: '/servers', label: t('servers'), icon: Server },
+    { href: '/settings', label: t('settings'), icon: Settings },
+  ];
 
   return (
     <>

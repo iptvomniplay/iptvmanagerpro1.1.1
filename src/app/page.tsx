@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -18,8 +20,10 @@ import {
 } from '@/components/ui/card';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { clients, servers } from '@/lib/data';
+import { useLanguage } from '@/hooks/use-language';
 
 export default function Dashboard() {
+  const { t } = useLanguage();
   const clientImage = PlaceHolderImages.find(
     (img) => img.id === 'dashboard-clients'
   );
@@ -36,20 +40,20 @@ export default function Dashboard() {
       <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Clients</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('totalClients')}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalClients}</div>
             <p className="text-xs text-muted-foreground">
-              +10% from last month
+              {t('lastMonth.plus10')}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Servers Online
+              {t('serversOnline')}
             </CardTitle>
             <Server className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -58,33 +62,33 @@ export default function Dashboard() {
               {onlineServers} / {servers.length}
             </div>
             <p className="text-xs text-muted-foreground">
-              All systems operational
+              {t('allSystemsOperational')}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              New Subscriptions
+              {t('newSubscriptions')}
             </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">+25</div>
             <p className="text-xs text-muted-foreground">
-              +12.1% from last month
+              {t('lastMonth.plus12')}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Recent Alerts</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('recentAlerts')}</CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">3</div>
             <p className="text-xs text-muted-foreground">
-              High CPU load on Server 2
+              {t('highCPU')}
             </p>
           </CardContent>
         </Card>
@@ -93,32 +97,30 @@ export default function Dashboard() {
         <div className="grid auto-rows-fr gap-4">
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle>Welcome to IPTV Manager Pro</CardTitle>
+              <CardTitle>{t('welcome')}</CardTitle>
               <CardDescription className="max-w-lg text-balance leading-relaxed">
-                Your central hub for managing clients and servers. Streamline
-                your operations and get a clear overview of your IPTV network.
+                {t('welcomeMessage')}
               </CardDescription>
             </CardHeader>
             <CardFooter>
               <Button asChild>
                 <Link href="/clients">
-                  Manage Clients <PlusCircle />
+                  {t('manageClients')} <PlusCircle />
                 </Link>
               </Button>
             </CardFooter>
           </Card>
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle>Configure Servers</CardTitle>
+              <CardTitle>{t('configureServers')}</CardTitle>
               <CardDescription className="max-w-lg text-balance leading-relaxed">
-                Use our AI-powered tool to validate server parameters for
-                optimal performance.
+                {t('configureServersMessage')}
               </CardDescription>
             </CardHeader>
             <CardFooter>
               <Button asChild>
                 <Link href="/servers/configure">
-                  Validate Configuration <ArrowRight />
+                  {t('validateConfiguration')} <ArrowRight />
                 </Link>
               </Button>
             </CardFooter>
@@ -129,10 +131,10 @@ export default function Dashboard() {
           <CardHeader className="flex flex-row items-start bg-muted/50">
             <div className="grid gap-0.5">
               <CardTitle className="group flex items-center gap-2 text-lg">
-                Quick Management
+                {t('quickManagement')}
               </CardTitle>
               <CardDescription>
-                Quickly access client and server management pages.
+                {t('quickManagementMessage')}
               </CardDescription>
             </div>
           </CardHeader>
@@ -150,11 +152,11 @@ export default function Dashboard() {
               )}
               <div className="absolute inset-0 rounded-lg bg-black/40" />
               <div className="absolute bottom-4 left-4">
-                <h3 className="text-xl font-bold text-white">Clients</h3>
-                <p className="text-sm text-white/90">View and manage all your clients</p>
+                <h3 className="text-xl font-bold text-white">{t('clients')}</h3>
+                <p className="text-sm text-white/90">{t('viewAndManageClients')}</p>
                 <Button asChild size="sm" className="mt-2">
                   <Link href="/clients">
-                    Go to Clients <ArrowRight />
+                    {t('goToClients')} <ArrowRight />
                   </Link>
                 </Button>
               </div>
@@ -173,11 +175,11 @@ export default function Dashboard() {
               )}
               <div className="absolute inset-0 rounded-lg bg-black/40" />
               <div className="absolute bottom-4 left-4">
-                <h3 className="text-xl font-bold text-white">Servers</h3>
-                <p className="text-sm text-white/90">Monitor server status and configuration</p>
+                <h3 className="text-xl font-bold text-white">{t('servers')}</h3>
+                <p className="text-sm text-white/90">{t('monitorServerStatus')}</p>
                  <Button asChild size="sm" className="mt-2">
                   <Link href="/servers">
-                    Go to Servers <ArrowRight />
+                    {t('goToServers')} <ArrowRight />
                   </Link>
                 </Button>
               </div>
