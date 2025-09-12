@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/sidebar';
 import { Home, Users, Server, Settings, Tv2 } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 
 const links = [
   { href: '/', label: 'Início', icon: Home },
@@ -61,21 +60,21 @@ export default function SidebarNav() {
           ))}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter className="flex-col items-start gap-2">
-         <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === '/settings'}
-                tooltip={{ children: "Configurações" }}
-              >
-                <Link href="/settings">
-                  <Settings />
-                  <span>Configurações</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={pathname === '/settings'}
+              tooltip={{ children: 'Configurações' }}
+            >
+              <Link href="/settings">
+                <Settings />
+                <span>Configurações</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
     </>
   );
