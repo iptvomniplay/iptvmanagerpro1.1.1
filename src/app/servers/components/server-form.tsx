@@ -108,12 +108,12 @@ export function ServerForm({ server }: ServerFormProps) {
       nickname: '',
       phone: '',
       paymentType: 'prepaid',
-      quantityOfCredits: 0,
+      quantityOfCredits: undefined,
       totalPurchaseValue: '',
       panelValue: '',
       dueDate: 1,
       hasInitialStock: false,
-      panelCreditStock: 0,
+      panelCreditStock: undefined,
       status: server?.status || 'Online',
       connections: server?.connections || 0,
       maxConnections: server?.maxConnections || 1000,
@@ -303,7 +303,7 @@ export function ServerForm({ server }: ServerFormProps) {
                   <FormItem>
                     <FormLabel>{t('quantityOfCredits')}</FormLabel>
                     <FormControl>
-                      <Input type="number" {...field} />
+                      <Input type="number" {...field} value={field.value ?? ''} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -395,7 +395,7 @@ export function ServerForm({ server }: ServerFormProps) {
                     <FormItem>
                         <FormLabel>{t('panelCreditStock')}</FormLabel>
                         <FormControl>
-                        <Input type="number" {...field} />
+                        <Input type="number" {...field} value={field.value ?? ''} />
                         </FormControl>
                         <FormDescription>{t('panelCreditStockDescription')}</FormDescription>
                         <FormMessage />
