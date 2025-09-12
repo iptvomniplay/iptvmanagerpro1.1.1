@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/use-language';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useTheme } from 'next-themes';
-import { Sun, Moon, Laptop2 } from 'lucide-react';
+import { Monitor, MoonStar, SunDim } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -70,12 +70,12 @@ export default function SettingsPage() {
                     htmlFor="light"
                     className={cn(
                       'flex flex-col items-center justify-center rounded-xl p-8 text-lg font-semibold transition-all cursor-pointer',
-                      'border-2 border-transparent',
+                      'border-2 border-transparent bg-secondary/30',
                       'hover:bg-accent hover:text-accent-foreground',
                       'peer-data-[state=checked]:border-primary peer-data-[state=checked]:ring-2 peer-data-[state=checked]:ring-primary/50'
                     )}
                   >
-                    <Sun className="mb-3 h-8 w-8" />
+                    <SunDim className="mb-3 h-8 w-8" />
                     {t('light')}
                   </Label>
                 </div>
@@ -89,12 +89,12 @@ export default function SettingsPage() {
                     htmlFor="dark"
                     className={cn(
                       'flex flex-col items-center justify-center rounded-xl p-8 text-lg font-semibold transition-all cursor-pointer',
-                      'border-2 border-transparent',
+                      'border-2 border-transparent bg-secondary/30',
                       'hover:bg-accent hover:text-accent-foreground',
                       'peer-data-[state=checked]:border-primary peer-data-[state=checked]:ring-2 peer-data-[state=checked]:ring-primary/50'
                     )}
                   >
-                    <Moon className="mb-3 h-8 w-8" />
+                    <MoonStar className="mb-3 h-8 w-8" />
                     {t('dark')}
                   </Label>
                 </div>
@@ -108,12 +108,12 @@ export default function SettingsPage() {
                     htmlFor="system"
                     className={cn(
                       'flex flex-col items-center justify-center rounded-xl p-8 text-lg font-semibold transition-all cursor-pointer',
-                      'border-2 border-transparent',
+                      'border-2 border-transparent bg-secondary/30',
                       'hover:bg-accent hover:text-accent-foreground',
                       'peer-data-[state=checked]:border-primary peer-data-[state=checked]:ring-2 peer-data-[state=checked]:ring-primary/50'
                     )}
                   >
-                    <Laptop2 className="mb-3 h-8 w-8" />
+                    <Monitor className="mb-3 h-8 w-8" />
                     {t('system')}
                   </Label>
                 </div>
