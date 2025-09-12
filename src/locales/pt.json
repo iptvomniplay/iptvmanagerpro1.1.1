@@ -103,7 +103,7 @@
     "support": "Suporte",
     "logout": "Sair",
     "serverName": "Nome do Painel",
-    "serverNamePlaceholder": "Servidor Principal UE",
+    "serverNamePlaceholder": "Digite aqui o nome do Painel",
     "serverUrl": "URL do Servidor",
     "serverUrlPlaceholder": "ue.principal.iptv.com",
     "maxConnections": "Conexões Máximas",

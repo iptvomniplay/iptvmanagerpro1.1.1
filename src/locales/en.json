@@ -103,7 +103,7 @@
     "support": "Support",
     "logout": "Logout",
     "serverName": "Panel Name",
-    "serverNamePlaceholder": "EU Main Server",
+    "serverNamePlaceholder": "Enter the Panel name here",
     "serverUrl": "Server URL",
     "serverUrlPlaceholder": "eu.main.iptv.com",
     "maxConnections": "Max Connections",
