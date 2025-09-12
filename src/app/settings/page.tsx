@@ -14,7 +14,6 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/use-language';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useTheme } from 'next-themes';
-import { Monitor, MoonStar, SunDim } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -72,10 +71,30 @@ export default function SettingsPage() {
                       'flex flex-col items-center justify-center gap-3 rounded-lg p-6 text-lg font-semibold transition-all cursor-pointer',
                       'border-2 border-transparent',
                       'hover:bg-accent hover:text-accent-foreground',
-                      'peer-data-[state=checked]:bg-accent peer-data-[state=checked]:text-accent-foreground'
+                      'peer-data-[state=checked]:border-primary'
                     )}
                   >
-                    <SunDim className="h-7 w-7" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="4" />
+                      <path d="M12 2v2" />
+                      <path d="M12 20v2" />
+                      <path d="m4.93 4.93 1.41 1.41" />
+                      <path d="m17.66 17.66 1.41 1.41" />
+                      <path d="M2 12h2" />
+                      <path d="M20 12h2" />
+                      <path d="m6.34 17.66-1.41 1.41" />
+                      <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
                     {t('light')}
                   </Label>
                 </div>
@@ -91,10 +110,23 @@ export default function SettingsPage() {
                       'flex flex-col items-center justify-center gap-3 rounded-lg p-6 text-lg font-semibold transition-all cursor-pointer',
                       'border-2 border-transparent',
                       'hover:bg-accent hover:text-accent-foreground',
-                      'peer-data-[state=checked]:bg-accent peer-data-[state=checked]:text-accent-foreground'
+                      'peer-data-[state=checked]:border-primary'
                     )}
                   >
-                    <MoonStar className="h-7 w-7" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                      <path d="M19 3v4h-4" />
+                    </svg>
                     {t('dark')}
                   </Label>
                 </div>
@@ -110,10 +142,23 @@ export default function SettingsPage() {
                       'flex flex-col items-center justify-center gap-3 rounded-lg p-6 text-lg font-semibold transition-all cursor-pointer',
                       'border-2 border-transparent',
                       'hover:bg-accent hover:text-accent-foreground',
-                      'peer-data-[state=checked]:bg-accent peer-data-[state=checked]:text-accent-foreground'
+                      'peer-data-[state=checked]:border-primary'
                     )}
                   >
-                    <Monitor className="h-7 w-7" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20Z" />
+                      <path d="M12 2a10 10 0 1 0 10 10" />
+                    </svg>
                     {t('system')}
                   </Label>
                 </div>
