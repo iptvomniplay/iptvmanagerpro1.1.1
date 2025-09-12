@@ -110,5 +110,6 @@
     "editServer": "Editar Servidor",
     "editServerDescription": "Atualize os detalhes deste servidor.",
     "panelAndServerRegistration": "Cadastro de Painel e Servidor(es)",
-    "save": "Salvar"
+    "save": "Salvar",
+    "next": "Próximo"
 }

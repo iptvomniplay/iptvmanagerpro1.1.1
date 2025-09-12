@@ -59,11 +59,8 @@ export function ServerForm({ server }: ServerFormProps) {
   });
 
   const handleSubmit = (values: ServerFormValues) => {
-    // Here you would typically handle the form submission,
-    // e.g., by sending the data to an API.
-    console.log(values);
-    // For this example, we'll just navigate back to the servers list.
-    router.push('/servers');
+    // Action removed as requested.
+    console.log('Form values:', values);
   };
   
   const handleCancel = () => {
@@ -170,8 +167,8 @@ export function ServerForm({ server }: ServerFormProps) {
             <Button type="button" variant="outline" onClick={handleCancel}>
                 {t('cancel')}
             </Button>
-            <Button type="submit">
-                {t('save')}
+            <Button type="button" onClick={() => handleSubmit(form.getValues())}>
+                {t('next')}
             </Button>
         </div>
       </form>
