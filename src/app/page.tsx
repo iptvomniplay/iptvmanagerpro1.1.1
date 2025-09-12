@@ -119,7 +119,7 @@ export default function Dashboard() {
             </CardHeader>
             <CardFooter>
               <Button asChild size="lg">
-                <Link href="/servers/configure">
+                <Link href="/servers">
                   {t('goToServers')} <ArrowRight />
                 </Link>
               </Button>
