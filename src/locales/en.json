@@ -54,7 +54,7 @@
     "saveChanges": "Save Changes",
     "createClient": "Create Client",
     "serverManagement": "Server Management",
-    "serverManagementDescription": "Monitor server status and manage configurations.",
+    "serverManagementDescription": "Manage servers and panels.",
     "addPanel": "Register",
     "online": "Online",
     "offline": "Offline",
