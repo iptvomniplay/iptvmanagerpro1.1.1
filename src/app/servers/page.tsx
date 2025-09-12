@@ -1,6 +1,8 @@
 'use client';
 
-import { servers } from '@/lib/data';
+import * as React from 'react';
+import { servers as initialServers } from '@/lib/data';
+import type { Server } from '@/lib/types';
 import {
   Card,
   CardContent,
@@ -16,9 +18,33 @@ import { cn } from '@/lib/utils';
 import { PlusCircle, Settings } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { useLanguage } from '@/hooks/use-language';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { ServerForm } from './components/server-form';
 
 export default function ServersPage() {
   const { t } = useLanguage();
+  const [servers, setServers] = React.useState<Server[]>(initialServers);
+  const [isFormOpen, setIsFormOpen] = React.useState(false);
+  const [editingServer, setEditingServer] = React.useState<Server | null>(
+    null
+  );
+
+  const handleAddServer = () => {
+    setEditingServer(null);
+    setIsFormOpen(true);
+  };
+  
+  const handleFormSubmit = (values: Omit<Server, 'id'>) => {
+    setIsFormOpen(false);
+  };
+
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -30,7 +56,7 @@ export default function ServersPage() {
             {t('serverManagementDescription')}
           </p>
         </div>
-        <Button size="lg">
+        <Button size="lg" onClick={handleAddServer}>
           <PlusCircle className="mr-2 h-5 w-5" />
           {t('registerServer')}
         </Button>
@@ -103,6 +129,25 @@ export default function ServersPage() {
           </Card>
         ))}
       </div>
+      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-xl">
+              {editingServer ? "Edit Server" : "Add Server Panel"}
+            </DialogTitle>
+            <DialogDescription>
+              {editingServer
+                ? "Update the details for this server."
+                : "Fill in the form to add a new server panel to the system."}
+            </DialogDescription>
+          </DialogHeader>
+          <ServerForm
+            server={editingServer}
+            onSubmit={handleFormSubmit}
+            onCancel={() => setIsFormOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
