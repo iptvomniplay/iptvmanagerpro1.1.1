@@ -109,5 +109,5 @@
     "maxConnections": "Conexões Máximas",
     "editServer": "Editar Servidor",
     "editServerDescription": "Atualize os detalhes deste servidor.",
-    "addServerPanelDescription": "Preencha o formulário para adicionar um novo painel de servidor ao sistema."
+    "panelAndServerRegistration": "Cadastro de Painel e Servidor(es)"
 }

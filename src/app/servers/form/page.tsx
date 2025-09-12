@@ -28,20 +28,14 @@ export default function ServerFormPage() {
     <div className="space-y-8">
        <div>
         <h1 className="text-3xl font-bold tracking-tight">
-          {server ? t('editServer') : t('addPanel')}
+          {server ? t('editServer') : t('panelAndServerRegistration')}
         </h1>
-        <p className="mt-2 text-lg text-muted-foreground">
-          {server ? t('editServerDescription') : t('addServerPanelDescription')}
-        </p>
       </div>
       <Card>
         <CardHeader>
             <CardTitle className="text-2xl">
-                {server ? t('editServer') : t('addPanel')}
+                {server ? t('editServer') : t('panelAndServerRegistration')}
             </CardTitle>
-            <CardDescription>
-                {server ? t('editServerDescription') : t('addServerPanelDescription')}
-            </CardDescription>
         </CardHeader>
         <CardContent>
             <ServerForm

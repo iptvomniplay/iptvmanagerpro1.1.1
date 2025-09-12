@@ -109,5 +109,5 @@
     "maxConnections": "Max Connections",
     "editServer": "Edit Server",
     "editServerDescription": "Update the details for this server.",
-    "addServerPanelDescription": "Fill in the form to add a new server panel to the system."
+    "panelAndServerRegistration": "Panel and Server(s) Registration"
 }
