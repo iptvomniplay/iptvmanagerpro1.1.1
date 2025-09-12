@@ -15,14 +15,24 @@ import { useLanguage } from '@/hooks/use-language';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useTheme } from 'next-themes';
 import { Sun, Moon, Laptop } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export default function SettingsPage() {
   const { language, setLanguage, t } = useLanguage();
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleLanguageChange = (lang: 'pt-BR' | 'en-US') => {
     setLanguage(lang);
   };
+
+  if (!mounted) {
+    return null; // or a loading skeleton
+  }
 
   return (
     <div className="space-y-10">
