@@ -30,7 +30,6 @@ import { useRouter } from 'next/navigation';
 import { PlusCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
-import { TelefoneGlobal } from '@/components/ui/telefone-global';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -125,9 +124,9 @@ export function ServerForm({ server }: ServerFormProps) {
   const totalPurchaseValue = watch('totalPurchaseValue');
 
   const unitValue = React.useMemo(() => {
-    if (!totalPurchaseValue) return '0.00';
+    if (!totalPurchaseValue || !quantityOfCredits) return '0.00';
     const total = parseFloat((totalPurchaseValue || '0').replace(/[^0-9,]/g, '').replace(',', '.'));
-    if (quantityOfCredits && total > 0 && quantityOfCredits > 0) {
+    if (total > 0 && quantityOfCredits > 0) {
       return (total / quantityOfCredits).toFixed(2);
     }
     return '0.00';
@@ -252,8 +251,9 @@ export function ServerForm({ server }: ServerFormProps) {
             name="phone"
             render={({ field }) => (
               <FormItem>
+                <FormLabel>{t('phone')}</FormLabel>
                 <FormControl>
-                  <TelefoneGlobal {...field} />
+                  <Input placeholder="+55 (11) 91234-5678" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

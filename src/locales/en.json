@@ -129,10 +129,5 @@
     "panelValue": "Panel Value",
     "dueDate": "Due Date",
     "panelCreditStock": "Panel Credit Stock",
-    "panelCreditStockDescription": "Total credits available on this panel.",
-    "phoneLabel": "Phone (required)",
-    "phoneInvalid": "Invalid DDI or incorrect format",
-    "phoneValid": "Valid number"
+    "panelCreditStockDescription": "Total credits available on this panel."
 }
-
-    
