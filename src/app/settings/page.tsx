@@ -69,13 +69,13 @@ export default function SettingsPage() {
                   <Label
                     htmlFor="light"
                     className={cn(
-                      'flex flex-col items-center justify-center rounded-xl p-8 text-lg font-semibold transition-all cursor-pointer',
-                      'border-2 border-transparent bg-secondary/30',
+                      'flex items-center justify-center gap-3 rounded-lg p-6 text-lg font-semibold transition-all cursor-pointer',
+                      'border-2 border-transparent',
                       'hover:bg-accent hover:text-accent-foreground',
-                      'peer-data-[state=checked]:border-primary peer-data-[state=checked]:ring-2 peer-data-[state=checked]:ring-primary/50'
+                      'peer-data-[state=checked]:bg-accent peer-data-[state=checked]:text-accent-foreground'
                     )}
                   >
-                    <SunDim className="mb-3 h-8 w-8" />
+                    <SunDim className="h-7 w-7" />
                     {t('light')}
                   </Label>
                 </div>
@@ -88,13 +88,13 @@ export default function SettingsPage() {
                   <Label
                     htmlFor="dark"
                     className={cn(
-                      'flex flex-col items-center justify-center rounded-xl p-8 text-lg font-semibold transition-all cursor-pointer',
-                      'border-2 border-transparent bg-secondary/30',
+                      'flex items-center justify-center gap-3 rounded-lg p-6 text-lg font-semibold transition-all cursor-pointer',
+                      'border-2 border-transparent',
                       'hover:bg-accent hover:text-accent-foreground',
-                      'peer-data-[state=checked]:border-primary peer-data-[state=checked]:ring-2 peer-data-[state=checked]:ring-primary/50'
+                      'peer-data-[state=checked]:bg-accent peer-data-[state=checked]:text-accent-foreground'
                     )}
                   >
-                    <MoonStar className="mb-3 h-8 w-8" />
+                    <MoonStar className="h-7 w-7" />
                     {t('dark')}
                   </Label>
                 </div>
@@ -107,13 +107,13 @@ export default function SettingsPage() {
                   <Label
                     htmlFor="system"
                     className={cn(
-                      'flex flex-col items-center justify-center rounded-xl p-8 text-lg font-semibold transition-all cursor-pointer',
-                      'border-2 border-transparent bg-secondary/30',
+                      'flex items-center justify-center gap-3 rounded-lg p-6 text-lg font-semibold transition-all cursor-pointer',
+                      'border-2 border-transparent',
                       'hover:bg-accent hover:text-accent-foreground',
-                      'peer-data-[state=checked]:border-primary peer-data-[state=checked]:ring-2 peer-data-[state=checked]:ring-primary/50'
+                      'peer-data-[state=checked]:bg-accent peer-data-[state=checked]:text-accent-foreground'
                     )}
                   >
-                    <Monitor className="mb-3 h-8 w-8" />
+                    <Monitor className="h-7 w-7" />
                     {t('system')}
                   </Label>
                 </div>
