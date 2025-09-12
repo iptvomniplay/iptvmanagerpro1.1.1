@@ -19,7 +19,7 @@ export default function SidebarNav() {
   const { t } = useLanguage();
 
   const links = [
-    { href: '/', label: t('dashboard'), icon: Home },
+    { href: '/', label: t('home'), icon: Home },
     { href: '/clients', label: t('clients'), icon: Users },
     { href: '/servers', label: t('servers'), icon: Server },
     { href: '/settings', label: t('settings'), icon: Settings },
