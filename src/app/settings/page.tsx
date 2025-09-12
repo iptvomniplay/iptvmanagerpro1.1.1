@@ -69,7 +69,7 @@ export default function SettingsPage() {
                   <Label
                     htmlFor="light"
                     className={cn(
-                      'flex items-center justify-center gap-3 rounded-lg p-6 text-lg font-semibold transition-all cursor-pointer',
+                      'flex flex-col items-center justify-center gap-3 rounded-lg p-6 text-lg font-semibold transition-all cursor-pointer',
                       'border-2 border-transparent',
                       'hover:bg-accent hover:text-accent-foreground',
                       'peer-data-[state=checked]:bg-accent peer-data-[state=checked]:text-accent-foreground'
@@ -88,7 +88,7 @@ export default function SettingsPage() {
                   <Label
                     htmlFor="dark"
                     className={cn(
-                      'flex items-center justify-center gap-3 rounded-lg p-6 text-lg font-semibold transition-all cursor-pointer',
+                      'flex flex-col items-center justify-center gap-3 rounded-lg p-6 text-lg font-semibold transition-all cursor-pointer',
                       'border-2 border-transparent',
                       'hover:bg-accent hover:text-accent-foreground',
                       'peer-data-[state=checked]:bg-accent peer-data-[state=checked]:text-accent-foreground'
@@ -107,7 +107,7 @@ export default function SettingsPage() {
                   <Label
                     htmlFor="system"
                     className={cn(
-                      'flex items-center justify-center gap-3 rounded-lg p-6 text-lg font-semibold transition-all cursor-pointer',
+                      'flex flex-col items-center justify-center gap-3 rounded-lg p-6 text-lg font-semibold transition-all cursor-pointer',
                       'border-2 border-transparent',
                       'hover:bg-accent hover:text-accent-foreground',
                       'peer-data-[state=checked]:bg-accent peer-data-[state=checked]:text-accent-foreground'
