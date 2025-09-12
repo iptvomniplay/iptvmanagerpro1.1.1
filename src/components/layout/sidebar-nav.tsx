@@ -13,7 +13,12 @@ import {
 import { Home, Users, Server, Settings, Tv2 } from 'lucide-react';
 import { Button } from '../ui/button';
 
-const links: { href: string, label: string, icon: React.ComponentType<any> }[] = [];
+const links = [
+  { href: '/', label: 'Dashboard', icon: Home },
+  { href: '/clients', label: 'Clients', icon: Users },
+  { href: '/servers', label: 'Servers', icon: Server },
+  { href: '/settings', label: 'Settings', icon: Settings },
+];
 
 export default function SidebarNav() {
   const pathname = usePathname();
