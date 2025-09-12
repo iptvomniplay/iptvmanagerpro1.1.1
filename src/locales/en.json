@@ -55,7 +55,7 @@
     "createClient": "Create Client",
     "serverManagement": "Server Management",
     "serverManagementDescription": "Monitor server status and manage configurations.",
-    "addPanel": "Add Panel",
+    "addPanel": "Register",
     "online": "Online",
     "offline": "Offline",
     "connections": "Connections",
