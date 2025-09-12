@@ -106,6 +106,11 @@ export function ServerForm({ server }: ServerFormProps) {
       nickname: '',
       phone: '',
       paymentType: 'prepaid',
+      quantityOfCredits: 0,
+      totalPurchaseValue: '',
+      panelValue: '',
+      dueDate: 1,
+      panelCreditStock: 0,
       status: server?.status || 'Online',
       connections: server?.connections || 0,
       maxConnections: server?.maxConnections || 1000,
@@ -141,7 +146,7 @@ export function ServerForm({ server }: ServerFormProps) {
       currency: language === 'pt-BR' ? 'BRL' : 'USD',
     });
     
-    setValue(fieldName, formatter.format(numericValue));
+    setValue(fieldName as any, formatter.format(numericValue));
   };
 
   const handleSubmit = (values: ServerFormValues) => {
@@ -455,5 +460,3 @@ export function ServerForm({ server }: ServerFormProps) {
     </Form>
   );
 }
-
-    
