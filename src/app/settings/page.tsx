@@ -71,7 +71,7 @@ export default function SettingsPage() {
                       'flex flex-col items-center justify-center gap-3 rounded-lg p-6 text-lg font-semibold transition-all cursor-pointer',
                       'border-2 border-transparent',
                       'hover:bg-accent hover:text-accent-foreground',
-                      'peer-data-[state=checked]:border-primary'
+                      'peer-data-[state=checked]:bg-accent peer-data-[state=checked]:text-accent-foreground'
                     )}
                   >
                     <svg
@@ -110,7 +110,7 @@ export default function SettingsPage() {
                       'flex flex-col items-center justify-center gap-3 rounded-lg p-6 text-lg font-semibold transition-all cursor-pointer',
                       'border-2 border-transparent',
                       'hover:bg-accent hover:text-accent-foreground',
-                      'peer-data-[state=checked]:border-primary'
+                      'peer-data-[state=checked]:bg-accent peer-data-[state=checked]:text-accent-foreground'
                     )}
                   >
                     <svg
@@ -125,7 +125,6 @@ export default function SettingsPage() {
                       strokeLinejoin="round"
                     >
                       <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-                      <path d="M19 3v4h-4" />
                     </svg>
                     {t('dark')}
                   </Label>
@@ -142,7 +141,7 @@ export default function SettingsPage() {
                       'flex flex-col items-center justify-center gap-3 rounded-lg p-6 text-lg font-semibold transition-all cursor-pointer',
                       'border-2 border-transparent',
                       'hover:bg-accent hover:text-accent-foreground',
-                      'peer-data-[state=checked]:border-primary'
+                      'peer-data-[state=checked]:bg-accent peer-data-[state=checked]:text-accent-foreground'
                     )}
                   >
                     <svg
