@@ -55,7 +55,7 @@
     "createClient": "Criar Cliente",
     "serverManagement": "Gerenciamento de Servidores",
     "serverManagementDescription": "Monitore o status do servidor e gerencie as configurações.",
-    "addPanel": "Add Painel",
+    "addPanel": "Adicionar Painel",
     "online": "Online",
     "offline": "Offline",
     "connections": "Conexões",
@@ -109,5 +109,6 @@
     "maxConnections": "Conexões Máximas",
     "editServer": "Editar Servidor",
     "editServerDescription": "Atualize os detalhes deste servidor.",
-    "panelAndServerRegistration": "Cadastro de Painel e Servidor(es)"
+    "panelAndServerRegistration": "Cadastro de Painel e Servidor(es)",
+    "save": "Salvar"
 }

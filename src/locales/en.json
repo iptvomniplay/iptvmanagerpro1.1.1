@@ -109,5 +109,6 @@
     "maxConnections": "Max Connections",
     "editServer": "Edit Server",
     "editServerDescription": "Update the details for this server.",
-    "panelAndServerRegistration": "Panel and Server(s) Registration"
+    "panelAndServerRegistration": "Panel and Server(s) Registration",
+    "save": "Save"
 }

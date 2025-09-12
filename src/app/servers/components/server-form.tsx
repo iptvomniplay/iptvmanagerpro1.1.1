@@ -162,7 +162,7 @@ export function ServerForm({ server, onSubmit, onCancel }: ServerFormProps) {
                 {t('cancel')}
             </Button>
             <Button type="submit">
-                {server ? t('saveChanges') : t('addPanel')}
+                {server ? t('saveChanges') : t('save')}
             </Button>
         </div>
       </form>
