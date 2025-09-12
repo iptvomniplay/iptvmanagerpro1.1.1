@@ -2,13 +2,18 @@
 
 import { ServerForm } from '../../components/server-form';
 import { useLanguage } from '@/hooks/use-language';
-import { servers } from '@/lib/data';
 import type { Server } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useData } from '@/hooks/use-data';
+import { useParams } from 'next/navigation';
+import { useMemo } from 'react';
 
-export default function EditServerPage({ params }: { params: { id: string } }) {
+export default function EditServerPage() {
   const { t } = useLanguage();
-  const server = servers.find((s) => s.id === params.id) || null;
+  const params = useParams();
+  const { servers } = useData();
+  
+  const server = useMemo(() => servers.find((s) => s.id === params.id) || null, [servers, params.id]);
 
   return (
     <div className="space-y-8">

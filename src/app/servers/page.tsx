@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import { servers as initialServers } from '@/lib/data';
 import type { Server } from '@/lib/types';
 import {
   Card,
@@ -19,11 +18,12 @@ import { PlusCircle, Settings } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
+import { useData } from '@/hooks/use-data';
 
 export default function ServersPage() {
   const { t } = useLanguage();
   const router = useRouter();
-  const [servers, setServers] = React.useState<Server[]>(initialServers);
+  const { servers } = useData();
 
   return (
     <>

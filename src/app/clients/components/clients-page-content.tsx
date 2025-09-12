@@ -46,14 +46,11 @@ import {
 import { ClientForm } from './client-form';
 import { format, parseISO } from 'date-fns';
 import { useLanguage } from '@/hooks/use-language';
+import { useData } from '@/hooks/use-data';
 
-export default function ClientsPageContent({
-  initialClients,
-}: {
-  initialClients: Client[];
-}) {
+export default function ClientsPageContent() {
   const { t } = useLanguage();
-  const [clients, setClients] = React.useState<Client[]>(initialClients);
+  const { clients, addClient, updateClient, deleteClient } = useData();
   const [searchTerm, setSearchTerm] = React.useState('');
   const [editingClient, setEditingClient] = React.useState<Client | null>(
     null
@@ -88,7 +85,7 @@ export default function ClientsPageContent({
 
   const handleDelete = () => {
     if (clientToDelete) {
-      setClients(clients.filter((c) => c.id !== clientToDelete.id));
+      deleteClient(clientToDelete.id);
     }
     setIsDeleteAlertOpen(false);
     setClientToDelete(null);
@@ -96,18 +93,9 @@ export default function ClientsPageContent({
 
   const handleFormSubmit = (values: Omit<Client, 'id' | 'registeredDate'>) => {
     if (editingClient) {
-      setClients(
-        clients.map((c) =>
-          c.id === editingClient.id ? { ...editingClient, ...values } : c
-        )
-      );
+      updateClient({ ...editingClient, ...values });
     } else {
-      const newClient: Client = {
-        ...values,
-        id: `C${(Math.random() * 1000).toFixed(0).padStart(3, '0')}`,
-        registeredDate: format(new Date(), 'yyyy-MM-dd'),
-      };
-      setClients([newClient, ...clients]);
+      addClient(values);
     }
     setIsFormOpen(false);
   };

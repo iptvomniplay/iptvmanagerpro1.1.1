@@ -19,11 +19,12 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { clients, servers } from '@/lib/data';
 import { useLanguage } from '@/hooks/use-language';
+import { useData } from '@/hooks/use-data';
 
 export default function Dashboard() {
   const { t } = useLanguage();
+  const { clients, servers } = useData();
   const clientImage = PlaceHolderImages.find(
     (img) => img.id === 'dashboard-clients'
   );
