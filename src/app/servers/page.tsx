@@ -18,47 +18,12 @@ import { cn } from '@/lib/utils';
 import { PlusCircle, Settings } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { useLanguage } from '@/hooks/use-language';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { ServerForm } from './components/server-form';
+import { useRouter } from 'next/navigation';
 
 export default function ServersPage() {
   const { t } = useLanguage();
+  const router = useRouter();
   const [servers, setServers] = React.useState<Server[]>(initialServers);
-  const [editingServer, setEditingServer] = React.useState<Server | null>(null);
-  const [isFormOpen, setIsFormOpen] = React.useState(false);
-
-  const handleAddServer = () => {
-    setEditingServer(null);
-    setIsFormOpen(true);
-  };
-
-  const handleEditServer = (server: Server) => {
-    setEditingServer(server);
-    setIsFormOpen(true);
-  };
-
-  const handleFormSubmit = (values: Omit<Server, 'id'>) => {
-    if (editingServer) {
-      setServers(
-        servers.map((s) =>
-          s.id === editingServer.id ? { ...editingServer, ...values } : s
-        )
-      );
-    } else {
-      const newServer: Server = {
-        ...values,
-        id: `S${(Math.random() * 100).toFixed(0).padStart(2, '0')}`,
-      };
-      setServers([newServer, ...servers]);
-    }
-    setIsFormOpen(false);
-  };
 
   return (
     <>
@@ -79,7 +44,7 @@ export default function ServersPage() {
                 {t('validateConfiguration')}
               </Link>
             </Button>
-            <Button size="lg" onClick={handleAddServer}>
+            <Button size="lg" onClick={() => router.push('/servers/new')}>
               <PlusCircle className="mr-2 h-5 w-5" />
               {t('addPanel')}
             </Button>
@@ -145,35 +110,17 @@ export default function ServersPage() {
                 </div>
               </CardContent>
               <CardFooter className="px-6 pb-6">
-                 <Button variant="outline" className="w-full" onClick={() => handleEditServer(server)} size="lg">
-                    <Settings className="mr-2 h-5 w-5" />
-                    {t('edit')}
+                 <Button asChild variant="outline" className="w-full" size="lg">
+                    <Link href={`/servers/${server.id}/edit`}>
+                      <Settings className="mr-2 h-5 w-5" />
+                      {t('edit')}
+                    </Link>
                 </Button>
               </CardFooter>
             </Card>
           ))}
         </div>
       </div>
-
-      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="text-xl">
-              {editingServer ? t('editServer') : t('panelAndServerRegistration')}
-            </DialogTitle>
-            <DialogDescription>
-              {editingServer
-                ? t('editServerDescription')
-                : ''}
-            </DialogDescription>
-          </DialogHeader>
-          <ServerForm
-            server={editingServer}
-            onSubmit={handleFormSubmit}
-            onCancel={() => setIsFormOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
     </>
   );
 }

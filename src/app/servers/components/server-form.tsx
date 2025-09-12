@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useLanguage } from '@/hooks/use-language';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -38,12 +39,13 @@ type ServerFormValues = z.infer<typeof formSchema>;
 
 interface ServerFormProps {
   server: Server | null;
-  onSubmit: (values: ServerFormValues) => void;
-  onCancel: () => void;
+  // onSubmit: (values: ServerFormValues) => void;
+  // onCancel: () => void;
 }
 
-export function ServerForm({ server, onSubmit, onCancel }: ServerFormProps) {
+export function ServerForm({ server }: ServerFormProps) {
   const { t } = useLanguage();
+  const router = useRouter();
   const form = useForm<ServerFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -57,8 +59,15 @@ export function ServerForm({ server, onSubmit, onCancel }: ServerFormProps) {
   });
 
   const handleSubmit = (values: ServerFormValues) => {
-    onSubmit(values);
-    form.reset();
+    // Here you would typically handle the form submission,
+    // e.g., by sending the data to an API.
+    console.log(values);
+    // For this example, we'll just navigate back to the servers list.
+    router.push('/servers');
+  };
+  
+  const handleCancel = () => {
+    router.push('/servers');
   };
 
   return (
@@ -158,11 +167,11 @@ export function ServerForm({ server, onSubmit, onCancel }: ServerFormProps) {
           />
         </div>
         <div className="flex justify-end gap-4 pt-6">
-            <Button type="button" variant="outline" onClick={onCancel}>
+            <Button type="button" variant="outline" onClick={handleCancel}>
                 {t('cancel')}
             </Button>
             <Button type="submit">
-                {server ? t('saveChanges') : t('save')}
+                {t('save')}
             </Button>
         </div>
       </form>
