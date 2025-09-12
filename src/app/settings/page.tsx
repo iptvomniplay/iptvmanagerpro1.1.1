@@ -44,7 +44,7 @@ export default function SettingsPage() {
       </div>
 
       <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
+        <Card>
           <CardHeader className="p-8">
             <CardTitle className="text-2xl">{t('appearance')}</CardTitle>
             <CardDescription className="text-lg">
@@ -57,7 +57,7 @@ export default function SettingsPage() {
               <RadioGroup
                 value={theme}
                 onValueChange={setTheme}
-                className="grid grid-cols-1 sm:grid-cols-3 gap-6"
+                className="grid grid-cols-1 sm:grid-cols-3 gap-4"
               >
                 <div>
                   <RadioGroupItem
@@ -68,31 +68,21 @@ export default function SettingsPage() {
                   <Label
                     htmlFor="light"
                     className={cn(
-                      'flex flex-col items-center justify-center gap-4 rounded-lg p-4 text-lg font-semibold transition-all cursor-pointer',
-                      'hover:text-primary',
-                      'peer-data-[state=checked]:text-primary'
+                      'flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-transparent p-4 text-base font-semibold transition-all cursor-pointer',
+                      'hover:text-primary hover:border-primary/50',
+                      'peer-data-[state=checked]:text-primary peer-data-[state=checked]:border-primary'
                     )}
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <circle cx="12" cy="12" r="4" />
-                      <path d="M12 2v2" />
-                      <path d="M12 20v2" />
-                      <path d="m4.93 4.93 1.41 1.41" />
-                      <path d="m17.66 17.66 1.41 1.41" />
-                      <path d="M2 12h2" />
-                      <path d="M20 12h2" />
-                      <path d="m6.34 17.66-1.41 1.41" />
-                      <path d="m19.07 4.93-1.41 1.41" />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="4"></circle>
+                      <path d="M12 2v2"></path>
+                      <path d="M12 20v2"></path>
+                      <path d="m4.93 4.93 1.41 1.41"></path>
+                      <path d="m17.66 17.66 1.41 1.41"></path>
+                      <path d="M2 12h2"></path>
+                      <path d="M20 12h2"></path>
+                      <path d="m6.34 17.66-1.41 1.41"></path>
+                      <path d="m19.07 4.93-1.41 1.41"></path>
                     </svg>
                     {t('light')}
                   </Label>
@@ -106,23 +96,13 @@ export default function SettingsPage() {
                   <Label
                     htmlFor="dark"
                     className={cn(
-                      'flex flex-col items-center justify-center gap-4 rounded-lg p-4 text-lg font-semibold transition-all cursor-pointer',
-                      'hover:text-primary',
-                      'peer-data-[state=checked]:text-primary'
+                      'flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-transparent p-4 text-base font-semibold transition-all cursor-pointer',
+                      'hover:text-primary hover:border-primary/50',
+                      'peer-data-[state=checked]:text-primary peer-data-[state=checked]:border-primary'
                     )}
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
                     </svg>
                     {t('dark')}
                   </Label>
@@ -136,24 +116,14 @@ export default function SettingsPage() {
                   <Label
                     htmlFor="system"
                     className={cn(
-                      'flex flex-col items-center justify-center gap-4 rounded-lg p-4 text-lg font-semibold transition-all cursor-pointer',
-                      'hover:text-primary',
-                      'peer-data-[state=checked]:text-primary'
+                      'flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-transparent p-4 text-base font-semibold transition-all cursor-pointer',
+                      'hover:text-primary hover:border-primary/50',
+                      'peer-data-[state=checked]:text-primary peer-data-[state=checked]:border-primary'
                     )}
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20Z" />
-                      <path d="M12 2a10 10 0 1 0 10 10" />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20Z"></path>
+                      <path d="M12 2a10 10 0 1 0 10 10"></path>
                     </svg>
                     {t('system')}
                   </Label>
