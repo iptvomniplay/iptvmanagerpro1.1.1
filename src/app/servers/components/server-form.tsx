@@ -291,7 +291,7 @@ export function ServerForm({ server }: ServerFormProps) {
           />
 
           {paymentType === 'prepaid' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <FormField
                 control={form.control}
                 name="quantityOfCredits"
@@ -322,6 +322,10 @@ export function ServerForm({ server }: ServerFormProps) {
                   </FormItem>
                 )}
               />
+               <div>
+                  <Label>{t('unitValue')}</Label>
+                  <Input value={unitValue} readOnly className="mt-2 bg-muted" />
+                </div>
             </div>
           )}
 
