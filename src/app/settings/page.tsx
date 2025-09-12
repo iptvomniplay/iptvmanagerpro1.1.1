@@ -16,6 +16,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
+import { Separator } from '@/components/ui/separator';
 
 export default function SettingsPage() {
   const { language, setLanguage, t } = useLanguage();
@@ -31,7 +32,7 @@ export default function SettingsPage() {
   };
 
   if (!mounted) {
-    return null; // or a loading skeleton
+    return null;
   }
 
   return (
@@ -44,14 +45,14 @@ export default function SettingsPage() {
       </div>
 
       <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
+        <Card className="self-start">
           <CardHeader className="p-8">
             <CardTitle className="text-2xl">{t('appearance')}</CardTitle>
             <CardDescription className="text-lg">
               {t('appearanceDescription')}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-10 p-8 pt-0">
+          <CardContent className="space-y-8 p-8 pt-0">
             <div className="space-y-4">
               <Label className="text-lg">{t('theme')}</Label>
               <RadioGroup
@@ -73,17 +74,17 @@ export default function SettingsPage() {
                       'peer-data-[state=checked]:text-primary peer-data-[state=checked]:border-primary'
                     )}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="4"></circle>
-                      <path d="M12 2v2"></path>
-                      <path d="M12 20v2"></path>
-                      <path d="m4.93 4.93 1.41 1.41"></path>
-                      <path d="m17.66 17.66 1.41 1.41"></path>
-                      <path d="M2 12h2"></path>
-                      <path d="M20 12h2"></path>
-                      <path d="m6.34 17.66-1.41 1.41"></path>
-                      <path d="m19.07 4.93-1.41 1.41"></path>
-                    </svg>
+                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-8">
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <path d="M12 2v2"></path>
+                        <path d="M12 20v2"></path>
+                        <path d="m4.93 4.93 1.41 1.41"></path>
+                        <path d="m17.66 17.66 1.41 1.41"></path>
+                        <path d="M2 12h2"></path>
+                        <path d="M20 12h2"></path>
+                        <path d="m6.34 17.66-1.41 1.41"></path>
+                        <path d="m19.07 4.93-1.41 1.41"></path>
+                      </svg>
                     {t('light')}
                   </Label>
                 </div>
@@ -101,7 +102,7 @@ export default function SettingsPage() {
                       'peer-data-[state=checked]:text-primary peer-data-[state=checked]:border-primary'
                     )}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-8">
                       <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
                     </svg>
                     {t('dark')}
@@ -121,14 +122,40 @@ export default function SettingsPage() {
                       'peer-data-[state=checked]:text-primary peer-data-[state=checked]:border-primary'
                     )}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20Z"></path>
-                      <path d="M12 2a10 10 0 1 0 10 10"></path>
-                    </svg>
+                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-8">
+                        <path d="M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20Z"></path>
+                        <path d="M12 2a10 10 0 1 0 10 10"></path>
+                      </svg>
                     {t('system')}
                   </Label>
                 </div>
               </RadioGroup>
+            </div>
+            <Separator />
+             <div className="space-y-4">
+              <Label className="text-lg">{t('language')}</Label>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3">
+                  <Checkbox
+                    id="pt-br"
+                    checked={language === 'pt-BR'}
+                    onCheckedChange={() => handleLanguageChange('pt-BR')}
+                  />
+                  <Label htmlFor="pt-br" className="text-base cursor-pointer">
+                    Português (Brasil)
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Checkbox
+                    id="en-us"
+                    checked={language === 'en-US'}
+                    onCheckedChange={() => handleLanguageChange('en-US')}
+                  />
+                  <Label htmlFor="en-us" className="text-base cursor-pointer">
+                    English
+                  </Label>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -171,36 +198,6 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="p-8">
-            <CardTitle className="text-2xl">{t('language')}</CardTitle>
-            <CardDescription className="text-lg">
-              {t('languageDescription')}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4 p-8 pt-0">
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="pt-br"
-                checked={language === 'pt-BR'}
-                onCheckedChange={() => handleLanguageChange('pt-BR')}
-              />
-              <Label htmlFor="pt-br" className="text-lg cursor-pointer">
-                Português (Brasil)
-              </Label>
-            </div>
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="en-us"
-                checked={language === 'en-US'}
-                onCheckedChange={() => handleLanguageChange('en-US')}
-              />
-              <Label htmlFor="en-us" className="text-lg cursor-pointer">
-                English
-              </Label>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       <div className="mt-8 flex justify-end">
