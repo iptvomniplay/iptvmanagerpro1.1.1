@@ -119,8 +119,8 @@ export default function Dashboard() {
             </CardHeader>
             <CardFooter>
               <Button asChild size="lg">
-                <Link href="/servers/configure">
-                  {t('validateConfiguration')} <ArrowRight />
+                <Link href="/servers">
+                  {t('goToServers')} <ArrowRight />
                 </Link>
               </Button>
             </CardFooter>
