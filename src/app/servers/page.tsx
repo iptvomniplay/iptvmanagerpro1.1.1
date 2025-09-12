@@ -18,32 +18,10 @@ import { cn } from '@/lib/utils';
 import { PlusCircle, Settings } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { useLanguage } from '@/hooks/use-language';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog';
-import { ServerForm } from './components/server-form';
 
 export default function ServersPage() {
   const { t } = useLanguage();
   const [servers, setServers] = React.useState<Server[]>(initialServers);
-  const [isFormOpen, setIsFormOpen] = React.useState(false);
-  const [editingServer, setEditingServer] = React.useState<Server | null>(
-    null
-  );
-
-  const handleAddServer = () => {
-    setEditingServer(null);
-    setIsFormOpen(true);
-  };
-  
-  const handleFormSubmit = (values: Omit<Server, 'id'>) => {
-    setIsFormOpen(false);
-  };
-
 
   return (
     <div className="space-y-8">
@@ -56,9 +34,11 @@ export default function ServersPage() {
             {t('serverManagementDescription')}
           </p>
         </div>
-        <Button size="lg" onClick={handleAddServer}>
-          <PlusCircle className="mr-2 h-5 w-5" />
-          {t('addPanel')}
+        <Button size="lg" asChild>
+          <Link href="/servers/form">
+            <PlusCircle className="mr-2 h-5 w-5" />
+            {t('addPanel')}
+          </Link>
         </Button>
       </div>
 
@@ -129,25 +109,6 @@ export default function ServersPage() {
           </Card>
         ))}
       </div>
-      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="text-xl">
-              {editingServer ? t('editServer') : t('addPanel')}
-            </DialogTitle>
-            <DialogDescription>
-              {editingServer
-                ? t('editServerDescription')
-                : t('addServerPanelDescription')}
-            </DialogDescription>
-          </DialogHeader>
-          <ServerForm
-            server={editingServer}
-            onSubmit={handleFormSubmit}
-            onCancel={() => setIsFormOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
