@@ -49,22 +49,39 @@ const formSchema = z.object({
   connections: z.coerce.number().min(0),
   maxConnections: z.coerce.number().min(1),
   cpuLoad: z.coerce.number().min(0).max(100),
-}).refine(data => {
+}).superRefine((data, ctx) => {
     if (data.paymentType === 'prepaid') {
-        return data.quantityOfCredits !== undefined && data.totalPurchaseValue !== undefined;
+        if (data.quantityOfCredits === undefined || data.quantityOfCredits <= 0) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Quantity of credits is required.",
+                path: ["quantityOfCredits"],
+            });
+        }
+        if (!data.totalPurchaseValue) {
+             ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Total purchase value is required.",
+                path: ["totalPurchaseValue"],
+            });
+        }
     }
-    return true;
-}, {
-    message: "Prepaid fields are required.",
-    path: ["quantityOfCredits"], 
-}).refine(data => {
     if (data.paymentType === 'postpaid') {
-        return data.panelValue !== undefined && data.dueDate !== undefined;
+        if (!data.panelValue) {
+             ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Panel value is required.",
+                path: ["panelValue"],
+            });
+        }
+        if (data.dueDate === undefined || data.dueDate < 1 || data.dueDate > 31) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Due date must be between 1 and 31.",
+                path: ["dueDate"],
+            });
+        }
     }
-    return true;
-}, {
-    message: "Postpaid fields are required.",
-    path: ["panelValue"],
 });
 
 type ServerFormValues = z.infer<typeof formSchema>;
@@ -102,6 +119,7 @@ export function ServerForm({ server }: ServerFormProps) {
   const totalPurchaseValue = watch('totalPurchaseValue');
 
   const unitValue = React.useMemo(() => {
+    if (!totalPurchaseValue) return '0.00';
     const total = parseFloat((totalPurchaseValue || '0').replace(/[^0-9,]/g, '').replace(',', '.'));
     if (quantityOfCredits && total > 0 && quantityOfCredits > 0) {
       return (total / quantityOfCredits).toFixed(2);
@@ -437,3 +455,5 @@ export function ServerForm({ server }: ServerFormProps) {
     </Form>
   );
 }
+
+    
