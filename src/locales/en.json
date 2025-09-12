@@ -111,5 +111,6 @@
     "editServerDescription": "Update the details for this server.",
     "panelAndServerRegistration": "Panel and Server(s) Registration",
     "save": "Save",
-    "next": "Next"
+    "next": "Next",
+    "addNewPanel": "Add Panel"
 }

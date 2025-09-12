@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/select';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
+import { PlusCircle } from 'lucide-react';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -67,9 +68,20 @@ export function ServerForm({ server }: ServerFormProps) {
     router.push('/servers');
   };
 
+  const handleAddPanel = () => {
+    // Functional action to be implemented later
+    console.log('Add Panel button clicked');
+  }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 py-4">
+        <div className="mb-6">
+          <Button type="button" onClick={handleAddPanel}>
+            <PlusCircle className="mr-2 h-5 w-5" />
+            {t('addNewPanel')}
+          </Button>
+        </div>
         <FormField
           control={form.control}
           name="name"

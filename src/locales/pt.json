@@ -111,5 +111,6 @@
     "editServerDescription": "Atualize os detalhes deste servidor.",
     "panelAndServerRegistration": "Cadastro de Painel e Servidor(es)",
     "save": "Salvar",
-    "next": "Próximo"
+    "next": "Próximo",
+    "addNewPanel": "Add Painel"
 }
