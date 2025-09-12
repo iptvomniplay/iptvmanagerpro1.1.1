@@ -129,5 +129,6 @@
     "panelValue": "Panel Value",
     "dueDate": "Due Date",
     "panelCreditStock": "Panel Credit Stock",
-    "panelCreditStockDescription": "Total credits available on this panel."
+    "panelCreditStockDescription": "Total credits available on this panel.",
+    "hasPanelCredits": "Panel already has credits?"
 }

@@ -30,6 +30,7 @@ import { useRouter } from 'next/navigation';
 import { PlusCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -44,6 +45,7 @@ const formSchema = z.object({
   totalPurchaseValue: z.string().optional(),
   panelValue: z.string().optional(),
   dueDate: z.coerce.number().optional(),
+  hasInitialStock: z.boolean().optional(),
   panelCreditStock: z.coerce.number().optional(),
   status: z.enum(['Online', 'Offline']),
   connections: z.coerce.number().min(0),
@@ -110,6 +112,7 @@ export function ServerForm({ server }: ServerFormProps) {
       totalPurchaseValue: '',
       panelValue: '',
       dueDate: 1,
+      hasInitialStock: false,
       panelCreditStock: 0,
       status: server?.status || 'Online',
       connections: server?.connections || 0,
@@ -122,6 +125,7 @@ export function ServerForm({ server }: ServerFormProps) {
   const paymentType = watch('paymentType');
   const quantityOfCredits = watch('quantityOfCredits');
   const totalPurchaseValue = watch('totalPurchaseValue');
+  const hasInitialStock = watch('hasInitialStock');
 
   const unitValue = React.useMemo(() => {
     if (!totalPurchaseValue || !quantityOfCredits) return '0.00';
@@ -363,20 +367,42 @@ export function ServerForm({ server }: ServerFormProps) {
               />
             </div>
           )}
-             <FormField
-                control={form.control}
-                name="panelCreditStock"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('panelCreditStock')}</FormLabel>
-                    <FormControl>
-                      <Input type="number" {...field} />
-                    </FormControl>
-                     <FormDescription>{t('panelCreditStockDescription')}</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <FormField
+              control={form.control}
+              name="hasInitialStock"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow-sm">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>
+                      {t('hasPanelCredits')}
+                    </FormLabel>
+                  </div>
+                </FormItem>
+              )}
+            />
+
+            {hasInitialStock && (
+                <FormField
+                    control={form.control}
+                    name="panelCreditStock"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>{t('panelCreditStock')}</FormLabel>
+                        <FormControl>
+                        <Input type="number" {...field} />
+                        </FormControl>
+                        <FormDescription>{t('panelCreditStockDescription')}</FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+            )}
         </div>
 
         <div className="grid grid-cols-2 gap-6">

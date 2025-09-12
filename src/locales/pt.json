@@ -129,5 +129,6 @@
     "panelValue": "Valor do Painel",
     "dueDate": "Dia do Vencimento",
     "panelCreditStock": "Estoque de Créditos do Painel",
-    "panelCreditStockDescription": "Total de créditos disponíveis neste painel."
+    "panelCreditStockDescription": "Total de créditos disponíveis neste painel.",
+    "hasPanelCredits": "Painel já possui créditos?"
 }
