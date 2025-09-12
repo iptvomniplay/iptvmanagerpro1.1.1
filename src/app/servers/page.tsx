@@ -58,7 +58,7 @@ export default function ServersPage() {
         </div>
         <Button size="lg" onClick={handleAddServer}>
           <PlusCircle className="mr-2 h-5 w-5" />
-          {t('registerServer')}
+          {t('addPanel')}
         </Button>
       </div>
 
@@ -133,12 +133,12 @@ export default function ServersPage() {
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-xl">
-              {editingServer ? "Edit Server" : "Add Server Panel"}
+              {editingServer ? t('editServer') : t('addPanel')}
             </DialogTitle>
             <DialogDescription>
               {editingServer
-                ? "Update the details for this server."
-                : "Fill in the form to add a new server panel to the system."}
+                ? t('editServerDescription')
+                : t('addServerPanelDescription')}
             </DialogDescription>
           </DialogHeader>
           <ServerForm

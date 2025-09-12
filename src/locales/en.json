@@ -55,11 +55,11 @@
     "createClient": "Create Client",
     "serverManagement": "Server Management",
     "serverManagementDescription": "Monitor server status and manage configurations.",
-    "registerServer": "Register Server",
+    "addPanel": "Add Panels",
     "online": "Online",
     "offline": "Offline",
     "connections": "Connections",
-    "cpuLoad": "CPU Load",
+    "cpuLoad": "CPU Load (%)",
     "configure": "Configure",
     "serverParameterValidator": "Server Parameter Validator",
     "serverParameterValidatorDescription": "Use our AI tool to validate your server parameters for optimal performance.",
@@ -101,5 +101,13 @@
     "toggleNotifications": "Toggle notifications",
     "myAccount": "My Account",
     "support": "Support",
-    "logout": "Logout"
+    "logout": "Logout",
+    "serverName": "Server Name",
+    "serverNamePlaceholder": "EU Main Server",
+    "serverUrl": "Server URL",
+    "serverUrlPlaceholder": "eu.main.iptv.com",
+    "maxConnections": "Max Connections",
+    "editServer": "Edit Server",
+    "editServerDescription": "Update the details for this server.",
+    "addServerPanelDescription": "Fill in the form to add a new server panel to the system."
 }

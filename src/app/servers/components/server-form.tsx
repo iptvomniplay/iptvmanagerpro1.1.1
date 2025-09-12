@@ -69,9 +69,9 @@ export function ServerForm({ server, onSubmit, onCancel }: ServerFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Server Name</FormLabel>
+              <FormLabel>{t('serverName')}</FormLabel>
               <FormControl>
-                <Input placeholder="EU Main Server" {...field} />
+                <Input placeholder={t('serverNamePlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -82,9 +82,9 @@ export function ServerForm({ server, onSubmit, onCancel }: ServerFormProps) {
           name="url"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Server URL</FormLabel>
+              <FormLabel>{t('serverUrl')}</FormLabel>
               <FormControl>
-                <Input placeholder="eu.main.iptv.com" {...field} />
+                <Input placeholder={t('serverUrlPlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -103,7 +103,7 @@ export function ServerForm({ server, onSubmit, onCancel }: ServerFormProps) {
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Status" />
+                      <SelectValue placeholder={t('selectStatus')} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -122,7 +122,7 @@ export function ServerForm({ server, onSubmit, onCancel }: ServerFormProps) {
             name="connections"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Connections</FormLabel>
+                <FormLabel>{t('connections')}</FormLabel>
                 <FormControl>
                   <Input type="number" {...field} />
                 </FormControl>
@@ -135,7 +135,7 @@ export function ServerForm({ server, onSubmit, onCancel }: ServerFormProps) {
             name="maxConnections"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Max Connections</FormLabel>
+                <FormLabel>{t('maxConnections')}</FormLabel>
                 <FormControl>
                   <Input type="number" {...field} />
                 </FormControl>
@@ -148,7 +148,7 @@ export function ServerForm({ server, onSubmit, onCancel }: ServerFormProps) {
             name="cpuLoad"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>CPU Load (%)</FormLabel>
+                <FormLabel>{t('cpuLoad')}</FormLabel>
                 <FormControl>
                   <Input type="number" {...field} />
                 </FormControl>
@@ -162,7 +162,7 @@ export function ServerForm({ server, onSubmit, onCancel }: ServerFormProps) {
                 {t('cancel')}
             </Button>
             <Button type="submit">
-                {server ? t('saveChanges') : "Add Panel"}
+                {server ? t('saveChanges') : t('addPanel')}
             </Button>
         </div>
       </form>

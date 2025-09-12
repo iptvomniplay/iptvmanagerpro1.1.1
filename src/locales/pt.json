@@ -55,11 +55,11 @@
     "createClient": "Criar Cliente",
     "serverManagement": "Gerenciamento de Servidores",
     "serverManagementDescription": "Monitore o status do servidor e gerencie as configurações.",
-    "registerServer": "Add Painéis",
+    "addPanel": "Add Painéis",
     "online": "Online",
     "offline": "Offline",
     "connections": "Conexões",
-    "cpuLoad": "Carga da CPU",
+    "cpuLoad": "Carga da CPU (%)",
     "configure": "Configurar",
     "serverParameterValidator": "Validador de Parâmetros do Servidor",
     "serverParameterValidatorDescription": "Use nossa ferramenta de IA para validar os parâmetros do seu servidor para um desempenho ideal.",
@@ -101,5 +101,13 @@
     "toggleNotifications": "Alternar notificações",
     "myAccount": "Minha Conta",
     "support": "Suporte",
-    "logout": "Sair"
+    "logout": "Sair",
+    "serverName": "Nome do Servidor",
+    "serverNamePlaceholder": "Servidor Principal UE",
+    "serverUrl": "URL do Servidor",
+    "serverUrlPlaceholder": "ue.principal.iptv.com",
+    "maxConnections": "Conexões Máximas",
+    "editServer": "Editar Servidor",
+    "editServerDescription": "Atualize os detalhes deste servidor.",
+    "addServerPanelDescription": "Preencha o formulário para adicionar um novo painel de servidor ao sistema."
 }
