@@ -67,7 +67,7 @@ export default function SettingsPage() {
                   />
                   <Label
                     htmlFor="light"
-                    className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-popover p-6 text-lg hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-foreground [&:has([data-state=checked])]:border-foreground cursor-pointer"
+                    className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-transparent p-6 text-lg transition-colors hover:border-primary/50 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
                   >
                     <Sun className="mb-2 h-7 w-7" />
                     {t('light')}
@@ -81,7 +81,7 @@ export default function SettingsPage() {
                   />
                   <Label
                     htmlFor="dark"
-                    className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-popover p-6 text-lg hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-foreground [&:has([data-state=checked])]:border-foreground cursor-pointer"
+                    className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-transparent p-6 text-lg transition-colors hover:border-primary/50 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
                   >
                     <Moon className="mb-2 h-7 w-7" />
                     {t('dark')}
@@ -95,7 +95,7 @@ export default function SettingsPage() {
                   />
                   <Label
                     htmlFor="system"
-                    className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-popover p-6 text-lg hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-foreground [&:has([data-state=checked])]:border-foreground cursor-pointer"
+                    className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-transparent p-6 text-lg transition-colors hover:border-primary/50 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
                   >
                     <Laptop className="mb-2 h-7 w-7" />
                     {t('system')}
