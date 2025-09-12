@@ -112,14 +112,18 @@ export function ServerForm({ server }: ServerFormProps) {
   const handleCurrencyChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof ServerFormValues) => {
     let value = e.target.value;
     value = value.replace(/\D/g, '');
-    value = (parseInt(value, 10) / 100).toFixed(2);
+    if (!value) {
+        setValue(fieldName, '');
+        return;
+    }
+    const numericValue = parseInt(value, 10) / 100;
     
     const formatter = new Intl.NumberFormat(language, {
       style: 'currency',
       currency: language === 'pt-BR' ? 'BRL' : 'USD',
     });
     
-    setValue(fieldName, formatter.format(parseFloat(value)));
+    setValue(fieldName, formatter.format(numericValue));
   };
 
   const handleSubmit = (values: ServerFormValues) => {
