@@ -136,7 +136,7 @@ export function ServerForm({ server }: ServerFormProps) {
     let value = e.target.value;
     value = value.replace(/\D/g, '');
     if (!value) {
-        setValue(fieldName, '');
+        setValue(fieldName as any, '');
         return;
     }
     const numericValue = parseInt(value, 10) / 100;
@@ -291,7 +291,7 @@ export function ServerForm({ server }: ServerFormProps) {
           />
 
           {paymentType === 'prepaid' && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
                 name="quantityOfCredits"
@@ -322,12 +322,6 @@ export function ServerForm({ server }: ServerFormProps) {
                   </FormItem>
                 )}
               />
-              <FormItem>
-                <FormLabel>{t('unitValue')}</FormLabel>
-                <FormControl>
-                    <Input value={new Intl.NumberFormat(language, { style: 'currency', currency: language === 'pt-BR' ? 'BRL' : 'USD' }).format(parseFloat(unitValue))} disabled />
-                </FormControl>
-              </FormItem>
             </div>
           )}
 
