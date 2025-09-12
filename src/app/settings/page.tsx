@@ -11,7 +11,6 @@ import {
   RadioGroupItem,
 } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 
 export default function SettingsPage() {
@@ -35,7 +34,7 @@ export default function SettingsPage() {
           <CardContent className="space-y-6">
             <div className="space-y-2">
               <Label>Theme</Label>
-              <RadioGroup defaultValue="system" className="grid grid-cols-3 gap-4">
+              <RadioGroup defaultValue="dark" className="grid grid-cols-3 gap-4">
                 <div>
                   <RadioGroupItem value="light" id="light" className="peer sr-only" />
                   <Label htmlFor="light" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
@@ -60,10 +59,10 @@ export default function SettingsPage() {
                 <Label>Primary Color</Label>
                 <div className="flex items-center gap-2">
                     <Button variant="outline" size="icon" className="h-8 w-8 rounded-full border-2 border-primary" style={{backgroundColor: "hsl(var(--primary))"}} />
-                    <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" style={{backgroundColor: "#3b82f6"}} />
-                    <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" style={{backgroundColor: "#16a34a"}} />
-                    <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" style={{backgroundColor: "#ea580c"}} />
-                    <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" style={{backgroundColor: "#9333ea"}} />
+                    <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" style={{backgroundColor: "#2196F3"}} />
+                    <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" style={{backgroundColor: "#4CAF50"}} />
+                    <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" style={{backgroundColor: "#FFC107"}} />
+                    <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" style={{backgroundColor: "#9C27B0"}} />
                 </div>
             </div>
           </CardContent>
@@ -105,6 +104,27 @@ export default function SettingsPage() {
               <Switch />
             </div>
           </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Language</CardTitle>
+                <CardDescription>
+                    Choose your preferred language for the application.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <RadioGroup defaultValue="pt-br" className="space-y-2">
+                    <div className="flex items-center">
+                        <RadioGroupItem value="pt-br" id="pt-br" />
+                        <Label htmlFor="pt-br" className="ml-2">Português (Brasil)</Label>
+                    </div>
+                    <div className="flex items-center">
+                        <RadioGroupItem value="en" id="en" />
+                        <Label htmlFor="en" className="ml-2">English</Label>
+                    </div>
+                </RadioGroup>
+            </CardContent>
         </Card>
       </div>
 
