@@ -65,50 +65,45 @@ export const servers: Server[] = [
     id: 'S01',
     name: 'EU Main Server',
     url: 'eu.main.iptv.com',
-    status: 'Online',
-    connections: 1250,
-    maxConnections: 2000,
-    cpuLoad: 65,
     responsibleName: 'Admin',
     paymentType: 'prepaid',
-    creditStock: 500
+    creditStock: 500,
+    subServers: [
+        { name: 'Live TV EU', type: 'Live', screens: 1000 },
+        { name: 'VOD EU', type: 'VOD', screens: 250 }
+    ]
   },
   {
     id: 'S02',
     name: 'US East Server',
     url: 'us.east.iptv.com',
-    status: 'Online',
-    connections: 830,
-    maxConnections: 1500,
-    cpuLoad: 92,
     responsibleName: 'Admin',
     paymentType: 'postpaid',
     panelValue: 'R$ 250,00',
     dueDate: 15,
-    creditStock: 120
+    creditStock: 120,
+    subServers: [
+        { name: 'Live TV US', type: 'Live', screens: 830 }
+    ]
   },
   {
     id: 'S03',
     name: 'Asia Pacific Server',
     url: 'apac.main.iptv.com',
-    status: 'Offline',
-    connections: 0,
-    maxConnections: 1000,
-    cpuLoad: 0,
     responsibleName: 'Admin',
     paymentType: 'prepaid',
-    creditStock: 0
+    creditStock: 0,
+    subServers: []
   },
   {
     id: 'S04',
     name: 'UK Backup Server',
     url: 'uk.backup.iptv.com',
-    status: 'Online',
-    connections: 45,
-    maxConnections: 500,
-    cpuLoad: 15,
     responsibleName: 'Admin',
     paymentType: 'prepaid',
-    creditStock: 85
+    creditStock: 85,
+    subServers: [
+        { name: 'Backup Feed', type: 'Backup', screens: 45 }
+    ]
   },
 ];

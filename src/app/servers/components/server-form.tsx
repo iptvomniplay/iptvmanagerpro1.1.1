@@ -2,9 +2,9 @@
 
 import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import type { Server } from '@/lib/types';
+import type { Server, SubServer } from '@/lib/types';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -27,10 +27,17 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useData } from '@/hooks/use-data';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+const subServerSchema = z.object({
+    name: z.string().min(1, "Server name is required"),
+    type: z.string().min(1, "Server type is required"),
+    screens: z.coerce.number().min(0, "Screens must be a positive number"),
+});
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -45,10 +52,7 @@ const formSchema = z.object({
   dueDate: z.coerce.number().optional(),
   hasInitialStock: z.boolean().default(false).optional(),
   creditStock: z.coerce.number().optional(),
-  status: z.enum(['Online', 'Offline']),
-  connections: z.coerce.number().min(0),
-  maxConnections: z.coerce.number().min(1),
-  cpuLoad: z.coerce.number().min(0).max(100),
+  subServers: z.array(subServerSchema).optional(),
 }).superRefine((data, ctx) => {
     if (data.paymentType === 'postpaid') {
         if (!data.panelValue) {
@@ -95,16 +99,18 @@ export function ServerForm({ server }: ServerFormProps) {
       dueDate: server?.dueDate || 1,
       hasInitialStock: !!server?.creditStock,
       creditStock: server?.creditStock || undefined,
-      status: server?.status || 'Online',
-      connections: server?.connections || 0,
-      maxConnections: server?.maxConnections || 1000,
-      cpuLoad: server?.cpuLoad || 0,
+      subServers: server?.subServers || [],
     },
   });
 
-  const { watch, setValue } = form;
+  const { control, watch, setValue } = form;
   const paymentType = watch('paymentType');
   const hasInitialStock = watch('hasInitialStock');
+  
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "subServers",
+  });
 
   const handleCurrencyChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof ServerFormValues) => {
     let value = e.target.value;
@@ -124,9 +130,10 @@ export function ServerForm({ server }: ServerFormProps) {
   };
 
   const handleSubmit = (values: ServerFormValues) => {
-    const serverData = {
+    const serverData: Server = {
         ...values,
         id: server?.id || '',
+        subServers: values.subServers || [],
     };
     if (server) {
         updateServer(serverData);
@@ -152,7 +159,7 @@ export function ServerForm({ server }: ServerFormProps) {
         
         <div className={cn("space-y-6", isPanelFormVisible ? 'block' : 'hidden')}>
           <FormField
-            control={form.control}
+            control={control}
             name="name"
             render={({ field }) => (
               <FormItem>
@@ -165,7 +172,7 @@ export function ServerForm({ server }: ServerFormProps) {
             )}
           />
           <FormField
-            control={form.control}
+            control={control}
             name="url"
             render={({ field }) => (
               <FormItem>
@@ -178,7 +185,7 @@ export function ServerForm({ server }: ServerFormProps) {
             )}
           />
            <FormField
-            control={form.control}
+            control={control}
             name="login"
             render={({ field }) => (
               <FormItem>
@@ -191,7 +198,7 @@ export function ServerForm({ server }: ServerFormProps) {
             )}
           />
           <FormField
-            control={form.control}
+            control={control}
             name="password"
             render={({ field }) => (
               <FormItem>
@@ -204,7 +211,7 @@ export function ServerForm({ server }: ServerFormProps) {
             )}
           />
           <FormField
-            control={form.control}
+            control={control}
             name="responsibleName"
             render={({ field }) => (
               <FormItem>
@@ -217,7 +224,7 @@ export function ServerForm({ server }: ServerFormProps) {
             )}
           />
           <FormField
-            control={form.control}
+            control={control}
             name="nickname"
             render={({ field }) => (
               <FormItem>
@@ -230,7 +237,7 @@ export function ServerForm({ server }: ServerFormProps) {
             )}
           />
           <FormField
-            control={form.control}
+            control={control}
             name="phone"
             render={({ field }) => (
               <FormItem>
@@ -243,7 +250,7 @@ export function ServerForm({ server }: ServerFormProps) {
             )}
           />
           <FormField
-            control={form.control}
+            control={control}
             name="paymentType"
             render={({ field }) => (
               <FormItem className="space-y-3">
@@ -276,7 +283,7 @@ export function ServerForm({ server }: ServerFormProps) {
           {paymentType === 'postpaid' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
-                control={form.control}
+                control={control}
                 name="panelValue"
                 render={({ field }) => (
                   <FormItem>
@@ -293,7 +300,7 @@ export function ServerForm({ server }: ServerFormProps) {
                 )}
               />
               <FormField
-                control={form.control}
+                control={control}
                 name="dueDate"
                 render={({ field }) => (
                   <FormItem>
@@ -319,7 +326,7 @@ export function ServerForm({ server }: ServerFormProps) {
             </div>
           )}
             <FormField
-              control={form.control}
+              control={control}
               name="hasInitialStock"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow-sm">
@@ -340,7 +347,7 @@ export function ServerForm({ server }: ServerFormProps) {
 
             {hasInitialStock && (
                 <FormField
-                    control={form.control}
+                    control={control}
                     name="creditStock"
                     render={({ field }) => (
                     <FormItem>
@@ -356,73 +363,67 @@ export function ServerForm({ server }: ServerFormProps) {
             )}
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
-          <FormField
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('status')}</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder={t('selectStatus')} />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="Online">{t('online')}</SelectItem>
-                    <SelectItem value="Offline">{t('offline')}</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <div className="grid grid-cols-3 gap-6">
-          <FormField
-            control={form.control}
-            name="connections"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('connections')}</FormLabel>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="maxConnections"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('maxConnections')}</FormLabel>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="cpuLoad"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('cpuLoad')}</FormLabel>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+         <Card>
+          <CardHeader>
+            <CardTitle>Servidores</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {fields.map((field, index) => (
+              <div key={field.id} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-end p-4 border rounded-lg">
+                <FormField
+                  control={control}
+                  name={`subServers.${index}.name`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nome do Servidor</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={control}
+                  name={`subServers.${index}.type`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tipo do Servidor</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                       <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={control}
+                  name={`subServers.${index}.screens`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Quantidade de Telas</FormLabel>
+                      <FormControl>
+                        <Input type="number" {...field} />
+                      </FormControl>
+                       <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => append({ name: '', type: '', screens: 0 })}
+            >
+             Adicionar Servidor
+            </Button>
+          </CardContent>
+        </Card>
+
         <div className="flex justify-end gap-4 pt-6">
             <Button type="button" variant="outline" onClick={handleCancel}>
                 {t('cancel')}

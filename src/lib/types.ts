@@ -7,14 +7,16 @@ export type Client = {
   registeredDate: string;
 };
 
+export type SubServer = {
+  name: string;
+  type: string;
+  screens: number;
+};
+
 export type Server = {
   id: string;
   name: string;
   url: string;
-  status: 'Online' | 'Offline';
-  connections: number;
-  maxConnections: number;
-  cpuLoad: number;
   responsibleName: string;
   nickname?: string;
   phone?: string;
@@ -22,4 +24,5 @@ export type Server = {
   panelValue?: string;
   dueDate?: number;
   creditStock?: number;
+  subServers?: SubServer[];
 };

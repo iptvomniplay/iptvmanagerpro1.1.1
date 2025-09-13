@@ -14,11 +14,19 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { PlusCircle, Settings } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
+import { PlusCircle, Settings, Users } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
 import { useData } from '@/hooks/use-data';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+
 
 export default function ServersPage() {
   const { t } = useLanguage();
@@ -51,27 +59,14 @@ export default function ServersPage() {
           </div>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2">
           {servers.map((server) => (
             <Card key={server.id}>
               <CardHeader className="p-6">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-xl">{server.name}</CardTitle>
-                  <Badge
-                    variant={
-                      server.status === 'Online' ? 'default' : 'destructive'
-                    }
-                    className="flex items-center gap-2 text-sm"
-                  >
-                    <span
-                      className={cn(
-                        'h-2.5 w-2.5 rounded-full',
-                        server.status === 'Online'
-                          ? 'bg-green-500'
-                          : 'bg-red-500'
-                      )}
-                    />
-                    {t(server.status.toLowerCase() as 'online' | 'offline')}
+                  <Badge variant={server.paymentType === 'prepaid' ? 'default' : 'secondary'}>
+                    {t(server.paymentType as any)}
                   </Badge>
                 </div>
                 <CardDescription className="pt-1 text-base">
@@ -79,35 +74,32 @@ export default function ServersPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6 px-6 pb-6">
-                <div>
-                  <div className="mb-2 flex justify-between text-base">
-                    <span className="font-medium">{t('connections')}</span>
-                    <span className="text-muted-foreground">
-                      {server.connections} / {server.maxConnections}
-                    </span>
+                {server.subServers && server.subServers.length > 0 ? (
+                  <div className="rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Nome do Servidor</TableHead>
+                          <TableHead>Tipo</TableHead>
+                          <TableHead className="text-right">Telas</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {server.subServers.map((sub, index) => (
+                          <TableRow key={index}>
+                            <TableCell>{sub.name}</TableCell>
+                            <TableCell>{sub.type}</TableCell>
+                            <TableCell className="text-right">{sub.screens}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
                   </div>
-                  <Progress
-                    value={(server.connections / server.maxConnections) * 100}
-                  />
-                </div>
-                <div>
-                  <div className="mb-2 flex justify-between text-base">
-                    <span className="font-medium">{t('cpuLoad')}</span>
-                    <span className="text-muted-foreground">
-                      {server.cpuLoad}%
-                    </span>
+                ) : (
+                  <div className="text-center text-muted-foreground py-4">
+                    Nenhum servidor cadastrado.
                   </div>
-                  <Progress
-                    value={server.cpuLoad}
-                    className={cn(
-                      server.cpuLoad > 90
-                        ? '[&>div]:bg-destructive'
-                        : server.cpuLoad > 75
-                        ? '[&>div]:bg-yellow-500'
-                        : ''
-                    )}
-                  />
-                </div>
+                )}
               </CardContent>
               <CardFooter className="px-6 pb-6">
                  <Button asChild variant="outline" className="w-full" size="lg">
