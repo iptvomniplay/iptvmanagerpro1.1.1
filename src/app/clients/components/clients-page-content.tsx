@@ -213,7 +213,12 @@ export default function ClientsPageContent() {
         </Table>
       </div>
 
-      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+      <Dialog open={isFormOpen} onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          resetFormState();
+        }
+        setIsFormOpen(isOpen);
+      }}>
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle className="text-xl">
