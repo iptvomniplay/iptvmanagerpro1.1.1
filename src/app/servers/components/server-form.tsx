@@ -158,290 +158,294 @@ export function ServerForm({ server }: ServerFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 py-4">
-        <div className="mb-6 flex flex-col items-start space-y-4">
+        <div className="space-y-4">
             <Button type="button" onClick={() => setIsPanelFormVisible(!isPanelFormVisible)} disabled={!!server} className="w-48">
                 <PlusCircle className="mr-2 h-5 w-5" />
                 {t('addNewPanel')}
             </Button>
-            <Button type="button" onClick={handleAddNewServer} className="w-48">
-                <PlusCircle className="mr-2 h-5 w-5" />
-                Add Servidor
-            </Button>
-        </div>
-        
-        <div className={cn("space-y-6", isPanelFormVisible ? 'block' : 'hidden')}>
-          <FormField
-            control={control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('serverName')}</FormLabel>
-                <FormControl>
-                  <Input placeholder={t('serverNamePlaceholder')} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={control}
-            name="url"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('panelUrl')}</FormLabel>
-                <FormControl>
-                  <Input placeholder={t('serverUrlPlaceholder')} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={control}
-            name="login"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('login')}</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('password')}</FormLabel>
-                <FormControl>
-                  <Input type="password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={control}
-            name="responsibleName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('responsibleName')}</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={control}
-            name="nickname"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('nickname')}</FormLabel>
-                <FormControl>
-                  <Input placeholder={t('nicknamePlaceholder')} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('phone')}</FormLabel>
-                <FormControl>
-                  <Input placeholder="+55 (11) 91234-5678" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={control}
-            name="paymentType"
-            render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel>{t('paymentMethod')}</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex space-x-4"
-                  >
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="prepaid" />
-                      </FormControl>
-                      <FormLabel className="font-normal">{t('prepaid')}</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="postpaid" />
-                      </FormControl>
-                      <FormLabel className="font-normal">{t('postpaid')}</FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          {paymentType === 'postpaid' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
+            
+            <div className={cn("space-y-6", isPanelFormVisible ? 'block' : 'hidden')}>
+            <FormField
                 control={control}
-                name="panelValue"
+                name="name"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('panelValue')}</FormLabel>
+                <FormItem>
+                    <FormLabel>{t('serverName')}</FormLabel>
                     <FormControl>
-                      <Input 
-                        {...field}
-                        onChange={(e) => handleCurrencyChange(e, 'panelValue')}
-                        placeholder={language === 'pt-BR' ? 'R$ 0,00' : '$ 0.00'}
-                      />
+                    <Input placeholder={t('serverNamePlaceholder')} {...field} />
                     </FormControl>
                     <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={control}
-                name="dueDate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('dueDate')}</FormLabel>
-                    <Select onValueChange={(value) => field.onChange(parseInt(value))} defaultValue={String(field.value || 1)}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione o dia" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
-                          <SelectItem key={day} value={String(day)}>
-                            {day}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          )}
-            <FormField
-              control={control}
-              name="hasInitialStock"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow-sm">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>
-                      {t('hasPanelCredits')}
-                    </FormLabel>
-                  </div>
                 </FormItem>
-              )}
+                )}
             />
-
-            {hasInitialStock && (
+            <FormField
+                control={control}
+                name="url"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>{t('panelUrl')}</FormLabel>
+                    <FormControl>
+                    <Input placeholder={t('serverUrlPlaceholder')} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            <FormField
+                control={control}
+                name="login"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>{t('login')}</FormLabel>
+                    <FormControl>
+                    <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            <FormField
+                control={control}
+                name="password"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>{t('password')}</FormLabel>
+                    <FormControl>
+                    <Input type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            <FormField
+                control={control}
+                name="responsibleName"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>{t('responsibleName')}</FormLabel>
+                    <FormControl>
+                    <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            <FormField
+                control={control}
+                name="nickname"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>{t('nickname')}</FormLabel>
+                    <FormControl>
+                    <Input placeholder={t('nicknamePlaceholder')} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            <FormField
+                control={control}
+                name="phone"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>{t('phone')}</FormLabel>
+                    <FormControl>
+                    <Input placeholder="+55 (11) 91234-5678" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            <FormField
+                control={control}
+                name="paymentType"
+                render={({ field }) => (
+                <FormItem className="space-y-3">
+                    <FormLabel>{t('paymentMethod')}</FormLabel>
+                    <FormControl>
+                    <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex space-x-4"
+                    >
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl>
+                            <RadioGroupItem value="prepaid" />
+                        </FormControl>
+                        <FormLabel className="font-normal">{t('prepaid')}</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl>
+                            <RadioGroupItem value="postpaid" />
+                        </FormControl>
+                        <FormLabel className="font-normal">{t('postpaid')}</FormLabel>
+                        </FormItem>
+                    </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            
+            {paymentType === 'postpaid' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                     control={control}
-                    name="creditStock"
+                    name="panelValue"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>{t('panelCreditStock')}</FormLabel>
+                        <FormLabel>{t('panelValue')}</FormLabel>
                         <FormControl>
-                        <Input type="number" {...field} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))} />
+                        <Input 
+                            {...field}
+                            onChange={(e) => handleCurrencyChange(e, 'panelValue')}
+                            placeholder={language === 'pt-BR' ? 'R$ 0,00' : '$ 0.00'}
+                        />
                         </FormControl>
-                        <FormDescription>{t('panelCreditStockDescription')}</FormDescription>
                         <FormMessage />
                     </FormItem>
                     )}
                 />
+                <FormField
+                    control={control}
+                    name="dueDate"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>{t('dueDate')}</FormLabel>
+                        <Select onValueChange={(value) => field.onChange(parseInt(value))} defaultValue={String(field.value || 1)}>
+                        <FormControl>
+                            <SelectTrigger>
+                            <SelectValue placeholder="Selecione o dia" />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                            <SelectItem key={day} value={String(day)}>
+                                {day}
+                            </SelectItem>
+                            ))}
+                        </SelectContent>
+                        </Select>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                </div>
             )}
+                <FormField
+                control={control}
+                name="hasInitialStock"
+                render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow-sm">
+                    <FormControl>
+                        <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                        <FormLabel>
+                        {t('hasPanelCredits')}
+                        </FormLabel>
+                    </div>
+                    </FormItem>
+                )}
+                />
+
+                {hasInitialStock && (
+                    <FormField
+                        control={control}
+                        name="creditStock"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>{t('panelCreditStock')}</FormLabel>
+                            <FormControl>
+                            <Input type="number" {...field} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))} />
+                            </FormControl>
+                            <FormDescription>{t('panelCreditStockDescription')}</FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                )}
+            </div>
+        </div>
+        
+        <div className="space-y-4">
+          <Button type="button" onClick={handleAddNewServer} className="w-48">
+              <PlusCircle className="mr-2 h-5 w-5" />
+              Add Servidor
+          </Button>
+
+          <div className={cn(isServerSectionVisible ? 'block' : 'hidden')}>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>Servidores</CardTitle>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => append({ name: '', type: '', screens: 0 })}
+                >
+                  Adicionar Servidor
+                </Button>
+              </CardHeader>
+              <CardContent className="space-y-4 pt-4">
+                {fields.map((field, index) => (
+                  <div key={field.id} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-end p-4 border rounded-lg">
+                    <FormField
+                      control={control}
+                      name={`subServers.${index}.name`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nome do Servidor</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={control}
+                      name={`subServers.${index}.type`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Tipo do Servidor</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={control}
+                      name={`subServers.${index}.screens`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Quantidade de Telas</FormLabel>
+                          <FormControl>
+                            <Input type="number" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                {fields.length === 0 && (
+                    <div className="text-center text-muted-foreground py-4">
+                        Nenhum servidor cadastrado. Clique em "Adicionar Servidor" para começar.
+                      </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
-        <div className={cn(isServerSectionVisible ? 'block' : 'hidden')}>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Servidores</CardTitle>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => append({ name: '', type: '', screens: 0 })}
-              >
-                Adicionar Servidor
-              </Button>
-            </CardHeader>
-            <CardContent className="space-y-4 pt-4">
-              {fields.map((field, index) => (
-                <div key={field.id} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-end p-4 border rounded-lg">
-                  <FormField
-                    control={control}
-                    name={`subServers.${index}.name`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nome do Servidor</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name={`subServers.${index}.type`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tipo do Servidor</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name={`subServers.${index}.screens`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Quantidade de Telas</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-              {fields.length === 0 && (
-                  <div className="text-center text-muted-foreground py-4">
-                      Nenhum servidor cadastrado. Clique em "Adicionar Servidor" para começar.
-                    </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
 
         <div className="flex justify-end gap-4 pt-6">
             <Button type="button" variant="outline" onClick={handleCancel}>
