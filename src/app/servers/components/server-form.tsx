@@ -83,6 +83,7 @@ export function ServerForm({ server }: ServerFormProps) {
   const { addServer, updateServer } = useData();
   const router = useRouter();
   const [isPanelFormVisible, setIsPanelFormVisible] = React.useState(!!server);
+  const [isServerSectionVisible, setIsServerSectionVisible] = React.useState(!!server?.subServers?.length);
   
   const form = useForm<ServerFormValues>({
     resolver: zodResolver(formSchema),
@@ -155,7 +156,7 @@ export function ServerForm({ server }: ServerFormProps) {
                 <PlusCircle className="mr-2 h-5 w-5" />
                 {t('addNewPanel')}
             </Button>
-            <Button type="button" className="w-48">
+            <Button type="button" onClick={() => setIsServerSectionVisible(!isServerSectionVisible)} className="w-48">
                 <PlusCircle className="mr-2 h-5 w-5" />
                 Add Servidor
             </Button>
@@ -367,71 +368,73 @@ export function ServerForm({ server }: ServerFormProps) {
             )}
         </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Servidores</CardTitle>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => append({ name: '', type: '', screens: 0 })}
-            >
-              Adicionar Servidor
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-4 pt-4">
-            {fields.map((field, index) => (
-              <div key={field.id} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-end p-4 border rounded-lg">
-                <FormField
-                  control={control}
-                  name={`subServers.${index}.name`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nome do Servidor</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={control}
-                  name={`subServers.${index}.type`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Tipo do Servidor</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                 <FormField
-                  control={control}
-                  name={`subServers.${index}.screens`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Quantidade de Telas</FormLabel>
-                      <FormControl>
-                        <Input type="number" {...field} />
-                      </FormControl>
-                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-            {fields.length === 0 && (
-                 <div className="text-center text-muted-foreground py-4">
-                    Nenhum servidor cadastrado. Clique em "Adicionar Servidor" para começar.
-                  </div>
-            )}
-          </CardContent>
-        </Card>
+        <div className={cn("space-y-6", isServerSectionVisible ? 'block' : 'hidden')}>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Servidores</CardTitle>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => append({ name: '', type: '', screens: 0 })}
+              >
+                Adicionar Servidor
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-4 pt-4">
+              {fields.map((field, index) => (
+                <div key={field.id} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-end p-4 border rounded-lg">
+                  <FormField
+                    control={control}
+                    name={`subServers.${index}.name`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nome do Servidor</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name={`subServers.${index}.type`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tipo do Servidor</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name={`subServers.${index}.screens`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Quantidade de Telas</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+              {fields.length === 0 && (
+                  <div className="text-center text-muted-foreground py-4">
+                      Nenhum servidor cadastrado. Clique em "Adicionar Servidor" para começar.
+                    </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
         <div className="flex justify-end gap-4 pt-6">
             <Button type="button" variant="outline" onClick={handleCancel}>
