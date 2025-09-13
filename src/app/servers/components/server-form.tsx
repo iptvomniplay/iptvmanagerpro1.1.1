@@ -113,6 +113,13 @@ export function ServerForm({ server }: ServerFormProps) {
     name: "subServers",
   });
 
+  const handleAddNewServer = () => {
+    setIsServerSectionVisible(true);
+    if (fields.length === 0) {
+      append({ name: '', type: '', screens: 0 });
+    }
+  };
+
   const handleCurrencyChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof ServerFormValues) => {
     let value = e.target.value;
     value = value.replace(/\D/g, '');
@@ -156,7 +163,7 @@ export function ServerForm({ server }: ServerFormProps) {
                 <PlusCircle className="mr-2 h-5 w-5" />
                 {t('addNewPanel')}
             </Button>
-            <Button type="button" onClick={() => setIsServerSectionVisible(!isServerSectionVisible)} className="w-48">
+            <Button type="button" onClick={handleAddNewServer} className="w-48">
                 <PlusCircle className="mr-2 h-5 w-5" />
                 Add Servidor
             </Button>
