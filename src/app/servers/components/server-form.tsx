@@ -105,7 +105,7 @@ export function ServerForm({ server }: ServerFormProps) {
       panelValue: server?.panelValue || '',
       dueDate: server?.dueDate || 1,
       hasInitialStock: !!server?.creditStock,
-      creditStock: server?.creditStock || undefined,
+      creditStock: server?.creditStock || 0,
       subServers: server?.subServers || [],
     },
   });
@@ -113,20 +113,13 @@ export function ServerForm({ server }: ServerFormProps) {
   const { control, watch, setValue } = form;
   const paymentType = watch('paymentType');
   const hasInitialStock = watch('hasInitialStock');
-  const subServers = watch('subServers');
-  const [isServerSectionVisible, setIsServerSectionVisible] = React.useState(!!server?.subServers?.length || (subServers && subServers.length > 0));
   
   const { fields, append, remove } = useFieldArray({
     control,
     name: "subServers",
   });
 
-  const handleAddNewServer = () => {
-    setIsServerSectionVisible(true);
-    if (fields.length === 0) {
-      append({ name: '', type: '', screens: undefined as any });
-    }
-  };
+  const [isServerSectionVisible, setIsServerSectionVisible] = React.useState(!!server?.subServers?.length);
 
   const handleCurrencyChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof ServerFormValues) => {
     let value = e.target.value;
@@ -368,7 +361,7 @@ export function ServerForm({ server }: ServerFormProps) {
                         <FormItem>
                             <FormLabel>{t('panelCreditStock')}</FormLabel>
                             <FormControl>
-                            <Input type="number" {...field} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))} />
+                            <Input type="number" {...field} />
                             </FormControl>
                             <FormDescription>{t('panelCreditStockDescription')}</FormDescription>
                             <FormMessage />
@@ -380,7 +373,7 @@ export function ServerForm({ server }: ServerFormProps) {
         </div>
         
         <div className={cn("space-y-4", isPanelFormVisible ? 'block' : 'hidden')}>
-          <Button type="button" onClick={handleAddNewServer} className="w-48">
+          <Button type="button" onClick={() => setIsServerSectionVisible(true)} className="w-48">
               <PlusCircle className="mr-2 h-5 w-5" />
               Add Servidor
           </Button>
@@ -392,7 +385,7 @@ export function ServerForm({ server }: ServerFormProps) {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => append({ name: '', type: '', screens: undefined as any })}
+                  onClick={() => append({ name: '', type: '', screens: 0 })}
                 >
                   Adicionar Servidor
                 </Button>
@@ -433,7 +426,7 @@ export function ServerForm({ server }: ServerFormProps) {
                         <FormItem>
                           <FormLabel>Quantidade de Telas</FormLabel>
                           <FormControl>
-                            <Input type="number" {...field} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))} />
+                            <Input type="number" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
