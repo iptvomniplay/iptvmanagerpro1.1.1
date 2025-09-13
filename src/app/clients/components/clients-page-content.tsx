@@ -146,7 +146,7 @@ export default function ClientsPageContent() {
         </div>
         <Button onClick={handleAddClient} size="lg">
           <PlusCircle className="mr-2 h-5 w-5" />
-          {t('registerClient')}
+          {t('addPanel')}
         </Button>
       </div>
 
