@@ -89,7 +89,6 @@ export function ServerForm({ server }: ServerFormProps) {
   const { t, language } = useLanguage();
   const { addServer, updateServer } = useData();
   const router = useRouter();
-  const [isPanelFormVisible, setIsPanelFormVisible] = React.useState(!!server);
   
   const form = useForm<ServerFormValues>({
     resolver: zodResolver(formSchema),
@@ -119,7 +118,15 @@ export function ServerForm({ server }: ServerFormProps) {
     name: "subServers",
   });
 
+  const [isPanelFormVisible, setIsPanelFormVisible] = React.useState(!!server);
   const [isServerSectionVisible, setIsServerSectionVisible] = React.useState(!!server?.subServers?.length);
+
+  const handleAddServerClick = () => {
+    setIsServerSectionVisible(true);
+    if (fields.length === 0) {
+      append({ name: '', type: '', screens: 0 });
+    }
+  }
 
   const handleCurrencyChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof ServerFormValues) => {
     let value = e.target.value;
@@ -373,9 +380,13 @@ export function ServerForm({ server }: ServerFormProps) {
         </div>
         
         <div className={cn("space-y-4", isPanelFormVisible ? 'block' : 'hidden')}>
-          <Button type="button" onClick={() => setIsServerSectionVisible(true)} className="w-48">
-              <PlusCircle className="mr-2 h-5 w-5" />
-              Add Servidor
+          <Button
+            type="button"
+            onClick={handleAddServerClick}
+            className="w-48"
+            >
+                <PlusCircle className="mr-2 h-5 w-5" />
+                Add Servidor
           </Button>
 
           <div className={cn(isServerSectionVisible ? 'block' : 'hidden')}>
