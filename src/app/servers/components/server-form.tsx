@@ -268,44 +268,44 @@ export function ServerForm({ server }: ServerFormProps) {
                 </FormItem>
                 )}
             />
-            <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] items-center gap-4">
-                <FormField
-                    control={control}
-                    name="phone"
-                    render={({ field }) => (
-                    <FormItem>
+            
+            <FormField
+                control={control}
+                name="phone"
+                render={({ field }) => (
+                <FormItem>
+                    <div className="flex justify-between items-center">
                         <FormLabel>{t('phone')}</FormLabel>
-                        <FormControl>
-                        <Input 
-                            {...field}
-                            onChange={handlePhoneChange}
-                            placeholder={language === 'pt-BR' && !hasDDI ? '(11) 99999-9999' : 'Enter number'}
+                        <FormField
+                            control={form.control}
+                            name="hasDDI"
+                            render={({ field: ddiField }) => (
+                                <FormItem className="flex items-center space-x-2 space-y-0">
+                                <FormControl>
+                                    <Checkbox
+                                    checked={ddiField.value}
+                                    onCheckedChange={ddiField.onChange}
+                                    />
+                                </FormControl>
+                                <FormLabel className="text-sm font-normal">
+                                    Tem DDI?
+                                </FormLabel>
+                                </FormItem>
+                            )}
                         />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-                 <FormField
-                    control={form.control}
-                    name="hasDDI"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-3 shadow-sm h-12 mt-8">
-                        <FormControl>
-                            <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                            <FormLabel>
-                            Tem DDI?
-                            </FormLabel>
-                        </div>
-                        </FormItem>
-                    )}
+                    </div>
+                    <FormControl>
+                    <Input 
+                        {...field}
+                        onChange={handlePhoneChange}
+                        placeholder={language === 'pt-BR' && !hasDDI ? '(11) 99999-9999' : 'Enter number'}
                     />
-            </div>
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            
             <FormField
                 control={control}
                 name="paymentType"
