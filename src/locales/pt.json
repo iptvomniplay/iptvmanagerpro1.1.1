@@ -132,5 +132,10 @@
     "panelCreditStockDescription": "Total de créditos disponíveis neste painel.",
     "hasPanelCredits": "Painel já possui créditos?",
     "stock": "Estoque",
-    "stockRegistration": "Cadastro de Estoque"
+    "stockRegistration": "Cadastro de Estoque",
+    "stockManagement": "Gerenciamento de Estoque",
+    "stockManagementDescription": "Gerencie o estoque de créditos para todos os seus painéis.",
+    "creditBalance": "Saldo de Créditos",
+    "creditBalanceDescription": "Visualize e gerencie o saldo de créditos de cada painel.",
+    "buyCredits": "Comprar Créditos"
 }

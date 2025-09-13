@@ -132,5 +132,10 @@
     "panelCreditStockDescription": "Total credits available on this panel.",
     "hasPanelCredits": "Panel already has credits?",
     "stock": "Stock",
-    "stockRegistration": "Stock Registration"
+    "stockRegistration": "Stock Registration",
+    "stockManagement": "Stock Management",
+    "stockManagementDescription": "Manage credit stock for all your panels.",
+    "creditBalance": "Credit Balance",
+    "creditBalanceDescription": "View and manage the credit balance for each panel.",
+    "buyCredits": "Buy Credits"
 }

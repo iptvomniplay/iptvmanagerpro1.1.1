@@ -51,7 +51,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const updateServer = useCallback((serverData: Server) => {
     setServers(prevServers =>
-      prevServers.map(s => (s.id === serverData.id ? serverData : s))
+      prevServers.map(s => (s.id === serverData.id ? {...s, ...serverData} : s))
     );
   }, []);
 

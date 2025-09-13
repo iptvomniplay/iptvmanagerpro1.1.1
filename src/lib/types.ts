@@ -15,4 +15,11 @@ export type Server = {
   connections: number;
   maxConnections: number;
   cpuLoad: number;
+  responsibleName: string;
+  nickname?: string;
+  phone?: string;
+  paymentType: 'prepaid' | 'postpaid';
+  panelValue?: string;
+  dueDate?: number;
+  creditStock?: number;
 };

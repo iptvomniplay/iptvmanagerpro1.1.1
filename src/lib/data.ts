@@ -69,6 +69,9 @@ export const servers: Server[] = [
     connections: 1250,
     maxConnections: 2000,
     cpuLoad: 65,
+    responsibleName: 'Admin',
+    paymentType: 'prepaid',
+    creditStock: 500
   },
   {
     id: 'S02',
@@ -78,6 +81,11 @@ export const servers: Server[] = [
     connections: 830,
     maxConnections: 1500,
     cpuLoad: 92,
+    responsibleName: 'Admin',
+    paymentType: 'postpaid',
+    panelValue: 'R$ 250,00',
+    dueDate: 15,
+    creditStock: 120
   },
   {
     id: 'S03',
@@ -87,6 +95,9 @@ export const servers: Server[] = [
     connections: 0,
     maxConnections: 1000,
     cpuLoad: 0,
+    responsibleName: 'Admin',
+    paymentType: 'prepaid',
+    creditStock: 0
   },
   {
     id: 'S04',
@@ -96,5 +107,8 @@ export const servers: Server[] = [
     connections: 45,
     maxConnections: 500,
     cpuLoad: 15,
+    responsibleName: 'Admin',
+    paymentType: 'prepaid',
+    creditStock: 85
   },
 ];

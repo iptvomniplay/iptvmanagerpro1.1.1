@@ -29,8 +29,8 @@ import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
 import { PlusCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useData } from '@/hooks/use-data';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -41,33 +41,15 @@ const formSchema = z.object({
   nickname: z.string().optional(),
   phone: z.string().optional(),
   paymentType: z.enum(['prepaid', 'postpaid']).default('prepaid'),
-  quantityOfCredits: z.coerce.number().optional(),
-  totalPurchaseValue: z.string().optional(),
   panelValue: z.string().optional(),
   dueDate: z.coerce.number().optional(),
-  hasInitialStock: z.boolean().optional(),
-  panelCreditStock: z.coerce.number().optional(),
+  hasInitialStock: z.boolean().default(false).optional(),
+  creditStock: z.coerce.number().optional(),
   status: z.enum(['Online', 'Offline']),
   connections: z.coerce.number().min(0),
   maxConnections: z.coerce.number().min(1),
   cpuLoad: z.coerce.number().min(0).max(100),
 }).superRefine((data, ctx) => {
-    if (data.paymentType === 'prepaid') {
-        if (data.quantityOfCredits === undefined || data.quantityOfCredits <= 0) {
-            ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: "Quantity of credits is required.",
-                path: ["quantityOfCredits"],
-            });
-        }
-        if (!data.totalPurchaseValue) {
-             ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: "Total purchase value is required.",
-                path: ["totalPurchaseValue"],
-            });
-        }
-    }
     if (data.paymentType === 'postpaid') {
         if (!data.panelValue) {
              ctx.addIssue({
@@ -94,8 +76,9 @@ interface ServerFormProps {
 
 export function ServerForm({ server }: ServerFormProps) {
   const { t, language } = useLanguage();
+  const { addServer, updateServer } = useData();
   const router = useRouter();
-  const [isPanelFormVisible, setIsPanelFormVisible] = React.useState(false);
+  const [isPanelFormVisible, setIsPanelFormVisible] = React.useState(!!server);
   
   const form = useForm<ServerFormValues>({
     resolver: zodResolver(formSchema),
@@ -104,16 +87,14 @@ export function ServerForm({ server }: ServerFormProps) {
       url: server?.url || '',
       login: '',
       password: '',
-      responsibleName: '',
-      nickname: '',
-      phone: '',
-      paymentType: 'prepaid',
-      quantityOfCredits: undefined,
-      totalPurchaseValue: '',
-      panelValue: '',
-      dueDate: 1,
-      hasInitialStock: false,
-      panelCreditStock: undefined,
+      responsibleName: server?.responsibleName || '',
+      nickname: server?.nickname || '',
+      phone: server?.phone || '',
+      paymentType: server?.paymentType || 'prepaid',
+      panelValue: server?.panelValue || '',
+      dueDate: server?.dueDate || 1,
+      hasInitialStock: !!server?.creditStock,
+      creditStock: server?.creditStock || undefined,
       status: server?.status || 'Online',
       connections: server?.connections || 0,
       maxConnections: server?.maxConnections || 1000,
@@ -123,18 +104,7 @@ export function ServerForm({ server }: ServerFormProps) {
 
   const { watch, setValue } = form;
   const paymentType = watch('paymentType');
-  const quantityOfCredits = watch('quantityOfCredits');
-  const totalPurchaseValue = watch('totalPurchaseValue');
   const hasInitialStock = watch('hasInitialStock');
-
-  const unitValue = React.useMemo(() => {
-    if (!totalPurchaseValue || !quantityOfCredits) return '0.00';
-    const total = parseFloat((totalPurchaseValue || '0').replace(/[^0-9,]/g, '').replace(',', '.'));
-    if (total > 0 && quantityOfCredits > 0) {
-      return (total / quantityOfCredits).toFixed(2);
-    }
-    return '0.00';
-  }, [quantityOfCredits, totalPurchaseValue]);
 
   const handleCurrencyChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof ServerFormValues) => {
     let value = e.target.value;
@@ -154,7 +124,16 @@ export function ServerForm({ server }: ServerFormProps) {
   };
 
   const handleSubmit = (values: ServerFormValues) => {
-    console.log('Form values:', values);
+    const serverData = {
+        ...values,
+        id: server?.id || '',
+    };
+    if (server) {
+        updateServer(serverData);
+    } else {
+        addServer(serverData);
+    }
+    router.push('/servers');
   };
   
   const handleCancel = () => {
@@ -165,7 +144,7 @@ export function ServerForm({ server }: ServerFormProps) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 py-4">
         <div className="mb-6">
-            <Button type="button" onClick={() => setIsPanelFormVisible(!isPanelFormVisible)}>
+            <Button type="button" onClick={() => setIsPanelFormVisible(!isPanelFormVisible)} disabled={!!server}>
                 <PlusCircle className="mr-2 h-5 w-5" />
                 {t('addNewPanel')}
             </Button>
@@ -293,46 +272,7 @@ export function ServerForm({ server }: ServerFormProps) {
               </FormItem>
             )}
           />
-
-          {paymentType === 'prepaid' && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <FormField
-                control={form.control}
-                name="quantityOfCredits"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('quantityOfCredits')}</FormLabel>
-                    <FormControl>
-                      <Input type="number" {...field} value={field.value ?? ''} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="totalPurchaseValue"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('totalPurchaseValue')}</FormLabel>
-                    <FormControl>
-                      <Input 
-                        {...field} 
-                        onChange={(e) => handleCurrencyChange(e, 'totalPurchaseValue')}
-                        placeholder={language === 'pt-BR' ? 'R$ 0,00' : '$ 0.00'}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-               <div>
-                  <Label>{t('unitValue')}</Label>
-                  <Input value={unitValue} readOnly className="mt-2 bg-muted" />
-                </div>
-            </div>
-          )}
-
+          
           {paymentType === 'postpaid' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
@@ -359,7 +299,7 @@ export function ServerForm({ server }: ServerFormProps) {
                   <FormItem>
                     <FormLabel>{t('dueDate')}</FormLabel>
                     <FormControl>
-                      <Input type="number" min="1" max="31" {...field} />
+                      <Input type="number" min="1" max="31" {...field} value={field.value ?? ''} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -390,7 +330,7 @@ export function ServerForm({ server }: ServerFormProps) {
             {hasInitialStock && (
                 <FormField
                     control={form.control}
-                    name="panelCreditStock"
+                    name="creditStock"
                     render={({ field }) => (
                     <FormItem>
                         <FormLabel>{t('panelCreditStock')}</FormLabel>
@@ -477,12 +417,10 @@ export function ServerForm({ server }: ServerFormProps) {
                 {t('cancel')}
             </Button>
             <Button type="submit">
-                {t('next')}
+                {server ? t('saveChanges') : t('registerClient')}
             </Button>
         </div>
       </form>
     </Form>
   );
 }
-
-    
