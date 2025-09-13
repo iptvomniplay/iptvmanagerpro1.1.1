@@ -130,5 +130,7 @@
     "dueDate": "Dia do Vencimento",
     "panelCreditStock": "Estoque de Créditos do Painel",
     "panelCreditStockDescription": "Total de créditos disponíveis neste painel.",
-    "hasPanelCredits": "Painel já possui créditos?"
+    "hasPanelCredits": "Painel já possui créditos?",
+    "stock": "Estoque",
+    "stockRegistration": "Cadastro de Estoque"
 }

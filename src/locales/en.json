@@ -130,5 +130,7 @@
     "dueDate": "Due Date",
     "panelCreditStock": "Panel Credit Stock",
     "panelCreditStockDescription": "Total credits available on this panel.",
-    "hasPanelCredits": "Panel already has credits?"
+    "hasPanelCredits": "Panel already has credits?",
+    "stock": "Stock",
+    "stockRegistration": "Stock Registration"
 }
