@@ -36,7 +36,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 const subServerSchema = z.object({
     name: z.string().min(1, "Server name is required"),
     type: z.string().min(1, "Server type is required"),
-    screens: z.coerce.number().min(0, "Screens must be a positive number"),
+    screens: z.coerce.number({required_error: "Screens are required."}).min(1, "Screens must be at least 1."),
 });
 
 const formSchema = z.object({
@@ -70,6 +70,13 @@ const formSchema = z.object({
             });
         }
     }
+    if (data.hasInitialStock && (data.creditStock === undefined || data.creditStock <= 0)) {
+         ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Credit stock must be a positive number.",
+            path: ["creditStock"],
+        });
+    }
 });
 
 type ServerFormValues = z.infer<typeof formSchema>;
@@ -83,7 +90,6 @@ export function ServerForm({ server }: ServerFormProps) {
   const { addServer, updateServer } = useData();
   const router = useRouter();
   const [isPanelFormVisible, setIsPanelFormVisible] = React.useState(!!server);
-  const [isServerSectionVisible, setIsServerSectionVisible] = React.useState(!!server?.subServers?.length);
   
   const form = useForm<ServerFormValues>({
     resolver: zodResolver(formSchema),
@@ -107,6 +113,8 @@ export function ServerForm({ server }: ServerFormProps) {
   const { control, watch, setValue } = form;
   const paymentType = watch('paymentType');
   const hasInitialStock = watch('hasInitialStock');
+  const subServers = watch('subServers');
+  const [isServerSectionVisible, setIsServerSectionVisible] = React.useState(!!server?.subServers?.length || (subServers && subServers.length > 0));
   
   const { fields, append, remove } = useFieldArray({
     control,
@@ -116,7 +124,7 @@ export function ServerForm({ server }: ServerFormProps) {
   const handleAddNewServer = () => {
     setIsServerSectionVisible(true);
     if (fields.length === 0) {
-      append({ name: '', type: '', screens: 0 });
+      append({ name: '', type: '', screens: undefined as any });
     }
   };
 
@@ -371,7 +379,7 @@ export function ServerForm({ server }: ServerFormProps) {
             </div>
         </div>
         
-        <div className="space-y-4">
+        <div className={cn("space-y-4", isPanelFormVisible ? 'block' : 'hidden')}>
           <Button type="button" onClick={handleAddNewServer} className="w-48">
               <PlusCircle className="mr-2 h-5 w-5" />
               Add Servidor
@@ -384,7 +392,7 @@ export function ServerForm({ server }: ServerFormProps) {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => append({ name: '', type: '', screens: 0 })}
+                  onClick={() => append({ name: '', type: '', screens: undefined as any })}
                 >
                   Adicionar Servidor
                 </Button>
@@ -425,7 +433,7 @@ export function ServerForm({ server }: ServerFormProps) {
                         <FormItem>
                           <FormLabel>Quantidade de Telas</FormLabel>
                           <FormControl>
-                            <Input type="number" {...field} />
+                            <Input type="number" {...field} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
