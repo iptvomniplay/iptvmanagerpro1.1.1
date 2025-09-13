@@ -65,7 +65,7 @@ export function ClientReview({
   
   const renderField = (field: EditableField) => {
     const isDate = field === 'expiryDate';
-    const displayValue = isDate ? format(parseISO(data[field]), 'MM/dd/yyyy') : data[field];
+    const displayValue = isDate && data[field] ? format(parseISO(data[field]), 'MM/dd/yyyy') : data[field];
 
     return (
         <div key={field} className="flex items-center justify-between p-3 border-b">
