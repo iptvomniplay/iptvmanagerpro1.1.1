@@ -126,7 +126,7 @@ export default function ClientsPageContent() {
         </div>
         <Button onClick={() => handleFormOpen(null)} size="lg">
           <PlusCircle className="mr-2 h-5 w-5" />
-          {t('registerClient')}
+          {t('register')}
         </Button>
       </div>
 
@@ -197,7 +197,7 @@ export default function ClientsPageContent() {
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-xl">
-              {editingClient ? t('editClient') : t('registerNewClient')}
+              {editingClient ? t('editClient') : t('clientRegistration')}
             </DialogTitle>
             <DialogDescription>
               {editingClient ? t('editClientDescription') : t('registerNewClientDescription')}
