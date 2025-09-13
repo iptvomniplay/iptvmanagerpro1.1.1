@@ -33,11 +33,11 @@ export default function SidebarNav() {
           <Button
             variant="ghost"
             size="icon"
-            className="h-12 w-12 rounded-lg"
+            className="h-16 w-16 rounded-lg"
             asChild
           >
             <Link href="/">
-              <Tv2 className="h-7 w-7 text-primary" />
+              <Tv2 className="h-9 w-9 text-primary" />
               <span className="sr-only">IPTV Manager Pro</span>
             </Link>
           </Button>
@@ -55,9 +55,10 @@ export default function SidebarNav() {
                 size="lg"
                 isActive={pathname === link.href}
                 tooltip={{ children: link.label }}
+                className="h-16"
               >
                 <Link href={link.href}>
-                  <link.icon />
+                  <link.icon className="h-7 w-7" />
                   <span>{link.label}</span>
                 </Link>
               </SidebarMenuButton>
