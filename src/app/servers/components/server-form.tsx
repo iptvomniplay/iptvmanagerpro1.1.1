@@ -4,7 +4,7 @@ import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import type { Server, SubServer } from '@/lib/types';
+import type { Server } from '@/lib/types';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -104,7 +104,7 @@ export function ServerForm({ server }: ServerFormProps) {
       hasDDI: server?.hasDDI || false,
       paymentType: server?.paymentType || 'prepaid',
       panelValue: server?.panelValue || '',
-      dueDate: server?.dueDate || 1,
+      dueDate: server?.dueDate || undefined,
       hasInitialStock: !!server?.creditStock,
       creditStock: server?.creditStock || undefined,
       subServers: server?.subServers || [],
@@ -165,6 +165,7 @@ export function ServerForm({ server }: ServerFormProps) {
     const serverData: Server = {
         ...values,
         id: server?.id || '',
+        status: server?.status || 'Online',
         subServers: values.subServers || [],
     };
     if (server) {
@@ -347,6 +348,7 @@ export function ServerForm({ server }: ServerFormProps) {
                         <FormControl>
                         <Input 
                             {...field}
+                            value={field.value ?? ''}
                             onChange={(e) => handleCurrencyChange(e, 'panelValue')}
                             placeholder={language === 'pt-BR' ? 'R$ 0,00' : '$ 0.00'}
                         />
@@ -361,7 +363,7 @@ export function ServerForm({ server }: ServerFormProps) {
                     render={({ field }) => (
                     <FormItem>
                         <FormLabel>{t('dueDate')}</FormLabel>
-                        <Select onValueChange={(value) => field.onChange(parseInt(value))} defaultValue={String(field.value || 1)}>
+                        <Select onValueChange={(value) => field.onChange(parseInt(value))} defaultValue={String(field.value || '')}>
                         <FormControl>
                             <SelectTrigger>
                             <SelectValue placeholder="Selecione o dia" />
@@ -409,7 +411,7 @@ export function ServerForm({ server }: ServerFormProps) {
                         <FormItem>
                             <FormLabel>{t('panelCreditStock')}</FormLabel>
                             <FormControl>
-                               <Input type="number" {...field} value={field.value ?? ''} placeholder="Ex: 100" />
+                               <Input type="number" {...field} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))} placeholder="Ex: 100" />
                             </FormControl>
                             <FormDescription>{t('panelCreditStockDescription')}</FormDescription>
                             <FormMessage />
@@ -419,14 +421,16 @@ export function ServerForm({ server }: ServerFormProps) {
                 )}
             </div>
 
-            <Button
-                type="button"
-                onClick={handleAddServerClick}
-                className="w-48"
-                >
-                    <PlusCircle className="mr-2 h-5 w-5" />
-                    Add Servidor
-            </Button>
+            <div className={cn(isPanelFormVisible ? 'block' : 'hidden')}>
+              <Button
+                  type="button"
+                  onClick={handleAddServerClick}
+                  className="w-48 mt-6"
+                  >
+                      <PlusCircle className="mr-2 h-5 w-5" />
+                      Add Servidor
+              </Button>
+            </div>
         
           <div className={cn("space-y-4", isServerSectionVisible ? 'block' : 'hidden')}>
             <Card>
@@ -476,7 +480,7 @@ export function ServerForm({ server }: ServerFormProps) {
                         <FormItem>
                           <FormLabel>Quantidade de Telas</FormLabel>
                           <FormControl>
-                            <Input type="number" {...field} value={field.value ?? ''} placeholder="Ex.: 1" />
+                            <Input type="number" {...field} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))} placeholder="Ex.: 1" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -509,5 +513,7 @@ export function ServerForm({ server }: ServerFormProps) {
     </Form>
   );
 }
+
+    
 
     
