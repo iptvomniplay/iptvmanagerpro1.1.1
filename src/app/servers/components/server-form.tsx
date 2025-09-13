@@ -364,10 +364,17 @@ export function ServerForm({ server }: ServerFormProps) {
         </div>
 
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Servidores</CardTitle>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => append({ name: '', type: '', screens: 0 })}
+            >
+              Adicionar Servidor
+            </Button>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-4">
             {fields.map((field, index) => (
               <div key={field.id} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-end p-4 border rounded-lg">
                 <FormField
@@ -414,14 +421,11 @@ export function ServerForm({ server }: ServerFormProps) {
                 </Button>
               </div>
             ))}
-             <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              onClick={() => append({ name: '', type: '', screens: 0 })}
-            >
-              Adicionar Servidor
-            </Button>
+            {fields.length === 0 && (
+                 <div className="text-center text-muted-foreground py-4">
+                    Nenhum servidor cadastrado. Clique em "Adicionar Servidor" para começar.
+                  </div>
+            )}
           </CardContent>
         </Card>
 
