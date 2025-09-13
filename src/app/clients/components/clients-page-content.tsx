@@ -19,13 +19,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -43,7 +36,6 @@ import {
   Search,
   Trash2,
 } from 'lucide-react';
-import { ClientForm } from './client-form';
 import { format, parseISO } from 'date-fns';
 import { useLanguage } from '@/hooks/use-language';
 import { useData } from '@/hooks/use-data';
@@ -52,10 +44,8 @@ export type ClientFormValues = Omit<Client, 'id' | 'registeredDate'>;
 
 export default function ClientsPageContent() {
   const { t } = useLanguage();
-  const { clients, addClient, updateClient, deleteClient } = useData();
+  const { clients, deleteClient, openNewClientForm, openEditClientForm } = useData();
   const [searchTerm, setSearchTerm] = React.useState('');
-  const [editingClient, setEditingClient] = React.useState<Client | null>(null);
-  const [isFormOpen, setIsFormOpen] = React.useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = React.useState(false);
   const [clientToDelete, setClientToDelete] = React.useState<Client | null>(null);
 
@@ -66,21 +56,6 @@ export default function ClientsPageContent() {
       client.status.toLowerCase().includes(searchTerm.toLowerCase())
   );
   
-  const resetFormState = () => {
-    setIsFormOpen(false);
-    setEditingClient(null);
-  }
-
-  const handleAddClient = () => {
-    setEditingClient(null);
-    setIsFormOpen(true);
-  };
-
-  const handleEditClient = (client: Client) => {
-    setEditingClient(client);
-    setIsFormOpen(true);
-  };
-
   const handleDeleteConfirm = (client: Client) => {
     setClientToDelete(client);
     setIsDeleteAlertOpen(true);
@@ -93,16 +68,6 @@ export default function ClientsPageContent() {
     setIsDeleteAlertOpen(false);
     setClientToDelete(null);
   };
-
-  const handleFormSubmit = (values: ClientFormValues) => {
-    if (editingClient) {
-      updateClient({ ...editingClient, ...values });
-    } else {
-      addClient(values);
-    }
-    resetFormState();
-  };
-
 
   const getStatusVariant = (status: Client['status']) => {
     switch (status) {
@@ -130,9 +95,9 @@ export default function ClientsPageContent() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Button onClick={handleAddClient} size="lg">
+        <Button onClick={openNewClientForm} size="lg">
           <PlusCircle className="mr-2 h-5 w-5" />
-          {t('addPanel')}
+          {t('registerClient')}
         </Button>
       </div>
 
@@ -172,7 +137,7 @@ export default function ClientsPageContent() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEditClient(client)}>
+                        <DropdownMenuItem onClick={() => openEditClientForm(client)}>
                           <FilePenLine className="mr-2 h-4 w-4" />
                           {t('edit')}
                         </DropdownMenuItem>
@@ -198,29 +163,6 @@ export default function ClientsPageContent() {
           </TableBody>
         </Table>
       </div>
-
-      <Dialog open={isFormOpen} onOpenChange={(isOpen) => {
-        if (!isOpen) {
-          resetFormState();
-        }
-        setIsFormOpen(isOpen);
-      }}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="text-xl">
-              {editingClient ? t('editClient') : t('registerNewClient')}
-            </DialogTitle>
-            <DialogDescription>
-              {editingClient ? t('editClientDescription') : t('registerNewClientDescription')}
-            </DialogDescription>
-          </DialogHeader>
-          <ClientForm
-              client={editingClient}
-              onSubmit={handleFormSubmit}
-              onCancel={resetFormState}
-          />
-        </DialogContent>
-      </Dialog>
       
       <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
         <AlertDialogContent>

@@ -137,5 +137,6 @@
     "stockManagementDescription": "Gerencie o estoque de créditos para todos os seus painéis.",
     "creditBalance": "Saldo de Créditos",
     "creditBalanceDescription": "Visualize e gerencie o saldo de créditos de cada painel.",
-    "buyCredits": "Comprar Créditos"
+    "buyCredits": "Comprar Créditos",
+    "clientRegistration": "Cadastro de Clientes"
 }

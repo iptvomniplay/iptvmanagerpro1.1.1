@@ -6,6 +6,7 @@ import {
 } from '@/components/ui/sidebar';
 import SidebarNav from './sidebar-nav';
 import Header from './header';
+import GlobalClientForm from './global-client-form';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
@@ -17,6 +18,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         <Header />
         <main className="flex-1 p-6 md:p-8 lg:p-10 bg-background">{children}</main>
       </SidebarInset>
+      <GlobalClientForm />
     </SidebarProvider>
   );
 }
