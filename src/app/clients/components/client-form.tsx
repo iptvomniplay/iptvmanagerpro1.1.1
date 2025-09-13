@@ -6,6 +6,8 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import type { Client } from '@/lib/types';
 import type { ClientFormValues } from './clients-page-content';
+import { useRouter } from 'next/navigation';
+import { useData } from '@/hooks/use-data';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -38,12 +40,15 @@ const formSchema = z.object({
 
 interface ClientFormProps {
   client: Client | null;
-  onSubmit: (values: ClientFormValues) => void;
-  onCancel: () => void;
+  onCancel?: () => void;
+  onSubmitted?: () => void;
 }
 
-export function ClientForm({ client, onSubmit, onCancel }: ClientFormProps) {
+export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   const { t } = useLanguage();
+  const router = useRouter();
+  const { addClient, updateClient } = useData();
+  
   const form = useForm<ClientFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -55,8 +60,26 @@ export function ClientForm({ client, onSubmit, onCancel }: ClientFormProps) {
   });
 
   const handleSubmit = (values: ClientFormValues) => {
-    onSubmit(values);
+    if (client) {
+      updateClient({ ...client, ...values });
+    } else {
+      addClient(values);
+    }
+
+    if (onSubmitted) {
+      onSubmitted();
+    } else {
+      router.push('/clients');
+    }
   };
+
+  const handleCancel = () => {
+    if (onCancel) {
+      onCancel();
+    } else {
+      router.back();
+    }
+  }
 
   return (
     <Form {...form}>
@@ -128,7 +151,7 @@ export function ClientForm({ client, onSubmit, onCancel }: ClientFormProps) {
           />
         </div>
         <div className="flex justify-end gap-4 pt-6">
-            <Button type="button" variant="outline" onClick={onCancel}>
+            <Button type="button" variant="outline" onClick={handleCancel}>
                 {t('cancel')}
             </Button>
             <Button type="submit">

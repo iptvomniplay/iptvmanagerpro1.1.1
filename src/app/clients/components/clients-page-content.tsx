@@ -47,17 +47,21 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { ClientForm } from './client-form';
+import { useRouter } from 'next/navigation';
 
 export type ClientFormValues = Omit<Client, 'id' | 'registeredDate'>;
 
 export default function ClientsPageContent() {
   const { t } = useLanguage();
-  const { clients, addClient, updateClient, deleteClient } = useData();
+  const { clients, updateClient, deleteClient } = useData();
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = React.useState('');
   const [isFormOpen, setIsFormOpen] = React.useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = React.useState(false);
   const [editingClient, setEditingClient] = React.useState<Client | null>(null);
-  const [clientToDelete, setClientToDelete] = React.useState<Client | null>(null);
+  const [clientToDelete, setClientToDelete] = React.useState<Client | null>(
+    null
+  );
 
   const filteredClients = clients.filter(
     (client) =>
@@ -65,23 +69,19 @@ export default function ClientsPageContent() {
       client.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       client.status.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  
-  const handleFormOpen = (client: Client | null) => {
+
+  const handleEditOpen = (client: Client) => {
     setEditingClient(client);
     setIsFormOpen(true);
   };
-  
+
   const handleFormClose = () => {
     setEditingClient(null);
     setIsFormOpen(false);
   };
 
-  const handleFormSubmit = (values: ClientFormValues) => {
-    if (editingClient) {
-      updateClient({ ...editingClient, ...values });
-    } else {
-      addClient(values);
-    }
+  const handleFormSubmit = () => {
+    // A submissão agora é tratada no ClientForm, apenas fechamos o modal
     handleFormClose();
   };
 
@@ -124,7 +124,7 @@ export default function ClientsPageContent() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Button onClick={() => handleFormOpen(null)} size="lg">
+        <Button onClick={() => router.push('/clients/new')} size="lg">
           <PlusCircle className="mr-2 h-5 w-5" />
           {t('register')}
         </Button>
@@ -166,7 +166,7 @@ export default function ClientsPageContent() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleFormOpen(client)}>
+                        <DropdownMenuItem onClick={() => handleEditOpen(client)}>
                           <FilePenLine className="mr-2 h-4 w-4" />
                           {t('edit')}
                         </DropdownMenuItem>
@@ -197,15 +197,15 @@ export default function ClientsPageContent() {
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-xl">
-              {editingClient ? t('editClient') : t('clientRegistration')}
+              {t('editClient')}
             </DialogTitle>
             <DialogDescription>
-              {editingClient ? t('editClientDescription') : t('registerNewClientDescription')}
+              {t('editClientDescription')}
             </DialogDescription>
           </DialogHeader>
           <ClientForm
             client={editingClient}
-            onSubmit={handleFormSubmit}
+            onSubmitted={handleFormSubmit}
             onCancel={handleFormClose}
           />
         </DialogContent>
