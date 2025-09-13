@@ -106,7 +106,7 @@
     "serverNamePlaceholder": "Enter the Panel name here",
     "serverUrl": "Server URL",
     "panelUrl": "Panel URL",
-    "serverUrlPlaceholder": "eu.main.iptv.com",
+    "serverUrlPlaceholder": "www.example.com",
     "maxConnections": "Max Connections",
     "editServer": "Edit Server",
     "editServerDescription": "Update the details for this server.",

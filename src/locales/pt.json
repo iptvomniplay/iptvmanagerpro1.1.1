@@ -106,7 +106,7 @@
     "serverNamePlaceholder": "Digite aqui o nome do Painel",
     "serverUrl": "URL do Servidor",
     "panelUrl": "URL do Painel",
-    "serverUrlPlaceholder": "ue.principal.iptv.com",
+    "serverUrlPlaceholder": "www.exemplo.com",
     "maxConnections": "Conexões Máximas",
     "editServer": "Editar Servidor",
     "editServerDescription": "Atualize os detalhes deste servidor.",

@@ -298,9 +298,20 @@ export function ServerForm({ server }: ServerFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('dueDate')}</FormLabel>
-                    <FormControl>
-                      <Input type="number" min="1" max="31" {...field} value={field.value ?? ''} />
-                    </FormControl>
+                    <Select onValueChange={(value) => field.onChange(parseInt(value))} defaultValue={String(field.value || 1)}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o dia" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                          <SelectItem key={day} value={String(day)}>
+                            {day}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -335,7 +346,7 @@ export function ServerForm({ server }: ServerFormProps) {
                     <FormItem>
                         <FormLabel>{t('panelCreditStock')}</FormLabel>
                         <FormControl>
-                        <Input type="number" {...field} value={field.value ?? ''} />
+                        <Input type="number" {...field} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))} />
                         </FormControl>
                         <FormDescription>{t('panelCreditStockDescription')}</FormDescription>
                         <FormMessage />
