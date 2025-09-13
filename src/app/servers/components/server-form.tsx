@@ -448,10 +448,12 @@ export function ServerForm({ server }: ServerFormProps) {
                 {t('cancel')}
             </Button>
             <Button type="submit">
-                {server ? t('saveChanges') : t('registerClient')}
+                {server ? t('saveChanges') : t('save')}
             </Button>
         </div>
       </form>
     </Form>
   );
 }
+
+    
