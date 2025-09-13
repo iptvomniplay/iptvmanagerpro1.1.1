@@ -39,14 +39,24 @@ import {
 import { format, parseISO } from 'date-fns';
 import { useLanguage } from '@/hooks/use-language';
 import { useData } from '@/hooks/use-data';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { ClientForm } from './client-form';
 
 export type ClientFormValues = Omit<Client, 'id' | 'registeredDate'>;
 
 export default function ClientsPageContent() {
   const { t } = useLanguage();
-  const { clients, deleteClient, openNewClientForm, openEditClientForm } = useData();
+  const { clients, addClient, updateClient, deleteClient } = useData();
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [isFormOpen, setIsFormOpen] = React.useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = React.useState(false);
+  const [editingClient, setEditingClient] = React.useState<Client | null>(null);
   const [clientToDelete, setClientToDelete] = React.useState<Client | null>(null);
 
   const filteredClients = clients.filter(
@@ -56,6 +66,25 @@ export default function ClientsPageContent() {
       client.status.toLowerCase().includes(searchTerm.toLowerCase())
   );
   
+  const handleFormOpen = (client: Client | null) => {
+    setEditingClient(client);
+    setIsFormOpen(true);
+  };
+  
+  const handleFormClose = () => {
+    setEditingClient(null);
+    setIsFormOpen(false);
+  };
+
+  const handleFormSubmit = (values: ClientFormValues) => {
+    if (editingClient) {
+      updateClient({ ...editingClient, ...values });
+    } else {
+      addClient(values);
+    }
+    handleFormClose();
+  };
+
   const handleDeleteConfirm = (client: Client) => {
     setClientToDelete(client);
     setIsDeleteAlertOpen(true);
@@ -95,7 +124,7 @@ export default function ClientsPageContent() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Button onClick={openNewClientForm} size="lg">
+        <Button onClick={() => handleFormOpen(null)} size="lg">
           <PlusCircle className="mr-2 h-5 w-5" />
           {t('registerClient')}
         </Button>
@@ -137,7 +166,7 @@ export default function ClientsPageContent() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => openEditClientForm(client)}>
+                        <DropdownMenuItem onClick={() => handleFormOpen(client)}>
                           <FilePenLine className="mr-2 h-4 w-4" />
                           {t('edit')}
                         </DropdownMenuItem>
@@ -163,6 +192,24 @@ export default function ClientsPageContent() {
           </TableBody>
         </Table>
       </div>
+
+      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-xl">
+              {editingClient ? t('editClient') : t('registerNewClient')}
+            </DialogTitle>
+            <DialogDescription>
+              {editingClient ? t('editClientDescription') : t('registerNewClientDescription')}
+            </DialogDescription>
+          </DialogHeader>
+          <ClientForm
+            client={editingClient}
+            onSubmit={handleFormSubmit}
+            onCancel={handleFormClose}
+          />
+        </DialogContent>
+      </Dialog>
       
       <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
         <AlertDialogContent>

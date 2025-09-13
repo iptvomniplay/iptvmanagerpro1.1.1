@@ -137,6 +137,5 @@
     "stockManagementDescription": "Manage credit stock for all your panels.",
     "creditBalance": "Credit Balance",
     "creditBalanceDescription": "View and manage the credit balance for each panel.",
-    "buyCredits": "Buy Credits",
-    "clientRegistration": "Client Registration"
+    "buyCredits": "Buy Credits"
 }

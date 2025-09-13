@@ -10,15 +10,13 @@ import {
   SidebarMenuButton,
   SidebarFooter,
 } from '@/components/ui/sidebar';
-import { Home, Users, Server, Settings, Tv2, Package, UserPlus } from 'lucide-react';
+import { Home, Users, Server, Settings, Tv2, Package } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useLanguage } from '@/hooks/use-language';
-import { useData } from '@/hooks/use-data';
 
 export default function SidebarNav() {
   const pathname = usePathname();
   const { t } = useLanguage();
-  const { openNewClientForm } = useData();
 
   const links = [
     { href: '/', label: t('home'), icon: Home },
@@ -70,17 +68,6 @@ export default function SidebarNav() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    size="lg"
-                    tooltip={{ children: t('clientRegistration') }}
-                    className="h-20 text-primary"
-                    onClick={openNewClientForm}
-                  >
-                    <UserPlus className="h-9 w-9" />
-                    <span>{t('clientRegistration')}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
             </SidebarMenu>
         </div>
         <div>
