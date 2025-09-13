@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import type { Client } from '@/lib/types';
+import type { ClientFormValues } from './clients-page-content';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -25,6 +26,7 @@ import {
 } from '@/components/ui/select';
 import { useLanguage } from '@/hooks/use-language';
 
+
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   email: z.string().email({ message: 'Please enter a valid email.' }),
@@ -33,8 +35,6 @@ const formSchema = z.object({
     message: 'Invalid date format',
   }),
 });
-
-type ClientFormValues = z.infer<typeof formSchema>;
 
 interface ClientFormProps {
   client: Client | null;
@@ -56,7 +56,6 @@ export function ClientForm({ client, onSubmit, onCancel }: ClientFormProps) {
 
   const handleSubmit = (values: ClientFormValues) => {
     onSubmit(values);
-    form.reset();
   };
 
   return (
@@ -133,7 +132,7 @@ export function ClientForm({ client, onSubmit, onCancel }: ClientFormProps) {
                 {t('cancel')}
             </Button>
             <Button type="submit">
-                {client ? t('saveChanges') : t('createClient')}
+                {t('next')}
             </Button>
         </div>
       </form>
