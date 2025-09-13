@@ -44,7 +44,6 @@ import {
   Trash2,
 } from 'lucide-react';
 import { ClientForm } from './client-form';
-import { ClientReview } from './client-review';
 import { format, parseISO } from 'date-fns';
 import { useLanguage } from '@/hooks/use-language';
 import { useData } from '@/hooks/use-data';
@@ -60,9 +59,6 @@ export default function ClientsPageContent() {
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = React.useState(false);
   const [clientToDelete, setClientToDelete] = React.useState<Client | null>(null);
 
-  const [formStep, setFormStep] = React.useState<'form' | 'review'>('form');
-  const [formData, setFormData] = React.useState<ClientFormValues | null>(null);
-
   const filteredClients = clients.filter(
     (client) =>
       client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -73,21 +69,15 @@ export default function ClientsPageContent() {
   const resetFormState = () => {
     setIsFormOpen(false);
     setEditingClient(null);
-    setFormData(null);
-    setFormStep('form');
   }
 
   const handleAddClient = () => {
     setEditingClient(null);
-    setFormData(null);
-    setFormStep('form');
     setIsFormOpen(true);
   };
 
   const handleEditClient = (client: Client) => {
     setEditingClient(client);
-    setFormData(client);
-    setFormStep('form');
     setIsFormOpen(true);
   };
 
@@ -105,18 +95,14 @@ export default function ClientsPageContent() {
   };
 
   const handleFormSubmit = (values: ClientFormValues) => {
-    setFormData(values);
-    setFormStep('review');
-  };
-
-  const handleFinalSubmit = (finalValues: ClientFormValues) => {
     if (editingClient) {
-      updateClient({ ...editingClient, ...finalValues });
+      updateClient({ ...editingClient, ...values });
     } else {
-      addClient(finalValues);
+      addClient(values);
     }
     resetFormState();
   };
+
 
   const getStatusVariant = (status: Client['status']) => {
     switch (status) {
@@ -219,32 +205,20 @@ export default function ClientsPageContent() {
         }
         setIsFormOpen(isOpen);
       }}>
-        <DialogContent className="sm:max-w-2xl">
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-xl">
               {editingClient ? t('editClient') : t('registerNewClient')}
             </DialogTitle>
             <DialogDescription>
-              {formStep === 'form'
-                ? (editingClient ? t('editClientDescription') : t('registerNewClientDescription'))
-                : "Revise e confirme os dados antes de salvar."}
+              {editingClient ? t('editClientDescription') : t('registerNewClientDescription')}
             </DialogDescription>
           </DialogHeader>
-          {formStep === 'form' && (
-            <ClientForm
-                client={editingClient}
-                onSubmit={handleFormSubmit}
-                onCancel={resetFormState}
-            />
-          )}
-          {formStep === 'review' && formData && (
-             <ClientReview
-                initialData={formData}
-                onBack={() => setFormStep('form')}
-                onFinalSubmit={handleFinalSubmit}
-                isEditing={!!editingClient}
-            />
-          )}
+          <ClientForm
+              client={editingClient}
+              onSubmit={handleFormSubmit}
+              onCancel={resetFormState}
+          />
         </DialogContent>
       </Dialog>
       

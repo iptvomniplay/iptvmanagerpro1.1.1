@@ -132,7 +132,7 @@ export function ClientForm({ client, onSubmit, onCancel }: ClientFormProps) {
                 {t('cancel')}
             </Button>
             <Button type="submit">
-                {t('next')}
+                {client ? t('saveChanges') : t('createClient')}
             </Button>
         </div>
       </form>
