@@ -151,11 +151,11 @@ export function ServerForm({ server }: ServerFormProps) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 py-4">
         <div className="mb-6 flex flex-col items-start space-y-4">
-            <Button type="button" onClick={() => setIsPanelFormVisible(!isPanelFormVisible)} disabled={!!server}>
+            <Button type="button" onClick={() => setIsPanelFormVisible(!isPanelFormVisible)} disabled={!!server} className="w-48">
                 <PlusCircle className="mr-2 h-5 w-5" />
                 {t('addNewPanel')}
             </Button>
-            <Button type="button">
+            <Button type="button" className="w-48">
                 <PlusCircle className="mr-2 h-5 w-5" />
                 Add Servidor
             </Button>
