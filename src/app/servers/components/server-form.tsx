@@ -47,6 +47,7 @@ const formSchema = z.object({
   responsibleName: z.string().min(2, { message: 'Responsible name is required.' }),
   nickname: z.string().optional(),
   phone: z.string().optional(),
+  hasDDI: z.boolean().default(false).optional(),
   paymentType: z.enum(['prepaid', 'postpaid']).default('prepaid'),
   panelValue: z.string().optional(),
   dueDate: z.coerce.number().optional(),
@@ -100,11 +101,12 @@ export function ServerForm({ server }: ServerFormProps) {
       responsibleName: server?.responsibleName || '',
       nickname: server?.nickname || '',
       phone: server?.phone || '',
+      hasDDI: server?.hasDDI || false,
       paymentType: server?.paymentType || 'prepaid',
       panelValue: server?.panelValue || '',
       dueDate: server?.dueDate || 1,
       hasInitialStock: !!server?.creditStock,
-      creditStock: server?.creditStock || 0,
+      creditStock: server?.creditStock || undefined,
       subServers: server?.subServers || [],
     },
   });
@@ -112,6 +114,7 @@ export function ServerForm({ server }: ServerFormProps) {
   const { control, watch, setValue } = form;
   const paymentType = watch('paymentType');
   const hasInitialStock = watch('hasInitialStock');
+  const hasDDI = watch('hasDDI');
   
   const { fields, append, remove } = useFieldArray({
     control,
@@ -124,7 +127,7 @@ export function ServerForm({ server }: ServerFormProps) {
   const handleAddServerClick = () => {
     setIsServerSectionVisible(true);
     if (fields.length === 0) {
-      append({ name: '', type: '', screens: 0 });
+      append({ name: '', type: '', screens: undefined as any });
     }
   }
 
@@ -144,6 +147,19 @@ export function ServerForm({ server }: ServerFormProps) {
     
     setValue(fieldName as any, formatter.format(numericValue));
   };
+  
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, '');
+    
+    if (language === 'pt-BR' && !hasDDI) {
+        if (value.length > 11) value = value.slice(0, 11);
+        value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+        value = value.replace(/(\d{5})(\d)/, '$1-$2');
+    }
+
+    setValue('phone', value);
+  };
+
 
   const handleSubmit = (values: ServerFormValues) => {
     const serverData: Server = {
@@ -166,13 +182,13 @@ export function ServerForm({ server }: ServerFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 py-4">
-        <div className="space-y-4">
-            <Button type="button" onClick={() => setIsPanelFormVisible(!isPanelFormVisible)} disabled={!!server} className="w-48">
-                <PlusCircle className="mr-2 h-5 w-5" />
-                {t('addNewPanel')}
-            </Button>
-            
-            <div className={cn("space-y-6", isPanelFormVisible ? 'block' : 'hidden')}>
+        
+        <Button type="button" onClick={() => setIsPanelFormVisible(!isPanelFormVisible)} disabled={!!server} className="w-48">
+            <PlusCircle className="mr-2 h-5 w-5" />
+            {t('addNewPanel')}
+        </Button>
+
+        <div className={cn("space-y-6", isPanelFormVisible ? 'block' : 'hidden')}>
             <FormField
                 control={control}
                 name="name"
@@ -206,7 +222,7 @@ export function ServerForm({ server }: ServerFormProps) {
                 <FormItem>
                     <FormLabel>{t('login')}</FormLabel>
                     <FormControl>
-                    <Input {...field} />
+                    <Input {...field} placeholder="Digite seu login" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -219,7 +235,7 @@ export function ServerForm({ server }: ServerFormProps) {
                 <FormItem>
                     <FormLabel>{t('password')}</FormLabel>
                     <FormControl>
-                    <Input type="password" {...field} />
+                    <Input type="password" {...field} placeholder="Digite sua senha" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -232,7 +248,7 @@ export function ServerForm({ server }: ServerFormProps) {
                 <FormItem>
                     <FormLabel>{t('responsibleName')}</FormLabel>
                     <FormControl>
-                    <Input {...field} />
+                    <Input {...field} placeholder="Nome do responsável pelo painel" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -251,19 +267,44 @@ export function ServerForm({ server }: ServerFormProps) {
                 </FormItem>
                 )}
             />
-            <FormField
-                control={control}
-                name="phone"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel>{t('phone')}</FormLabel>
-                    <FormControl>
-                    <Input placeholder="+55 (11) 91234-5678" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] items-center gap-4">
+                <FormField
+                    control={control}
+                    name="phone"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>{t('phone')}</FormLabel>
+                        <FormControl>
+                        <Input 
+                            {...field}
+                            onChange={handlePhoneChange}
+                            placeholder={language === 'pt-BR' && !hasDDI ? '(11) 99999-9999' : 'Enter number'}
+                        />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                 <FormField
+                    control={form.control}
+                    name="hasDDI"
+                    render={({ field }) => (
+                        <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-3 shadow-sm h-12 mt-8">
+                        <FormControl>
+                            <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                            <FormLabel>
+                            Tem DDI?
+                            </FormLabel>
+                        </div>
+                        </FormItem>
+                    )}
+                    />
+            </div>
             <FormField
                 control={control}
                 name="paymentType"
@@ -368,7 +409,7 @@ export function ServerForm({ server }: ServerFormProps) {
                         <FormItem>
                             <FormLabel>{t('panelCreditStock')}</FormLabel>
                             <FormControl>
-                            <Input type="number" {...field} />
+                               <Input type="number" {...field} value={field.value ?? ''} placeholder="Ex: 100" />
                             </FormControl>
                             <FormDescription>{t('panelCreditStockDescription')}</FormDescription>
                             <FormMessage />
@@ -377,26 +418,24 @@ export function ServerForm({ server }: ServerFormProps) {
                     />
                 )}
             </div>
-        </div>
-        
-        <div className={cn("space-y-4", isPanelFormVisible ? 'block' : 'hidden')}>
-          <Button
-            type="button"
-            onClick={handleAddServerClick}
-            className="w-48"
-            >
-                <PlusCircle className="mr-2 h-5 w-5" />
-                Add Servidor
-          </Button>
 
-          <div className={cn(isServerSectionVisible ? 'block' : 'hidden')}>
+            <Button
+                type="button"
+                onClick={handleAddServerClick}
+                className="w-48"
+                >
+                    <PlusCircle className="mr-2 h-5 w-5" />
+                    Add Servidor
+            </Button>
+        
+          <div className={cn("space-y-4", isServerSectionVisible ? 'block' : 'hidden')}>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Servidores</CardTitle>
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => append({ name: '', type: '', screens: 0 })}
+                  onClick={() => append({ name: '', type: '', screens: undefined as any })}
                 >
                   Adicionar Servidor
                 </Button>
@@ -411,7 +450,7 @@ export function ServerForm({ server }: ServerFormProps) {
                         <FormItem>
                           <FormLabel>Nome do Servidor</FormLabel>
                           <FormControl>
-                            <Input {...field} />
+                            <Input {...field} placeholder="Digite o nome do servidor" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -424,7 +463,7 @@ export function ServerForm({ server }: ServerFormProps) {
                         <FormItem>
                           <FormLabel>Tipo do Servidor</FormLabel>
                           <FormControl>
-                            <Input {...field} />
+                            <Input {...field} placeholder="Tipo (ex.: Streaming)" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -437,7 +476,7 @@ export function ServerForm({ server }: ServerFormProps) {
                         <FormItem>
                           <FormLabel>Quantidade de Telas</FormLabel>
                           <FormControl>
-                            <Input type="number" {...field} />
+                            <Input type="number" {...field} value={field.value ?? ''} placeholder="Ex.: 1" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -456,7 +495,6 @@ export function ServerForm({ server }: ServerFormProps) {
               </CardContent>
             </Card>
           </div>
-        </div>
 
 
         <div className="flex justify-end gap-4 pt-6">
@@ -471,3 +509,5 @@ export function ServerForm({ server }: ServerFormProps) {
     </Form>
   );
 }
+
+    

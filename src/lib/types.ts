@@ -20,9 +20,12 @@ export type Server = {
   responsibleName: string;
   nickname?: string;
   phone?: string;
+  hasDDI?: boolean;
   paymentType: 'prepaid' | 'postpaid';
   panelValue?: string;
   dueDate?: number;
   creditStock?: number;
   subServers?: SubServer[];
 };
+
+    
