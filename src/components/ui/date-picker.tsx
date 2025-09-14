@@ -29,16 +29,8 @@ interface DatePickerProps {
 }
 
 export function DatePicker({ date, setDate }: DatePickerProps) {
-  const [open, setOpen] = React.useState(false);
   const { t, language } = useLanguage();
 
-  const handleSelectAndClose = (selectedDate: Date | undefined) => {
-    setDate(selectedDate);
-    if (selectedDate) {
-      setOpen(false);
-    }
-  };
-  
   const CustomCaption = (props: CaptionProps) => {
     const { goToMonth, displayMonth } = props;
 
@@ -52,8 +44,6 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
         const newDate = new Date(displayMonth);
         newDate.setFullYear(parseInt(value));
         goToMonth(newDate);
-        // We might want to close on year change, but it can be jarring
-        // setOpen(false); 
     };
 
     const handleMonthChange = (value: string) => {
@@ -97,7 +87,7 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
 
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover>
       <PopoverTrigger asChild>
         <Button
           variant={'outline'}
@@ -118,7 +108,7 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
         <Calendar
           mode="single"
           selected={date}
-          onSelect={handleSelectAndClose}
+          onSelect={setDate}
           initialFocus
           captionLayout="dropdown-nav"
           fromYear={1960}
