@@ -32,14 +32,12 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
   const [open, setOpen] = React.useState(false);
   const { t, language } = useLanguage();
 
-  const handleSelect = (selectedDate: Date | undefined) => {
+  const handleSelectAndClose = (selectedDate: Date | undefined) => {
     setDate(selectedDate);
-    // Não fecha o popover aqui para permitir a seleção de ano/mês
+    if (selectedDate) {
+      setOpen(false);
+    }
   };
-
-  const handleConfirm = () => {
-    setOpen(false);
-  }
   
   const CustomCaption = (props: CaptionProps) => {
     const { goToMonth, displayMonth } = props;
@@ -54,6 +52,8 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
         const newDate = new Date(displayMonth);
         newDate.setFullYear(parseInt(value));
         goToMonth(newDate);
+        // We might want to close on year change, but it can be jarring
+        // setOpen(false); 
     };
 
     const handleMonthChange = (value: string) => {
@@ -118,7 +118,7 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
         <Calendar
           mode="single"
           selected={date}
-          onSelect={handleSelect}
+          onSelect={handleSelectAndClose}
           initialFocus
           captionLayout="dropdown-nav"
           fromYear={1960}
@@ -127,9 +127,6 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
             Caption: CustomCaption,
           }}
         />
-        <div className="p-2 border-t flex justify-end">
-            <Button onClick={handleConfirm} size="sm">{t('confirm')}</Button>
-        </div>
       </PopoverContent>
     </Popover>
   );
