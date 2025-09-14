@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/select';
 import { useLanguage } from '@/hooks/use-language';
 import { Checkbox } from '@/components/ui/checkbox';
+import { DatePicker } from '@/components/ui/date-picker';
 
 
 const formSchema = z.object({
@@ -36,6 +37,7 @@ const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }),
   phone: z.string().optional(),
   hasDDI: z.boolean().default(false).optional(),
+  birthDate: z.date().optional(),
   status: z.enum(['Active', 'Inactive', 'Expired']),
 });
 
@@ -58,6 +60,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       email: client?.email || '',
       phone: client?.phone || '',
       hasDDI: client?.hasDDI || false,
+      birthDate: client?.birthDate ? new Date(client.birthDate) : undefined,
       status: client?.status || 'Active',
     },
   });
@@ -81,6 +84,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     const clientData = {
       ...values,
+      birthDate: values.birthDate ? values.birthDate.toISOString().split('T')[0] : undefined,
     };
 
     if (client) {
@@ -177,6 +181,22 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                     onChange={handlePhoneChange}
                     placeholder={language === 'pt-BR' && !hasDDI ? '(11) 99999-9999' : t('phonePlaceholder')}
                 />
+                </FormControl>
+                <FormMessage />
+            </FormItem>
+            )}
+        />
+        <FormField
+            control={form.control}
+            name="birthDate"
+            render={({ field }) => (
+            <FormItem>
+                <FormLabel>{t('birthDate')}</FormLabel>
+                <FormControl>
+                    <DatePicker 
+                        value={field.value}
+                        onChange={field.onChange}
+                    />
                 </FormControl>
                 <FormMessage />
             </FormItem>

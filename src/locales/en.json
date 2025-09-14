@@ -31,7 +31,6 @@
     "name": "Name",
     "status": "Status",
     "email": "Email",
-    "expiryDate": "Expiry Date",
     "actions": "Actions",
     "openMenu": "Open menu",
     "edit": "Edit",
