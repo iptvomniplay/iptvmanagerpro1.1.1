@@ -200,6 +200,19 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
         <div className="grid grid-cols-2 gap-6">
           <FormField
             control={form.control}
+            name="expiryDate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('expiryDate')}</FormLabel>
+                <FormControl>
+                  <Input type="date" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
             name="status"
             render={({ field }) => (
               <FormItem>
@@ -219,19 +232,6 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                     <SelectItem value="Expired">{t('expired')}</SelectItem>
                   </SelectContent>
                 </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="expiryDate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('expiryDate')}</FormLabel>
-                <FormControl>
-                  <Input type="date" {...field} />
-                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
