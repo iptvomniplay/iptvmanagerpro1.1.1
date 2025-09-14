@@ -10,6 +10,7 @@ export const clients: Client[] = [
     phone: '(11) 98765-4321',
     status: 'Active',
     expiryDate: format(new Date(2025, 5, 15), 'yyyy-MM-dd'),
+    birthDate: '1985-08-20',
     registeredDate: format(subDays(new Date(), 30), 'yyyy-MM-dd'),
   },
   {
@@ -37,6 +38,7 @@ export const clients: Client[] = [
     hasDDI: true,
     status: 'Inactive',
     expiryDate: format(new Date(2025, 1, 1), 'yyyy-MM-dd'),
+    birthDate: '1992-02-14',
     registeredDate: format(subDays(new Date(), 120), 'yyyy-MM-dd'),
   },
   {

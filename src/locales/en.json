@@ -168,5 +168,6 @@
     "addClient": "Add Client",
     "collapse": "Collapse",
     "expand": "Expand",
-    "pickADate": "Pick a date"
+    "pickADate": "Pick a date",
+    "birthDate": "Date of Birth"
 }
