@@ -164,5 +164,6 @@
     "subServerTypePlaceholder": "Type (e.g., Streaming)",
     "subServerScreens": "Number of Screens",
     "subServerScreensPlaceholder": "Ex.: 1",
-    "noSubServers": "No servers registered. Click on 'Add Server' to start."
+    "noSubServers": "No servers registered. Click on 'Add Server' to start.",
+    "addClient": "Add Client"
 }
