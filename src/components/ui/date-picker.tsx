@@ -4,7 +4,7 @@ import * as React from 'react';
 import { format } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
-import { DayPicker } from 'react-day-picker';
+import { DayPicker, CaptionProps } from 'react-day-picker';
 
 import { useLanguage } from '@/hooks/use-language';
 import { cn } from '@/lib/utils';
@@ -21,6 +21,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Calendar } from '@/components/ui/calendar';
+
 
 interface DatePickerProps {
   value?: Date;
@@ -34,56 +36,66 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
 
   const handleSelect = (date: Date | undefined) => {
     onChange(date);
-    setOpen(false);
+    if (date) {
+      setOpen(false);
+    }
   };
-
-  function CustomCaption({
-    displayMonth,
-    onMonthChange,
-  }: {
-    displayMonth: Date;
-    onMonthChange: (month: Date) => void;
-  }) {
+  
+  function CustomCaption(props: CaptionProps) {
+    const { t, language } = useLanguage();
+    const locale = language === 'pt-BR' ? ptBR : enUS;
+    
     const currentYear = new Date().getFullYear();
     const fromYear = currentYear - 100;
     const toYear = currentYear;
     const years = Array.from({ length: toYear - fromYear + 1 }, (_, i) => toYear - i);
     const months = Array.from({ length: 12 }, (_, i) => i);
 
+    const handleMonthChange = (month: number) => {
+      const newDate = new Date(props.displayMonth.getFullYear(), month);
+      if (props.onMonthChange) {
+        props.onMonthChange(newDate);
+      }
+    };
+
+    const handleYearChange = (year: number) => {
+      const newDate = new Date(year, props.displayMonth.getMonth());
+       if (props.onMonthChange) {
+        props.onMonthChange(newDate);
+      }
+    };
+
     return (
-      <div className="flex justify-between items-center px-2 py-2">
-        <Button
+       <div className="flex justify-center items-center relative gap-2 mb-4">
+         <Button
           variant="outline"
           size="icon"
           className="h-8 w-8"
-          onClick={() => onMonthChange(new Date(displayMonth.getFullYear(), displayMonth.getMonth() - 1))}
+          disabled={!props.previousMonth}
+          onClick={() => props.onMonthChange && props.previousMonth && props.onMonthChange(props.previousMonth)}
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        <div className="flex items-center gap-2">
-           <Select
-            value={String(displayMonth.getMonth())}
-            onValueChange={(value) => {
-              onMonthChange(new Date(displayMonth.getFullYear(), Number(value)));
-            }}
+        
+        <Select
+            value={String(props.displayMonth.getMonth())}
+            onValueChange={(value) => handleMonthChange(Number(value))}
           >
-            <SelectTrigger className="h-8 w-[120px]">
+            <SelectTrigger className="h-8 w-auto min-w-[120px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {months.map((month) => (
                 <SelectItem key={month} value={String(month)}>
-                  {format(new Date(displayMonth.getFullYear(), month), 'MMMM', { locale })}
+                  {format(new Date(props.displayMonth.getFullYear(), month), 'MMMM', { locale })}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
+
           <Select
-            value={String(displayMonth.getFullYear())}
-            onValueChange={(value) => {
-               const newDate = new Date(Number(value), displayMonth.getMonth());
-               onMonthChange(newDate);
-            }}
+            value={String(props.displayMonth.getFullYear())}
+            onValueChange={(value) => handleYearChange(Number(value))}
           >
             <SelectTrigger className="h-8 w-[80px]">
               <SelectValue />
@@ -96,12 +108,13 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
               ))}
             </SelectContent>
           </Select>
-        </div>
+
         <Button
           variant="outline"
           size="icon"
           className="h-8 w-8"
-          onClick={() => onMonthChange(new Date(displayMonth.getFullYear(), displayMonth.getMonth() + 1))}
+          disabled={!props.nextMonth}
+          onClick={() => props.onMonthChange && props.nextMonth && props.onMonthChange(props.nextMonth)}
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
@@ -124,20 +137,14 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
-        <Calendar
+        <DayPicker
           mode="single"
           selected={value}
           onSelect={handleSelect}
-          defaultMonth={value || new Date()}
+          defaultMonth={value || new Date(new Date().setFullYear(new Date().getFullYear() - 30))}
           locale={locale}
           components={{
-            Caption: (props) => <CustomCaption displayMonth={props.displayMonth} onMonthChange={(month) => {
-              const newDate = new Date(month);
-              if (value) {
-                newDate.setDate(value.getDate());
-              }
-              onChange(newDate);
-            }} />,
+            Caption: CustomCaption,
           }}
           fromYear={new Date().getFullYear() - 100}
           toYear={new Date().getFullYear()}
