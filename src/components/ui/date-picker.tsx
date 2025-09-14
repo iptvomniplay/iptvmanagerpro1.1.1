@@ -2,9 +2,8 @@
 
 import * as React from 'react';
 import { CalendarIcon } from 'lucide-react';
-import { format, set } from 'date-fns';
+import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { DayPicker, CaptionProps } from 'react-day-picker';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -22,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useLanguage } from '@/hooks/use-language';
+import { CaptionProps } from 'react-day-picker';
 
 interface DatePickerProps {
   value: Date | undefined;
@@ -32,31 +32,40 @@ interface DatePickerProps {
 export function DatePicker({ value, onChange, placeholder }: DatePickerProps) {
   const { language } = useLanguage();
   const [open, setOpen] = React.useState(false);
+  const [date, setDate] = React.useState<Date | undefined>(value);
 
-  const handleDateChange = (date: Date) => {
-    onChange(date);
-  };
-  
-  const handleYearChange = (year: string) => {
-    const newDate = set(value || new Date(), { year: parseInt(year) });
-    onChange(newDate);
-    setOpen(false); // Fecha o popover ao selecionar o ano
-  };
+  React.useEffect(() => {
+    setDate(value);
+  }, [value]);
 
-  const handleMonthChange = (month: string) => {
-    const newDate = set(value || new Date(), { month: parseInt(month) });
-    onChange(newDate);
+  const handleSelect = (selectedDate: Date | undefined) => {
+    if (selectedDate) {
+      setDate(selectedDate);
+      onChange(selectedDate);
+    }
   };
   
   function CustomCaption(props: CaptionProps) {
      if (!props.displayMonths || props.displayMonths.length === 0) {
       return null;
     }
-    const { fromYear, fromMonth, fromDate, toYear, toMonth, toDate } = { fromYear: 1900, toYear: new Date().getFullYear(), fromMonth: undefined, fromDate: undefined, toMonth: undefined, toDate: undefined };
     const currentMonth = props.displayMonths[0].date;
-
+    const { fromYear, toYear } = { fromYear: 1900, toYear: new Date().getFullYear() };
     const years = Array.from({ length: toYear - fromYear + 1 }, (_, i) => toYear - i);
     const months = Array.from({ length: 12 }, (_, i) => i);
+
+    const handleYearChange = (year: string) => {
+        const newDate = new Date(date || new Date());
+        newDate.setFullYear(parseInt(year, 10));
+        handleSelect(newDate);
+        setOpen(false); // Fecha o popover ao selecionar o ano
+    };
+
+    const handleMonthChange = (month: string) => {
+        const newDate = new Date(date || new Date());
+        newDate.setMonth(parseInt(month, 10));
+        handleSelect(newDate);
+    };
     
     return (
       <div className="flex justify-center gap-2 mb-4">
@@ -102,12 +111,12 @@ export function DatePicker({ value, onChange, placeholder }: DatePickerProps) {
           variant={'outline'}
           className={cn(
             'w-full justify-start text-left font-normal',
-            !value && 'text-muted-foreground'
+            !date && 'text-muted-foreground'
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {value ? (
-            format(value, 'PPP', {
+          {date ? (
+            format(date, 'PPP', {
               locale: language === 'pt-BR' ? ptBR : undefined,
             })
           ) : (
@@ -118,8 +127,8 @@ export function DatePicker({ value, onChange, placeholder }: DatePickerProps) {
       <PopoverContent className="w-auto p-0">
         <Calendar
           mode="single"
-          selected={value}
-          onSelect={onChange}
+          selected={date}
+          onSelect={handleSelect}
           initialFocus
           disabled={(date) =>
             date > new Date() || date < new Date('1900-01-01')
