@@ -4,6 +4,7 @@ import * as React from 'react';
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import type { CaptionProps } from 'react-day-picker';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -21,7 +22,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useLanguage } from '@/hooks/use-language';
-import { CaptionProps } from 'react-day-picker';
 
 interface DatePickerProps {
   value: Date | undefined;
@@ -40,33 +40,39 @@ export function DatePicker({ value, onChange, placeholder }: DatePickerProps) {
 
   const handleSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
-      setDate(selectedDate);
-      onChange(selectedDate);
+      const newDate = date ? new Date(date) : new Date();
+      newDate.setFullYear(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+      
+      setDate(newDate);
+      onChange(newDate);
     }
   };
-  
+
   function CustomCaption(props: CaptionProps) {
-     if (!props.displayMonths || props.displayMonths.length === 0) {
+    if (!props.displayMonths || props.displayMonths.length === 0) {
       return null;
     }
+    
     const currentMonth = props.displayMonths[0].date;
     const { fromYear, toYear } = { fromYear: 1900, toYear: new Date().getFullYear() };
     const years = Array.from({ length: toYear - fromYear + 1 }, (_, i) => toYear - i);
     const months = Array.from({ length: 12 }, (_, i) => i);
 
     const handleYearChange = (year: string) => {
-        const newDate = new Date(date || new Date());
-        newDate.setFullYear(parseInt(year, 10));
-        handleSelect(newDate);
-        setOpen(false); // Fecha o popover ao selecionar o ano
+      const newDate = new Date(date || new Date());
+      newDate.setFullYear(parseInt(year, 10));
+      setDate(newDate);
+      onChange(newDate);
+      setOpen(false); 
     };
 
     const handleMonthChange = (month: string) => {
-        const newDate = new Date(date || new Date());
-        newDate.setMonth(parseInt(month, 10));
-        handleSelect(newDate);
+      const newDate = new Date(date || new Date());
+      newDate.setMonth(parseInt(month, 10));
+      setDate(newDate);
+      onChange(newDate);
     };
-    
+
     return (
       <div className="flex justify-center gap-2 mb-4">
         <Select
@@ -102,7 +108,6 @@ export function DatePicker({ value, onChange, placeholder }: DatePickerProps) {
       </div>
     );
   }
-
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
