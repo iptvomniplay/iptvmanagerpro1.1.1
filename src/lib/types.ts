@@ -3,6 +3,8 @@ export type Client = {
   name: string;
   nickname?: string;
   email: string;
+  phone?: string;
+  hasDDI?: boolean;
   status: 'Active' | 'Inactive' | 'Expired';
   expiryDate: string;
   registeredDate: string;

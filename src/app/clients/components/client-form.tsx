@@ -27,12 +27,15 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useLanguage } from '@/hooks/use-language';
+import { Checkbox } from '@/components/ui/checkbox';
 
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   nickname: z.string().optional(),
   email: z.string().email({ message: 'Please enter a valid email.' }),
+  phone: z.string().optional(),
+  hasDDI: z.boolean().default(false).optional(),
   status: z.enum(['Active', 'Inactive', 'Expired']),
   expiryDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
     message: 'Invalid date format',
@@ -46,7 +49,7 @@ interface ClientFormProps {
 }
 
 export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const router = useRouter();
   const { addClient, updateClient } = useData();
   
@@ -56,10 +59,28 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       name: client?.name || '',
       nickname: client?.nickname || '',
       email: client?.email || '',
+      phone: client?.phone || '',
+      hasDDI: client?.hasDDI || false,
       status: client?.status || 'Active',
       expiryDate: client?.expiryDate ? client.expiryDate : '',
     },
   });
+
+  const { watch, setValue } = form;
+  const hasDDI = watch('hasDDI');
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, '');
+    
+    if (language === 'pt-BR' && !hasDDI) {
+        if (value.length > 11) value = value.slice(0, 11);
+        value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+        value = value.replace(/(\d{5})(\d)/, '$1-$2');
+    }
+
+    setValue('phone', value);
+  };
+
 
   const handleSubmit = (values: ClientFormValues) => {
     if (client) {
@@ -124,6 +145,42 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
               <FormMessage />
             </FormItem>
           )}
+        />
+        <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+            <FormItem>
+                <div className="flex justify-between items-center">
+                    <FormLabel>{t('phone')}</FormLabel>
+                    <FormField
+                        control={form.control}
+                        name="hasDDI"
+                        render={({ field: ddiField }) => (
+                            <FormItem className="flex items-center space-x-2 space-y-0">
+                            <FormControl>
+                                <Checkbox
+                                checked={ddiField.value}
+                                onCheckedChange={ddiField.onChange}
+                                />
+                            </FormControl>
+                            <FormLabel className="text-sm font-normal">
+                                {t('hasDDI')}
+                            </FormLabel>
+                            </FormItem>
+                        )}
+                    />
+                </div>
+                <FormControl>
+                <Input 
+                    {...field}
+                    onChange={handlePhoneChange}
+                    placeholder={language === 'pt-BR' && !hasDDI ? '(11) 99999-9999' : t('phonePlaceholder')}
+                />
+                </FormControl>
+                <FormMessage />
+            </FormItem>
+            )}
         />
         <div className="grid grid-cols-2 gap-6">
           <FormField
