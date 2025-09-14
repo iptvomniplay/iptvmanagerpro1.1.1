@@ -9,8 +9,6 @@ export const clients: Client[] = [
     email: 'john.doe@example.com',
     phone: '(11) 98765-4321',
     status: 'Active',
-    expiryDate: format(new Date(2025, 5, 15), 'yyyy-MM-dd'),
-    birthDate: '1985-08-20',
     registeredDate: format(subDays(new Date(), 30), 'yyyy-MM-dd'),
   },
   {
@@ -18,7 +16,6 @@ export const clients: Client[] = [
     name: 'Jane Smith',
     email: 'jane.smith@example.com',
     status: 'Active',
-    expiryDate: format(new Date(2024, 11, 20), 'yyyy-MM-dd'),
     registeredDate: format(subDays(new Date(), 60), 'yyyy-MM-dd'),
   },
   {
@@ -26,7 +23,6 @@ export const clients: Client[] = [
     name: 'Peter Jones',
     email: 'peter.jones@example.com',
     status: 'Expired',
-    expiryDate: format(subDays(new Date(), 10), 'yyyy-MM-dd'),
     registeredDate: format(subDays(new Date(), 400), 'yyyy-MM-dd'),
   },
   {
@@ -37,8 +33,6 @@ export const clients: Client[] = [
     phone: '+1 555-1234',
     hasDDI: true,
     status: 'Inactive',
-    expiryDate: format(new Date(2025, 1, 1), 'yyyy-MM-dd'),
-    birthDate: '1992-02-14',
     registeredDate: format(subDays(new Date(), 120), 'yyyy-MM-dd'),
   },
   {
@@ -46,7 +40,6 @@ export const clients: Client[] = [
     name: 'David Brown',
     email: 'david.brown@example.com',
     status: 'Active',
-    expiryDate: format(new Date(2026, 0, 5), 'yyyy-MM-dd'),
     registeredDate: format(subDays(new Date(), 5), 'yyyy-MM-dd'),
   },
     {
@@ -54,7 +47,6 @@ export const clients: Client[] = [
     name: 'Sarah Miller',
     email: 'sarah.miller@example.com',
     status: 'Active',
-    expiryDate: format(new Date(2024, 8, 22), 'yyyy-MM-dd'),
     registeredDate: format(subDays(new Date(), 90), 'yyyy-MM-dd'),
   },
   {
@@ -62,7 +54,6 @@ export const clients: Client[] = [
     name: 'Michael Davis',
     email: 'michael.davis@example.com',
     status: 'Inactive',
-    expiryDate: format(new Date(2025, 3, 10), 'yyyy-MM-dd'),
     registeredDate: format(subDays(new Date(), 200), 'yyyy-MM-dd'),
   },
 ];

@@ -36,7 +36,6 @@ import {
   Search,
   Trash2,
 } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
 import { useLanguage } from '@/hooks/use-language';
 import { useData } from '@/hooks/use-data';
 import {
@@ -138,7 +137,6 @@ export default function ClientsPageContent() {
               <TableHead>{t('name')}</TableHead>
               <TableHead>{t('status')}</TableHead>
               <TableHead>{t('email')}</TableHead>
-              <TableHead>{t('expiryDate')}</TableHead>
               <TableHead className="text-right">{t('actions')}</TableHead>
             </TableRow>
           </TableHeader>
@@ -154,9 +152,6 @@ export default function ClientsPageContent() {
                     </Badge>
                   </TableCell>
                   <TableCell>{client.email}</TableCell>
-                  <TableCell>
-                    {format(parseISO(client.expiryDate), 'MMMM d, yyyy')}
-                  </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -184,7 +179,7 @@ export default function ClientsPageContent() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="h-28 text-center text-lg">
+                <TableCell colSpan={5} className="h-28 text-center text-lg">
                   {t('noClientsFound')}
                 </TableCell>
               </TableRow>

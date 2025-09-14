@@ -28,7 +28,6 @@ import {
 } from '@/components/ui/select';
 import { useLanguage } from '@/hooks/use-language';
 import { Checkbox } from '@/components/ui/checkbox';
-import { DatePicker } from '@/components/ui/date-picker';
 
 
 const formSchema = z.object({
@@ -37,10 +36,6 @@ const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }),
   phone: z.string().optional(),
   hasDDI: z.boolean().default(false).optional(),
-  birthDate: z.date().optional(),
-  expiryDate: z.date({
-    required_error: 'An expiry date is required.',
-  }),
   status: z.enum(['Active', 'Inactive', 'Expired']),
 });
 
@@ -64,8 +59,6 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       phone: client?.phone || '',
       hasDDI: client?.hasDDI || false,
       status: client?.status || 'Active',
-      expiryDate: client?.expiryDate ? new Date(client.expiryDate) : new Date(),
-      birthDate: client?.birthDate ? new Date(client.birthDate) : undefined,
     },
   });
 
@@ -88,8 +81,6 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     const clientData = {
       ...values,
-      expiryDate: values.expiryDate.toISOString().split('T')[0],
-      birthDate: values.birthDate?.toISOString().split('T')[0],
     };
 
     if (client) {
@@ -191,37 +182,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
             </FormItem>
             )}
         />
-        <FormField
-            control={form.control}
-            name="birthDate"
-            render={({ field }) => (
-                <FormItem className="flex flex-col">
-                    <FormLabel>{t('birthDate')}</FormLabel>
-                    <DatePicker 
-                        value={field.value}
-                        onChange={field.onChange}
-                        placeholder={t('pickADate')}
-                    />
-                    <FormMessage />
-                </FormItem>
-            )}
-        />
-        <div className="grid grid-cols-2 gap-6">
-          <FormField
-            control={form.control}
-            name="expiryDate"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>{t('expiryDate')}</FormLabel>
-                 <DatePicker 
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder={t('pickADate')}
-                />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <div className="grid grid-cols-1 gap-6">
           <FormField
             control={form.control}
             name="status"
