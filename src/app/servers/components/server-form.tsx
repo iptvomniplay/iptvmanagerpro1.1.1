@@ -32,6 +32,15 @@ import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useData } from '@/hooks/use-data';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+
 
 const subServerSchema = z.object({
     name: z.string().min(1, "Server name is required"),
@@ -86,32 +95,35 @@ interface ServerFormProps {
   server: Server | null;
 }
 
+const getInitialValues = (server: Server | null) => ({
+    name: server?.name || '',
+    url: server?.url || '',
+    login: '',
+    password: '',
+    responsibleName: server?.responsibleName || '',
+    nickname: server?.nickname || '',
+    phone: server?.phone || '',
+    hasDDI: server?.hasDDI || false,
+    paymentType: server?.paymentType || 'prepaid',
+    panelValue: server?.panelValue || '',
+    dueDate: server?.dueDate || undefined,
+    hasInitialStock: !!server?.creditStock,
+    creditStock: server?.creditStock || undefined,
+    subServers: server?.subServers || [],
+});
+
 export function ServerForm({ server }: ServerFormProps) {
   const { t, language } = useLanguage();
   const { addServer, updateServer } = useData();
   const router = useRouter();
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false);
   
   const form = useForm<ServerFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: server?.name || '',
-      url: server?.url || '',
-      login: '',
-      password: '',
-      responsibleName: server?.responsibleName || '',
-      nickname: server?.nickname || '',
-      phone: server?.phone || '',
-      hasDDI: server?.hasDDI || false,
-      paymentType: server?.paymentType || 'prepaid',
-      panelValue: server?.panelValue || '',
-      dueDate: server?.dueDate || undefined,
-      hasInitialStock: !!server?.creditStock,
-      creditStock: server?.creditStock || undefined,
-      subServers: server?.subServers || [],
-    },
+    defaultValues: getInitialValues(server),
   });
 
-  const { control, watch, setValue } = form;
+  const { control, watch, setValue, reset } = form;
   const paymentType = watch('paymentType');
   const hasInitialStock = watch('hasInitialStock');
   const hasDDI = watch('hasDDI');
@@ -173,14 +185,26 @@ export function ServerForm({ server }: ServerFormProps) {
     } else {
         addServer(serverData);
     }
-    router.push('/servers');
+    setIsSuccessModalOpen(true);
   };
   
   const handleCancel = () => {
     router.push('/servers');
   };
 
+  const handleModalClose = () => {
+      setIsSuccessModalOpen(false);
+      if (server) { // On edit page, go back to list
+          router.push('/servers');
+      } else { // On new page, reset form for another entry
+          reset(getInitialValues(null));
+          setIsPanelFormVisible(false);
+          setIsServerSectionVisible(false);
+      }
+  }
+
   return (
+    <>
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 py-4">
         
@@ -511,9 +535,18 @@ export function ServerForm({ server }: ServerFormProps) {
         </div>
       </form>
     </Form>
+
+    <AlertDialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Sucesso</AlertDialogTitle>
+            <AlertDialogDescription>
+              Cadastro adicionado com sucesso
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogAction onClick={handleModalClose}>OK</AlertDialogAction>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
-
-    
-
-    
