@@ -36,6 +36,7 @@ const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }),
   phone: z.string().optional(),
   hasDDI: z.boolean().default(false).optional(),
+  birthDate: z.string().optional(),
   status: z.enum(['Active', 'Inactive', 'Expired']),
   expiryDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
     message: 'Invalid date format',
@@ -61,6 +62,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       email: client?.email || '',
       phone: client?.phone || '',
       hasDDI: client?.hasDDI || false,
+      birthDate: client?.birthDate || '',
       status: client?.status || 'Active',
       expiryDate: client?.expiryDate ? client.expiryDate : '',
     },
@@ -181,6 +183,19 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                 <FormMessage />
             </FormItem>
             )}
+        />
+        <FormField
+          control={form.control}
+          name="birthDate"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('dateOfBirth')}</FormLabel>
+              <FormControl>
+                <Input type="date" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
         <div className="grid grid-cols-2 gap-6">
           <FormField

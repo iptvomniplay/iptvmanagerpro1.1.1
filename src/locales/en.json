@@ -167,5 +167,6 @@
     "noSubServers": "No servers registered. Click on 'Add Server' to start.",
     "addClient": "Add Client",
     "collapse": "Collapse",
-    "expand": "Expand"
+    "expand": "Expand",
+    "dateOfBirth": "Date of Birth"
 }

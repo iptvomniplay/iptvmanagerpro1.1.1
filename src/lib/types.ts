@@ -5,6 +5,7 @@ export type Client = {
   email: string;
   phone?: string;
   hasDDI?: boolean;
+  birthDate?: string;
   status: 'Active' | 'Inactive' | 'Expired';
   expiryDate: string;
   registeredDate: string;
