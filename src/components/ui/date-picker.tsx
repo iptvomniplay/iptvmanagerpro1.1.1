@@ -44,7 +44,6 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
   const CustomCaption = (props: CaptionProps) => {
     const { goToMonth, displayMonth } = props;
 
-    // Safety check to prevent crash if displayMonths is not ready
     if (!props.displayMonths || props.displayMonths.length === 0) {
       return null;
     }
