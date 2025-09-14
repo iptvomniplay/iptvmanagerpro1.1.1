@@ -165,5 +165,7 @@
     "subServerScreens": "Number of Screens",
     "subServerScreensPlaceholder": "Ex.: 1",
     "noSubServers": "No servers registered. Click on 'Add Server' to start.",
-    "addClient": "Add Client"
+    "addClient": "Add Client",
+    "collapse": "Collapse",
+    "expand": "Expand"
 }

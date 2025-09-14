@@ -165,5 +165,7 @@
     "subServerScreens": "Quantidade de Telas",
     "subServerScreensPlaceholder": "Ex.: 1",
     "noSubServers": "Nenhum servidor cadastrado. Clique em 'Adicionar Servidor' para começar.",
-    "addClient": "Add Cliente"
+    "addClient": "Add Cliente",
+    "collapse": "Recolher",
+    "expand": "Expandir"
 }
