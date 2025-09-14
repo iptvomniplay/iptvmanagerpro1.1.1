@@ -48,12 +48,14 @@ const subServerSchema = z.object({
     screens: z.coerce.number({required_error: "Screens are required."}).min(1, "Screens must be at least 1."),
 });
 
-const formSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
-  url: z.string().url({ message: 'Please enter a valid URL.' }),
-  login: z.string().min(1, { message: 'Login is required.' }),
-  password: z.string().min(1, { message: 'Password is required.' }),
-  responsibleName: z.string().min(2, { message: 'Responsible name is required.' }),
+const createFormSchema = (t: (key: any) => string) => z.object({
+  name: z.string().min(2, { message: t('nameMustBeAtLeast2') }),
+  url: z.string().min(1, t('urlIsRequired')).refine((val) => /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(val), {
+    message: t('invalidUrl'),
+  }),
+  login: z.string().min(1, { message: t('loginIsRequired') }),
+  password: z.string().min(1, { message: t('passwordIsRequired') }),
+  responsibleName: z.string().min(2, { message: t('responsibleNameIsRequired') }),
   nickname: z.string().optional(),
   phone: z.string().optional(),
   hasDDI: z.boolean().default(false).optional(),
@@ -68,14 +70,14 @@ const formSchema = z.object({
         if (!data.panelValue) {
              ctx.addIssue({
                 code: z.ZodIssueCode.custom,
-                message: "Panel value is required.",
+                message: t('panelValueIsRequired'),
                 path: ["panelValue"],
             });
         }
         if (data.dueDate === undefined || data.dueDate < 1 || data.dueDate > 31) {
             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
-                message: "Due date must be between 1 and 31.",
+                message: t('dueDateIsRequired'),
                 path: ["dueDate"],
             });
         }
@@ -83,13 +85,12 @@ const formSchema = z.object({
     if (data.hasInitialStock && (data.creditStock === undefined || data.creditStock <= 0)) {
          ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: "Credit stock must be a positive number.",
+            message: t('creditStockIsRequired'),
             path: ["creditStock"],
         });
     }
 });
 
-type ServerFormValues = z.infer<typeof formSchema>;
 
 interface ServerFormProps {
   server: Server | null;
@@ -118,6 +119,9 @@ export function ServerForm({ server }: ServerFormProps) {
   const router = useRouter();
   const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false);
   
+  const formSchema = createFormSchema(t);
+  type ServerFormValues = z.infer<typeof formSchema>;
+
   const form = useForm<ServerFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: getInitialValues(server),
@@ -247,7 +251,7 @@ export function ServerForm({ server }: ServerFormProps) {
                 <FormItem>
                     <FormLabel>{t('login')}</FormLabel>
                     <FormControl>
-                    <Input {...field} placeholder="Digite seu login" />
+                    <Input {...field} placeholder={t('loginPlaceholder')} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -260,7 +264,7 @@ export function ServerForm({ server }: ServerFormProps) {
                 <FormItem>
                     <FormLabel>{t('password')}</FormLabel>
                     <FormControl>
-                    <Input type="password" {...field} placeholder="Digite sua senha" />
+                    <Input type="password" {...field} placeholder={t('passwordPlaceholder')} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -273,7 +277,7 @@ export function ServerForm({ server }: ServerFormProps) {
                 <FormItem>
                     <FormLabel>{t('responsibleName')}</FormLabel>
                     <FormControl>
-                    <Input {...field} placeholder="Nome do responsável pelo painel" />
+                    <Input {...field} placeholder={t('responsibleNamePlaceholder')} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -312,7 +316,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                     />
                                 </FormControl>
                                 <FormLabel className="text-sm font-normal">
-                                    Tem DDI?
+                                    {t('hasDDI')}
                                 </FormLabel>
                                 </FormItem>
                             )}
@@ -322,7 +326,7 @@ export function ServerForm({ server }: ServerFormProps) {
                     <Input 
                         {...field}
                         onChange={handlePhoneChange}
-                        placeholder={language === 'pt-BR' && !hasDDI ? '(11) 99999-9999' : 'Enter number'}
+                        placeholder={language === 'pt-BR' && !hasDDI ? '(11) 99999-9999' : t('phonePlaceholder')}
                     />
                     </FormControl>
                     <FormMessage />
@@ -390,7 +394,7 @@ export function ServerForm({ server }: ServerFormProps) {
                         <Select onValueChange={(value) => field.onChange(parseInt(value))} defaultValue={String(field.value || '')}>
                         <FormControl>
                             <SelectTrigger>
-                            <SelectValue placeholder="Selecione o dia" />
+                            <SelectValue placeholder={t('selectDay')} />
                             </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -435,7 +439,7 @@ export function ServerForm({ server }: ServerFormProps) {
                         <FormItem>
                             <FormLabel>{t('panelCreditStock')}</FormLabel>
                             <FormControl>
-                               <Input type="number" {...field} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))} placeholder="Ex: 100" />
+                               <Input type="number" {...field} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))} placeholder={t('creditStockPlaceholder')} />
                             </FormControl>
                             <FormDescription>{t('panelCreditStockDescription')}</FormDescription>
                             <FormMessage />
@@ -452,20 +456,20 @@ export function ServerForm({ server }: ServerFormProps) {
                   className="w-48 mt-6"
                   >
                       <PlusCircle className="mr-2 h-5 w-5" />
-                      Add Servidor
+                      {t('addSubServer')}
               </Button>
             </div>
         
           <div className={cn("space-y-4", isServerSectionVisible ? 'block' : 'hidden')}>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Servidores</CardTitle>
+                <CardTitle>{t('servers')}</CardTitle>
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => append({ name: '', type: '', screens: undefined as any })}
                 >
-                  Adicionar Servidor
+                  {t('addSubServer')}
                 </Button>
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
@@ -476,9 +480,9 @@ export function ServerForm({ server }: ServerFormProps) {
                       name={`subServers.${index}.name`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Nome do Servidor</FormLabel>
+                          <FormLabel>{t('subServerName')}</FormLabel>
                           <FormControl>
-                            <Input {...field} placeholder="Digite o nome do servidor" />
+                            <Input {...field} placeholder={t('subServerNamePlaceholder')} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -489,9 +493,9 @@ export function ServerForm({ server }: ServerFormProps) {
                       name={`subServers.${index}.type`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Tipo do Servidor</FormLabel>
+                          <FormLabel>{t('subServerType')}</FormLabel>
                           <FormControl>
-                            <Input {...field} placeholder="Tipo (ex.: Streaming)" />
+                            <Input {...field} placeholder={t('subServerTypePlaceholder')} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -502,9 +506,9 @@ export function ServerForm({ server }: ServerFormProps) {
                       name={`subServers.${index}.screens`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Quantidade de Telas</FormLabel>
+                          <FormLabel>{t('subServerScreens')}</FormLabel>
                           <FormControl>
-                            <Input type="number" {...field} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))} placeholder="Ex.: 1" />
+                            <Input type="number" {...field} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))} placeholder={t('subServerScreensPlaceholder')} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -517,7 +521,7 @@ export function ServerForm({ server }: ServerFormProps) {
                 ))}
                 {fields.length === 0 && (
                     <div className="text-center text-muted-foreground py-4">
-                        Nenhum servidor cadastrado. Clique em "Adicionar Servidor" para começar.
+                        {t('noSubServers')}
                       </div>
                 )}
               </CardContent>
