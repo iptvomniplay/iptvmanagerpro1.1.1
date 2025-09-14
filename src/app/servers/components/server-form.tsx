@@ -50,9 +50,7 @@ const subServerSchema = z.object({
 
 const createFormSchema = (t: (key: any) => string) => z.object({
   name: z.string().min(2, { message: t('nameMustBeAtLeast2') }),
-  url: z.string().min(1, t('urlIsRequired')).refine((val) => /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(val), {
-    message: t('invalidUrl'),
-  }),
+  url: z.string().min(1, { message: t('urlIsRequired') }),
   login: z.string().min(1, { message: t('loginIsRequired') }),
   password: z.string().min(1, { message: t('passwordIsRequired') }),
   responsibleName: z.string().min(2, { message: t('responsibleNameIsRequired') }),
