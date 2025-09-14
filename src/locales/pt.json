@@ -168,5 +168,9 @@
     "addClient": "Add Cliente",
     "collapse": "Recolher",
     "expand": "Expandir",
-    "dateOfBirth": "Data de Nascimento"
+    "dateOfBirth": "Data de Nascimento",
+    "pickADate": "Escolha uma data",
+    "confirm": "Confirmar",
+    "selectMonth": "Selecione o mês",
+    "selectYear": "Selecione o ano"
 }

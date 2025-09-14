@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/select';
 import { useLanguage } from '@/hooks/use-language';
 import { Checkbox } from '@/components/ui/checkbox';
+import { DatePicker } from '@/components/ui/date-picker';
 
 
 const formSchema = z.object({
@@ -36,10 +37,10 @@ const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }),
   phone: z.string().optional(),
   hasDDI: z.boolean().default(false).optional(),
-  birthDate: z.string().optional(),
+  birthDate: z.date().optional(),
   status: z.enum(['Active', 'Inactive', 'Expired']),
-  expiryDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
-    message: 'Invalid date format',
+  expiryDate: z.date({
+    required_error: 'An expiry date is required.',
   }),
 });
 
@@ -54,7 +55,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   const router = useRouter();
   const { addClient, updateClient } = useData();
   
-  const form = useForm<ClientFormValues>({
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: client?.name || '',
@@ -62,9 +63,9 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       email: client?.email || '',
       phone: client?.phone || '',
       hasDDI: client?.hasDDI || false,
-      birthDate: client?.birthDate || '',
+      birthDate: client?.birthDate ? new Date(client.birthDate) : undefined,
       status: client?.status || 'Active',
-      expiryDate: client?.expiryDate ? client.expiryDate : '',
+      expiryDate: client?.expiryDate ? new Date(client.expiryDate) : undefined,
     },
   });
 
@@ -84,11 +85,17 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   };
 
 
-  const handleSubmit = (values: ClientFormValues) => {
+  const handleSubmit = (values: z.infer<typeof formSchema>) => {
+    const clientData = {
+      ...values,
+      birthDate: values.birthDate?.toISOString().split('T')[0],
+      expiryDate: values.expiryDate.toISOString().split('T')[0],
+    };
+
     if (client) {
-      updateClient({ ...client, ...values });
+      updateClient({ ...client, ...clientData });
     } else {
-      addClient(values);
+      addClient(clientData as Omit<Client, 'id' | 'registeredDate'>);
     }
 
     if (onSubmitted) {
@@ -188,25 +195,27 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
           control={form.control}
           name="birthDate"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex flex-col">
               <FormLabel>{t('dateOfBirth')}</FormLabel>
-              <FormControl>
-                <Input type="date" {...field} />
-              </FormControl>
+               <DatePicker
+                date={field.value}
+                setDate={field.onChange}
+              />
               <FormMessage />
             </FormItem>
           )}
         />
         <div className="grid grid-cols-2 gap-6">
-          <FormField
+           <FormField
             control={form.control}
             name="expiryDate"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex flex-col">
                 <FormLabel>{t('expiryDate')}</FormLabel>
-                <FormControl>
-                  <Input type="date" {...field} />
-                </FormControl>
+                 <DatePicker
+                  date={field.value}
+                  setDate={field.onChange}
+                />
                 <FormMessage />
               </FormItem>
             )}
