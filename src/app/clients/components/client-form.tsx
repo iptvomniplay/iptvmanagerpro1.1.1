@@ -31,6 +31,7 @@ import { useLanguage } from '@/hooks/use-language';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+  nickname: z.string().optional(),
   email: z.string().email({ message: 'Please enter a valid email.' }),
   status: z.enum(['Active', 'Inactive', 'Expired']),
   expiryDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
@@ -53,6 +54,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: client?.name || '',
+      nickname: client?.nickname || '',
       email: client?.email || '',
       status: client?.status || 'Active',
       expiryDate: client?.expiryDate ? client.expiryDate : '',
@@ -92,6 +94,19 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
               <FormLabel>{t('fullName')}</FormLabel>
               <FormControl>
                 <Input placeholder="John Doe" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="nickname"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('nickname')}</FormLabel>
+              <FormControl>
+                <Input placeholder={t('nicknamePlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

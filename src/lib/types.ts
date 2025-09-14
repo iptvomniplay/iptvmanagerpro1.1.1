@@ -1,6 +1,7 @@
 export type Client = {
   id: string;
   name: string;
+  nickname?: string;
   email: string;
   status: 'Active' | 'Inactive' | 'Expired';
   expiryDate: string;

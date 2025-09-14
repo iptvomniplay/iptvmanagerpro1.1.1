@@ -5,6 +5,7 @@ export const clients: Client[] = [
   {
     id: 'C001',
     name: 'John Doe',
+    nickname: 'Johnny',
     email: 'john.doe@example.com',
     status: 'Active',
     expiryDate: format(new Date(2025, 5, 15), 'yyyy-MM-dd'),
@@ -29,6 +30,7 @@ export const clients: Client[] = [
   {
     id: 'C004',
     name: 'Mary Williams',
+    nickname: 'Mary',
     email: 'mary.williams@example.com',
     status: 'Inactive',
     expiryDate: format(new Date(2025, 1, 1), 'yyyy-MM-dd'),
