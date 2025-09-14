@@ -539,9 +539,9 @@ export function ServerForm({ server }: ServerFormProps) {
     <AlertDialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Sucesso</AlertDialogTitle>
+            <AlertDialogTitle>{t('registrationAddedSuccess')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Cadastro adicionado com sucesso
+              {t(server ? 'editServerSuccess' : 'newServerSuccess')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogAction onClick={handleModalClose}>OK</AlertDialogAction>

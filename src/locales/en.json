@@ -138,5 +138,7 @@
     "creditBalance": "Credit Balance",
     "creditBalanceDescription": "View and manage the credit balance for each panel.",
     "buyCredits": "Buy Credits",
-    "registrationAddedSuccess": "Registration added successfully"
+    "registrationAddedSuccess": "Registration added successfully",
+    "newServerSuccess": "New server has been registered and form is ready for the next one.",
+    "editServerSuccess": "Server details have been updated."
 }
