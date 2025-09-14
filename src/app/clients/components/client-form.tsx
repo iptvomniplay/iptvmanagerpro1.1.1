@@ -28,8 +28,12 @@ import {
 } from '@/components/ui/select';
 import { useLanguage } from '@/hooks/use-language';
 import { Checkbox } from '@/components/ui/checkbox';
-import { DatePicker } from '@/components/ui/date-picker';
-
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import { CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -37,7 +41,6 @@ const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }),
   phone: z.string().optional(),
   hasDDI: z.boolean().default(false).optional(),
-  birthDate: z.date().optional(),
   status: z.enum(['Active', 'Inactive', 'Expired']),
   expiryDate: z.date({
     required_error: 'An expiry date is required.',
@@ -63,7 +66,6 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       email: client?.email || '',
       phone: client?.phone || '',
       hasDDI: client?.hasDDI || false,
-      birthDate: client?.birthDate ? new Date(client.birthDate) : undefined,
       status: client?.status || 'Active',
       expiryDate: client?.expiryDate ? new Date(client.expiryDate) : undefined,
     },
@@ -88,7 +90,6 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     const clientData = {
       ...values,
-      birthDate: values.birthDate?.toISOString().split('T')[0],
       expiryDate: values.expiryDate.toISOString().split('T')[0],
     };
 
@@ -191,31 +192,44 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
             </FormItem>
             )}
         />
-        <FormField
-          control={form.control}
-          name="birthDate"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>{t('dateOfBirth')}</FormLabel>
-               <DatePicker
-                date={field.value}
-                setDate={field.onChange}
-              />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <div className="grid grid-cols-2 gap-6">
-           <FormField
+          <FormField
             control={form.control}
             name="expiryDate"
             render={({ field }) => (
               <FormItem className="flex flex-col">
                 <FormLabel>{t('expiryDate')}</FormLabel>
-                 <DatePicker
-                  date={field.value}
-                  setDate={field.onChange}
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={'outline'}
+                        className={cn(
+                          'w-full pl-3 text-left font-normal',
+                          !field.value && 'text-muted-foreground'
+                        )}
+                      >
+                        {field.value ? (
+                          format(field.value, 'PPP', { locale: language === 'pt-BR' ? ptBR : undefined })
+                        ) : (
+                          <span>{t('pickADate')}</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) =>
+                        date > new Date() || date < new Date('1900-01-01')
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
                 <FormMessage />
               </FormItem>
             )}
