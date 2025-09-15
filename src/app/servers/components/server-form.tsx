@@ -832,17 +832,29 @@ export function ServerForm({ server }: ServerFormProps) {
                                             <p className="font-semibold">{field.name} ({field.type})</p>
                                             <p className="text-sm text-muted-foreground">{t('screens')}: {field.screens}</p>
                                         </div>
-                                        <CollapsibleTrigger asChild>
+                                        <div className="flex items-center gap-2">
                                             <Button
                                                 type="button"
                                                 variant="ghost"
                                                 size="icon"
-                                                className="h-7 w-7 text-muted-foreground"
+                                                onClick={() => remove(index)}
+                                                className="h-7 w-7 text-destructive"
                                             >
-                                                {expandedItems[index] !== false ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-                                                <span className="sr-only">{expandedItems[index] !== false ? t('collapse') : t('expand')}</span>
+                                                <X className="h-5 w-5" />
+                                                <span className="sr-only">{t('delete')}</span>
                                             </Button>
-                                        </CollapsibleTrigger>
+                                            <CollapsibleTrigger asChild>
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-7 w-7 text-muted-foreground"
+                                                >
+                                                    {expandedItems[index] !== false ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                                                    <span className="sr-only">{expandedItems[index] !== false ? t('collapse') : t('expand')}</span>
+                                                </Button>
+                                            </CollapsibleTrigger>
+                                        </div>
                                     </div>
                                     <CollapsibleContent>
                                         <div className="flex flex-wrap gap-1 mt-2">
@@ -910,3 +922,5 @@ export function ServerForm({ server }: ServerFormProps) {
     </>
   );
 }
+
+    
