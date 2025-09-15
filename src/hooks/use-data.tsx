@@ -39,18 +39,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const storedClients = localStorage.getItem('clients');
       const storedServers = localStorage.getItem('servers');
       
-      // If there are no clients in local storage, we assume it's a fresh start
-      // and we shouldn't load any initial data.
-      if (storedClients === null) {
-        localStorage.setItem('clients', JSON.stringify([]));
-      }
-      if (storedServers === null) {
-        localStorage.setItem('servers', JSON.stringify([]));
-      }
-      
-      setClients(safelyParseJSON(localStorage.getItem('clients'), []));
-      setServers(safelyParseJSON(localStorage.getItem('servers'), []));
-
+      setClients(safelyParseJSON(storedClients, []));
+      setServers(safelyParseJSON(storedServers, []));
     } catch (error) {
         console.error("Failed to load data from localStorage", error);
         setClients([]);
