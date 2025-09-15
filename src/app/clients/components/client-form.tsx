@@ -151,38 +151,38 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
           )}
         />
         <FormField
-            control={form.control}
-            name="phone"
-            render={({ field }) => (
+          control={form.control}
+          name="phone"
+          render={({ field }) => (
             <FormItem>
-                <FormLabel>{t('phone')}</FormLabel>
-                <FormControl>
+              <FormLabel>{t('phone')}</FormLabel>
+                <FormField
+                    control={form.control}
+                    name="hasDDI"
+                    render={({ field: ddiField }) => (
+                        <FormItem className="flex items-center space-x-2 space-y-0 my-2">
+                        <FormControl>
+                            <Checkbox
+                            checked={ddiField.value}
+                            onCheckedChange={ddiField.onChange}
+                            />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">
+                            {t('hasDDI')}
+                        </FormLabel>
+                        </FormItem>
+                    )}
+                />
+              <FormControl>
                 <Input 
                     {...field}
                     onChange={handlePhoneChange}
                     placeholder={language === 'pt-BR' && !hasDDI ? '(11) 99999-9999' : t('phonePlaceholder')}
                 />
-                </FormControl>
-                <FormMessage />
+              </FormControl>
+              <FormMessage />
             </FormItem>
-            )}
-        />
-        <FormField
-            control={form.control}
-            name="hasDDI"
-            render={({ field: ddiField }) => (
-                <FormItem className="flex items-center space-x-2 space-y-0">
-                <FormControl>
-                    <Checkbox
-                    checked={ddiField.value}
-                    onCheckedChange={ddiField.onChange}
-                    />
-                </FormControl>
-                <FormLabel className="text-sm font-normal">
-                    {t('hasDDI')}
-                </FormLabel>
-                </FormItem>
-            )}
+          )}
         />
         <FormField
             control={form.control}
