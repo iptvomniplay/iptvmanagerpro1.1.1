@@ -133,7 +133,7 @@ const getInitialValues = (server: Server | null): ServerFormValues => ({
   panelValue: server?.panelValue || '',
   dueDate: server?.dueDate || undefined,
   hasInitialStock: !!server?.creditStock,
-  creditStock: server?.creditStock || undefined,
+  creditStock: server?.creditStock || 0,
   subServers: server?.subServers && server.subServers.length > 0 ? server.subServers : [],
 });
 
@@ -177,16 +177,35 @@ export function ServerForm({ server }: ServerFormProps) {
   React.useEffect(() => {
     if (!hasInitialStock) {
       setValue('creditStock', 0);
-    } else {
-       if (form.getValues('creditStock') === 0) {
-         setValue('creditStock', undefined);
-       }
+    } else if (form.getValues('creditStock') === 0) {
+      setValue('creditStock', undefined);
     }
   }, [hasInitialStock, setValue, form]);
 
   const subServerSchema = createSubServerSchema(t);
 
   const handleAddPlan = () => {
+    const tempSchema = z.object({
+      name: z.string().min(1, t('serverNameRequired')),
+      type: z.string().min(1, t('serverTypeRequired')),
+      screens: z.coerce
+        .number({ required_error: t('screensRequired') })
+        .min(1, t('screensMin')),
+    });
+    
+    const validationResult = tempSchema.safeParse(subServerFormState);
+    
+    if (!validationResult.success) {
+      const newErrors: Record<string, string> = {};
+      validationResult.error.issues.forEach(issue => {
+        newErrors[issue.path[0]] = issue.message;
+      });
+      setSubServerErrors(prev => ({...prev, ...newErrors}));
+      const firstErrorField = validationResult.error.issues[0].path[0] as string;
+      (document.getElementsByName(firstErrorField)[0] as HTMLElement)?.focus();
+      return;
+    }
+    
     const planInput = currentPlanInput.trim();
     if (planInput) {
       setSubServerFormState(prev => ({
@@ -895,3 +914,4 @@ export function ServerForm({ server }: ServerFormProps) {
     
 
     
+
