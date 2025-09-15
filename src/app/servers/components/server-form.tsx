@@ -34,10 +34,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
-  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
@@ -135,7 +133,7 @@ const getInitialValues = (server: Server | null) => ({
   dueDate: server?.dueDate || undefined,
   hasInitialStock: !!server?.creditStock,
   creditStock: server?.creditStock || undefined,
-  subServers: server?.subServers && server.subServers.length > 0 ? server.subServers : [initialSubServerValues],
+  subServers: server?.subServers && server.subServers.length > 0 ? server.subServers : [],
 });
 
 
@@ -170,17 +168,32 @@ export function ServerForm({ server }: ServerFormProps) {
   });
 
   const [isPanelFormVisible, setIsPanelFormVisible] = React.useState(!!server);
-
+  
   React.useEffect(() => {
-    if (!subServers || subServers.length === 0) return;
-    const lastServer = subServers[subServers.length - 1];
-    if (lastServer && !isAddMoreServerModalOpen && !showAddMoreButton) {
-        const isLastServerValid = lastServer.name && lastServer.type && lastServer.screens > 0 && lastServer.plans.length > 0;
-        if(isLastServerValid) {
-            setIsAddMoreServerModalOpen(true);
-        }
+    if (isPanelFormVisible && fields.length === 0) {
+      append(initialSubServerValues);
     }
-  }, [subServers, isAddMoreServerModalOpen, showAddMoreButton])
+  }, [isPanelFormVisible, fields.length, append]);
+
+
+ React.useEffect(() => {
+    if (!subServers || subServers.length === 0) return;
+
+    const lastServerIndex = subServers.length - 1;
+    const lastServer = subServers[lastServerIndex];
+
+    const isLastServerValid =
+      lastServer &&
+      lastServer.name &&
+      lastServer.type &&
+      lastServer.screens > 0 &&
+      lastServer.plans.length > 0;
+
+    if (isLastServerValid && !isAddMoreServerModalOpen && !showAddMoreButton) {
+      setIsAddMoreServerModalOpen(true);
+    }
+  }, [subServers, isAddMoreServerModalOpen, showAddMoreButton, getValues]);
+
 
   const handleAddPlan = (fieldIndex: number) => {
     const planInput = currentPlanInputs[fieldIndex]?.trim();
@@ -201,7 +214,8 @@ export function ServerForm({ server }: ServerFormProps) {
   };
 
   const handleAddSubServer = () => {
-    append({ name: '', type: '', screens: 1, plans: [] });
+    append(initialSubServerValues);
+    setShowAddMoreButton(false);
   }
 
   const handleCurrencyChange = (
@@ -760,5 +774,3 @@ export function ServerForm({ server }: ServerFormProps) {
     </>
   );
 }
-
-    

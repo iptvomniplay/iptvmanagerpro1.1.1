@@ -39,5 +39,3 @@ export function AddServerModal({ isOpen, onResponse }: AddServerModalProps) {
     </AlertDialog>
   );
 }
-
-    
