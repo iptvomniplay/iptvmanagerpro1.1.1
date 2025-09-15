@@ -34,7 +34,6 @@ import {
 } from '@/components/ui/select';
 import { Search, User } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 
 const testFormSchema = (t: (key: string) => string) => z.object({
   duration: z.coerce.number().min(1, { message: 'Duration is required.' }),
@@ -70,12 +69,16 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
     }
 
     const lowercasedTerm = searchTerm.toLowerCase();
-    const results = clients.filter(
-      (client) =>
-        client.name.toLowerCase().includes(lowercasedTerm) ||
-        (client.phone && client.phone.includes(lowercasedTerm)) ||
-        (client.nickname && client.nickname.toLowerCase().includes(lowercasedTerm))
-    );
+    const numericTerm = lowercasedTerm.replace(/\D/g, '');
+
+    const results = clients.filter((client) => {
+        const clientPhoneNumeric = client.phone ? client.phone.replace(/\D/g, '') : '';
+        return (
+            client.name.toLowerCase().includes(lowercasedTerm) ||
+            (client.nickname && client.nickname.toLowerCase().includes(lowercasedTerm)) ||
+            (numericTerm.length > 0 && clientPhoneNumeric.includes(numericTerm))
+        );
+    });
     setSearchResults(results);
   }, [searchTerm, clients]);
   
@@ -143,24 +146,30 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                   </div>
                 </ScrollArea>
               )}
-               {searchResults.length === 0 && searchTerm && (
+               {searchResults.length === 0 && searchTerm && !selectedClient && (
                  <p className="text-center text-muted-foreground pt-8">{t('noClientFound')}</p>
                )}
+                {selectedClient && (
+                    <div className="space-y-2">
+                        <Label htmlFor="selected-client-name">{t('client')}</Label>
+                        <div className="flex items-center gap-3 rounded-lg border p-4 bg-accent">
+                            <User className="h-6 w-6 text-muted-foreground"/>
+                            <Input
+                                id="selected-client-name"
+                                value={selectedClient.name}
+                                readOnly
+                                className="bg-transparent border-0 text-lg font-semibold focus-visible:ring-0 focus-visible:ring-offset-0"
+                            />
+                        </div>
+                    </div>
+                )}
             </div>
             
             <div className="space-y-6">
                 {selectedClient ? (
                      <div className="space-y-6">
-                        <div className="flex items-center gap-3 rounded-lg border p-4 bg-accent">
-                            <User className="h-6 w-6 text-muted-foreground"/>
-                            <div>
-                                <p className="text-sm text-muted-foreground">{t('client')}</p>
-                                <p className="text-lg font-semibold">{selectedClient.name}</p>
-                            </div>
-                        </div>
-
                       <Form {...form}>
-                        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+                        <form id="test-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
                             <h3 className="text-xl font-semibold">{t('testDetails')}</h3>
                             <FormField
                                 control={form.control}
@@ -201,7 +210,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                       </Form>
                     </div>
                 ) : (
-                    <div className="flex items-center justify-center h-full text-muted-foreground text-center">
+                    <div className="flex items-center justify-center h-full text-muted-foreground text-center rounded-lg border border-dashed">
                         <p>{t('awaitingInput')}</p>
                     </div>
                 )}
@@ -214,7 +223,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
             {t('cancel')}
           </Button>
           {selectedClient && (
-             <Button type="submit" form="test-form" onClick={form.handleSubmit(handleSubmit)}>{t('addTest')}</Button>
+             <Button type="submit" form="test-form">{t('addTest')}</Button>
           )}
         </DialogFooter>
       </DialogContent>
