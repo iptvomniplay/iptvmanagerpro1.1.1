@@ -222,7 +222,7 @@
     "plansPlaceholder": "Enter a plan name",
     "plansRequired": "Plans are required.",
     "atLeastOnePlanRequired": "At least one plan must be added.",
-    "addPlan": "Add Plan",
+    "addPlan": "Add + Plans",
     "addServer": "Add Server",
     "addMoreServerTitle": "Server Added!",
     "addMoreServerDescription": "Do you want to add another server to this panel?",
