@@ -184,8 +184,9 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    {t('emailAddress')}{' '}
                     <span className="text-muted-foreground">({t('optional')})</span>
+                    {' '}
+                    {t('emailAddress')}
                   </FormLabel>
                   <FormControl>
                     <Input placeholder="name@example.com" {...field} />
@@ -282,7 +283,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                   {t('cancel')}
               </Button>
               <Button type="submit">
-                  {client ? t('saveChanges') : t('createClient')}
+                  {client ? t('saveChanges') : t('save')}
               </Button>
           </div>
         </form>
