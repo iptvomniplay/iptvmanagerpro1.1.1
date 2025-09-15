@@ -18,7 +18,7 @@ export default function NewClientPage() {
         <CardHeader>
           <CardTitle>{t('clientRegistration')}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6 p-6">
+        <CardContent className="space-y-6">
           <div className="flex justify-between items-center">
             <Button
               type="button"
