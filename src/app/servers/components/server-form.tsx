@@ -287,7 +287,7 @@ export function ServerForm({ server }: ServerFormProps) {
       return { isValid: false, subServer: null };
     }
 
-    return { isValid: true, subServer: subServerToValidate };
+    return { isValid: true, subServer: result.data };
   };
 
   const handleSubmit = (values: ServerFormValues) => {
@@ -766,7 +766,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 </FormControl>
                                 {subServerErrors.plans && <p className="text-sm font-medium text-destructive">{subServerErrors.plans}</p>}
                             </FormItem>
-                             <Button type="button" variant="secondary" onClick={handleAddPlan}>
+                             <Button type="button" onClick={handleAddPlan}>
                                 {t('addPlan')}
                             </Button>
                             <Button type="button" onClick={handleAddServerClick}>
@@ -810,7 +810,7 @@ export function ServerForm({ server }: ServerFormProps) {
                         ))}
                     </div>
                 
-                    {fields.length === 0 && (
+                    {(fields.length === 0 && !hasSubServers) && (
                         <div className="text-center text-muted-foreground py-4">
                             {t('noSubServers')}
                         </div>
@@ -866,3 +866,5 @@ export function ServerForm({ server }: ServerFormProps) {
     </>
   );
 }
+
+    
