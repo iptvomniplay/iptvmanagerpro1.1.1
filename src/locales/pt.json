@@ -209,5 +209,6 @@
     "testDetails": "Detalhes do Teste",
     "testDuration": "Duração do Teste (horas)",
     "testPackage": "Pacote do Teste",
-    "client": "Cliente"
+    "client": "Cliente",
+    "selectClientPrompt": "Busque por um cliente para adicionar um teste."
 }
