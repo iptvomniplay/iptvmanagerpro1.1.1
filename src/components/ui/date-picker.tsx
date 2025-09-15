@@ -4,7 +4,7 @@ import * as React from 'react';
 import { format } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
-import { DayPicker, CaptionProps } from 'react-day-picker';
+import { CaptionProps } from 'react-day-picker';
 
 import { useLanguage } from '@/hooks/use-language';
 import { cn } from '@/lib/utils';
@@ -77,7 +77,7 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
           variant="outline"
           size="icon"
           className="h-9 w-9"
-          onClick={() => setMonth(new Date(month.setMonth(month.getMonth() - 1)))}
+          onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1))}
         >
           <ChevronLeft className="h-5 w-5" />
         </Button>
@@ -118,7 +118,7 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
           variant="outline"
           size="icon"
           className="h-9 w-9"
-          onClick={() => setMonth(new Date(month.setMonth(month.getMonth() + 1)))}
+          onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1))}
         >
           <ChevronRight className="h-5 w-5" />
         </Button>
@@ -137,7 +137,7 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {value ? format(value, 'PPP', { locale }) : <span>{t('pickADate')}</span>}
+          {value ? format(value, 'dd/MM/yyyy', { locale }) : <span>{t('pickADate')}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0 bg-background" align="start">
