@@ -841,6 +841,18 @@ export function ServerForm({ server }: ServerFormProps) {
                                 {t('addServer')}
                             </Button>
                         </div>
+                         {subServerFormState.plans.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                                {subServerFormState.plans.map((plan, index) => (
+                                    <Badge key={index} variant="secondary" className="text-sm">
+                                        {plan}
+                                        <button type="button" onClick={() => handleRemovePlan(index)} className="ml-2 rounded-full p-0.5 hover:bg-destructive/80">
+                                            <X className="h-3 w-3"/>
+                                        </button>
+                                    </Badge>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     <div className="space-y-2">
@@ -934,6 +946,7 @@ export function ServerForm({ server }: ServerFormProps) {
     
 
     
+
 
 
 
