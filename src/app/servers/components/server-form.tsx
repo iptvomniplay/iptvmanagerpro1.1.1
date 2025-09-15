@@ -241,13 +241,6 @@ export function ServerForm({ server }: ServerFormProps) {
       setSubServerErrors(prev => ({ ...prev, plans: undefined }));
     }
   };
-  
-  const handleRemovePlan = (planIndex: number) => {
-    setSubServerFormState(prev => ({
-        ...prev,
-        plans: prev.plans.filter((_, i) => i !== planIndex)
-    }));
-  };
 
   const handleCurrencyChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -370,26 +363,15 @@ export function ServerForm({ server }: ServerFormProps) {
   };
 
   const onInvalid = (errors: any) => {
-    if (!hasSubmissionError) {
-        toast({
-            variant: "destructive",
-            title: t('validationError'),
-            description: (
-                <div className="flex flex-col gap-1">
-                    <p>{t('fillAllFieldsWarning')}</p>
-                    <ul className="list-disc pl-5">
-                       {Object.keys(errors).map(key => <li key={key}>{errors[key].message || t(key as any)}</li>)}
-                    </ul>
-                </div>
-            )
-        });
-        setHasSubmissionError(true);
-    } else {
-        const firstErrorField = Object.keys(errors)[0];
-        const el = document.getElementsByName(firstErrorField)[0];
-        if (el) {
-          el.focus();
-        }
+    toast({
+        variant: "destructive",
+        title: t('validationError'),
+        description: t('fillAllFieldsWarning'),
+    });
+    const firstErrorField = Object.keys(errors)[0];
+    const el = document.getElementsByName(firstErrorField)[0];
+    if (el) {
+      el.focus();
     }
   };
 
@@ -450,8 +432,6 @@ export function ServerForm({ server }: ServerFormProps) {
             // User doesn't want to add more, they will click save next.
             const saveButton = document.getElementById('main-save-button');
             saveButton?.focus();
-            saveButton?.classList.add('animate-flash');
-            setTimeout(() => saveButton?.classList.remove('animate-flash'), 1500);
         }
     } else {
       const firstErrorField = result.error.issues[0].path[0] as string;
@@ -841,18 +821,6 @@ export function ServerForm({ server }: ServerFormProps) {
                                 {t('addServer')}
                             </Button>
                         </div>
-                         {subServerFormState.plans.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
-                                {subServerFormState.plans.map((plan, index) => (
-                                    <Badge key={index} variant="secondary" className="text-sm">
-                                        {plan}
-                                        <button type="button" onClick={() => handleRemovePlan(index)} className="ml-2 rounded-full p-0.5 hover:bg-destructive/80">
-                                            <X className="h-3 w-3"/>
-                                        </button>
-                                    </Badge>
-                                ))}
-                            </div>
-                        )}
                     </div>
 
                     <div className="space-y-2">
@@ -901,7 +869,7 @@ export function ServerForm({ server }: ServerFormProps) {
               <Button type="button" variant="outline" onClick={handleCancel}>
               {t('cancel')}
               </Button>
-              <Button id="main-save-button" type="submit" className={cn(hasSubmissionError && 'animate-flash-destructive')}>
+              <Button id="main-save-button" type="submit">
                   {server ? t('saveChanges') : t('save')}
               </Button>
           </div>
@@ -942,16 +910,3 @@ export function ServerForm({ server }: ServerFormProps) {
     </>
   );
 }
-
-    
-
-    
-
-
-
-
-
-
-
-
-
