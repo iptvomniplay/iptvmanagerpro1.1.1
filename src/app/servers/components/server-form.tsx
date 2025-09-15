@@ -176,9 +176,13 @@ export function ServerForm({ server }: ServerFormProps) {
 
   React.useEffect(() => {
     if (!hasInitialStock) {
-      setValue('creditStock', undefined);
+      setValue('creditStock', 0);
+    } else {
+       if (form.getValues('creditStock') === 0) {
+         setValue('creditStock', undefined);
+       }
     }
-  }, [hasInitialStock, setValue]);
+  }, [hasInitialStock, setValue, form]);
 
   const subServerSchema = createSubServerSchema(t);
 
@@ -362,6 +366,8 @@ export function ServerForm({ server }: ServerFormProps) {
     } else {
         const serverData: Omit<Server, 'id' | 'status'> = {
             ...serverDataToConfirm,
+            login: serverDataToConfirm.login,
+            password: serverDataToConfirm.password,
             subServers: serverDataToConfirm.subServers || [],
         };
         addServer(serverData);
@@ -690,6 +696,7 @@ export function ServerForm({ server }: ServerFormProps) {
                         <Input
                           type="number"
                           {...field}
+                          disabled={!hasInitialStock}
                           value={field.value ?? ''}
                           onChange={(e) =>
                             field.onChange(
@@ -884,5 +891,7 @@ export function ServerForm({ server }: ServerFormProps) {
     </>
   );
 }
+
+    
 
     
