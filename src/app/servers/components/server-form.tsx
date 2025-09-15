@@ -171,28 +171,25 @@ export function ServerForm({ server }: ServerFormProps) {
 
   const [isPanelFormVisible, setIsPanelFormVisible] = React.useState(!!server);
   
-  React.useEffect(() => {
-    if (isPanelFormVisible && !server && fields.length === 0) {
-      // Don't add a server by default anymore. The user will use the dedicated form.
-    }
-  }, [isPanelFormVisible, fields.length, append, server]);
-
   const subServerSchema = createSubServerSchema(t);
 
-   React.useEffect(() => {
+  React.useEffect(() => {
     const checkFields = async () => {
         const result = subServerSchema.safeParse(subServerFormState);
-        if (result.success) {
+        // Only open modal if it's not already open and the form is valid
+        if (result.success && !isAddMoreServerModalOpen) {
             setIsAddMoreServerModalOpen(true);
         }
     }
+    // No need to await here
     checkFields();
-  }, [subServerFormState, subServerSchema]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subServerFormState, isAddMoreServerModalOpen]); // Removed schema from deps
 
 
   const handleAddPlan = () => {
     const planInput = currentPlanInput.trim();
-    if (planInput && !subServerFormState.plans.includes(planInput)) {
+    if (planInput) { // Allows adding even if it's the only plan
       setSubServerFormState(prev => ({
           ...prev,
           plans: [...prev.plans, planInput]
@@ -291,10 +288,14 @@ export function ServerForm({ server }: ServerFormProps) {
 
    const handleAddMoreResponse = (addMore: boolean) => {
     setIsAddMoreServerModalOpen(false);
+    const result = subServerSchema.safeParse(subServerFormState);
+
     if (addMore) {
-        append(subServerFormState);
-        setSubServerFormState(initialSubServerValues);
-        setShowAddMoreButton(true); // Keep "Add + Servidores" button visible
+        if (result.success) {
+            append(subServerFormState);
+            setSubServerFormState(initialSubServerValues);
+            setCurrentPlanInput('');
+        }
     } else {
         // User said no, just flash the save button.
         // The data is kept in subServerFormState and will be added on final submit.
@@ -645,14 +646,14 @@ export function ServerForm({ server }: ServerFormProps) {
                                     <Input
                                         type="number"
                                         value={subServerFormState.screens || ''}
-                                        onChange={e => setSubServerFormState(p => ({ ...p, screens: e.target.value === '' ? 0 : Number(e.target.value) }))}
+                                        onChange={e => setSubServerFormState(p => ({ ...p, screens: e.target.value === '' ? undefined : Number(e.target.value) }))}
                                         placeholder={t('subServerScreensPlaceholder')}
                                     />
                                 </FormControl>
                             </FormItem>
                         </div>
-                        <div className="grid grid-cols-[1fr_auto] gap-4 items-end">
-                            <FormItem>
+                        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-end">
+                             <FormItem>
                                 <FormLabel>{t('plans')}</FormLabel>
                                 <FormControl>
                                     <Input
@@ -668,11 +669,11 @@ export function ServerForm({ server }: ServerFormProps) {
                                     />
                                 </FormControl>
                             </FormItem>
-                            <Button type="button" onClick={handleAddPlan}>
+                             <Button type="button" onClick={handleAddPlan} className="self-end">
                                 {t('addPlan')}
                             </Button>
                         </div>
-                        <div className="col-span-2 flex flex-wrap gap-2 pt-2">
+                        <div className="flex flex-wrap gap-2 pt-2 min-h-[24px]">
                            {subServerFormState.plans.map((plan, planIndex) => (
                                 <Badge key={planIndex} variant="secondary" className="flex items-center gap-2">
                                     {plan}
@@ -683,20 +684,6 @@ export function ServerForm({ server }: ServerFormProps) {
                             ))}
                         </div>
                     </div>
-
-                    {showAddMoreButton && (
-                        <Button
-                            type="button"
-                            onClick={() => {
-                                append(subServerFormState);
-                                setSubServerFormState(initialSubServerValues);
-                            }}
-                            className="w-48"
-                        >
-                            <PlusCircle className="mr-2 h-5 w-5" />
-                            {t('addMoreServers')}
-                        </Button>
-                    )}
 
                     {/* Display added sub servers */}
                     <div className="space-y-2">
@@ -724,7 +711,7 @@ export function ServerForm({ server }: ServerFormProps) {
                         ))}
                     </div>
                 
-                    {fields.length === 0 && !subServerSchema.safeParse(subServerFormState).success &&(
+                    {fields.length === 0 && (
                         <div className="text-center text-muted-foreground py-4">
                             {t('noSubServers')}
                         </div>
@@ -778,5 +765,7 @@ export function ServerForm({ server }: ServerFormProps) {
     </>
   );
 }
+
+    
 
     
