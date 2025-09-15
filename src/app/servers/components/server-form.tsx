@@ -109,6 +109,7 @@ interface ServerFormProps {
 }
 
 type ServerFormValues = z.infer<ReturnType<typeof createFormSchema>>;
+type SubServerFormValues = z.infer<ReturnType<typeof createSubServerSchema>>;
 
 const getInitialValues = (server: Server | null) => ({
   name: server?.name || '',
@@ -127,6 +128,13 @@ const getInitialValues = (server: Server | null) => ({
   subServers: server?.subServers || [],
 });
 
+const initialSubServerValues: SubServerFormValues = {
+    name: '',
+    type: '',
+    screens: undefined as any,
+    plans: [],
+};
+
 export function ServerForm({ server }: ServerFormProps) {
   const { t, language } = useLanguage();
   const { addServer, updateServer } = useData();
@@ -134,9 +142,13 @@ export function ServerForm({ server }: ServerFormProps) {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = React.useState(false);
   const [serverDataToConfirm, setServerDataToConfirm] = React.useState<ServerFormValues | null>(null);
-  const [planInputs, setPlanInputs] = React.useState<string[]>([]);
+  const [currentPlanInput, setCurrentPlanInput] = React.useState('');
+  const [subServerFormState, setSubServerFormState] = React.useState<SubServerFormValues>(initialSubServerValues);
+  const [subServerErrors, setSubServerErrors] = React.useState<Record<string, string | undefined>>({});
+
 
   const formSchema = createFormSchema(t);
+  const subServerSchema = createSubServerSchema(t);
 
   const form = useForm<ServerFormValues>({
     resolver: zodResolver(formSchema),
@@ -148,49 +160,59 @@ export function ServerForm({ server }: ServerFormProps) {
   const hasInitialStock = watch('hasInitialStock');
   const hasDDI = watch('hasDDI');
 
-  const { fields, append, remove, update } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: 'subServers',
   });
-
-  React.useEffect(() => {
-    setPlanInputs(fields.map(() => ''));
-  }, [fields.length]);
 
   const [isPanelFormVisible, setIsPanelFormVisible] = React.useState(!!server);
   const [isServerSectionVisible, setIsServerSectionVisible] =
     React.useState(!!server?.subServers?.length);
 
-  const handleAddServerClick = () => {
-    setIsServerSectionVisible(true);
-    if (fields.length === 0) {
-      append({ name: '', type: '', screens: undefined as any, plans: [] });
+
+  const handleAddPlan = () => {
+    if (currentPlanInput.trim()) {
+        setSubServerFormState(prev => ({
+            ...prev,
+            plans: [...prev.plans, currentPlanInput.trim()]
+        }));
+        setCurrentPlanInput('');
+        if (subServerErrors.plans) {
+            setSubServerErrors(prev => ({...prev, plans: undefined}));
+        }
     }
   };
-
-  const handleAddPlan = (subServerIndex: number) => {
-    const planValue = planInputs[subServerIndex]?.trim();
-    if (planValue) {
-        const currentPlans = form.getValues(`subServers.${subServerIndex}.plans`) || [];
-        const updatedPlans = [...currentPlans, planValue];
-        setValue(`subServers.${subServerIndex}.plans`, updatedPlans, { shouldValidate: true });
-        
-        const newPlanInputs = [...planInputs];
-        newPlanInputs[subServerIndex] = '';
-        setPlanInputs(newPlanInputs);
-        trigger(`subServers.${subServerIndex}.plans`);
-    }
+  
+  const handleRemovePlan = (planIndex: number) => {
+    setSubServerFormState(prev => ({
+        ...prev,
+        plans: prev.plans.filter((_, i) => i !== planIndex)
+    }));
   };
 
-  const handleRemovePlan = (subServerIndex: number, planIndex: number) => {
-    const currentPlans = form.getValues(`subServers.${subServerIndex}.plans`);
-    if (currentPlans) {
-        const updatedPlans = currentPlans.filter((_, i) => i !== planIndex);
-        setValue(`subServers.${subServerIndex}.plans`, updatedPlans, { shouldValidate: true });
-        trigger(`subServers.${subServerIndex}.plans`);
+  const handleAddSubServer = () => {
+    const result = subServerSchema.safeParse(subServerFormState);
+    if (result.success) {
+      append(result.data);
+      setSubServerFormState(initialSubServerValues);
+      setSubServerErrors({});
+    } else {
+        const errors: Record<string, string> = {};
+        result.error.errors.forEach(err => {
+            if (err.path[0]) {
+                errors[err.path[0]] = err.message;
+            }
+        });
+        setSubServerErrors(errors);
     }
-  };
+  }
 
+  const handleSubServerInputChange = (field: keyof SubServerFormValues, value: any) => {
+    setSubServerFormState(prev => ({...prev, [field]: value}));
+     if (subServerErrors[field]) {
+        setSubServerErrors(prev => ({...prev, [field]: undefined}));
+    }
+  }
 
   const handleCurrencyChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -576,7 +598,7 @@ export function ServerForm({ server }: ServerFormProps) {
           <div className={cn(isPanelFormVisible ? 'block' : 'hidden')}>
             <Button
               type="button"
-              onClick={handleAddServerClick}
+              onClick={() => setIsServerSectionVisible(true)}
               className="w-48 mt-6"
             >
               <PlusCircle className="mr-2 h-5 w-5" />
@@ -593,131 +615,104 @@ export function ServerForm({ server }: ServerFormProps) {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>{t('servers')}</CardTitle>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() =>
-                    append({ name: '', type: '', screens: undefined as any, plans: [] })
-                  }
-                >
-                  {t('addMoreServers')}
-                </Button>
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
-                {fields.map((field, index) => (
-                  <div
-                    key={field.id}
-                    className="p-4 border rounded-lg grid gap-4"
-                  >
+                  <div className="p-4 border rounded-lg grid gap-4">
                     <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-end">
-                      <FormField
-                          control={control}
-                          name={`subServers.${index}.name`}
-                          render={({ field }) => (
-                              <FormItem>
-                              <FormLabel>{t('subServerName')}</FormLabel>
-                              <FormControl>
-                                  <Input
-                                  {...field}
-                                  placeholder={t('subServerNamePlaceholder')}
-                                  />
-                              </FormControl>
-                              <FormMessage />
-                              </FormItem>
-                          )}
-                      />
-                      <FormField
-                          control={control}
-                          name={`subServers.${index}.type`}
-                          render={({ field }) => (
-                              <FormItem>
-                              <FormLabel>{t('subServerType')}</FormLabel>
-                              <FormControl>
-                                  <Input
-                                  {...field}
-                                  placeholder={t('subServerTypePlaceholder')}
-                                  />
-                              </FormControl>
-                              <FormMessage />
-                              </FormItem>
-                          )}
-                      />
-                      <FormField
-                          control={control}
-                          name={`subServers.${index}.screens`}
-                          render={({ field }) => (
-                              <FormItem>
-                              <FormLabel>{t('subServerScreens')}</FormLabel>
-                              <FormControl>
-                                  <Input
-                                  type="number"
-                                  {...field}
-                                  value={field.value ?? ''}
-                                  onChange={(e) =>
-                                      field.onChange(
-                                      e.target.value === ''
-                                          ? undefined
-                                          : Number(e.target.value)
-                                      )
-                                  }
-                                  placeholder={t('subServerScreensPlaceholder')}
-                                  />
-                              </FormControl>
-                              <FormMessage />
-                              </FormItem>
-                          )}
-                      />
-                      <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          onClick={() => remove(index)}
-                      >
-                          <Trash2 className="h-4 w-4" />
-                      </Button>
+                        <div className="space-y-2">
+                            <FormLabel>{t('subServerName')}</FormLabel>
+                            <Input
+                                value={subServerFormState.name}
+                                onChange={e => handleSubServerInputChange('name', e.target.value)}
+                                placeholder={t('subServerNamePlaceholder')}
+                            />
+                            {subServerErrors.name && <p className="text-sm font-medium text-destructive">{subServerErrors.name}</p>}
+                        </div>
+                        <div className="space-y-2">
+                           <FormLabel>{t('subServerType')}</FormLabel>
+                            <Input
+                                value={subServerFormState.type}
+                                onChange={e => handleSubServerInputChange('type', e.target.value)}
+                                placeholder={t('subServerTypePlaceholder')}
+                            />
+                            {subServerErrors.type && <p className="text-sm font-medium text-destructive">{subServerErrors.type}</p>}
+                        </div>
+                        <div className="space-y-2">
+                            <FormLabel>{t('subServerScreens')}</FormLabel>
+                            <Input
+                                type="number"
+                                value={subServerFormState.screens || ''}
+                                onChange={e => handleSubServerInputChange('screens', e.target.value === '' ? undefined : Number(e.target.value))}
+                                placeholder={t('subServerScreensPlaceholder')}
+                            />
+                            {subServerErrors.screens && <p className="text-sm font-medium text-destructive">{subServerErrors.screens}</p>}
+                        </div>
                     </div>
-                     <FormField
-                        control={control}
-                        name={`subServers.${index}.plans`}
-                        render={() => (
-                            <FormItem>
-                                <FormLabel>{t('plans')}</FormLabel>
-                                <div className="flex gap-2">
-                                    <Input
-                                        value={planInputs[index] || ''}
-                                        onChange={(e) => {
-                                            const newPlanInputs = [...planInputs];
-                                            newPlanInputs[index] = e.target.value;
-                                            setPlanInputs(newPlanInputs);
-                                        }}
-                                        onKeyDown={(e) => {
-                                          if (e.key === 'Enter') {
-                                            e.preventDefault();
-                                            handleAddPlan(index);
-                                          }
-                                        }}
-                                        placeholder={t('plansPlaceholder')}
-                                    />
-                                    <Button type="button" onClick={() => handleAddPlan(index)}>
-                                        {t('addPlan')}
-                                    </Button>
-                                </div>
-                                <FormMessage />
-                                <div className="flex flex-wrap gap-2 pt-2">
-                                    {form.getValues(`subServers.${index}.plans`)?.map((plan, planIndex) => (
-                                        <Badge key={planIndex} variant="secondary" className="flex items-center gap-2">
-                                            {plan}
-                                            <button type="button" onClick={() => handleRemovePlan(index, planIndex)} className="rounded-full hover:bg-muted-foreground/20">
-                                                <X className="h-3 w-3" />
-                                            </button>
-                                        </Badge>
-                                    ))}
-                                </div>
-                            </FormItem>
-                        )}
-                        />
+                     <div>
+                        <FormLabel>{t('plans')}</FormLabel>
+                        <div className="flex gap-2">
+                            <Input
+                                value={currentPlanInput}
+                                onChange={(e) => setCurrentPlanInput(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    handleAddPlan();
+                                  }
+                                }}
+                                placeholder={t('plansPlaceholder')}
+                            />
+                            <Button type="button" onClick={handleAddPlan}>
+                                {t('addPlan')}
+                            </Button>
+                        </div>
+                        {subServerErrors.plans && <p className="text-sm font-medium text-destructive mt-2">{subServerErrors.plans}</p>}
+
+                        <div className="flex flex-wrap gap-2 pt-2">
+                            {subServerFormState.plans.map((plan, planIndex) => (
+                                <Badge key={planIndex} variant="secondary" className="flex items-center gap-2">
+                                    {plan}
+                                    <button type="button" onClick={() => handleRemovePlan(planIndex)} className="rounded-full hover:bg-muted-foreground/20">
+                                        <X className="h-3 w-3" />
+                                    </button>
+                                </Badge>
+                            ))}
+                        </div>
+                    </div>
+                     <div className="flex justify-end">
+                        <Button type="button" onClick={handleAddSubServer}>
+                            {t('addMoreServers')}
+                        </Button>
+                    </div>
                   </div>
-                ))}
+
+                <div className="flex flex-wrap gap-4">
+                  {fields.map((field, index) => (
+                    <div key={field.id} className="relative group p-4 border rounded-lg w-full md:w-auto flex-1 min-w-[300px] bg-accent/50">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="absolute top-2 right-2 h-6 w-6 text-muted-foreground hover:text-destructive"
+                            onClick={() => remove(index)}
+                        >
+                            <X className="h-4 w-4" />
+                        </Button>
+                        <h4 className="font-semibold text-lg mb-2">{field.name}</h4>
+                        <p className="text-sm text-muted-foreground">{t('subServerType')}: {field.type}</p>
+                        <p className="text-sm text-muted-foreground">{t('screens')}: {field.screens}</p>
+                        <div className="mt-2">
+                            <p className="text-sm font-medium">{t('plans')}:</p>
+                            <div className="flex flex-wrap gap-1 mt-1">
+                                {field.plans.map((plan, planIndex) => (
+                                    <Badge key={planIndex} variant="outline">{plan}</Badge>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                  ))}
+                </div>
+                
                 {fields.length === 0 && (
                   <div className="text-center text-muted-foreground py-4">
                     {t('noSubServers')}
