@@ -160,6 +160,7 @@ export function ServerForm({ server }: ServerFormProps) {
   const form = useForm<ServerFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: getInitialValues(server),
+    shouldFocusError: false,
   });
 
   const { control, watch, setValue, reset, formState: { errors } } = form;
@@ -903,6 +904,7 @@ export function ServerForm({ server }: ServerFormProps) {
     
 
     
+
 
 
 
