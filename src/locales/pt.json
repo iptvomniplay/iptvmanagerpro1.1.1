@@ -167,7 +167,7 @@
     "subServerScreens": "Telas",
     "screens": "Telas",
     "subServerScreensPlaceholder": "Ex.: 1",
-    "noSubServers": "Nenhum servidor cadastrado. Clique em 'Add + Servidores' para começar.",
+    "noSubServers": "Nenhum servidor cadastrado. Preencha o formulário acima para começar.",
     "noSubServersMessage": "Nenhum servidor cadastrado para este painel.",
     "addClient": "Add Cliente",
     "collapse": "Recolher",
