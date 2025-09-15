@@ -75,7 +75,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
     const results = clients.filter((client) => {
         const normalizedName = normalizeString(client.name);
         const normalizedNickname = client.nickname ? normalizeString(client.nickname) : '';
-        const clientPhoneNumeric = client.phone ? client.phone.replace(/\D/g, '') : '';
+        const clientPhoneNumeric = client.phone ? normalizeString(client.phone).replace(/\D/g, '') : '';
         const searchPhoneNumeric = normalizedTerm.replace(/\D/g, '');
 
         return (
@@ -132,6 +132,13 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                   className="pl-10"
                 />
               </div>
+
+              {!selectedClient && !searchTerm && (
+                <div className="flex items-center justify-center h-full text-muted-foreground text-center rounded-lg border border-dashed py-10">
+                    <p>{t('awaitingInput')}</p>
+                </div>
+              )}
+
               {searchResults.length > 0 && (
                 <ScrollArea className="h-72 rounded-md border">
                   <div className="p-4 space-y-2">
@@ -214,11 +221,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                         </form>
                       </Form>
                     </div>
-                ) : (
-                    <div className="flex items-center justify-center h-full text-muted-foreground text-center rounded-lg border border-dashed">
-                        <p>{t('awaitingInput')}</p>
-                    </div>
-                )}
+                ) : null}
             </div>
           </div>
         </ScrollArea>
