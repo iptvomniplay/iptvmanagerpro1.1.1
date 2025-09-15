@@ -382,20 +382,29 @@ export function ServerForm({ server }: ServerFormProps) {
 
    const handleAddMoreResponse = (addMore: boolean) => {
     setIsAddMoreServerModalOpen(false);
-    const { isValid, subServer } = processAndValidateSubServer();
+    const subServerToValidate = processSubServerForValidation();
+    const result = subServerSchema.safeParse(subServerToValidate);
 
-    if (isValid && subServer) {
-        append(subServer);
+    if (result.success) {
+        append(result.data);
         setSubServerFormState(initialSubServerValues);
         setCurrentPlanInput('');
         if (addMore) {
            // Form is cleared, ready for the next one
+           const firstSubServerField = document.getElementsByName("name")[1];
+           if(firstSubServerField) firstSubServerField.focus();
         } else {
             // User doesn't want to add more, they will click save next.
             const saveButton = document.getElementById('main-save-button');
             saveButton?.classList.add('animate-flash');
             setTimeout(() => saveButton?.classList.remove('animate-flash'), 1500);
         }
+    } else {
+      const firstErrorField = result.error.issues[0].path[0] as string;
+      const el = document.getElementsByName(firstErrorField)[0];
+      if (el) {
+        el.focus();
+      }
     }
   };
 
@@ -706,7 +715,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <FormLabel>{t('subServerName')}</FormLabel>
                                 <FormControl>
                                     <Input 
-                                        name="name"
+                                        name="subServerName"
                                         value={subServerFormState.name}
                                         onChange={e => {
                                             setSubServerFormState(p => ({ ...p, name: e.target.value }));
@@ -721,7 +730,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <FormLabel>{t('subServerType')}</FormLabel>
                                 <FormControl>
                                     <Input 
-                                        name="type"
+                                        name="subServerType"
                                         value={subServerFormState.type}
                                         onChange={e => {
                                             setSubServerFormState(p => ({ ...p, type: e.target.value }));
@@ -768,7 +777,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 </FormControl>
                                 {subServerErrors.plans && <p className="text-sm font-medium text-destructive">{subServerErrors.plans}</p>}
                             </FormItem>
-                             <Button type="button" onClick={handleAddPlan}>
+                             <Button type="button" onClick={handleAddPlan} variant="default">
                                 {t('addPlan')}
                             </Button>
                             <Button type="button" onClick={handleAddServerClick}>
@@ -812,7 +821,7 @@ export function ServerForm({ server }: ServerFormProps) {
                         ))}
                     </div>
                 
-                    {fields.length === 0 && !hasSubServers && (
+                    {fields.length === 0 && (
                         <div className={cn("text-center py-4", noServersAddedError ? "text-destructive" : "text-muted-foreground")}>
                             {t('noSubServers')}
                         </div>
@@ -821,16 +830,14 @@ export function ServerForm({ server }: ServerFormProps) {
             </Card>
           </div>
 
-          {(fields.length > 0 || hasSubServers) && (
-             <div className="flex justify-end gap-4 pt-6">
-                <Button type="button" variant="outline" onClick={handleCancel}>
-                {t('cancel')}
-                </Button>
-                <Button id="main-save-button" type="submit" className={cn(hasSubmissionError && 'animate-flash-destructive')}>
-                    {server ? t('saveChanges') : t('save')}
-                </Button>
-            </div>
-          )}
+          <div className="flex justify-end gap-4 pt-6">
+              <Button type="button" variant="outline" onClick={handleCancel}>
+              {t('cancel')}
+              </Button>
+              <Button id="main-save-button" type="submit" className={cn(hasSubmissionError && 'animate-flash-destructive')}>
+                  {server ? t('saveChanges') : t('save')}
+              </Button>
+          </div>
         </form>
       </Form>
       
@@ -868,3 +875,5 @@ export function ServerForm({ server }: ServerFormProps) {
     </>
   );
 }
+
+    
