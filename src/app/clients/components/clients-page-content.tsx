@@ -50,6 +50,7 @@ import {
 import { ClientForm } from './client-form';
 import { useRouter } from 'next/navigation';
 import { TestModal } from './test-modal';
+import { normalizeString } from '@/lib/utils';
 
 export type ClientFormValues = Omit<Client, 'id' | 'registeredDate'>;
 
@@ -66,13 +67,17 @@ export default function ClientsPageContent() {
     null
   );
 
-  const filteredClients = clients.filter(
-    (client) =>
-      client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (client.nickname && client.nickname.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (client.phone && client.phone.includes(searchTerm)) ||
-      client.status.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredClients = clients.filter((client) => {
+    const normalizedSearchTerm = normalizeString(searchTerm);
+    return (
+      normalizeString(client.name).includes(normalizedSearchTerm) ||
+      (client.nickname &&
+        normalizeString(client.nickname).includes(normalizedSearchTerm)) ||
+      (client.phone &&
+        normalizeString(client.phone).replace(/\D/g, '').includes(normalizedSearchTerm.replace(/\D/g, ''))) ||
+      normalizeString(client.status).includes(normalizedSearchTerm)
+    );
+  });
 
   const handleEditOpen = (client: Client) => {
     setEditingClient(client);

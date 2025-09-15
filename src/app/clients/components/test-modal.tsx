@@ -35,6 +35,7 @@ import {
 import { Search, User } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
+import { normalizeString } from '@/lib/utils';
 
 const testFormSchema = (t: (key: string) => string) => z.object({
   duration: z.coerce.number().min(1, { message: 'Duration is required.' }),
@@ -69,15 +70,18 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
       return;
     }
 
-    const lowercasedTerm = searchTerm.toLowerCase();
-    const numericTerm = lowercasedTerm.replace(/\D/g, '');
+    const normalizedTerm = normalizeString(searchTerm);
 
     const results = clients.filter((client) => {
+        const normalizedName = normalizeString(client.name);
+        const normalizedNickname = client.nickname ? normalizeString(client.nickname) : '';
         const clientPhoneNumeric = client.phone ? client.phone.replace(/\D/g, '') : '';
+        const searchPhoneNumeric = normalizedTerm.replace(/\D/g, '');
+
         return (
-            client.name.toLowerCase().includes(lowercasedTerm) ||
-            (client.nickname && client.nickname.toLowerCase().includes(lowercasedTerm)) ||
-            (numericTerm.length > 0 && clientPhoneNumeric.includes(numericTerm))
+            normalizedName.includes(normalizedTerm) ||
+            (normalizedNickname && normalizedNickname.includes(normalizedTerm)) ||
+            (searchPhoneNumeric.length > 0 && clientPhoneNumeric.includes(searchPhoneNumeric))
         );
     });
     setSearchResults(results);
