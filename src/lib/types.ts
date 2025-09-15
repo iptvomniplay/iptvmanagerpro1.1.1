@@ -32,5 +32,3 @@ export type Server = {
   creditStock?: number;
   subServers?: SubServer[];
 };
-
-    
