@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import type { Client, Server } from '@/lib/types';
-import { clients as initialClients, servers as initialServers } from '@/lib/data';
 import { format } from 'date-fns';
 
 interface DataContextType {
@@ -21,34 +20,28 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 const safelyParseJSON = (jsonString: string | null, fallback: any) => {
   if (!jsonString) return fallback;
   try {
-    return JSON.parse(jsonString);
+    const parsed = JSON.parse(jsonString);
+    return Array.isArray(parsed) ? parsed : fallback;
   } catch (e) {
     console.error("Failed to parse JSON from localStorage", e);
     return fallback;
   }
 };
 
+
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [clients, setClients] = useState<Client[]>(initialClients);
-  const [servers, setServers] = useState<Server[]>(initialServers);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [servers, setServers] = useState<Server[]>([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
     try {
       const storedClients = localStorage.getItem('clients');
       const storedServers = localStorage.getItem('servers');
-      // If there are no stored clients, we respect the initial (empty) state.
-      // If there are, we load them.
-      if (storedClients) {
-        setClients(safelyParseJSON(storedClients, []));
-      }
-       // If there are no stored servers, we respect the initial (empty) state.
-      if (storedServers) {
-        setServers(safelyParseJSON(storedServers, []));
-      }
+      setClients(safelyParseJSON(storedClients, []));
+      setServers(safelyParseJSON(storedServers, []));
     } catch (error) {
         console.error("Failed to load data from localStorage", error);
-        // Fallback to empty arrays in case of error
         setClients([]);
         setServers([]);
     }
@@ -95,6 +88,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         ...serverData,
         id: `S${(Math.random() * 100).toFixed(0).padStart(2, '0')}`,
         status: 'Online',
+        subServers: serverData.subServers || [],
         };
         return [newServer, ...prevServers];
     });
