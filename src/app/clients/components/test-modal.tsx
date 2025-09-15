@@ -109,9 +109,12 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
         </DialogHeader>
 
         <ScrollArea className="flex-1">
-          <div className="grid md:grid-cols-2 p-6 gap-8 h-full">
+          <div className="p-6 h-full grid md:grid-cols-2 gap-8 md:gap-12">
             <div className="space-y-6">
-               <h3 className="text-xl font-semibold">{t('searchClient')}</h3>
+               <div className="space-y-2">
+                 <h3 className="text-xl font-semibold">{t('searchClient')}</h3>
+                 <p className="text-muted-foreground">{t('selectClientPrompt')}</p>
+               </div>
                <form onSubmit={handleSearch} className="flex gap-2">
                 <Input
                   placeholder={t('searchClientPlaceholder')}
@@ -145,7 +148,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                  <p className="text-center text-muted-foreground pt-8">{t('noClientFound')}</p>
                )}
             </div>
-
+            
             <div className="space-y-6">
                 {selectedClient ? (
                      <div className="space-y-6">
@@ -200,7 +203,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                     </div>
                 ) : (
                     <div className="flex items-center justify-center h-full text-muted-foreground text-center">
-                        <p>{t('selectClientPrompt')}</p>
+                        <p>{t('awaitingInput')}</p>
                     </div>
                 )}
             </div>
