@@ -158,7 +158,7 @@
     "responsibleNamePlaceholder": "Nome do responsável pelo painel",
     "selectDay": "Selecione o dia",
     "creditStockPlaceholder": "Ex: 100",
-    "addSubServer": "Add Servidores",
+    "addSubServer": "Adicionar Servidor",
     "addMoreServers": "Add + Servidores",
     "subServerName": "Nome do Servidor",
     "subServerNamePlaceholder": "Digite o nome do servidor",
@@ -219,6 +219,9 @@
     "noPanelsFound": "Nenhum painel encontrado",
     "searchPanelPlaceholder": "Buscar por nome do painel...",
     "plans": "Planos",
-    "plansPlaceholder": "Insira os planos separados por vírgula ou nova linha",
-    "plansRequired": "Os planos são obrigatórios."
+    "plansPlaceholder": "Digite o nome do plano",
+    "plansRequired": "Os planos são obrigatórios.",
+    "atLeastOnePlanRequired": "Pelo menos um plano deve ser adicionado.",
+    "addPlan": "Adicionar Plano",
+    "Add Servidores": "Add Servidores"
 }

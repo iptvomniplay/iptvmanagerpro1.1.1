@@ -94,7 +94,13 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, serverData }: Co
                       <TableRow key={index}>
                         <TableCell>{sub.name}</TableCell>
                         <TableCell>{sub.type}</TableCell>
-                        <TableCell className="whitespace-pre-wrap">{sub.plans}</TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {sub.plans.map((plan, planIndex) => (
+                                <Badge key={planIndex} variant="outline">{plan}</Badge>
+                            ))}
+                          </div>
+                        </TableCell>
                         <TableCell className="text-right">{sub.screens}</TableCell>
                       </TableRow>
                     ))}

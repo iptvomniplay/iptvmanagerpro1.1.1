@@ -14,7 +14,7 @@ export type SubServer = {
   name: string;
   type: string;
   screens: number;
-  plans: string;
+  plans: string[];
 };
 
 export type Server = {

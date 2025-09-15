@@ -167,7 +167,7 @@
     "subServerScreens": "Screens",
     "screens": "Screens",
     "subServerScreensPlaceholder": "Ex.: 1",
-    "noSubServers": "No servers registered. Click on 'Add Server' to start.",
+    "noSubServers": "No servers registered. Click on 'Add + Servers' to start.",
     "noSubServersMessage": "No servers registered for this panel.",
     "addClient": "Add Client",
     "collapse": "Collapse",
@@ -219,6 +219,9 @@
     "noPanelsFound": "No panels found",
     "searchPanelPlaceholder": "Search by panel name...",
     "plans": "Plans",
-    "plansPlaceholder": "Enter plans separated by comma or new line",
-    "plansRequired": "Plans are required."
+    "plansPlaceholder": "Enter a plan name",
+    "plansRequired": "Plans are required.",
+    "atLeastOnePlanRequired": "At least one plan must be added.",
+    "addPlan": "Add Plan",
+    "Add Servidores": "Add Servers"
 }

@@ -26,7 +26,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
-import { PlusCircle, Trash2 } from 'lucide-react';
+import { PlusCircle, Trash2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useData } from '@/hooks/use-data';
@@ -40,7 +40,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { ConfirmationModal } from './confirmation-modal';
-import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 
 const createSubServerSchema = (t: (key: any) => string) => z.object({
   name: z.string().min(1, t('serverNameRequired')),
@@ -48,7 +48,7 @@ const createSubServerSchema = (t: (key: any) => string) => z.object({
   screens: z.coerce
     .number({ required_error: t('screensRequired') })
     .min(1, t('screensMin')),
-  plans: z.string().min(1, t('plansRequired')),
+  plans: z.array(z.string()).min(1, t('atLeastOnePlanRequired')),
 });
 
 const createFormSchema = (t: (key: any) => string) =>
@@ -134,6 +134,7 @@ export function ServerForm({ server }: ServerFormProps) {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = React.useState(false);
   const [serverDataToConfirm, setServerDataToConfirm] = React.useState<ServerFormValues | null>(null);
+  const [planInputs, setPlanInputs] = React.useState<string[]>([]);
 
   const formSchema = createFormSchema(t);
 
@@ -142,15 +143,19 @@ export function ServerForm({ server }: ServerFormProps) {
     defaultValues: getInitialValues(server),
   });
 
-  const { control, watch, setValue, reset } = form;
+  const { control, watch, setValue, reset, trigger } = form;
   const paymentType = watch('paymentType');
   const hasInitialStock = watch('hasInitialStock');
   const hasDDI = watch('hasDDI');
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, update } = useFieldArray({
     control,
     name: 'subServers',
   });
+
+  React.useEffect(() => {
+    setPlanInputs(fields.map(() => ''));
+  }, [fields.length]);
 
   const [isPanelFormVisible, setIsPanelFormVisible] = React.useState(!!server);
   const [isServerSectionVisible, setIsServerSectionVisible] =
@@ -159,9 +164,33 @@ export function ServerForm({ server }: ServerFormProps) {
   const handleAddServerClick = () => {
     setIsServerSectionVisible(true);
     if (fields.length === 0) {
-      append({ name: '', type: '', screens: undefined as any, plans: '' });
+      append({ name: '', type: '', screens: undefined as any, plans: [] });
     }
   };
+
+  const handleAddPlan = (subServerIndex: number) => {
+    const planValue = planInputs[subServerIndex]?.trim();
+    if (planValue) {
+        const currentPlans = form.getValues(`subServers.${subServerIndex}.plans`) || [];
+        const updatedPlans = [...currentPlans, planValue];
+        setValue(`subServers.${subServerIndex}.plans`, updatedPlans, { shouldValidate: true });
+        
+        const newPlanInputs = [...planInputs];
+        newPlanInputs[subServerIndex] = '';
+        setPlanInputs(newPlanInputs);
+        trigger(`subServers.${subServerIndex}.plans`);
+    }
+  };
+
+  const handleRemovePlan = (subServerIndex: number, planIndex: number) => {
+    const currentPlans = form.getValues(`subServers.${subServerIndex}.plans`);
+    if (currentPlans) {
+        const updatedPlans = currentPlans.filter((_, i) => i !== planIndex);
+        setValue(`subServers.${subServerIndex}.plans`, updatedPlans, { shouldValidate: true });
+        trigger(`subServers.${subServerIndex}.plans`);
+    }
+  };
+
 
   const handleCurrencyChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -551,7 +580,7 @@ export function ServerForm({ server }: ServerFormProps) {
               className="w-48 mt-6"
             >
               <PlusCircle className="mr-2 h-5 w-5" />
-              {t('addSubServer')}
+              {t('Add Servidores')}
             </Button>
           </div>
 
@@ -568,7 +597,7 @@ export function ServerForm({ server }: ServerFormProps) {
                   type="button"
                   variant="outline"
                   onClick={() =>
-                    append({ name: '', type: '', screens: undefined as any, plans: '' })
+                    append({ name: '', type: '', screens: undefined as any, plans: [] })
                   }
                 >
                   {t('addMoreServers')}
@@ -647,22 +676,46 @@ export function ServerForm({ server }: ServerFormProps) {
                           <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
-                    <FormField
-                      control={control}
-                      name={`subServers.${index}.plans`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('plans')}</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              {...field}
-                              placeholder={t('plansPlaceholder')}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                     <FormField
+                        control={control}
+                        name={`subServers.${index}.plans`}
+                        render={() => (
+                            <FormItem>
+                                <FormLabel>{t('plans')}</FormLabel>
+                                <div className="flex gap-2">
+                                    <Input
+                                        value={planInputs[index] || ''}
+                                        onChange={(e) => {
+                                            const newPlanInputs = [...planInputs];
+                                            newPlanInputs[index] = e.target.value;
+                                            setPlanInputs(newPlanInputs);
+                                        }}
+                                        onKeyDown={(e) => {
+                                          if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            handleAddPlan(index);
+                                          }
+                                        }}
+                                        placeholder={t('plansPlaceholder')}
+                                    />
+                                    <Button type="button" onClick={() => handleAddPlan(index)}>
+                                        {t('addPlan')}
+                                    </Button>
+                                </div>
+                                <FormMessage />
+                                <div className="flex flex-wrap gap-2 pt-2">
+                                    {form.getValues(`subServers.${index}.plans`)?.map((plan, planIndex) => (
+                                        <Badge key={planIndex} variant="secondary" className="flex items-center gap-2">
+                                            {plan}
+                                            <button type="button" onClick={() => handleRemovePlan(index, planIndex)} className="rounded-full hover:bg-muted-foreground/20">
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </Badge>
+                                    ))}
+                                </div>
+                            </FormItem>
+                        )}
+                        />
                   </div>
                 ))}
                 {fields.length === 0 && (
