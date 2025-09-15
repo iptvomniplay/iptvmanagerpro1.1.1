@@ -155,26 +155,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
             name="phone"
             render={({ field }) => (
             <FormItem>
-                <div className="flex justify-between items-center">
-                    <FormLabel>{t('phone')}</FormLabel>
-                    <FormField
-                        control={form.control}
-                        name="hasDDI"
-                        render={({ field: ddiField }) => (
-                            <FormItem className="flex items-center space-x-2 space-y-0">
-                            <FormControl>
-                                <Checkbox
-                                checked={ddiField.value}
-                                onCheckedChange={ddiField.onChange}
-                                />
-                            </FormControl>
-                            <FormLabel className="text-sm font-normal">
-                                {t('hasDDI')}
-                            </FormLabel>
-                            </FormItem>
-                        )}
-                    />
-                </div>
+                <FormLabel>{t('phone')}</FormLabel>
                 <FormControl>
                 <Input 
                     {...field}
@@ -184,6 +165,23 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                 </FormControl>
                 <FormMessage />
             </FormItem>
+            )}
+        />
+        <FormField
+            control={form.control}
+            name="hasDDI"
+            render={({ field: ddiField }) => (
+                <FormItem className="flex items-center space-x-2 space-y-0">
+                <FormControl>
+                    <Checkbox
+                    checked={ddiField.value}
+                    onCheckedChange={ddiField.onChange}
+                    />
+                </FormControl>
+                <FormLabel className="text-sm font-normal">
+                    {t('hasDDI')}
+                </FormLabel>
+                </FormItem>
             )}
         />
         <FormField
