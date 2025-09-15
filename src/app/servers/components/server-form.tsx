@@ -670,16 +670,16 @@ export function ServerForm({ server }: ServerFormProps) {
                         <Button type="button" onClick={handleAddPlan}>
                             {t('addPlan')}
                         </Button>
-                        <div className="col-span-2 flex flex-wrap gap-2 pt-2">
-                            {subServerFormState.plans.map((plan, planIndex) => (
-                                <Badge key={planIndex} variant="secondary" className="flex items-center gap-2">
-                                    {plan}
-                                    <button type="button" onClick={() => handleRemovePlan(planIndex)} className="rounded-full hover:bg-muted-foreground/20">
-                                        <X className="h-3 w-3" />
-                                    </button>
-                                </Badge>
-                            ))}
-                        </div>
+                    </div>
+                    <div className="col-span-2 flex flex-wrap gap-2 pt-2">
+                        {subServerFormState.plans.map((plan, planIndex) => (
+                            <Badge key={planIndex} variant="secondary" className="flex items-center gap-2">
+                                {plan}
+                                <button type="button" onClick={() => handleRemovePlan(planIndex)} className="rounded-full hover:bg-muted-foreground/20">
+                                    <X className="h-3 w-3" />
+                                </button>
+                            </Badge>
+                        ))}
                     </div>
                   </div>
 
