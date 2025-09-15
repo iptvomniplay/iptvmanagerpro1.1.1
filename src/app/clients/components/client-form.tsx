@@ -61,7 +61,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       phone: client?.phone || '',
       hasDDI: client?.hasDDI || false,
       birthDate: client?.birthDate ? new Date(client.birthDate) : undefined,
-      status: client?.status || 'Active',
+      status: client?.status || undefined,
     },
   });
 
@@ -222,7 +222,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                 <FormLabel>{t('status')}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  value={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
