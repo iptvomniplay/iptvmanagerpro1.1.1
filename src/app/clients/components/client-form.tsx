@@ -111,7 +111,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 p-6">
-        <div className="md:w-1/2">
+        <div className="w-full md:w-1/2">
           <FormField
             control={form.control}
             name="name"
@@ -126,7 +126,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
             )}
           />
         </div>
-        <div className="md:w-1/2">
+        <div className="w-full md:w-1/2">
           <FormField
             control={form.control}
             name="nickname"
@@ -141,7 +141,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
             )}
           />
         </div>
-        <div className="md:w-1/2">
+        <div className="w-full md:w-1/2">
           <FormField
             control={form.control}
             name="email"
@@ -159,7 +159,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
             )}
           />
         </div>
-        <div className="md:w-1/2">
+        <div className="w-full md:w-1/2">
           <FormField
             control={form.control}
             name="phone"
@@ -195,7 +195,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
             )}
           />
         </div>
-        <div className="md:w-1/2">
+        <div className="w-full md:w-1/2">
           <FormField
               control={form.control}
               name="birthDate"
@@ -213,7 +213,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
               )}
           />
         </div>
-        <div className="md:w-1/2">
+        <div className="w-full md:w-[240px]">
           <FormField
             control={form.control}
             name="status"
