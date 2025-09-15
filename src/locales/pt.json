@@ -197,5 +197,6 @@
     "screensMin": "O número de telas deve ser no mínimo 1.",
     "statusRequired": "O status é obrigatório.",
     "phoneRequired": "O telefone é obrigatório.",
-    "birthDateRequired": "A data de nascimento é obrigatória."
+    "birthDateRequired": "A data de nascimento é obrigatória.",
+    "testButtonLabel": "Teste"
 }

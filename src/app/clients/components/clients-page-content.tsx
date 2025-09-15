@@ -34,6 +34,7 @@ import {
   MoreHorizontal,
   PlusCircle,
   Search,
+  TestTube,
   Trash2,
 } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
@@ -120,10 +121,16 @@ export default function ClientsPageContent() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Button onClick={() => router.push('/clients/new')} size="lg">
-          <PlusCircle className="mr-2 h-5 w-5" />
-          {t('register')}
-        </Button>
+        <div className="flex items-center gap-4">
+            <Button onClick={() => router.push('/clients/new')} size="lg" variant="outline">
+                <TestTube className="mr-2 h-5 w-5" />
+                {t('testButtonLabel')}
+            </Button>
+            <Button onClick={() => router.push('/clients/new')} size="lg">
+                <PlusCircle className="mr-2 h-5 w-5" />
+                {t('register')}
+            </Button>
+        </div>
       </div>
 
       <div className="rounded-xl border shadow-sm">

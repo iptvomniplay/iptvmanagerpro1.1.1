@@ -197,5 +197,6 @@
     "screensMin": "Screens must be at least 1.",
     "statusRequired": "Status is required.",
     "phoneRequired": "Phone is required.",
-    "birthDateRequired": "Date of birth is required."
+    "birthDateRequired": "Date of birth is required.",
+    "testButtonLabel": "Test"
 }
