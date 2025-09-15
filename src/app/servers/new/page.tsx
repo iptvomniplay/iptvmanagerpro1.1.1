@@ -1,11 +1,14 @@
 'use client';
 
+import * as React from 'react';
 import { ServerForm } from '../components/server-form';
 import { useLanguage } from '@/hooks/use-language';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 export default function NewServerPage() {
   const { t } = useLanguage();
+  const [isFormVisible, setIsFormVisible] = React.useState(false);
 
   return (
     <div className="space-y-8">
@@ -14,7 +17,15 @@ export default function NewServerPage() {
           <CardTitle className="text-2xl">{t('panelAndServerRegistration')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <ServerForm server={null} />
+          {isFormVisible ? (
+            <ServerForm server={null} />
+          ) : (
+            <div className="flex justify-center items-center h-40">
+              <Button size="lg" onClick={() => setIsFormVisible(true)}>
+                {t('addPanel')}
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
