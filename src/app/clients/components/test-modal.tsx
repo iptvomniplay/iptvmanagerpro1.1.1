@@ -63,12 +63,12 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
     },
   });
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchTerm) {
+  React.useEffect(() => {
+    if (searchTerm.trim() === '') {
       setSearchResults([]);
       return;
     }
+
     const lowercasedTerm = searchTerm.toLowerCase();
     const results = clients.filter(
       (client) =>
@@ -77,7 +77,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
         (client.nickname && client.nickname.toLowerCase().includes(lowercasedTerm))
     );
     setSearchResults(results);
-  };
+  }, [searchTerm, clients]);
   
   const handleSelectClient = (client: Client) => {
     setSelectedClient(client);
@@ -115,16 +115,15 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                  <h3 className="text-xl font-semibold">{t('searchClient')}</h3>
                  <p className="text-muted-foreground">{t('selectClientPrompt')}</p>
                </div>
-               <form onSubmit={handleSearch} className="flex gap-2">
+               <div className="relative">
+                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
                   placeholder={t('searchClientPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
                 />
-                <Button type="submit">
-                  <Search className="mr-2 h-4 w-4" /> {t('searchClient')}
-                </Button>
-              </form>
+              </div>
               {searchResults.length > 0 && (
                 <ScrollArea className="h-72 rounded-md border">
                   <div className="p-4 space-y-2">
@@ -136,7 +135,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                       >
                         <div>
                           <p className="font-semibold">{client.name}</p>
-                          <p className="text-sm text-muted-foreground">{client.email}</p>
+                          <p className="text-sm text-muted-foreground">{client.phone}</p>
                         </div>
                         <Button variant="outline" size="sm">{t('selectClient')}</Button>
                       </div>
