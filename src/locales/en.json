@@ -223,7 +223,7 @@
     "plansRequired": "Plans are required.",
     "atLeastOnePlanRequired": "At least one plan must be added.",
     "addPlan": "Add Plan",
-    "Add Servidores": "Add Servers",
+    "addServer": "Add Server",
     "addMoreServerTitle": "Server Added!",
     "addMoreServerDescription": "Do you want to add another server to this panel?",
     "yes": "Yes",

@@ -145,12 +145,11 @@ export function ServerForm({ server }: ServerFormProps) {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = React.useState(false);
   const [serverDataToConfirm, setServerDataToConfirm] = React.useState<ServerFormValues | null>(null);
   const [isAddMoreServerModalOpen, setIsAddMoreServerModalOpen] = React.useState(false);
-  const [showAddMoreButton, setShowAddMoreButton] = React.useState(false);
   const [flashSaveButton, setFlashSaveButton] = React.useState(false);
 
   const [subServerFormState, setSubServerFormState] = React.useState<SubServerFormValues>(initialSubServerValues);
   const [currentPlanInput, setCurrentPlanInput] = React.useState('');
-
+  const [subServerErrors, setSubServerErrors] = React.useState<Record<string, string | undefined>>({});
 
   const formSchema = createFormSchema(t);
 
@@ -159,7 +158,7 @@ export function ServerForm({ server }: ServerFormProps) {
     defaultValues: getInitialValues(server),
   });
 
-  const { control, watch, setValue, reset, trigger, getValues, formState: { errors } } = form;
+  const { control, watch, setValue, reset } = form;
   const paymentType = watch('paymentType');
   const hasInitialStock = watch('hasInitialStock');
   const hasDDI = watch('hasDDI');
@@ -173,28 +172,15 @@ export function ServerForm({ server }: ServerFormProps) {
   
   const subServerSchema = createSubServerSchema(t);
 
-  React.useEffect(() => {
-    const checkFields = async () => {
-        const result = subServerSchema.safeParse(subServerFormState);
-        // Only open modal if it's not already open and the form is valid
-        if (result.success && !isAddMoreServerModalOpen) {
-            setIsAddMoreServerModalOpen(true);
-        }
-    }
-    // No need to await here
-    checkFields();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subServerFormState, isAddMoreServerModalOpen]); // Removed schema from deps
-
-
   const handleAddPlan = () => {
     const planInput = currentPlanInput.trim();
-    if (planInput) { // Allows adding even if it's the only plan
+    if (planInput) {
       setSubServerFormState(prev => ({
           ...prev,
           plans: [...prev.plans, planInput]
       }));
       setCurrentPlanInput('');
+      setSubServerErrors(prev => ({ ...prev, plans: undefined }));
     }
   };
   
@@ -236,15 +222,33 @@ export function ServerForm({ server }: ServerFormProps) {
 
     setValue('phone', value);
   };
+  
+  const handleAddServerClick = () => {
+    const result = subServerSchema.safeParse(subServerFormState);
+    if (!result.success) {
+        const newErrors: Record<string, string | undefined> = {};
+        result.error.issues.forEach(issue => {
+            newErrors[issue.path[0]] = issue.message;
+        });
+        setSubServerErrors(newErrors);
+        return;
+    }
+    setSubServerErrors({});
+    setIsAddMoreServerModalOpen(true);
+  };
 
   const handleSubmit = (values: ServerFormValues) => {
-     // Check if there's a partially filled sub-server form that's valid and not yet added
     const result = subServerSchema.safeParse(subServerFormState);
-    if (result.success && !fields.some(f => f.name === subServerFormState.name)) {
-      values.subServers = [...(values.subServers || []), subServerFormState];
+    let finalValues = values;
+
+    if (result.success) {
+      finalValues = {
+        ...values,
+        subServers: [...(values.subServers || []), subServerFormState],
+      };
     }
 
-    setServerDataToConfirm(values);
+    setServerDataToConfirm(finalValues);
     setIsConfirmationModalOpen(true);
   };
 
@@ -289,18 +293,16 @@ export function ServerForm({ server }: ServerFormProps) {
    const handleAddMoreResponse = (addMore: boolean) => {
     setIsAddMoreServerModalOpen(false);
     const result = subServerSchema.safeParse(subServerFormState);
-
-    if (addMore) {
-        if (result.success) {
-            append(subServerFormState);
-            setSubServerFormState(initialSubServerValues);
-            setCurrentPlanInput('');
-        }
-    } else {
-        // User said no, just flash the save button.
-        // The data is kept in subServerFormState and will be added on final submit.
+    
+    if (result.success) {
+      if (addMore) {
+        append(subServerFormState);
+        setSubServerFormState(initialSubServerValues);
+        setCurrentPlanInput('');
+      } else {
         setFlashSaveButton(true);
-        setTimeout(() => setFlashSaveButton(false), 1500); // Animation duration
+        setTimeout(() => setFlashSaveButton(false), 1500); 
+      }
     }
   };
 
@@ -625,20 +627,28 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <FormControl>
                                     <Input 
                                         value={subServerFormState.name}
-                                        onChange={e => setSubServerFormState(p => ({ ...p, name: e.target.value }))}
+                                        onChange={e => {
+                                            setSubServerFormState(p => ({ ...p, name: e.target.value }));
+                                            setSubServerErrors(p => ({...p, name: undefined}));
+                                        }}
                                         placeholder={t('subServerNamePlaceholder')} 
                                     />
                                 </FormControl>
+                                {subServerErrors.name && <p className="text-sm font-medium text-destructive">{subServerErrors.name}</p>}
                             </FormItem>
                             <FormItem>
                                 <FormLabel>{t('subServerType')}</FormLabel>
                                 <FormControl>
                                     <Input 
                                         value={subServerFormState.type}
-                                        onChange={e => setSubServerFormState(p => ({ ...p, type: e.target.value }))}
+                                        onChange={e => {
+                                            setSubServerFormState(p => ({ ...p, type: e.target.value }));
+                                            setSubServerErrors(p => ({...p, type: undefined}));
+                                        }}
                                         placeholder={t('subServerTypePlaceholder')} 
                                     />
                                 </FormControl>
+                                 {subServerErrors.type && <p className="text-sm font-medium text-destructive">{subServerErrors.type}</p>}
                             </FormItem>
                              <FormItem>
                                 <FormLabel>{t('subServerScreens')}</FormLabel>
@@ -646,13 +656,17 @@ export function ServerForm({ server }: ServerFormProps) {
                                     <Input
                                         type="number"
                                         value={subServerFormState.screens || ''}
-                                        onChange={e => setSubServerFormState(p => ({ ...p, screens: e.target.value === '' ? undefined : Number(e.target.value) }))}
+                                        onChange={e => {
+                                            setSubServerFormState(p => ({ ...p, screens: e.target.value === '' ? undefined : Number(e.target.value) }));
+                                            setSubServerErrors(p => ({...p, screens: undefined}));
+                                        }}
                                         placeholder={t('subServerScreensPlaceholder')}
                                     />
                                 </FormControl>
+                                 {subServerErrors.screens && <p className="text-sm font-medium text-destructive">{subServerErrors.screens}</p>}
                             </FormItem>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-end">
+                        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_auto] gap-4 items-end">
                              <FormItem>
                                 <FormLabel>{t('plans')}</FormLabel>
                                 <FormControl>
@@ -668,9 +682,13 @@ export function ServerForm({ server }: ServerFormProps) {
                                         placeholder={t('plansPlaceholder')}
                                     />
                                 </FormControl>
+                                {subServerErrors.plans && <p className="text-sm font-medium text-destructive">{subServerErrors.plans}</p>}
                             </FormItem>
-                             <Button type="button" onClick={handleAddPlan} className="self-end">
+                             <Button type="button" onClick={handleAddPlan}>
                                 {t('addPlan')}
+                            </Button>
+                             <Button type="button" onClick={handleAddServerClick}>
+                                {t('addServer')}
                             </Button>
                         </div>
                         <div className="flex flex-wrap gap-2 pt-2 min-h-[24px]">
@@ -765,7 +783,3 @@ export function ServerForm({ server }: ServerFormProps) {
     </>
   );
 }
-
-    
-
-    
