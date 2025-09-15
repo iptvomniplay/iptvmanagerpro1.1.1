@@ -167,7 +167,7 @@
     "subServerScreens": "Screens",
     "screens": "Screens",
     "subServerScreensPlaceholder": "Ex.: 1",
-    "noSubServers": "No servers registered. Fill out the form above to get started.",
+    "noSubServers": "No servers have been added yet. Fill out the form above to get started.",
     "noSubServersMessage": "No servers registered for this panel.",
     "addClient": "Add Client",
     "collapse": "Collapse",
@@ -227,5 +227,8 @@
     "addMoreServerTitle": "Server Added!",
     "addMoreServerDescription": "Do you want to add another server to this panel?",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "validationError": "Validation Error",
+    "fillAllFieldsWarning": "Please fill in all required fields before saving.",
+    "fillAllSubServerFields": "Please fill in all sub-server fields before adding it to the list."
 }

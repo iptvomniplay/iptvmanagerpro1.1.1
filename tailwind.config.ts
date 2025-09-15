@@ -100,14 +100,19 @@ export default {
           },
         },
         'flash': {
-          '0%, 100%': { 'box-shadow': '0 0 0 0 rgba(0, 122, 204, 0.4)' },
-          '50%': { 'box-shadow': '0 0 0 4px rgba(0, 122, 204, 0)' },
+          '0%, 100%': { 'box-shadow': '0 0 0 0 hsl(var(--primary) / 0.4)' },
+          '50%': { 'box-shadow': '0 0 0 4px hsl(var(--primary) / 0)' },
+        },
+        'flash-destructive': {
+            '0%, 100%': { 'box-shadow': '0 0 0 0 hsl(var(--destructive) / 0.7)' },
+            '50%': { 'box-shadow': '0 0 0 5px hsl(var(--destructive) / 0)' },
         },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'flash': 'flash 1.5s ease-out',
+        'flash-destructive': 'flash-destructive 1.5s ease-in-out',
       },
     },
   },

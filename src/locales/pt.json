@@ -167,7 +167,7 @@
     "subServerScreens": "Telas",
     "screens": "Telas",
     "subServerScreensPlaceholder": "Ex.: 1",
-    "noSubServers": "Nenhum servidor cadastrado. Preencha o formulário acima para começar.",
+    "noSubServers": "Nenhum servidor foi adicionado ainda. Preencha o formulário acima para começar.",
     "noSubServersMessage": "Nenhum servidor cadastrado para este painel.",
     "addClient": "Add Cliente",
     "collapse": "Recolher",
@@ -227,5 +227,8 @@
     "addMoreServerTitle": "Servidor Adicionado!",
     "addMoreServerDescription": "Deseja adicionar mais um servidor a este painel?",
     "yes": "Sim",
-    "no": "Não"
+    "no": "Não",
+    "validationError": "Erro de Validação",
+    "fillAllFieldsWarning": "Por favor, preencha todos os campos obrigatórios antes de salvar.",
+    "fillAllSubServerFields": "Por favor, preencha todos os campos do sub-servidor antes de adicioná-lo à lista."
 }

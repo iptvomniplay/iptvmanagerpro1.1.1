@@ -4,7 +4,7 @@ import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import type { Server, SubServer } from '@/lib/types';
+import type { Server } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -42,6 +42,7 @@ import {
 import { ConfirmationModal } from './confirmation-modal';
 import { Badge } from '@/components/ui/badge';
 import { AddServerModal } from './add-server-modal';
+import { useToast } from '@/hooks/use-toast';
 
 const createSubServerSchema = (t: (key: any) => string) => z.object({
   name: z.string().min(1, t('serverNameRequired')),
@@ -141,12 +142,14 @@ export function ServerForm({ server }: ServerFormProps) {
   const { t, language } = useLanguage();
   const { addServer, updateServer } = useData();
   const router = useRouter();
+  const { toast } = useToast();
+  
   const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = React.useState(false);
   const [serverDataToConfirm, setServerDataToConfirm] = React.useState<ServerFormValues | null>(null);
   const [isAddMoreServerModalOpen, setIsAddMoreServerModalOpen] = React.useState(false);
-  const [flashSaveButton, setFlashSaveButton] = React.useState(false);
-
+  const [hasSubmissionError, setHasSubmissionError] = React.useState(false);
+  
   const [subServerFormState, setSubServerFormState] = React.useState<SubServerFormValues>(initialSubServerValues);
   const [currentPlanInput, setCurrentPlanInput] = React.useState('');
   const [subServerErrors, setSubServerErrors] = React.useState<Record<string, string | undefined>>({});
@@ -158,7 +161,7 @@ export function ServerForm({ server }: ServerFormProps) {
     defaultValues: getInitialValues(server),
   });
 
-  const { control, watch, setValue, reset } = form;
+  const { control, watch, setValue, reset, formState: { errors } } = form;
   const paymentType = watch('paymentType');
   const hasInitialStock = watch('hasInitialStock');
   const hasDDI = watch('hasDDI');
@@ -227,10 +230,17 @@ export function ServerForm({ server }: ServerFormProps) {
     const result = subServerSchema.safeParse(subServerFormState);
     if (!result.success) {
         const newErrors: Record<string, string | undefined> = {};
+        const firstErrorField = result.error.issues[0].path[0];
+
         result.error.issues.forEach(issue => {
             newErrors[issue.path[0]] = issue.message;
         });
         setSubServerErrors(newErrors);
+        
+        const el = document.getElementsByName(firstErrorField as string)[0];
+        if (el) {
+          el.focus();
+        }
         return;
     }
     setSubServerErrors({});
@@ -238,19 +248,56 @@ export function ServerForm({ server }: ServerFormProps) {
   };
 
   const handleSubmit = (values: ServerFormValues) => {
-    const result = subServerSchema.safeParse(subServerFormState);
     let finalValues = values;
 
-    if (result.success) {
-      finalValues = {
-        ...values,
-        subServers: [...(values.subServers || []), subServerFormState],
-      };
+    const subServerResult = subServerSchema.safeParse(subServerFormState);
+    if (Object.values(subServerFormState).some(v => (Array.isArray(v) ? v.length > 0 : v))) {
+         if (subServerResult.success) {
+            finalValues = {
+                ...values,
+                subServers: [...(values.subServers || []), subServerFormState],
+            };
+        } else {
+            setHasSubmissionError(true);
+            toast({
+                variant: 'destructive',
+                title: t('validationError'),
+                description: t('fillAllSubServerFields'),
+            });
+            return;
+        }
     }
 
+    setHasSubmissionError(false);
     setServerDataToConfirm(finalValues);
     setIsConfirmationModalOpen(true);
   };
+
+  const onInvalid = (errors: any) => {
+    if (!hasSubmissionError) {
+        const errorMessages = Object.keys(errors).map(key => `- ${t(key as any)}`);
+        toast({
+            variant: "destructive",
+            title: t('validationError'),
+            description: (
+                <div className="flex flex-col gap-1">
+                    <p>{t('fillAllFieldsWarning')}</p>
+                    <ul className="list-disc pl-5">
+                       {Object.keys(errors).map(key => <li key={key}>{t(key as any)}</li>)}
+                    </ul>
+                </div>
+            )
+        });
+        setHasSubmissionError(true);
+    } else {
+        const firstErrorField = Object.keys(errors)[0];
+        const el = document.getElementsByName(firstErrorField)[0];
+        if (el) {
+          el.focus();
+        }
+    }
+  };
+
 
   const handleConfirmSave = () => {
     if (!serverDataToConfirm) return;
@@ -286,6 +333,7 @@ export function ServerForm({ server }: ServerFormProps) {
     } else {
       reset(getInitialValues(null));
       setSubServerFormState(initialSubServerValues);
+      remove();
       setIsPanelFormVisible(false);
     }
   };
@@ -295,13 +343,11 @@ export function ServerForm({ server }: ServerFormProps) {
     const result = subServerSchema.safeParse(subServerFormState);
     
     if (result.success) {
-      if (addMore) {
-        append(subServerFormState);
-        setSubServerFormState(initialSubServerValues);
-        setCurrentPlanInput('');
-      } else {
-        setFlashSaveButton(true);
-        setTimeout(() => setFlashSaveButton(false), 1500); 
+      append(subServerFormState);
+      setSubServerFormState(initialSubServerValues);
+      setCurrentPlanInput('');
+      if (!addMore) {
+        setHasSubmissionError(true);
       }
     }
   };
@@ -310,7 +356,7 @@ export function ServerForm({ server }: ServerFormProps) {
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 p-6">
+        <form onSubmit={form.handleSubmit(handleSubmit, onInvalid)} className="space-y-6 p-6">
           <Button
             type="button"
             onClick={() => setIsPanelFormVisible(!isPanelFormVisible)}
@@ -626,6 +672,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <FormLabel>{t('subServerName')}</FormLabel>
                                 <FormControl>
                                     <Input 
+                                        name="subServerName"
                                         value={subServerFormState.name}
                                         onChange={e => {
                                             setSubServerFormState(p => ({ ...p, name: e.target.value }));
@@ -640,6 +687,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <FormLabel>{t('subServerType')}</FormLabel>
                                 <FormControl>
                                     <Input 
+                                        name="subServerType"
                                         value={subServerFormState.type}
                                         onChange={e => {
                                             setSubServerFormState(p => ({ ...p, type: e.target.value }));
@@ -655,6 +703,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <FormControl>
                                     <Input
                                         type="number"
+                                        name="subServerScreens"
                                         value={subServerFormState.screens || ''}
                                         onChange={e => {
                                             setSubServerFormState(p => ({ ...p, screens: e.target.value === '' ? undefined : Number(e.target.value) }));
@@ -666,11 +715,12 @@ export function ServerForm({ server }: ServerFormProps) {
                                  {subServerErrors.screens && <p className="text-sm font-medium text-destructive">{subServerErrors.screens}</p>}
                             </FormItem>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_auto] gap-4 items-end">
+                        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-end">
                              <FormItem>
                                 <FormLabel>{t('plans')}</FormLabel>
                                 <FormControl>
                                     <Input
+                                        name="subServerPlans"
                                         value={currentPlanInput}
                                         onChange={(e) => setCurrentPlanInput(e.target.value)}
                                         onKeyDown={(e) => {
@@ -687,9 +737,6 @@ export function ServerForm({ server }: ServerFormProps) {
                              <Button type="button" onClick={handleAddPlan}>
                                 {t('addPlan')}
                             </Button>
-                             <Button type="button" onClick={handleAddServerClick}>
-                                {t('addServer')}
-                            </Button>
                         </div>
                         <div className="flex flex-wrap gap-2 pt-2 min-h-[24px]">
                            {subServerFormState.plans.map((plan, planIndex) => (
@@ -701,6 +748,9 @@ export function ServerForm({ server }: ServerFormProps) {
                                 </Badge>
                             ))}
                         </div>
+                         <Button type="button" onClick={handleAddServerClick} className="w-full">
+                            {t('addServer')}
+                        </Button>
                     </div>
 
                     {/* Display added sub servers */}
@@ -742,7 +792,7 @@ export function ServerForm({ server }: ServerFormProps) {
             <Button type="button" variant="outline" onClick={handleCancel}>
               {t('cancel')}
             </Button>
-            <Button type="submit" className={cn(flashSaveButton && 'animate-flash')}>
+            <Button type="submit" className={cn(hasSubmissionError && 'animate-flash-destructive')}>
                 {server ? t('saveChanges') : t('save')}
             </Button>
           </div>
