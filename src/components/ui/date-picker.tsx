@@ -8,7 +8,7 @@ import { CaptionProps, DayPicker } from 'react-day-picker';
 
 import { useLanguage } from '@/hooks/use-language';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Popover,
   PopoverContent,
@@ -58,10 +58,11 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
     const handleYearChange = (year: number) => {
         const newDate = new Date(year, props.displayMonth.getMonth());
         props.onMonthChange?.(newDate);
+        setOpen(false);
     };
 
     return (
-       <div className="flex justify-center items-center relative gap-4 mb-4">
+       <div className="flex justify-center items-center relative gap-2 mb-4">
          <Button
           variant="outline"
           size="icon"
