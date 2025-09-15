@@ -171,7 +171,7 @@ export function ServerForm({ server }: ServerFormProps) {
     name: 'subServers',
   });
   
-  const hasSubServers = fields.length > 0 || subServerFormState.plans.length > 0 || currentPlanInput.trim() !== '';
+  const hasSubServers = fields.length > 0 || subServerFormState.name || subServerFormState.type || subServerFormState.screens || subServerFormState.plans.length > 0 || currentPlanInput.trim() !== '';
 
 
   const subServerSchema = createSubServerSchema(t);
@@ -227,15 +227,20 @@ export function ServerForm({ server }: ServerFormProps) {
     setValue('phone', value);
   };
   
-  const handleAddServerClick = () => {
+  const processSubServerForValidation = () => {
     let formStateWithCurrentPlan = { ...subServerFormState };
     const planInput = currentPlanInput.trim();
     
     if (planInput && !formStateWithCurrentPlan.plans.includes(planInput)) {
         formStateWithCurrentPlan.plans.push(planInput);
     }
-    
-    const result = subServerSchema.safeParse(formStateWithCurrentPlan);
+    return formStateWithCurrentPlan;
+  }
+  
+  const handleAddServerClick = () => {
+    const subServerToValidate = processSubServerForValidation();
+    const result = subServerSchema.safeParse(subServerToValidate);
+
     if (!result.success) {
         const newErrors: Record<string, string | undefined> = {};
         const firstErrorField = result.error.issues[0].path[0];
@@ -253,31 +258,19 @@ export function ServerForm({ server }: ServerFormProps) {
     }
 
     setSubServerErrors({});
-    
-    if (planInput) {
-        setSubServerFormState(formStateWithCurrentPlan);
-        setCurrentPlanInput('');
-    }
-
     setIsAddMoreServerModalOpen(true);
   };
 
   const processAndValidateSubServer = () => {
-    const planInput = currentPlanInput.trim();
-    let currentSubServer = { ...subServerFormState };
-
-    // If there's text in the plan input, add it to the current sub-server's plans
-    if (planInput && !currentSubServer.plans.includes(planInput)) {
-      currentSubServer.plans = [...currentSubServer.plans, planInput];
-    }
+    const subServerToValidate = processSubServerForValidation();
     
-    const isSubServerFormEmpty = Object.values(subServerFormState).every(v => (Array.isArray(v) ? v.length === 0 : !v)) && !planInput;
+    const isSubServerFormEmpty = Object.values(subServerFormState).every(v => (Array.isArray(v) ? v.length === 0 : !v)) && !currentPlanInput.trim();
 
     if (isSubServerFormEmpty) {
       return { isValid: true, subServer: null };
     }
 
-    const result = subServerSchema.safeParse(currentSubServer);
+    const result = subServerSchema.safeParse(subServerToValidate);
 
     if (!result.success) {
       setHasSubmissionError(true);
@@ -294,7 +287,7 @@ export function ServerForm({ server }: ServerFormProps) {
       return { isValid: false, subServer: null };
     }
 
-    return { isValid: true, subServer: currentSubServer };
+    return { isValid: true, subServer: subServerToValidate };
   };
 
   const handleSubmit = (values: ServerFormValues) => {
