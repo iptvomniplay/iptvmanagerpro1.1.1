@@ -26,7 +26,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
-import { PlusCircle, Trash2, X } from 'lucide-react';
+import { PlusCircle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useData } from '@/hooks/use-data';
@@ -475,7 +475,7 @@ export function ServerForm({ server }: ServerFormProps) {
                   <FormLabel>{t('paymentMethod')}</FormLabel>
                   <FormControl>
                     <RadioGroup
-                      onValueChange={field.onChange}
+                      onValuechange={field.onChange}
                       defaultValue={field.value}
                       className="flex space-x-4"
                     >
