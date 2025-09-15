@@ -164,6 +164,7 @@
     "subServerType": "Server Type",
     "subServerTypePlaceholder": "Type (e.g., Streaming)",
     "subServerScreens": "Screens",
+    "screens": "Screens",
     "subServerScreensPlaceholder": "Ex.: 1",
     "noSubServers": "No servers registered. Click on 'Add Server' to start.",
     "noSubServersMessage": "No servers registered for this panel.",
@@ -210,5 +211,10 @@
     "testDuration": "Test Duration (hours)",
     "testPackage": "Test Package",
     "client": "Client",
-    "selectClientPrompt": "Search for a client to add a test."
+    "selectClientPrompt": "Search for a client to add a test.",
+    "panel": "Panel",
+    "selectPanel": "Select Panel",
+    "selectPanelPlaceholder": "Click to select a panel",
+    "noPanelsFound": "No panels found",
+    "searchPanelPlaceholder": "Search by panel name..."
 }

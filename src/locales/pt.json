@@ -164,6 +164,7 @@
     "subServerType": "Tipo do Servidor",
     "subServerTypePlaceholder": "Tipo (ex.: Streaming)",
     "subServerScreens": "Telas",
+    "screens": "Telas",
     "subServerScreensPlaceholder": "Ex.: 1",
     "noSubServers": "Nenhum servidor cadastrado. Clique em 'Adicionar Servidor' para começar.",
     "noSubServersMessage": "Nenhum servidor cadastrado para este painel.",
@@ -210,5 +211,10 @@
     "testDuration": "Duração do Teste (horas)",
     "testPackage": "Pacote do Teste",
     "client": "Cliente",
-    "selectClientPrompt": "Busque por um cliente para adicionar um teste."
+    "selectClientPrompt": "Busque por um cliente para adicionar um teste.",
+    "panel": "Painel",
+    "selectPanel": "Selecionar Painel",
+    "selectPanelPlaceholder": "Clique para selecionar um painel",
+    "noPanelsFound": "Nenhum painel encontrado",
+    "searchPanelPlaceholder": "Buscar por nome do painel..."
 }
