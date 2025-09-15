@@ -34,7 +34,7 @@ import { DatePicker } from '@/components/ui/date-picker';
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   nickname: z.string().optional(),
-  email: z.string().email({ message: 'Please enter a valid email.' }),
+  email: z.string().email({ message: 'Please enter a valid email.' }).optional().or(z.literal('')),
   phone: z.string().optional(),
   hasDDI: z.boolean().default(false).optional(),
   birthDate: z.date().optional(),
