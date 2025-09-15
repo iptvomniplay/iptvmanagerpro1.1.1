@@ -36,6 +36,7 @@ import {
   Search,
   TestTube,
   Trash2,
+  ChevronDown,
 } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { useData } from '@/hooks/use-data';
@@ -122,10 +123,23 @@ export default function ClientsPageContent() {
           />
         </div>
         <div className="flex items-center gap-4">
-            <Button onClick={() => router.push('/clients/new')} size="lg" variant="outline">
-                <TestTube className="mr-2 h-5 w-5" />
-                {t('testButtonLabel')}
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                  <Button size="lg" variant="outline">
+                      <TestTube className="mr-2 h-5 w-5" />
+                      {t('testButtonLabel')}
+                      <ChevronDown className="ml-2 h-5 w-5" />
+                  </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => router.push('/clients/new')}>
+                      {t('addTest')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push('/clients/tests')}>
+                      {t('viewTests')}
+                  </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button onClick={() => router.push('/clients/new')} size="lg">
                 <PlusCircle className="mr-2 h-5 w-5" />
                 {t('register')}

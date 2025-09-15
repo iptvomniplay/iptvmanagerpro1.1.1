@@ -198,5 +198,7 @@
     "statusRequired": "O status é obrigatório.",
     "phoneRequired": "O telefone é obrigatório.",
     "birthDateRequired": "A data de nascimento é obrigatória.",
-    "testButtonLabel": "Teste"
+    "testButtonLabel": "Teste",
+    "addTest": "Adicionar Teste",
+    "viewTests": "Ver Todos os Testes"
 }

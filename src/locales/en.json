@@ -198,5 +198,7 @@
     "statusRequired": "Status is required.",
     "phoneRequired": "Phone is required.",
     "birthDateRequired": "Date of birth is required.",
-    "testButtonLabel": "Test"
+    "testButtonLabel": "Test",
+    "addTest": "Add Test",
+    "viewTests": "View All Tests"
 }
