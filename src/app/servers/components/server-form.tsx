@@ -390,6 +390,7 @@ export function ServerForm({ server }: ServerFormProps) {
         append(result.data);
         setSubServerFormState(initialSubServerValues);
         setCurrentPlanInput('');
+        setNoServersAddedError(false);
         if (addMore) {
            // Form is cleared, ready for the next one
            const firstSubServerField = document.getElementsByName("name")[1];
@@ -397,6 +398,7 @@ export function ServerForm({ server }: ServerFormProps) {
         } else {
             // User doesn't want to add more, they will click save next.
             const saveButton = document.getElementById('main-save-button');
+            saveButton?.focus();
             saveButton?.classList.add('animate-flash');
             setTimeout(() => saveButton?.classList.remove('animate-flash'), 1500);
         }
@@ -779,10 +781,10 @@ export function ServerForm({ server }: ServerFormProps) {
                                 </FormControl>
                                 {subServerErrors.plans && <p className="text-sm font-medium text-destructive">{subServerErrors.plans}</p>}
                             </FormItem>
-                             <Button type="button" onClick={handleAddPlan} variant="default">
+                             <Button type="button" onClick={handleAddPlan} variant="outline">
                                 {t('addPlan')}
                             </Button>
-                            <Button type="button" onClick={handleAddServerClick}>
+                            <Button type="button" onClick={handleAddServerClick} variant="default">
                                 {t('addServer')}
                             </Button>
                         </div>
