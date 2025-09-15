@@ -50,6 +50,7 @@
     "active": "Ativo",
     "inactive": "Inativo",
     "expired": "Expirado",
+    "test": "Teste",
     "saveChanges": "Salvar Alterações",
     "createClient": "Criar Cliente",
     "serverManagement": "Gerenciamento de Servidores",

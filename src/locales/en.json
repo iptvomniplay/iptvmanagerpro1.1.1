@@ -50,6 +50,7 @@
     "active": "Active",
     "inactive": "Inactive",
     "expired": "Expired",
+    "test": "Test",
     "saveChanges": "Save Changes",
     "createClient": "Create Client",
     "serverManagement": "Server Management",

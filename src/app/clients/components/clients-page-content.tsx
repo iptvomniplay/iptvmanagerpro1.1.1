@@ -105,6 +105,8 @@ export default function ClientsPageContent() {
         return 'secondary';
       case 'Expired':
         return 'destructive';
+      case 'Test':
+        return 'outline';
       default:
         return 'outline';
     }

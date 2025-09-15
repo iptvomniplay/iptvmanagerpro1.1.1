@@ -38,7 +38,7 @@ const formSchema = z.object({
   phone: z.string().optional(),
   hasDDI: z.boolean().default(false).optional(),
   birthDate: z.date().optional(),
-  status: z.enum(['Active', 'Inactive', 'Expired']),
+  status: z.enum(['Active', 'Inactive', 'Expired', 'Test']),
 });
 
 interface ClientFormProps {
@@ -231,8 +231,9 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                   </FormControl>
                   <SelectContent>
                     <SelectItem value="Active">{t('active')}</SelectItem>
-                    <SelectItem value="Inactive">{t('inactive')}</SelectItem>
                     <SelectItem value="Expired">{t('expired')}</SelectItem>
+                    <SelectItem value="Inactive">{t('inactive')}</SelectItem>
+                    <SelectItem value="Test">{t('test')}</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
