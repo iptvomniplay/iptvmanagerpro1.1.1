@@ -3,8 +3,8 @@
 import * as React from 'react';
 import { format } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
-import { DayPicker, CaptionProps } from 'react-day-picker';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { CaptionProps, DayPicker } from 'react-day-picker';
 
 import { useLanguage } from '@/hooks/use-language';
 import { cn } from '@/lib/utils';
@@ -22,7 +22,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
-
 
 interface DatePickerProps {
   value?: Date;
@@ -52,36 +51,32 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
     const months = Array.from({ length: 12 }, (_, i) => i);
 
     const handleMonthChange = (month: number) => {
-      const newDate = new Date(props.displayMonth.getFullYear(), month);
-      if (props.onMonthChange) {
-        props.onMonthChange(newDate);
-      }
+        const newDate = new Date(props.displayMonth.getFullYear(), month);
+        props.onMonthChange?.(newDate);
     };
 
     const handleYearChange = (year: number) => {
-      const newDate = new Date(year, props.displayMonth.getMonth());
-       if (props.onMonthChange) {
-        props.onMonthChange(newDate);
-      }
+        const newDate = new Date(year, props.displayMonth.getMonth());
+        props.onMonthChange?.(newDate);
     };
 
     return (
-       <div className="flex justify-center items-center relative gap-2 mb-4">
+       <div className="flex justify-center items-center relative gap-4 mb-4">
          <Button
           variant="outline"
           size="icon"
-          className="h-8 w-8"
+          className="h-9 w-9"
           disabled={!props.previousMonth}
           onClick={() => props.onMonthChange && props.previousMonth && props.onMonthChange(props.previousMonth)}
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-5 w-5" />
         </Button>
         
         <Select
             value={String(props.displayMonth.getMonth())}
             onValueChange={(value) => handleMonthChange(Number(value))}
           >
-            <SelectTrigger className="h-8 w-auto min-w-[120px]">
+            <SelectTrigger className="h-9 w-auto min-w-[140px] text-base">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -97,7 +92,7 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
             value={String(props.displayMonth.getFullYear())}
             onValueChange={(value) => handleYearChange(Number(value))}
           >
-            <SelectTrigger className="h-8 w-[80px]">
+            <SelectTrigger className="h-9 w-[100px] text-base">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -112,11 +107,11 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
         <Button
           variant="outline"
           size="icon"
-          className="h-8 w-8"
+          className="h-9 w-9"
           disabled={!props.nextMonth}
           onClick={() => props.onMonthChange && props.nextMonth && props.onMonthChange(props.nextMonth)}
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-5 w-5" />
         </Button>
       </div>
     );
@@ -132,11 +127,11 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
             !value && 'text-muted-foreground'
           )}
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
+          <Calendar className="mr-2 h-4 w-4" />
           {value ? format(value, 'PPP', { locale }) : <span>{t('pickADate')}</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
+      <PopoverContent className="w-auto p-4">
         <DayPicker
           mode="single"
           selected={value}
@@ -148,6 +143,18 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
           }}
           fromYear={new Date().getFullYear() - 100}
           toYear={new Date().getFullYear()}
+          classNames={{
+            months: 'flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0',
+            month: 'space-y-4',
+            head_row: 'flex mb-2',
+            head_cell: 'text-muted-foreground rounded-md w-10 font-normal text-sm',
+            row: 'flex w-full mt-2',
+            cell: 'h-10 w-10 text-center text-base p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20',
+            day: cn(
+              buttonVariants({ variant: 'ghost' }),
+              'h-10 w-10 p-0 font-normal aria-selected:opacity-100'
+            ),
+          }}
         />
       </PopoverContent>
     </Popover>
