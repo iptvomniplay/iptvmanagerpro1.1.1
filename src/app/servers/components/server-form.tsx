@@ -571,7 +571,7 @@ export function ServerForm({ server }: ServerFormProps) {
                     append({ name: '', type: '', screens: undefined as any, plans: '' })
                   }
                 >
-                  {t('addSubServer')}
+                  Adicionar Servidor
                 </Button>
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
