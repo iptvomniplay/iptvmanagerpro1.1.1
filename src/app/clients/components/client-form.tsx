@@ -43,9 +43,9 @@ const createFormSchema = (t: (key: string) => string) => z.object({
   name: z.string().min(2, { message: t('nameValidation') }),
   nickname: z.string().optional(),
   email: z.string().email({ message: t('emailValidation') }).optional().or(z.literal('')),
-  phone: z.string().optional(),
+  phone: z.string().min(1, { message: t('phoneRequired') }),
   hasDDI: z.boolean().default(false).optional(),
-  birthDate: z.date().optional(),
+  birthDate: z.date({ required_error: t('birthDateRequired') }),
   status: z.enum(['Active', 'Inactive', 'Expired', 'Test'], { required_error: t('statusRequired') }),
 });
 
@@ -186,8 +186,6 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    <span className="text-muted-foreground">({t('optional')})</span>
-                    {' '}
                     {t('emailAddress')}
                   </FormLabel>
                   <FormControl>
