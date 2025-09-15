@@ -100,13 +100,13 @@ export default function ClientsPageContent() {
   const getStatusVariant = (status: Client['status']) => {
     switch (status) {
       case 'Active':
-        return 'default';
+        return 'success';
       case 'Inactive':
-        return 'secondary';
+        return 'inactive';
       case 'Expired':
         return 'destructive';
       case 'Test':
-        return 'outline';
+        return 'warning';
       default:
         return 'outline';
     }
