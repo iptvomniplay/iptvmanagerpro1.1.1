@@ -196,7 +196,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
               )}
             />
           </div>
-          <div className="w-full md:w-1/2">
+          <div className="w-full md:w-[240px]">
             <FormField
               control={form.control}
               name="phone"
@@ -232,7 +232,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
               )}
             />
           </div>
-          <div className="w-full md:w-1/2">
+          <div className="w-full md:w-[240px]">
             <FormField
                 control={form.control}
                 name="birthDate"
