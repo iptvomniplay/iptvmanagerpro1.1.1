@@ -159,6 +159,7 @@
     "selectDay": "Select the day",
     "creditStockPlaceholder": "Ex: 100",
     "addSubServer": "Add Server",
+    "addMoreServers": "Add + Servers",
     "subServerName": "Server Name",
     "subServerNamePlaceholder": "Enter the server name",
     "subServerType": "Server Type",
