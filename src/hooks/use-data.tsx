@@ -18,29 +18,27 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
+const safelyParseJSON = (jsonString: string | null, fallback: any) => {
+  if (!jsonString) return fallback;
+  try {
+    return JSON.parse(jsonString);
+  } catch (e) {
+    console.error("Failed to parse JSON from localStorage", e);
+    return fallback;
+  }
+};
+
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [clients, setClients] = useState<Client[]>([]);
-  const [servers, setServers] = useState<Server[]>([]);
+  const [clients, setClients] = useState<Client[]>(() => safelyParseJSON(typeof window !== 'undefined' ? localStorage.getItem('clients') : null, initialClients));
+  const [servers, setServers] = useState<Server[]>(() => safelyParseJSON(typeof window !== 'undefined' ? localStorage.getItem('servers') : null, initialServers));
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
     try {
       const storedClients = localStorage.getItem('clients');
       const storedServers = localStorage.getItem('servers');
-
-      if (storedClients) {
-        setClients(JSON.parse(storedClients));
-      } else {
-        setClients(initialClients);
-        localStorage.setItem('clients', JSON.stringify(initialClients));
-      }
-
-      if (storedServers) {
-        setServers(JSON.parse(storedServers));
-      } else {
-        setServers(initialServers);
-        localStorage.setItem('servers', JSON.stringify(initialServers));
-      }
+      setClients(safelyParseJSON(storedClients, initialClients));
+      setServers(safelyParseJSON(storedServers, initialServers));
     } catch (error) {
         console.error("Failed to load data from localStorage", error);
         setClients(initialClients);
