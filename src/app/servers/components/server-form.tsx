@@ -174,6 +174,11 @@ export function ServerForm({ server }: ServerFormProps) {
   
   const hasSubServers = fields.length > 0 || subServerFormState.name || subServerFormState.type || subServerFormState.screens || subServerFormState.plans.length > 0 || currentPlanInput.trim() !== '';
 
+  React.useEffect(() => {
+    if (!hasInitialStock) {
+      setValue('creditStock', undefined);
+    }
+  }, [hasInitialStock, setValue]);
 
   const subServerSchema = createSubServerSchema(t);
 
