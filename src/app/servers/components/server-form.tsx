@@ -120,11 +120,11 @@ const initialSubServerValues: SubServerFormValues = {
     plans: [],
 };
 
-const getInitialValues = (server: Server | null) => ({
+const getInitialValues = (server: Server | null): ServerFormValues => ({
   name: server?.name || '',
   url: server?.url || '',
-  login: '',
-  password: '',
+  login: server?.login || '',
+  password: server?.password || '',
   responsibleName: server?.responsibleName || '',
   nickname: server?.nickname || '',
   phone: server?.phone || '',
@@ -353,10 +353,9 @@ export function ServerForm({ server }: ServerFormProps) {
       };
       updateServer(serverData);
     } else {
-        const { login, password, ...rest } = serverDataToConfirm;
         const serverData: Omit<Server, 'id' | 'status'> = {
-            ...rest,
-            subServers: rest.subServers || [],
+            ...serverDataToConfirm,
+            subServers: serverDataToConfirm.subServers || [],
         };
         addServer(serverData);
     }

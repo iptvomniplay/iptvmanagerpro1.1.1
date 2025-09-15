@@ -21,6 +21,8 @@ export type Server = {
   id: string;
   name: string;
   url: string;
+  login: string;
+  password?: string;
   status: 'Online' | 'Offline';
   responsibleName: string;
   nickname?: string;
