@@ -35,29 +35,32 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
-    // This effect runs only on the client side
+    // This effect runs only on the client side to clear and load data.
     try {
-      const storedClients = localStorage.getItem('clients');
-      const storedServers = localStorage.getItem('servers');
+      // Force remove old data to ensure a clean start.
+      localStorage.removeItem('clients');
+      localStorage.removeItem('servers');
       
-      setClients(safelyParseJSON(storedClients, []));
-      setServers(safelyParseJSON(storedServers, []));
+      // After cleaning, initialize with empty arrays.
+      setClients([]);
+      setServers([]);
     } catch (error) {
-        console.error("Failed to load data from localStorage", error);
+        console.error("Failed to clear or load data from localStorage", error);
         setClients([]);
         setServers([]);
     }
+    // Mark data as "loaded" to render children.
     setIsDataLoaded(true);
   }, []);
 
   useEffect(() => {
-    if (isDataLoaded) {
+    if (isDataLoaded && clients.length > 0) {
       localStorage.setItem('clients', JSON.stringify(clients));
     }
   }, [clients, isDataLoaded]);
 
   useEffect(() => {
-    if (isDataLoaded) {
+    if (isDataLoaded && servers.length > 0) {
       localStorage.setItem('servers', JSON.stringify(servers));
     }
   }, [servers, isDataLoaded]);
