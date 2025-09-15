@@ -40,6 +40,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { ConfirmationModal } from './confirmation-modal';
+import { Textarea } from '@/components/ui/textarea';
 
 const createSubServerSchema = (t: (key: any) => string) => z.object({
   name: z.string().min(1, t('serverNameRequired')),
@@ -47,6 +48,7 @@ const createSubServerSchema = (t: (key: any) => string) => z.object({
   screens: z.coerce
     .number({ required_error: t('screensRequired') })
     .min(1, t('screensMin')),
+  plans: z.string().min(1, t('plansRequired')),
 });
 
 const createFormSchema = (t: (key: any) => string) =>
@@ -157,7 +159,7 @@ export function ServerForm({ server }: ServerFormProps) {
   const handleAddServerClick = () => {
     setIsServerSectionVisible(true);
     if (fields.length === 0) {
-      append({ name: '', type: '', screens: undefined as any });
+      append({ name: '', type: '', screens: undefined as any, plans: '' });
     }
   };
 
@@ -566,7 +568,7 @@ export function ServerForm({ server }: ServerFormProps) {
                   type="button"
                   variant="outline"
                   onClick={() =>
-                    append({ name: '', type: '', screens: undefined as any })
+                    append({ name: '', type: '', screens: undefined as any, plans: '' })
                   }
                 >
                   {t('addSubServer')}
@@ -576,73 +578,91 @@ export function ServerForm({ server }: ServerFormProps) {
                 {fields.map((field, index) => (
                   <div
                     key={field.id}
-                    className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-end p-4 border rounded-lg"
+                    className="p-4 border rounded-lg grid gap-4"
                   >
+                    <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-end">
+                      <FormField
+                          control={control}
+                          name={`subServers.${index}.name`}
+                          render={({ field }) => (
+                              <FormItem>
+                              <FormLabel>{t('subServerName')}</FormLabel>
+                              <FormControl>
+                                  <Input
+                                  {...field}
+                                  placeholder={t('subServerNamePlaceholder')}
+                                  />
+                              </FormControl>
+                              <FormMessage />
+                              </FormItem>
+                          )}
+                      />
+                      <FormField
+                          control={control}
+                          name={`subServers.${index}.type`}
+                          render={({ field }) => (
+                              <FormItem>
+                              <FormLabel>{t('subServerType')}</FormLabel>
+                              <FormControl>
+                                  <Input
+                                  {...field}
+                                  placeholder={t('subServerTypePlaceholder')}
+                                  />
+                              </FormControl>
+                              <FormMessage />
+                              </FormItem>
+                          )}
+                      />
+                      <FormField
+                          control={control}
+                          name={`subServers.${index}.screens`}
+                          render={({ field }) => (
+                              <FormItem>
+                              <FormLabel>{t('subServerScreens')}</FormLabel>
+                              <FormControl>
+                                  <Input
+                                  type="number"
+                                  {...field}
+                                  value={field.value ?? ''}
+                                  onChange={(e) =>
+                                      field.onChange(
+                                      e.target.value === ''
+                                          ? undefined
+                                          : Number(e.target.value)
+                                      )
+                                  }
+                                  placeholder={t('subServerScreensPlaceholder')}
+                                  />
+                              </FormControl>
+                              <FormMessage />
+                              </FormItem>
+                          )}
+                      />
+                      <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          onClick={() => remove(index)}
+                      >
+                          <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                     <FormField
                       control={control}
-                      name={`subServers.${index}.name`}
+                      name={`subServers.${index}.plans`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('subServerName')}</FormLabel>
+                          <FormLabel>{t('plans')}</FormLabel>
                           <FormControl>
-                            <Input
+                            <Textarea
                               {...field}
-                              placeholder={t('subServerNamePlaceholder')}
+                              placeholder={t('plansPlaceholder')}
                             />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <FormField
-                      control={control}
-                      name={`subServers.${index}.type`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('subServerType')}</FormLabel>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              placeholder={t('subServerTypePlaceholder')}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={control}
-                      name={`subServers.${index}.screens`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('subServerScreens')}</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              {...field}
-                              value={field.value ?? ''}
-                              onChange={(e) =>
-                                field.onChange(
-                                  e.target.value === ''
-                                    ? undefined
-                                    : Number(e.target.value)
-                                )
-                              }
-                              placeholder={t('subServerScreensPlaceholder')}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      onClick={() => remove(index)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
                   </div>
                 ))}
                 {fields.length === 0 && (

@@ -85,6 +85,7 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, serverData }: Co
                     <TableRow>
                       <TableHead>{t('subServerName')}</TableHead>
                       <TableHead>{t('subServerType')}</TableHead>
+                      <TableHead>{t('plans')}</TableHead>
                       <TableHead className="text-right">{t('subServerScreens')}</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -93,6 +94,7 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, serverData }: Co
                       <TableRow key={index}>
                         <TableCell>{sub.name}</TableCell>
                         <TableCell>{sub.type}</TableCell>
+                        <TableCell className="whitespace-pre-wrap">{sub.plans}</TableCell>
                         <TableCell className="text-right">{sub.screens}</TableCell>
                       </TableRow>
                     ))}

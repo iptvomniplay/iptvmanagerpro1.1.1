@@ -216,5 +216,8 @@
     "selectPanel": "Selecionar Painel",
     "selectPanelPlaceholder": "Clique para selecionar um painel",
     "noPanelsFound": "Nenhum painel encontrado",
-    "searchPanelPlaceholder": "Buscar por nome do painel..."
+    "searchPanelPlaceholder": "Buscar por nome do painel...",
+    "plans": "Planos",
+    "plansPlaceholder": "Insira os planos separados por vírgula ou nova linha",
+    "plansRequired": "Os planos são obrigatórios."
 }

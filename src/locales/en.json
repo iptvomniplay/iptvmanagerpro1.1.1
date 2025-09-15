@@ -216,5 +216,8 @@
     "selectPanel": "Select Panel",
     "selectPanelPlaceholder": "Click to select a panel",
     "noPanelsFound": "No panels found",
-    "searchPanelPlaceholder": "Search by panel name..."
+    "searchPanelPlaceholder": "Search by panel name...",
+    "plans": "Plans",
+    "plansPlaceholder": "Enter plans separated by comma or new line",
+    "plansRequired": "Plans are required."
 }
