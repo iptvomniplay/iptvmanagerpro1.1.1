@@ -29,20 +29,28 @@ const safelyParseJSON = (jsonString: string | null, fallback: any) => {
 };
 
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [clients, setClients] = useState<Client[]>(() => safelyParseJSON(typeof window !== 'undefined' ? localStorage.getItem('clients') : null, initialClients));
-  const [servers, setServers] = useState<Server[]>(() => safelyParseJSON(typeof window !== 'undefined' ? localStorage.getItem('servers') : null, initialServers));
+  const [clients, setClients] = useState<Client[]>(initialClients);
+  const [servers, setServers] = useState<Server[]>(initialServers);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
     try {
       const storedClients = localStorage.getItem('clients');
       const storedServers = localStorage.getItem('servers');
-      setClients(safelyParseJSON(storedClients, initialClients));
-      setServers(safelyParseJSON(storedServers, initialServers));
+      // If there are no stored clients, we respect the initial (empty) state.
+      // If there are, we load them.
+      if (storedClients) {
+        setClients(safelyParseJSON(storedClients, []));
+      }
+       // If there are no stored servers, we respect the initial (empty) state.
+      if (storedServers) {
+        setServers(safelyParseJSON(storedServers, []));
+      }
     } catch (error) {
         console.error("Failed to load data from localStorage", error);
-        setClients(initialClients);
-        setServers(initialServers);
+        // Fallback to empty arrays in case of error
+        setClients([]);
+        setServers([]);
     }
     setIsDataLoaded(true);
   }, []);
