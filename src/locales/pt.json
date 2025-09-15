@@ -186,7 +186,8 @@
     "namePlaceholder": "João da Silva",
     "emailPlaceholder": "nome@exemplo.com",
     "phonePtBRPlaceholder": "(11) 99999-9999",
-    "ok": "OK"
+    "ok": "OK",
+    "currencyPlaceholderBRL": "R$ 0,00",
+    "dashboardClientsDesc": "Uma representação do gerenciamento de clientes.",
+    "dashboardServersDesc": "Uma representação de servidores."
 }
-
-    

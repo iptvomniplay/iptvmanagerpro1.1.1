@@ -2,13 +2,11 @@
   "placeholderImages": [
     {
       "id": "dashboard-clients",
-      "description": "A representation of managing clients.",
       "imageUrl": "https://picsum.photos/seed/10/600/400",
       "imageHint": "people network"
     },
     {
       "id": "dashboard-servers",
-      "description": "A representation of servers.",
       "imageUrl": "https://picsum.photos/seed/11/600/400",
       "imageHint": "server room"
     }

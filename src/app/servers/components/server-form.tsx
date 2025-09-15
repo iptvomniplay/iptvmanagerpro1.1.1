@@ -385,7 +385,7 @@ export function ServerForm({ server }: ServerFormProps) {
                         onChange={handlePhoneChange}
                         placeholder={
                           language === 'pt-BR' && !hasDDI
-                            ? '(11) 99999-9999'
+                            ? t('phonePtBRPlaceholder')
                             : t('phonePlaceholder')
                         }
                       />
@@ -445,7 +445,7 @@ export function ServerForm({ server }: ServerFormProps) {
                           value={field.value ?? ''}
                           onChange={(e) => handleCurrencyChange(e, 'panelValue')}
                           placeholder={
-                            language === 'pt-BR' ? 'R$ 0,00' : '$ 0.00'
+                            language === 'pt-BR' ? t('currencyPlaceholderBRL') : t('currencyPlaceholderUSD')
                           }
                         />
                       </FormControl>
@@ -681,7 +681,7 @@ export function ServerForm({ server }: ServerFormProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogAction onClick={handleSuccessModalClose}>
-            OK
+            {t('ok')}
           </AlertDialogAction>
         </AlertDialogContent>
       </AlertDialog>

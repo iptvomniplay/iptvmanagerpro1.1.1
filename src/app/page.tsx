@@ -144,7 +144,7 @@ export default function Dashboard() {
               {clientImage && (
                 <Image
                   src={clientImage.imageUrl}
-                  alt={clientImage.description}
+                  alt={t('dashboardClientsDesc')}
                   width={600}
                   height={400}
                   data-ai-hint={clientImage.imageHint}
@@ -167,7 +167,7 @@ export default function Dashboard() {
               {serverImage && (
                 <Image
                   src={serverImage.imageUrl}
-                  alt={serverImage.description}
+                  alt={t('dashboardServersDesc')}
                   width={600}
                   height={400}
                   data-ai-hint={serverImage.imageHint}

@@ -186,7 +186,8 @@
     "namePlaceholder": "John Doe",
     "emailPlaceholder": "name@example.com",
     "phonePtBRPlaceholder": "(11) 99999-9999",
-    "ok": "OK"
+    "ok": "OK",
+    "currencyPlaceholderUSD": "$ 0.00",
+    "dashboardClientsDesc": "A representation of managing clients.",
+    "dashboardServersDesc": "A representation of servers."
 }
-
-    
