@@ -34,13 +34,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   AlertDialog,
   AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
+  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { ConfirmationModal } from './confirmation-modal';
 import { Badge } from '@/components/ui/badge';
+import { AddServerModal } from './add-server-modal';
 
 const createSubServerSchema = (t: (key: any) => string) => z.object({
   name: z.string().min(1, t('serverNameRequired')),
@@ -111,6 +114,13 @@ interface ServerFormProps {
 type ServerFormValues = z.infer<ReturnType<typeof createFormSchema>>;
 type SubServerFormValues = z.infer<ReturnType<typeof createSubServerSchema>>;
 
+const initialSubServerValues: SubServerFormValues = {
+    name: '',
+    type: '',
+    screens: undefined as any,
+    plans: [],
+};
+
 const getInitialValues = (server: Server | null) => ({
   name: server?.name || '',
   url: server?.url || '',
@@ -125,15 +135,9 @@ const getInitialValues = (server: Server | null) => ({
   dueDate: server?.dueDate || undefined,
   hasInitialStock: !!server?.creditStock,
   creditStock: server?.creditStock || undefined,
-  subServers: server?.subServers || [],
+  subServers: server?.subServers && server.subServers.length > 0 ? server.subServers : [initialSubServerValues],
 });
 
-const initialSubServerValues: SubServerFormValues = {
-    name: '',
-    type: '',
-    screens: undefined as any,
-    plans: [],
-};
 
 export function ServerForm({ server }: ServerFormProps) {
   const { t, language } = useLanguage();
@@ -143,7 +147,9 @@ export function ServerForm({ server }: ServerFormProps) {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = React.useState(false);
   const [serverDataToConfirm, setServerDataToConfirm] = React.useState<ServerFormValues | null>(null);
   const [currentPlanInputs, setCurrentPlanInputs] = React.useState<Record<number, string>>({});
-
+  const [isAddMoreServerModalOpen, setIsAddMoreServerModalOpen] = React.useState(false);
+  const [showAddMoreButton, setShowAddMoreButton] = React.useState(false);
+  const [flashSaveButton, setFlashSaveButton] = React.useState(false);
 
   const formSchema = createFormSchema(t);
 
@@ -156,6 +162,7 @@ export function ServerForm({ server }: ServerFormProps) {
   const paymentType = watch('paymentType');
   const hasInitialStock = watch('hasInitialStock');
   const hasDDI = watch('hasDDI');
+  const subServers = watch('subServers');
 
   const { fields, append, remove, update } = useFieldArray({
     control,
@@ -163,9 +170,17 @@ export function ServerForm({ server }: ServerFormProps) {
   });
 
   const [isPanelFormVisible, setIsPanelFormVisible] = React.useState(!!server);
-  const [isServerSectionVisible, setIsServerSectionVisible] =
-    React.useState(!!server?.subServers?.length);
 
+  React.useEffect(() => {
+    if (!subServers || subServers.length === 0) return;
+    const lastServer = subServers[subServers.length - 1];
+    if (lastServer && !isAddMoreServerModalOpen && !showAddMoreButton) {
+        const isLastServerValid = lastServer.name && lastServer.type && lastServer.screens > 0 && lastServer.plans.length > 0;
+        if(isLastServerValid) {
+            setIsAddMoreServerModalOpen(true);
+        }
+    }
+  }, [subServers, isAddMoreServerModalOpen, showAddMoreButton])
 
   const handleAddPlan = (fieldIndex: number) => {
     const planInput = currentPlanInputs[fieldIndex]?.trim();
@@ -187,9 +202,6 @@ export function ServerForm({ server }: ServerFormProps) {
 
   const handleAddSubServer = () => {
     append({ name: '', type: '', screens: 1, plans: [] });
-    if (!isServerSectionVisible) {
-        setIsServerSectionVisible(true);
-    }
   }
 
   const handleCurrencyChange = (
@@ -263,9 +275,19 @@ export function ServerForm({ server }: ServerFormProps) {
     } else {
       reset(getInitialValues(null));
       setIsPanelFormVisible(false);
-      setIsServerSectionVisible(false);
     }
   };
+
+   const handleAddMoreResponse = (addMore: boolean) => {
+    setIsAddMoreServerModalOpen(false);
+    if (addMore) {
+        setShowAddMoreButton(true);
+    } else {
+        setFlashSaveButton(true);
+        setTimeout(() => setFlashSaveButton(false), 1500); // Animation duration
+    }
+  };
+
 
   return (
     <>
@@ -577,14 +599,16 @@ export function ServerForm({ server }: ServerFormProps) {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>{t('servers')}</CardTitle>
-                <Button
-                    type="button"
-                    onClick={handleAddSubServer}
-                    className="w-48"
-                    >
-                    <PlusCircle className="mr-2 h-5 w-5" />
-                    {t('addMoreServers')}
-                </Button>
+                {showAddMoreButton && (
+                  <Button
+                      type="button"
+                      onClick={handleAddSubServer}
+                      className="w-48"
+                      >
+                      <PlusCircle className="mr-2 h-5 w-5" />
+                      {t('addMoreServers')}
+                  </Button>
+                )}
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
                 <div className="space-y-4">
@@ -695,7 +719,9 @@ export function ServerForm({ server }: ServerFormProps) {
             <Button type="button" variant="outline" onClick={handleCancel}>
               {t('cancel')}
             </Button>
-            <Button type="submit">{server ? t('saveChanges') : t('save')}</Button>
+            <Button type="submit" className={cn(flashSaveButton && 'animate-flash')}>
+                {server ? t('saveChanges') : t('save')}
+            </Button>
           </div>
         </form>
       </Form>
@@ -708,6 +734,11 @@ export function ServerForm({ server }: ServerFormProps) {
             serverData={serverDataToConfirm}
         />
       )}
+
+      <AddServerModal
+        isOpen={isAddMoreServerModalOpen}
+        onResponse={handleAddMoreResponse}
+      />
 
 
       <AlertDialog
@@ -729,3 +760,5 @@ export function ServerForm({ server }: ServerFormProps) {
     </>
   );
 }
+
+    

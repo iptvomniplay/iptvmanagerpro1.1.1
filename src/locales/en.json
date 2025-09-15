@@ -158,7 +158,7 @@
     "responsibleNamePlaceholder": "Name of the person responsible for the panel",
     "selectDay": "Select the day",
     "creditStockPlaceholder": "Ex: 100",
-    "addSubServer": "Add Server",
+    "addSubServer": "Add Servers",
     "addMoreServers": "Add + Servers",
     "subServerName": "Server Name",
     "subServerNamePlaceholder": "Enter the server name",
@@ -167,7 +167,7 @@
     "subServerScreens": "Screens",
     "screens": "Screens",
     "subServerScreensPlaceholder": "Ex.: 1",
-    "noSubServers": "No servers registered. Click on 'Add + Servers' to start.",
+    "noSubServers": "No servers registered. Fill out the form above to get started.",
     "noSubServersMessage": "No servers registered for this panel.",
     "addClient": "Add Client",
     "collapse": "Collapse",
@@ -223,5 +223,9 @@
     "plansRequired": "Plans are required.",
     "atLeastOnePlanRequired": "At least one plan must be added.",
     "addPlan": "Add Plan",
-    "Add Servidores": "Add Servers"
+    "Add Servidores": "Add Servers",
+    "addMoreServerTitle": "Server Added!",
+    "addMoreServerDescription": "Do you want to add another server to this panel?",
+    "yes": "Yes",
+    "no": "No"
 }

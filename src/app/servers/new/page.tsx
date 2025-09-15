@@ -13,10 +13,12 @@ export default function NewServerPage() {
         <h1 className="text-3xl font-bold tracking-tight">{t('panelAndServerRegistration')}</h1>
       </div>
       <Card>
-          <CardContent>
+          <CardContent className="p-0">
               <ServerForm server={null} />
           </CardContent>
       </Card>
     </div>
   );
 }
+
+    
