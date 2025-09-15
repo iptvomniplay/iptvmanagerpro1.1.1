@@ -8,7 +8,7 @@ import { DayPicker, CaptionProps } from 'react-day-picker';
 
 import { useLanguage } from '@/hooks/use-language';
 import { cn } from '@/lib/utils';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Popover,
   PopoverContent,
@@ -31,49 +31,53 @@ interface DatePickerProps {
 export function DatePicker({ value, onChange }: DatePickerProps) {
   const { t, language } = useLanguage();
   const [open, setOpen] = React.useState(false);
+  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(value);
+  const [month, setMonth] = React.useState<Date>(value || new Date());
+  
   const locale = language === 'pt-BR' ? ptBR : enUS;
 
-  const handleSelect = (date: Date | undefined) => {
-    onChange(date);
-    if (date) {
-      setOpen(false);
-    }
+  React.useEffect(() => {
+    setSelectedDate(value);
+    setMonth(value || new Date());
+  }, [value]);
+
+  const handleOkClick = () => {
+    onChange(selectedDate);
+    setOpen(false);
+  };
+
+  const handleCancelClick = () => {
+    // Reset to original value on cancel
+    setSelectedDate(value);
+    setMonth(value || new Date());
+    setOpen(false);
   };
   
   function CustomCaption(props: CaptionProps) {
-    const { t, language } = useLanguage();
-    const locale = language === 'pt-BR' ? ptBR : enUS;
-    
-    const { displayMonth, onMonthChange, previousMonth, nextMonth } = props;
-
+    const { displayMonth } = props;
     const currentYear = new Date().getFullYear();
     const fromYear = currentYear - 100;
     const toYear = currentYear;
     const years = Array.from({ length: toYear - fromYear + 1 }, (_, i) => toYear - i);
     const months = Array.from({ length: 12 }, (_, i) => i);
 
-    if (!displayMonth) {
-      return null;
-    }
-    
     const handleMonthChange = (month: string) => {
-        const newDate = new Date(displayMonth.getFullYear(), parseInt(month, 10));
-        onMonthChange?.(newDate);
+      const newMonth = new Date(displayMonth.getFullYear(), parseInt(month, 10));
+      setMonth(newMonth);
     };
 
     const handleYearChange = (year: string) => {
-        const newDate = new Date(parseInt(year, 10), displayMonth.getMonth());
-        onMonthChange?.(newDate);
+       const newMonth = new Date(parseInt(year, 10), displayMonth.getMonth());
+       setMonth(newMonth);
     };
 
     return (
        <div className="flex justify-center items-center relative gap-2 mb-4">
-         <Button
+        <Button
           variant="outline"
           size="icon"
           className="h-9 w-9"
-          disabled={!previousMonth}
-          onClick={() => previousMonth && onMonthChange?.(previousMonth)}
+          onClick={() => setMonth(new Date(month.setMonth(month.getMonth() - 1)))}
         >
           <ChevronLeft className="h-5 w-5" />
         </Button>
@@ -86,9 +90,9 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {months.map((month) => (
-                <SelectItem key={month} value={String(month)}>
-                  {format(new Date(displayMonth.getFullYear(), month), 'MMMM', { locale })}
+              {months.map((m) => (
+                <SelectItem key={m} value={String(m)}>
+                  {format(new Date(displayMonth.getFullYear(), m), 'MMMM', { locale })}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -114,8 +118,7 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
           variant="outline"
           size="icon"
           className="h-9 w-9"
-          disabled={!nextMonth}
-          onClick={() => nextMonth && onMonthChange?.(nextMonth)}
+          onClick={() => setMonth(new Date(month.setMonth(month.getMonth() + 1)))}
         >
           <ChevronRight className="h-5 w-5" />
         </Button>
@@ -137,19 +140,20 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
           {value ? format(value, 'PPP', { locale }) : <span>{t('pickADate')}</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-4 bg-background">
-        <DayPicker
+      <PopoverContent className="w-auto p-0 bg-background" align="start">
+        <Calendar
           mode="single"
-          selected={value}
-          onSelect={handleSelect}
-          defaultMonth={value || new Date(new Date().setFullYear(new Date().getFullYear() - 30))}
+          selected={selectedDate}
+          onSelect={setSelectedDate}
+          month={month}
+          onMonthChange={setMonth}
           locale={locale}
           captionLayout="dropdown-buttons"
           fromYear={new Date().getFullYear() - 100}
           toYear={new Date().getFullYear()}
           classNames={{
             months: 'flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0',
-            month: 'space-y-4 w-full',
+            month: 'space-y-4 w-full p-4',
             caption_layout: 'dropdown-buttons flex justify-center items-center gap-2 mb-4',
             caption: 'flex justify-center pt-1 relative items-center',
             caption_label: 'hidden',
@@ -157,15 +161,15 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
             head_cell: 'text-muted-foreground rounded-md w-12 font-normal text-base',
             row: 'flex w-full mt-2 justify-between',
             cell: 'h-12 w-12 text-center text-base p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20',
-            day: cn(
-              buttonVariants({ variant: 'ghost' }),
-              'h-12 w-12 p-0 font-normal aria-selected:opacity-100'
-            ),
           }}
           components={{
             Caption: CustomCaption,
           }}
         />
+        <div className="flex justify-end gap-2 p-4 border-t">
+            <Button variant="ghost" onClick={handleCancelClick}>{t('cancel')}</Button>
+            <Button onClick={handleOkClick}>OK</Button>
+        </div>
       </PopoverContent>
     </Popover>
   );
