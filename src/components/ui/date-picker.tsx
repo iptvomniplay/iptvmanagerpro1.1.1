@@ -4,7 +4,7 @@ import * as React from 'react';
 import { format } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
-import { DayPicker } from 'react-day-picker';
+import { DayPicker, CaptionProps } from 'react-day-picker';
 
 import { useLanguage } from '@/hooks/use-language';
 import { cn } from '@/lib/utils';
@@ -40,12 +40,11 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
     }
   };
   
-  function CustomCaption(props: React.ComponentProps<typeof DayPicker>['components']['Caption']) {
+  function CustomCaption(props: CaptionProps) {
     const { t, language } = useLanguage();
     const locale = language === 'pt-BR' ? ptBR : enUS;
     
-    const { onMonthChange, previousMonth, nextMonth } = props.props;
-    const displayMonth = props.props.displayMonth;
+    const { displayMonth, onMonthChange, previousMonth, nextMonth } = props;
 
     const currentYear = new Date().getFullYear();
     const fromYear = currentYear - 100;
