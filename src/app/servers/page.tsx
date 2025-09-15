@@ -79,9 +79,9 @@ export default function ServersPage() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Nome do Servidor</TableHead>
-                          <TableHead>Tipo</TableHead>
-                          <TableHead className="text-right">Telas</TableHead>
+                          <TableHead>{t('subServerName')}</TableHead>
+                          <TableHead>{t('subServerType')}</TableHead>
+                          <TableHead className="text-right">{t('subServerScreens')}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -97,7 +97,7 @@ export default function ServersPage() {
                   </div>
                 ) : (
                   <div className="text-center text-muted-foreground py-4">
-                    Nenhum servidor cadastrado.
+                    {t('noSubServersMessage')}
                   </div>
                 )}
               </CardContent>
