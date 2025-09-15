@@ -189,5 +189,9 @@
     "ok": "OK",
     "currencyPlaceholderBRL": "R$ 0,00",
     "dashboardClientsDesc": "Uma representação do gerenciamento de clientes.",
-    "dashboardServersDesc": "Uma representação de servidores."
+    "dashboardServersDesc": "Uma representação de servidores.",
+    "serverNameRequired": "O nome do servidor é obrigatório",
+    "serverTypeRequired": "O tipo do servidor é obrigatório",
+    "screensRequired": "O número de telas é obrigatório.",
+    "screensMin": "O número de telas deve ser no mínimo 1."
 }

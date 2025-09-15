@@ -41,12 +41,12 @@ import {
 } from '@/components/ui/alert-dialog';
 import { ConfirmationModal } from './confirmation-modal';
 
-const subServerSchema = z.object({
-  name: z.string().min(1, 'Server name is required'),
-  type: z.string().min(1, 'Server type is required'),
+const createSubServerSchema = (t: (key: any) => string) => z.object({
+  name: z.string().min(1, t('serverNameRequired')),
+  type: z.string().min(1, t('serverTypeRequired')),
   screens: z.coerce
-    .number({ required_error: 'Screens are required.' })
-    .min(1, 'Screens must be at least 1.'),
+    .number({ required_error: t('screensRequired') })
+    .min(1, t('screensMin')),
 });
 
 const createFormSchema = (t: (key: any) => string) =>
@@ -67,7 +67,7 @@ const createFormSchema = (t: (key: any) => string) =>
       dueDate: z.coerce.number().optional(),
       hasInitialStock: z.boolean().default(false).optional(),
       creditStock: z.coerce.number().optional(),
-      subServers: z.array(subServerSchema).optional(),
+      subServers: z.array(createSubServerSchema(t)).optional(),
     })
     .superRefine((data, ctx) => {
       if (data.paymentType === 'postpaid') {

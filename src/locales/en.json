@@ -189,5 +189,9 @@
     "ok": "OK",
     "currencyPlaceholderUSD": "$ 0.00",
     "dashboardClientsDesc": "A representation of managing clients.",
-    "dashboardServersDesc": "A representation of servers."
+    "dashboardServersDesc": "A representation of servers.",
+    "serverNameRequired": "Server name is required",
+    "serverTypeRequired": "Server type is required",
+    "screensRequired": "Screens are required.",
+    "screensMin": "Screens must be at least 1."
 }
