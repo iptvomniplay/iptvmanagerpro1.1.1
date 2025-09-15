@@ -251,6 +251,7 @@ export function ServerForm({ server }: ServerFormProps) {
     const subServerResult = subServerSchema.safeParse(subServerFormState);
     const isSubServerFormEmpty = Object.values(subServerFormState).every(v => (Array.isArray(v) ? v.length === 0 : !v));
 
+    // Only try to add the sub-server from the form if it's not empty
     if (!isSubServerFormEmpty) {
          if (subServerResult.success) {
             finalValues = {
@@ -258,6 +259,7 @@ export function ServerForm({ server }: ServerFormProps) {
                 subServers: [...(values.subServers || []), subServerFormState],
             };
         } else {
+             // If form is not empty but invalid, show errors and stop
             setHasSubmissionError(true);
             const firstErrorField = subServerResult.error.issues[0].path[0] as string;
             const el = document.getElementsByName(firstErrorField)[0];
@@ -271,6 +273,16 @@ export function ServerForm({ server }: ServerFormProps) {
             });
             return;
         }
+    }
+    
+    // Check if there are any servers to save at all
+    if (!finalValues.subServers || finalValues.subServers.length === 0) {
+        toast({
+            variant: "destructive",
+            title: t('validationError'),
+            description: t('noSubServers'),
+        });
+        return;
     }
 
     setHasSubmissionError(false);
@@ -350,7 +362,7 @@ export function ServerForm({ server }: ServerFormProps) {
       setSubServerFormState(initialSubServerValues);
       setCurrentPlanInput('');
       if (!addMore) {
-        handleSubmit(form.getValues());
+        // We just close the modal, user will click Save
       }
     }
   };
@@ -359,7 +371,7 @@ export function ServerForm({ server }: ServerFormProps) {
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit, onInvalid)} className="space-y-6 p-6">
+        <form onSubmit={form.handleSubmit(handleSubmit, onInvalid)} className="space-y-6">
           <div className="space-y-6">
             <div className="md:w-1/2">
               <FormField
@@ -826,5 +838,3 @@ export function ServerForm({ server }: ServerFormProps) {
     </>
   );
 }
-
-    
