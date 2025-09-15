@@ -154,10 +154,9 @@ export default function ClientsPageContent() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t('clientID')}</TableHead>
               <TableHead>{t('name')}</TableHead>
               <TableHead>{t('status')}</TableHead>
-              <TableHead>{t('email')}</TableHead>
+              <TableHead>{t('clientID')}</TableHead>
               <TableHead className="text-right">{t('actions')}</TableHead>
             </TableRow>
           </TableHeader>
@@ -165,14 +164,13 @@ export default function ClientsPageContent() {
             {filteredClients.length > 0 ? (
               filteredClients.map((client) => (
                 <TableRow key={client.id}>
-                  <TableCell className="font-medium">{client.id}</TableCell>
                   <TableCell>{client.name}</TableCell>
                   <TableCell>
                     <Badge variant={getStatusVariant(client.status)}>
                       {t(client.status.toLowerCase() as any)}
                     </Badge>
                   </TableCell>
-                  <TableCell>{client.email}</TableCell>
+                  <TableCell className="font-medium">{client.id}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -200,7 +198,7 @@ export default function ClientsPageContent() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} className="h-28 text-center text-lg">
+                <TableCell colSpan={4} className="h-28 text-center text-lg">
                   {t('noClientsFound')}
                 </TableCell>
               </TableRow>
