@@ -26,7 +26,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
-import { PlusCircle, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, PlusCircle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useData } from '@/hooks/use-data';
@@ -43,6 +43,8 @@ import { ConfirmationModal } from './confirmation-modal';
 import { Badge } from '@/components/ui/badge';
 import { AddServerModal } from './add-server-modal';
 import { useToast } from '@/hooks/use-toast';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+
 
 const createSubServerSchema = (t: (key: any) => string) => z.object({
   name: z.string().min(1, t('serverNameRequired')),
@@ -154,6 +156,7 @@ export function ServerForm({ server }: ServerFormProps) {
   const [subServerFormState, setSubServerFormState] = React.useState<SubServerFormValues>(initialSubServerValues);
   const [currentPlanInput, setCurrentPlanInput] = React.useState('');
   const [subServerErrors, setSubServerErrors] = React.useState<Record<string, string | undefined>>({});
+  const [expandedItems, setExpandedItems] = React.useState<Record<number, boolean>>({});
 
   const formSchema = createFormSchema(t);
 
@@ -187,6 +190,10 @@ export function ServerForm({ server }: ServerFormProps) {
 
 
   const subServerSchema = createSubServerSchema(t);
+  
+  const toggleExpand = (index: number) => {
+    setExpandedItems(prev => ({...prev, [index]: !prev[index]}));
+  };
 
   const handleAddPlan = () => {
     const tempSchema = z.object({
@@ -212,9 +219,9 @@ export function ServerForm({ server }: ServerFormProps) {
     
     const planInput = currentPlanInput.trim();
     if (planInput) {
-      setSubServerFormState(prev => ({
-          ...prev,
-          plans: [...prev.plans, planInput]
+       setSubServerFormState(prev => ({
+        ...prev,
+        plans: [...prev.plans, planInput],
       }));
       setCurrentPlanInput('');
       setSubServerErrors(prev => ({ ...prev, plans: undefined }));
@@ -819,30 +826,50 @@ export function ServerForm({ server }: ServerFormProps) {
                                 {t('addServer')}
                             </Button>
                         </div>
+                         {subServerFormState.plans.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                                {subServerFormState.plans.map((plan, index) => (
+                                    <Badge key={index} variant="secondary" className="flex items-center gap-2">
+                                        {plan}
+                                        <button type="button" onClick={() => handleRemovePlan(index)} className="rounded-full hover:bg-muted-foreground/20">
+                                            <X className="h-3 w-3"/>
+                                        </button>
+                                    </Badge>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     <div className="space-y-2">
                          {fields.map((field, index) => (
-                            <div key={field.id} className="relative group p-4 border rounded-lg flex items-center justify-between bg-card">
-                                <div>
-                                    <p className="font-semibold">{field.name} ({field.type})</p>
-                                    <p className="text-sm text-muted-foreground">{t('screens')}: {field.screens}</p>
-                                    <div className="flex flex-wrap gap-1 mt-2">
-                                        {field.plans.map((plan, planIndex) => (
-                                            <Badge key={planIndex} variant="outline">{plan}</Badge>
-                                        ))}
+                            <Collapsible key={field.id} open={expandedItems[index] !== false} onOpenChange={() => toggleExpand(index)} asChild>
+                                <div className="p-4 border rounded-lg bg-card">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="font-semibold">{field.name} ({field.type})</p>
+                                            <p className="text-sm text-muted-foreground">{t('screens')}: {field.screens}</p>
+                                        </div>
+                                        <CollapsibleTrigger asChild>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-7 w-7 text-muted-foreground"
+                                            >
+                                                {expandedItems[index] !== false ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                                                <span className="sr-only">{expandedItems[index] !== false ? t('collapse') : t('expand')}</span>
+                                            </Button>
+                                        </CollapsibleTrigger>
                                     </div>
+                                    <CollapsibleContent>
+                                        <div className="flex flex-wrap gap-1 mt-2">
+                                            {field.plans.map((plan, planIndex) => (
+                                                <Badge key={planIndex} variant="outline">{plan}</Badge>
+                                            ))}
+                                        </div>
+                                    </CollapsibleContent>
                                 </div>
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                                    onClick={() => remove(index)}
-                                >
-                                    <X className="h-4 w-4" />
-                                </Button>
-                            </div>
+                            </Collapsible>
                         ))}
                     </div>
                 
@@ -904,6 +931,7 @@ export function ServerForm({ server }: ServerFormProps) {
     
 
     
+
 
 
 
