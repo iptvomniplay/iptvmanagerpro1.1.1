@@ -49,7 +49,7 @@ export default function NewClientPage() {
               </Button>
             )}
           </div>
-          <div className={cn("pt-6", isFormVisible ? 'block' : 'hidden')}>
+          <div className={cn("px-6 pt-6", isFormVisible ? 'block' : 'hidden')}>
               <CardDescription>{t('registerNewClientDescription')}</CardDescription>
               <ClientForm client={null} onSubmitted={() => setIsFormVisible(false)} />
           </div>
