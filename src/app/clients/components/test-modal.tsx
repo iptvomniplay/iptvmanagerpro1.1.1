@@ -127,103 +127,79 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
           </DialogHeader>
 
           <ScrollArea className="flex-1">
-            <div className="p-6 h-full grid md:grid-cols-2 gap-8 md:gap-12">
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <h3 className="text-xl font-semibold">{t('searchClient')}</h3>
-                  <p className="text-muted-foreground">{t('selectClientPrompt')}</p>
-                </div>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                  <Input
-                    placeholder={t('searchClientPlaceholder')}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-                
-                {searchResults.length > 0 && (
-                  <ScrollArea className="h-72 rounded-md border">
-                    <div className="p-4 space-y-2">
-                      {searchResults.map((client) => (
-                        <div
-                          key={client.id}
-                          className="flex items-center justify-between p-3 rounded-md hover:bg-accent cursor-pointer"
-                          onClick={() => handleSelectClient(client)}
-                        >
-                          <div>
-                            <p className="font-semibold">{client.name}</p>
-                            <p className="text-sm text-muted-foreground">{client.phone}</p>
-                          </div>
-                          <Button variant="outline" size="sm">{t('selectClient')}</Button>
-                        </div>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                )}
-                
-                {!selectedClient && searchResults.length === 0 && (
-                   <div className="flex items-center justify-center h-full text-muted-foreground text-center rounded-lg border border-dashed py-10">
-                      <p>{searchTerm ? t('noClientFound') : t('awaitingInput')}</p>
-                  </div>
-                )}
-
-                {selectedClient && (
+             <Form {...form}>
+              <form id="test-form" onSubmit={form.handleSubmit(handleSubmit)} className="p-6 h-full grid md:grid-cols-2 gap-8 md:gap-12">
+                  <div className="space-y-6">
                     <div className="space-y-2">
-                        <Label htmlFor="selected-client-name">{t('client')}</Label>
-                        <div className="flex items-center gap-3 rounded-lg border p-4 bg-accent">
-                            <User className="h-6 w-6 text-muted-foreground"/>
-                            <Input
-                                id="selected-client-name"
-                                value={selectedClient.name}
-                                readOnly
-                                className="bg-transparent border-0 text-lg font-semibold focus-visible:ring-0 focus-visible:ring-offset-0"
-                            />
-                        </div>
+                      <h3 className="text-xl font-semibold">{t('searchClient')}</h3>
+                      <p className="text-muted-foreground">{t('selectClientPrompt')}</p>
                     </div>
-                )}
-              </div>
-              
-              <div className="space-y-6">
-                  {selectedClient && (
-                       <div className="space-y-6">
-                        <Form {...form}>
-                          <form id="test-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-                              <h3 className="text-xl font-semibold">{t('testDetails')}</h3>
-                              
-                              <div className="space-y-2">
-                                <Label>{t('panel')}</Label>
-                                <div className="relative">
-                                  <Input
-                                    placeholder={t('selectPanelPlaceholder')}
-                                    value={selectedPanel ? selectedPanel.name : ''}
-                                    readOnly
-                                    onClick={() => setIsPanelModalOpen(true)}
-                                    className="cursor-pointer"
-                                  />
-                                   <ServerIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                                </div>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                      <Input
+                        placeholder={t('searchClientPlaceholder')}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                    
+                    {searchResults.length > 0 && (
+                      <ScrollArea className="h-72 rounded-md border">
+                        <div className="p-4 space-y-2">
+                          {searchResults.map((client) => (
+                            <div
+                              key={client.id}
+                              className="flex items-center justify-between p-3 rounded-md hover:bg-accent cursor-pointer"
+                              onClick={() => handleSelectClient(client)}
+                            >
+                              <div>
+                                <p className="font-semibold">{client.name}</p>
+                                <p className="text-sm text-muted-foreground">{client.phone}</p>
                               </div>
-
-                              {selectedPanel && (
-                                <div className="space-y-4">
-                                  <h4 className="font-semibold">{t('subServerDetails')}</h4>
-                                  {selectedPanel.subServers && selectedPanel.subServers.length > 0 ? (
-                                     <ul className="grid gap-2">
-                                        {selectedPanel.subServers.map((sub, index) => (
-                                          <li key={index} className="flex justify-between items-center rounded-md border p-3">
-                                            <p>{sub.name} ({sub.type})</p>
-                                            <p className="text-muted-foreground">{t('screens')}: {sub.screens}</p>
-                                          </li>
-                                        ))}
-                                      </ul>
-                                  ) : (
-                                    <p className="text-muted-foreground text-sm">{t('noSubServersMessage')}</p>
-                                  )}
-                                </div>
-                              )}
-                              
+                              <Button variant="outline" size="sm">{t('selectClient')}</Button>
+                            </div>
+                          ))}
+                        </div>
+                      </ScrollArea>
+                    )}
+                    
+                    {selectedClient && (
+                        <div className="space-y-2">
+                            <Label htmlFor="selected-client-name">{t('client')}</Label>
+                            <div className="flex items-center gap-3 rounded-lg border p-4 bg-accent">
+                                <User className="h-6 w-6 text-muted-foreground"/>
+                                <Input
+                                    id="selected-client-name"
+                                    value={selectedClient.name}
+                                    readOnly
+                                    className="bg-transparent border-0 text-lg font-semibold focus-visible:ring-0 focus-visible:ring-offset-0"
+                                />
+                            </div>
+                        </div>
+                    )}
+                    
+                    {!selectedClient && (
+                      <>
+                        {searchTerm && searchResults.length === 0 && (
+                          <div className="flex items-center justify-center text-muted-foreground text-center rounded-lg border border-dashed py-10">
+                            <p>{t('noClientFound')}</p>
+                          </div>
+                        )}
+                        {!searchTerm && (
+                           <div className="flex items-center justify-center h-full text-muted-foreground text-center rounded-lg border border-dashed py-10">
+                              <p>{t('awaitingInput')}</p>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+              
+                <div className="space-y-6">
+                    {selectedClient && (
+                        <>
+                          <div className="space-y-4">
+                            <h3 className="text-xl font-semibold">{t('testDetails')}</h3>
                               <FormField
                                   control={form.control}
                                   name="duration"
@@ -259,12 +235,46 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                                   </FormItem>
                                   )}
                               />
-                          </form>
-                        </Form>
-                      </div>
-                  )}
-              </div>
-            </div>
+                          </div>
+
+                          <div className="space-y-4">
+                              <div className="space-y-2">
+                                <Label>{t('panel')}</Label>
+                                <div className="relative">
+                                  <Input
+                                    placeholder={t('selectPanelPlaceholder')}
+                                    value={selectedPanel ? selectedPanel.name : ''}
+                                    readOnly
+                                    onClick={() => setIsPanelModalOpen(true)}
+                                    className="cursor-pointer"
+                                  />
+                                   <ServerIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                </div>
+                              </div>
+
+                              {selectedPanel && (
+                                <div className="space-y-4">
+                                  <h4 className="font-semibold">{t('subServerDetails')}</h4>
+                                  {selectedPanel.subServers && selectedPanel.subServers.length > 0 ? (
+                                     <ul className="grid gap-2">
+                                        {selectedPanel.subServers.map((sub, index) => (
+                                          <li key={index} className="flex justify-between items-center rounded-md border p-3">
+                                            <p>{sub.name} ({sub.type})</p>
+                                            <p className="text-muted-foreground">{t('screens')}: {sub.screens}</p>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                  ) : (
+                                    <p className="text-muted-foreground text-sm">{t('noSubServersMessage')}</p>
+                                  )}
+                                </div>
+                              )}
+                          </div>
+                        </>
+                      )}
+                  </div>
+                </form>
+            </Form>
           </ScrollArea>
 
           <DialogFooter className="p-6 border-t">
