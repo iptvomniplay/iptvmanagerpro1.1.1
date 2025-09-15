@@ -778,9 +778,11 @@ export function ServerForm({ server }: ServerFormProps) {
             <Button type="button" variant="outline" onClick={handleCancel}>
               {t('cancel')}
             </Button>
-            <Button type="submit" className={cn(hasSubmissionError && 'animate-flash-destructive')}>
-                {server ? t('saveChanges') : t('save')}
-            </Button>
+            {(fields.length > 0 || subServerFormState.plans.length > 0) && (
+              <Button type="submit" className={cn(hasSubmissionError && 'animate-flash-destructive')}>
+                  {server ? t('saveChanges') : t('save')}
+              </Button>
+            )}
           </div>
         </form>
       </Form>
