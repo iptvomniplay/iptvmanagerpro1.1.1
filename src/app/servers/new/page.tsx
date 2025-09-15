@@ -20,7 +20,7 @@ export default function NewServerPage() {
           {isFormVisible ? (
             <ServerForm server={null} />
           ) : (
-            <div className="flex justify-center items-center h-40">
+            <div className="flex justify-start">
               <Button size="lg" onClick={() => setIsFormVisible(true)}>
                 {t('addPanel')}
               </Button>
