@@ -168,5 +168,6 @@
     "collapse": "Recolher",
     "expand": "Expandir",
     "pickADate": "Escolha uma data",
-    "birthDate": "Data de Nascimento"
+    "birthDate": "Data de Nascimento",
+    "optional": "Opcional"
 }

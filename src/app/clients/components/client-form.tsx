@@ -110,7 +110,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 p-6">
         <div className="md:w-1/2">
           <FormField
             control={form.control}
@@ -147,7 +147,10 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('emailAddress')}</FormLabel>
+                <FormLabel>
+                  {t('emailAddress')}{' '}
+                  <span className="text-muted-foreground">({t('optional')})</span>
+                </FormLabel>
                 <FormControl>
                   <Input placeholder="name@example.com" {...field} />
                 </FormControl>
