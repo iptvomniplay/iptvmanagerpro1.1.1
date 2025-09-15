@@ -105,7 +105,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
     
     const clientData = {
       ...clientDataToConfirm,
-      birthDate: clientDataToConfirm.birthDate ? clientDataToConfirm.birthDate.toISOString().split('T')[0] : undefined,
+      birthDate: clientDataToConfirm.birthDate.toISOString().split('T')[0],
     };
 
     if (client) {

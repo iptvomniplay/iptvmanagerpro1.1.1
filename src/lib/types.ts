@@ -3,9 +3,9 @@ export type Client = {
   name: string;
   nickname?: string;
   email: string;
-  phone?: string;
+  phone: string;
   hasDDI?: boolean;
-  birthDate?: string;
+  birthDate: string;
   status: 'Active' | 'Inactive' | 'Expired' | 'Test';
   registeredDate: string;
 };
