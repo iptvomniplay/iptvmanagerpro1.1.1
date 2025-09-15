@@ -39,17 +39,17 @@ import {
 } from '@/components/ui/alert-dialog';
 
 
-const formSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+const createFormSchema = (t: (key: string) => string) => z.object({
+  name: z.string().min(2, { message: t('nameValidation') }),
   nickname: z.string().optional(),
-  email: z.string().email({ message: 'Please enter a valid email.' }).optional().or(z.literal('')),
+  email: z.string().email({ message: t('emailValidation') }).optional().or(z.literal('')),
   phone: z.string().optional(),
   hasDDI: z.boolean().default(false).optional(),
   birthDate: z.date().optional(),
   status: z.enum(['Active', 'Inactive', 'Expired', 'Test']),
 });
 
-export type ClientFormValues = z.infer<typeof formSchema>;
+export type ClientFormValues = z.infer<ReturnType<typeof createFormSchema>>;
 
 interface ClientFormProps {
   client: Client | null;
@@ -64,6 +64,8 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = React.useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false);
   const [clientDataToConfirm, setClientDataToConfirm] = React.useState<ClientFormValues | null>(null);
+
+  const formSchema = createFormSchema(t);
 
   const form = useForm<ClientFormValues>({
     resolver: zodResolver(formSchema),
@@ -155,7 +157,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                 <FormItem>
                   <FormLabel>{t('fullName')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="John Doe" {...field} />
+                    <Input placeholder={t('namePlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -189,7 +191,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                     {t('emailAddress')}
                   </FormLabel>
                   <FormControl>
-                    <Input placeholder="name@example.com" {...field} />
+                    <Input placeholder={t('emailPlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -224,7 +226,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                     <Input 
                         {...field}
                         onChange={handlePhoneChange}
-                        placeholder={language === 'pt-BR' && !hasDDI ? '(11) 99999-9999' : t('phonePlaceholder')}
+                        placeholder={language === 'pt-BR' && !hasDDI ? t('phonePtBRPlaceholder') : t('phonePlaceholder')}
                     />
                   </FormControl>
                   <FormMessage />
@@ -310,10 +312,12 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogAction onClick={handleSuccessModalClose}>
-            OK
+            {t('ok')}
           </AlertDialogAction>
         </AlertDialogContent>
       </AlertDialog>
     </>
   );
 }
+
+    

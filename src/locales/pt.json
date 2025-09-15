@@ -180,5 +180,13 @@
     "backToEdit": "Voltar para Editar",
     "panelDetails": "Detalhes do Painel",
     "subServerDetails": "Detalhes dos Servidores",
-    "clientDetails": "Detalhes do Cliente"
+    "clientDetails": "Detalhes do Cliente",
+    "nameValidation": "O nome deve ter pelo menos 2 caracteres.",
+    "emailValidation": "Por favor, insira um e-mail válido.",
+    "namePlaceholder": "João da Silva",
+    "emailPlaceholder": "nome@exemplo.com",
+    "phonePtBRPlaceholder": "(11) 99999-9999",
+    "ok": "OK"
 }
+
+    
