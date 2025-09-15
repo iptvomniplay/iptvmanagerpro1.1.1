@@ -170,6 +170,9 @@ export function ServerForm({ server }: ServerFormProps) {
     control,
     name: 'subServers',
   });
+  
+  const hasSubServers = fields.length > 0 || subServerFormState.plans.length > 0 || currentPlanInput.trim() !== '';
+
 
   const subServerSchema = createSubServerSchema(t);
 
@@ -225,7 +228,14 @@ export function ServerForm({ server }: ServerFormProps) {
   };
   
   const handleAddServerClick = () => {
-    const result = subServerSchema.safeParse(subServerFormState);
+    let formStateWithCurrentPlan = { ...subServerFormState };
+    const planInput = currentPlanInput.trim();
+    
+    if (planInput && !formStateWithCurrentPlan.plans.includes(planInput)) {
+        formStateWithCurrentPlan.plans.push(planInput);
+    }
+    
+    const result = subServerSchema.safeParse(formStateWithCurrentPlan);
     if (!result.success) {
         const newErrors: Record<string, string | undefined> = {};
         const firstErrorField = result.error.issues[0].path[0];
@@ -241,36 +251,59 @@ export function ServerForm({ server }: ServerFormProps) {
         }
         return;
     }
+
     setSubServerErrors({});
+    
+    if (planInput) {
+        setSubServerFormState(formStateWithCurrentPlan);
+        setCurrentPlanInput('');
+    }
+
     setIsAddMoreServerModalOpen(true);
   };
 
+  const processAndValidateSubServer = () => {
+    const planInput = currentPlanInput.trim();
+    let currentSubServer = { ...subServerFormState };
+
+    // If there's text in the plan input, add it to the current sub-server's plans
+    if (planInput && !currentSubServer.plans.includes(planInput)) {
+      currentSubServer.plans = [...currentSubServer.plans, planInput];
+    }
+    
+    const isSubServerFormEmpty = Object.values(subServerFormState).every(v => (Array.isArray(v) ? v.length === 0 : !v)) && !planInput;
+
+    if (isSubServerFormEmpty) {
+      return { isValid: true, subServer: null };
+    }
+
+    const result = subServerSchema.safeParse(currentSubServer);
+
+    if (!result.success) {
+      setHasSubmissionError(true);
+      const firstErrorField = result.error.issues[0].path[0] as string;
+      const el = document.getElementsByName(firstErrorField)[0];
+      if (el) {
+        el.focus();
+      }
+      toast({
+        variant: 'destructive',
+        title: t('validationError'),
+        description: t('fillAllSubServerFields'),
+      });
+      return { isValid: false, subServer: null };
+    }
+
+    return { isValid: true, subServer: currentSubServer };
+  };
+
   const handleSubmit = (values: ServerFormValues) => {
-    let finalValues = values;
+    const { isValid, subServer } = processAndValidateSubServer();
+    if (!isValid) return;
 
-    const subServerResult = subServerSchema.safeParse(subServerFormState);
-    const isSubServerFormEmpty = Object.values(subServerFormState).every(v => (Array.isArray(v) ? v.length === 0 : !v));
-
-    if (!isSubServerFormEmpty) {
-         if (subServerResult.success) {
-            finalValues = {
-                ...values,
-                subServers: [...(values.subServers || []), subServerFormState],
-            };
-        } else {
-            setHasSubmissionError(true);
-            const firstErrorField = subServerResult.error.issues[0].path[0] as string;
-            const el = document.getElementsByName(firstErrorField)[0];
-             if (el) {
-                el.focus();
-            }
-            toast({
-                variant: 'destructive',
-                title: t('validationError'),
-                description: t('fillAllSubServerFields'),
-            });
-            return;
-        }
+    let finalValues = { ...values };
+    if (subServer) {
+        finalValues.subServers = [...(values.subServers || []), subServer];
     }
     
     if (!finalValues.subServers || finalValues.subServers.length === 0) {
@@ -346,21 +379,28 @@ export function ServerForm({ server }: ServerFormProps) {
     } else {
       reset(getInitialValues(null));
       setSubServerFormState(initialSubServerValues);
+      setCurrentPlanInput('');
       remove();
     }
   };
 
    const handleAddMoreResponse = (addMore: boolean) => {
     setIsAddMoreServerModalOpen(false);
-    const result = subServerSchema.safeParse(subServerFormState);
-    
-    if (result.success) {
-      append(subServerFormState);
-      setSubServerFormState(initialSubServerValues);
-      setCurrentPlanInput('');
-      if (!addMore) {
-        // Just close the modal, user will click Save
-      }
+    const { isValid, subServer } = processAndValidateSubServer();
+
+    if (isValid && subServer) {
+        append(subServer);
+        setSubServerFormState(initialSubServerValues);
+        setCurrentPlanInput('');
+        if (addMore) {
+           // Form is cleared, ready for the next one
+        } else {
+            // User doesn't want to add more, they will click save next.
+            // We can add a visual cue to the save button.
+            const saveButton = document.getElementById('main-save-button');
+            saveButton?.classList.add('animate-flash');
+            setTimeout(() => saveButton?.classList.remove('animate-flash'), 1500);
+        }
     }
   };
 
@@ -714,7 +754,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                  {subServerErrors.screens && <p className="text-sm font-medium text-destructive">{subServerErrors.screens}</p>}
                             </FormItem>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-end">
+                        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_auto] gap-4 items-end">
                              <FormItem>
                                 <FormLabel>{t('plans')}</FormLabel>
                                 <FormControl>
@@ -733,8 +773,11 @@ export function ServerForm({ server }: ServerFormProps) {
                                 </FormControl>
                                 {subServerErrors.plans && <p className="text-sm font-medium text-destructive">{subServerErrors.plans}</p>}
                             </FormItem>
-                             <Button type="button" onClick={handleAddPlan}>
+                             <Button type="button" variant="secondary" onClick={handleAddPlan}>
                                 {t('addPlan')}
+                            </Button>
+                            <Button type="button" onClick={handleAddServerClick}>
+                                {t('addServer')}
                             </Button>
                         </div>
                         <div className="flex flex-wrap gap-2 pt-2 min-h-[24px]">
@@ -747,9 +790,6 @@ export function ServerForm({ server }: ServerFormProps) {
                                 </Badge>
                             ))}
                         </div>
-                         <Button type="button" onClick={handleAddServerClick} className="w-full">
-                            {t('addServer')}
-                        </Button>
                     </div>
 
                     <div className="space-y-2">
@@ -786,14 +826,16 @@ export function ServerForm({ server }: ServerFormProps) {
             </Card>
           </div>
 
-          <div className="flex justify-end gap-4 pt-6">
-            <Button type="button" variant="outline" onClick={handleCancel}>
-              {t('cancel')}
-            </Button>
-            <Button type="submit" className={cn(hasSubmissionError && 'animate-flash-destructive')}>
-                {server ? t('saveChanges') : t('save')}
-            </Button>
-          </div>
+          {(fields.length > 0 || hasSubServers) && (
+             <div className="flex justify-end gap-4 pt-6">
+                <Button type="button" variant="outline" onClick={handleCancel}>
+                {t('cancel')}
+                </Button>
+                <Button id="main-save-button" type="submit" className={cn(hasSubmissionError && 'animate-flash-destructive')}>
+                    {server ? t('saveChanges') : t('save')}
+                </Button>
+            </div>
+          )}
         </form>
       </Form>
       
