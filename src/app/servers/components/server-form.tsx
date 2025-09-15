@@ -208,7 +208,7 @@ export function ServerForm({ server }: ServerFormProps) {
   return (
     <>
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 py-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 p-6">
         
         <Button type="button" onClick={() => setIsPanelFormVisible(!isPanelFormVisible)} disabled={!!server} className="w-48">
             <PlusCircle className="mr-2 h-5 w-5" />

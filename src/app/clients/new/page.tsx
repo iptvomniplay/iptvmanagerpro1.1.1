@@ -18,7 +18,7 @@ export default function NewClientPage() {
         <CardHeader>
           <CardTitle>{t('clientRegistration')}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-6 p-6">
           <div className="flex justify-between items-center">
             <Button
               type="button"
@@ -49,7 +49,7 @@ export default function NewClientPage() {
               </Button>
             )}
           </div>
-          <div className={cn("px-6 pt-6", isFormVisible ? 'block' : 'hidden')}>
+          <div className={cn("pt-6", isFormVisible ? 'block' : 'hidden')}>
               <CardDescription>{t('registerNewClientDescription')}</CardDescription>
               <ClientForm client={null} onSubmitted={() => setIsFormVisible(false)} />
           </div>
