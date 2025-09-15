@@ -781,7 +781,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 </FormControl>
                                 {subServerErrors.plans && <p className="text-sm font-medium text-destructive">{subServerErrors.plans}</p>}
                             </FormItem>
-                             <Button type="button" onClick={handleAddPlan} variant="outline">
+                             <Button type="button" onClick={handleAddPlan} variant="default">
                                 {t('addPlan')}
                             </Button>
                             <Button type="button" onClick={handleAddServerClick} variant="default">
