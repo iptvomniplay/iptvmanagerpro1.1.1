@@ -175,12 +175,15 @@ export function ServerForm({ server }: ServerFormProps) {
   const hasSubServers = fields.length > 0 || subServerFormState.name || subServerFormState.type || subServerFormState.screens || subServerFormState.plans.length > 0 || currentPlanInput.trim() !== '';
 
   React.useEffect(() => {
-    if (!hasInitialStock) {
-      setValue('creditStock', 0);
-    } else if (form.getValues('creditStock') === 0) {
-      setValue('creditStock', undefined);
+    if (hasInitialStock) {
+        if (form.getValues('creditStock') === 0) {
+            setValue('creditStock', undefined);
+        }
+    } else {
+        setValue('creditStock', 0);
     }
   }, [hasInitialStock, setValue, form]);
+
 
   const subServerSchema = createSubServerSchema(t);
 
@@ -377,16 +380,12 @@ export function ServerForm({ server }: ServerFormProps) {
           ...serverDataToConfirm,
           id: server.id,
           status: server.status,
-          login: serverDataToConfirm.login,
-          password: serverDataToConfirm.password,
           subServers: serverDataToConfirm.subServers || [],
       };
       updateServer(serverData);
     } else {
         const serverData: Omit<Server, 'id' | 'status'> = {
             ...serverDataToConfirm,
-            login: serverDataToConfirm.login,
-            password: serverDataToConfirm.password,
             subServers: serverDataToConfirm.subServers || [],
         };
         addServer(serverData);
@@ -914,4 +913,5 @@ export function ServerForm({ server }: ServerFormProps) {
     
 
     
+
 
