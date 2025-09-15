@@ -163,29 +163,26 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                   </ScrollArea>
                 )}
                 
-                {!selectedClient && !searchTerm && (
-                  <div className="flex items-center justify-center h-full text-muted-foreground text-center rounded-lg border border-dashed py-10">
-                      <p>{t('awaitingInput')}</p>
+                {!selectedClient && searchResults.length === 0 && (
+                   <div className="flex items-center justify-center h-full text-muted-foreground text-center rounded-lg border border-dashed py-10">
+                      <p>{searchTerm ? t('noClientFound') : t('awaitingInput')}</p>
                   </div>
                 )}
-                
-                {searchResults.length === 0 && searchTerm && !selectedClient && (
-                  <p className="text-center text-muted-foreground pt-8">{t('noClientFound')}</p>
+
+                {selectedClient && (
+                    <div className="space-y-2">
+                        <Label htmlFor="selected-client-name">{t('client')}</Label>
+                        <div className="flex items-center gap-3 rounded-lg border p-4 bg-accent">
+                            <User className="h-6 w-6 text-muted-foreground"/>
+                            <Input
+                                id="selected-client-name"
+                                value={selectedClient.name}
+                                readOnly
+                                className="bg-transparent border-0 text-lg font-semibold focus-visible:ring-0 focus-visible:ring-offset-0"
+                            />
+                        </div>
+                    </div>
                 )}
-                  {selectedClient && (
-                      <div className="space-y-2">
-                          <Label htmlFor="selected-client-name">{t('client')}</Label>
-                          <div className="flex items-center gap-3 rounded-lg border p-4 bg-accent">
-                              <User className="h-6 w-6 text-muted-foreground"/>
-                              <Input
-                                  id="selected-client-name"
-                                  value={selectedClient.name}
-                                  readOnly
-                                  className="bg-transparent border-0 text-lg font-semibold focus-visible:ring-0 focus-visible:ring-offset-0"
-                              />
-                          </div>
-                      </div>
-                  )}
               </div>
               
               <div className="space-y-6">
