@@ -49,6 +49,7 @@ import {
 } from '@/components/ui/dialog';
 import { ClientForm } from './client-form';
 import { useRouter } from 'next/navigation';
+import { TestModal } from './test-modal';
 
 export type ClientFormValues = Omit<Client, 'id' | 'registeredDate'>;
 
@@ -59,6 +60,7 @@ export default function ClientsPageContent() {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [isFormOpen, setIsFormOpen] = React.useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = React.useState(false);
+  const [isTestModalOpen, setIsTestModalOpen] = React.useState(false);
   const [editingClient, setEditingClient] = React.useState<Client | null>(null);
   const [clientToDelete, setClientToDelete] = React.useState<Client | null>(
     null
@@ -132,7 +134,7 @@ export default function ClientsPageContent() {
                   </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => router.push('/clients/new')}>
+                  <DropdownMenuItem onClick={() => setIsTestModalOpen(true)}>
                       {t('addTest')}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => router.push('/clients/tests')}>
@@ -239,6 +241,8 @@ export default function ClientsPageContent() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <TestModal isOpen={isTestModalOpen} onClose={() => setIsTestModalOpen(false)} />
     </>
   );
 }

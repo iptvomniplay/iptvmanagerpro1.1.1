@@ -25,7 +25,7 @@
     "goToServers": "Go to Servers",
     "clientManagement": "Client Management",
     "clientManagementDescription": "View, add, edit, and manage your clients.",
-    "searchClientPlaceholder": "Search by name, ID, or status...",
+    "searchClientPlaceholder": "Search by name, phone or nickname...",
     "register": "Register",
     "clientID": "Client ID",
     "name": "Name",
@@ -200,5 +200,14 @@
     "birthDateRequired": "Date of birth is required.",
     "testButtonLabel": "Test",
     "addTest": "Add Test",
-    "viewTests": "View All Tests"
+    "viewTests": "View All Tests",
+    "addTestToClient": "Add Test to Client",
+    "addTestToClientDescription": "Search for a client and fill in the test details.",
+    "searchClient": "Search Client",
+    "selectClient": "Select Client",
+    "noClientFound": "No client found.",
+    "testDetails": "Test Details",
+    "testDuration": "Test Duration (hours)",
+    "testPackage": "Test Package",
+    "client": "Client"
 }
