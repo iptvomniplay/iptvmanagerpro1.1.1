@@ -35,6 +35,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
+    // This effect runs only on the client side
     try {
       const storedClients = localStorage.getItem('clients');
       const storedServers = localStorage.getItem('servers');
@@ -115,7 +116,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     updateServer,
     deleteServer,
   };
-
+  
+  // Render children only after data is loaded from localStorage to prevent hydration mismatch
   return <DataContext.Provider value={value}>{isDataLoaded ? children : null}</DataContext.Provider>;
 };
 
