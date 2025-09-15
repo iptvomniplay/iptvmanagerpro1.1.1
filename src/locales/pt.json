@@ -141,6 +141,8 @@
     "registrationAddedSuccess": "Cadastro adicionado com sucesso",
     "newServerSuccess": "Novo servidor foi cadastrado e o formulário está pronto para o próximo.",
     "editServerSuccess": "Os detalhes do servidor foram atualizados.",
+    "newClientSuccess": "Novo cliente foi cadastrado.",
+    "editClientSuccess": "Os detalhes do cliente foram atualizados.",
     "invalidUrl": "Por favor, insira uma URL válida.",
     "nameMustBeAtLeast2": "O nome deve ter pelo menos 2 caracteres.",
     "urlIsRequired": "A URL é obrigatória.",
@@ -173,8 +175,10 @@
     "optional": "Opcional",
     "reviewRegistration": "Revisar Cadastro",
     "reviewRegistrationDescription": "Por favor, revise os detalhes abaixo antes de confirmar.",
+    "reviewClientRegistration": "Revisar Cadastro do Cliente",
     "confirmAndSave": "Confirmar e Salvar",
     "backToEdit": "Voltar para Editar",
     "panelDetails": "Detalhes do Painel",
-    "subServerDetails": "Detalhes dos Servidores"
+    "subServerDetails": "Detalhes dos Servidores",
+    "clientDetails": "Detalhes do Cliente"
 }

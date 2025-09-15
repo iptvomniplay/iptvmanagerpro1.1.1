@@ -52,7 +52,7 @@ export type ClientFormValues = Omit<Client, 'id' | 'registeredDate'>;
 
 export default function ClientsPageContent() {
   const { t } = useLanguage();
-  const { clients, updateClient, deleteClient } = useData();
+  const { clients, deleteClient } = useData();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = React.useState('');
   const [isFormOpen, setIsFormOpen] = React.useState(false);
@@ -77,11 +77,6 @@ export default function ClientsPageContent() {
   const handleFormClose = () => {
     setEditingClient(null);
     setIsFormOpen(false);
-  };
-
-  const handleFormSubmit = () => {
-    // A submissão agora é tratada no ClientForm, apenas fechamos o modal
-    handleFormClose();
   };
 
   const handleDeleteConfirm = (client: Client) => {
@@ -202,7 +197,7 @@ export default function ClientsPageContent() {
           </DialogHeader>
           <ClientForm
             client={editingClient}
-            onSubmitted={handleFormSubmit}
+            onSubmitted={handleFormClose}
             onCancel={handleFormClose}
           />
         </DialogContent>

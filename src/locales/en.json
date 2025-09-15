@@ -141,6 +141,8 @@
     "registrationAddedSuccess": "Registration added successfully",
     "newServerSuccess": "New server has been registered and form is ready for the next one.",
     "editServerSuccess": "Server details have been updated.",
+    "newClientSuccess": "New client has been registered.",
+    "editClientSuccess": "Client details have been updated.",
     "invalidUrl": "Please enter a valid URL.",
     "nameMustBeAtLeast2": "Name must be at least 2 characters.",
     "urlIsRequired": "URL is required.",
@@ -173,8 +175,10 @@
     "optional": "Optional",
     "reviewRegistration": "Review Registration",
     "reviewRegistrationDescription": "Please review the details below before confirming.",
+    "reviewClientRegistration": "Review Client Registration",
     "confirmAndSave": "Confirm & Save",
     "backToEdit": "Back to Edit",
     "panelDetails": "Panel Details",
-    "subServerDetails": "Sub-Server Details"
+    "subServerDetails": "Sub-Server Details",
+    "clientDetails": "Client Details"
 }
