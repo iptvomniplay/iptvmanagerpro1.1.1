@@ -31,11 +31,14 @@ interface ConfirmationModalProps {
 }
 
 const DetailItem = ({ label, value }: { label: string; value?: string | number | null; }) => {
-  if (!value) return null;
+  const displayValue = value ?? 0;
+  
+  if (!value && value !== 0) return null;
+
   return (
     <div>
       <p className="text-sm font-medium text-muted-foreground">{label}</p>
-      <p className="text-lg">{String(value)}</p>
+      <p className="text-lg">{String(displayValue)}</p>
     </div>
   );
 };
