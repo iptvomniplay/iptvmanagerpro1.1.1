@@ -170,5 +170,11 @@
     "expand": "Expandir",
     "pickADate": "Escolha uma data",
     "birthDate": "Data de Nascimento",
-    "optional": "Opcional"
+    "optional": "Opcional",
+    "reviewRegistration": "Revisar Cadastro",
+    "reviewRegistrationDescription": "Por favor, revise os detalhes abaixo antes de confirmar.",
+    "confirmAndSave": "Confirmar e Salvar",
+    "backToEdit": "Voltar para Editar",
+    "panelDetails": "Detalhes do Painel",
+    "subServerDetails": "Detalhes dos Servidores"
 }

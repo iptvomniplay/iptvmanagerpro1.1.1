@@ -170,5 +170,11 @@
     "expand": "Expand",
     "pickADate": "Pick a date",
     "birthDate": "Date of Birth",
-    "optional": "Optional"
+    "optional": "Optional",
+    "reviewRegistration": "Review Registration",
+    "reviewRegistrationDescription": "Please review the details below before confirming.",
+    "confirmAndSave": "Confirm & Save",
+    "backToEdit": "Back to Edit",
+    "panelDetails": "Panel Details",
+    "subServerDetails": "Sub-Server Details"
 }
