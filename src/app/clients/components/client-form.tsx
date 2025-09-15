@@ -46,7 +46,7 @@ const createFormSchema = (t: (key: string) => string) => z.object({
   phone: z.string().optional(),
   hasDDI: z.boolean().default(false).optional(),
   birthDate: z.date().optional(),
-  status: z.enum(['Active', 'Inactive', 'Expired', 'Test']),
+  status: z.enum(['Active', 'Inactive', 'Expired', 'Test'], { required_error: t('statusRequired') }),
 });
 
 export type ClientFormValues = z.infer<ReturnType<typeof createFormSchema>>;
@@ -319,5 +319,3 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
     </>
   );
 }
-
-    
