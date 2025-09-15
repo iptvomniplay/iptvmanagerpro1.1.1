@@ -216,121 +216,135 @@ export function ServerForm({ server }: ServerFormProps) {
         </Button>
 
         <div className={cn("space-y-6", isPanelFormVisible ? 'block' : 'hidden')}>
-            <FormField
-                control={control}
-                name="name"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel>{t('serverName')}</FormLabel>
-                    <FormControl>
-                    <Input placeholder={t('serverNamePlaceholder')} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
-            <FormField
-                control={control}
-                name="url"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel>{t('panelUrl')}</FormLabel>
-                    <FormControl>
-                    <Input placeholder={t('serverUrlPlaceholder')} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
-            <FormField
-                control={control}
-                name="login"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel>{t('login')}</FormLabel>
-                    <FormControl>
-                    <Input {...field} placeholder={t('loginPlaceholder')} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
-            <FormField
-                control={control}
-                name="password"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel>{t('password')}</FormLabel>
-                    <FormControl>
-                    <Input type="password" {...field} placeholder={t('passwordPlaceholder')} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
-            <FormField
-                control={control}
-                name="responsibleName"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel>{t('responsibleName')}</FormLabel>
-                    <FormControl>
-                    <Input {...field} placeholder={t('responsibleNamePlaceholder')} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
-            <FormField
-                control={control}
-                name="nickname"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel>{t('nickname')}</FormLabel>
-                    <FormControl>
-                    <Input placeholder={t('nicknamePlaceholder')} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
+            <div className="md:w-1/2">
+              <FormField
+                  control={control}
+                  name="name"
+                  render={({ field }) => (
+                  <FormItem>
+                      <FormLabel>{t('serverName')}</FormLabel>
+                      <FormControl>
+                      <Input placeholder={t('serverNamePlaceholder')} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                  </FormItem>
+                  )}
+              />
+            </div>
+            <div className="md:w-1/2">
+              <FormField
+                  control={control}
+                  name="url"
+                  render={({ field }) => (
+                  <FormItem>
+                      <FormLabel>{t('panelUrl')}</FormLabel>
+                      <FormControl>
+                      <Input placeholder={t('serverUrlPlaceholder')} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                  </FormItem>
+                  )}
+              />
+            </div>
+            <div className="md:w-1/2">
+              <FormField
+                  control={control}
+                  name="login"
+                  render={({ field }) => (
+                  <FormItem>
+                      <FormLabel>{t('login')}</FormLabel>
+                      <FormControl>
+                      <Input {...field} placeholder={t('loginPlaceholder')} />
+                      </FormControl>
+                      <FormMessage />
+                  </FormItem>
+                  )}
+              />
+            </div>
+            <div className="md:w-1/2">
+              <FormField
+                  control={control}
+                  name="password"
+                  render={({ field }) => (
+                  <FormItem>
+                      <FormLabel>{t('password')}</FormLabel>
+                      <FormControl>
+                      <Input type="password" {...field} placeholder={t('passwordPlaceholder')} />
+                      </FormControl>
+                      <FormMessage />
+                  </FormItem>
+                  )}
+              />
+            </div>
+            <div className="md:w-1/2">
+              <FormField
+                  control={control}
+                  name="responsibleName"
+                  render={({ field }) => (
+                  <FormItem>
+                      <FormLabel>{t('responsibleName')}</FormLabel>
+                      <FormControl>
+                      <Input {...field} placeholder={t('responsibleNamePlaceholder')} />
+                      </FormControl>
+                      <FormMessage />
+                  </FormItem>
+                  )}
+              />
+            </div>
+            <div className="md:w-1/2">
+              <FormField
+                  control={control}
+                  name="nickname"
+                  render={({ field }) => (
+                  <FormItem>
+                      <FormLabel>{t('nickname')}</FormLabel>
+                      <FormControl>
+                      <Input placeholder={t('nicknamePlaceholder')} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                  </FormItem>
+                  )}
+              />
+            </div>
             
-            <FormField
-                control={control}
-                name="phone"
-                render={({ field }) => (
-                <FormItem>
-                    <div className="flex justify-between items-center">
-                        <FormLabel>{t('phone')}</FormLabel>
-                        <FormField
-                            control={form.control}
-                            name="hasDDI"
-                            render={({ field: ddiField }) => (
-                                <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl>
-                                    <Checkbox
-                                    checked={ddiField.value}
-                                    onCheckedChange={ddiField.onChange}
-                                    />
-                                </FormControl>
-                                <FormLabel className="text-sm font-normal">
-                                    {t('hasDDI')}
-                                </FormLabel>
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-                    <FormControl>
-                    <Input 
-                        {...field}
-                        onChange={handlePhoneChange}
-                        placeholder={language === 'pt-BR' && !hasDDI ? '(11) 99999-9999' : t('phonePlaceholder')}
-                    />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
+            <div className="md:w-1/2">
+              <FormField
+                  control={control}
+                  name="phone"
+                  render={({ field }) => (
+                  <FormItem>
+                      <div className="flex justify-between items-center">
+                          <FormLabel>{t('phone')}</FormLabel>
+                          <FormField
+                              control={form.control}
+                              name="hasDDI"
+                              render={({ field: ddiField }) => (
+                                  <FormItem className="flex items-center space-x-2 space-y-0">
+                                  <FormControl>
+                                      <Checkbox
+                                      checked={ddiField.value}
+                                      onCheckedChange={ddiField.onChange}
+                                      />
+                                  </FormControl>
+                                  <FormLabel className="text-sm font-normal">
+                                      {t('hasDDI')}
+                                  </FormLabel>
+                                  </FormItem>
+                              )}
+                          />
+                      </div>
+                      <FormControl>
+                      <Input 
+                          {...field}
+                          onChange={handlePhoneChange}
+                          placeholder={language === 'pt-BR' && !hasDDI ? '(11) 99999-9999' : t('phonePlaceholder')}
+                      />
+                      </FormControl>
+                      <FormMessage />
+                  </FormItem>
+                  )}
+              />
+            </div>
             
             <FormField
                 control={control}
@@ -364,7 +378,7 @@ export function ServerForm({ server }: ServerFormProps) {
             />
             
             {paymentType === 'postpaid' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:w-1/2">
                 <FormField
                     control={control}
                     name="panelValue"
@@ -413,7 +427,7 @@ export function ServerForm({ server }: ServerFormProps) {
                 control={control}
                 name="hasInitialStock"
                 render={({ field }) => (
-                    <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow-sm">
+                    <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow-sm md:w-1/2">
                     <FormControl>
                         <Checkbox
                         checked={field.value}
@@ -430,20 +444,22 @@ export function ServerForm({ server }: ServerFormProps) {
                 />
 
                 {hasInitialStock && (
-                    <FormField
-                        control={control}
-                        name="creditStock"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>{t('panelCreditStock')}</FormLabel>
-                            <FormControl>
-                               <Input type="number" {...field} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))} placeholder={t('creditStockPlaceholder')} />
-                            </FormControl>
-                            <FormDescription>{t('panelCreditStockDescription')}</FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
+                    <div className="md:w-1/2">
+                      <FormField
+                          control={control}
+                          name="creditStock"
+                          render={({ field }) => (
+                          <FormItem>
+                              <FormLabel>{t('panelCreditStock')}</FormLabel>
+                              <FormControl>
+                                <Input type="number" {...field} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))} placeholder={t('creditStockPlaceholder')} />
+                              </FormControl>
+                              <FormDescription>{t('panelCreditStockDescription')}</FormDescription>
+                              <FormMessage />
+                          </FormItem>
+                          )}
+                      />
+                    </div>
                 )}
             </div>
 

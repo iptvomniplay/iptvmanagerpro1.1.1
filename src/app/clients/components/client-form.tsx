@@ -111,51 +111,58 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('fullName')}</FormLabel>
-              <FormControl>
-                <Input placeholder="John Doe" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-         <FormField
-          control={form.control}
-          name="nickname"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('nickname')}</FormLabel>
-              <FormControl>
-                <Input placeholder={t('nicknamePlaceholder')} {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('emailAddress')}</FormLabel>
-              <FormControl>
-                <Input placeholder="name@example.com" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('phone')}</FormLabel>
+        <div className="md:w-1/2">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('fullName')}</FormLabel>
+                <FormControl>
+                  <Input placeholder="John Doe" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="md:w-1/2">
+          <FormField
+            control={form.control}
+            name="nickname"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('nickname')}</FormLabel>
+                <FormControl>
+                  <Input placeholder={t('nicknamePlaceholder')} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="md:w-1/2">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('emailAddress')}</FormLabel>
+                <FormControl>
+                  <Input placeholder="name@example.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="md:w-1/2">
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('phone')}</FormLabel>
                 <FormField
                     control={form.control}
                     name="hasDDI"
@@ -173,34 +180,37 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                         </FormItem>
                     )}
                 />
-              <FormControl>
-                <Input 
-                    {...field}
-                    onChange={handlePhoneChange}
-                    placeholder={language === 'pt-BR' && !hasDDI ? '(11) 99999-9999' : t('phonePlaceholder')}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-            control={form.control}
-            name="birthDate"
-            render={({ field }) => (
-            <FormItem>
-                <FormLabel>{t('birthDate')}</FormLabel>
                 <FormControl>
-                    <DatePicker 
-                        value={field.value}
-                        onChange={field.onChange}
-                    />
+                  <Input 
+                      {...field}
+                      onChange={handlePhoneChange}
+                      placeholder={language === 'pt-BR' && !hasDDI ? '(11) 99999-9999' : t('phonePlaceholder')}
+                  />
                 </FormControl>
                 <FormMessage />
-            </FormItem>
+              </FormItem>
             )}
-        />
-        <div className="grid grid-cols-1 gap-6">
+          />
+        </div>
+        <div className="md:w-1/2">
+          <FormField
+              control={form.control}
+              name="birthDate"
+              render={({ field }) => (
+              <FormItem>
+                  <FormLabel>{t('birthDate')}</FormLabel>
+                  <FormControl>
+                      <DatePicker 
+                          value={field.value}
+                          onChange={field.onChange}
+                      />
+                  </FormControl>
+                  <FormMessage />
+              </FormItem>
+              )}
+          />
+        </div>
+        <div className="md:w-1/2">
           <FormField
             control={form.control}
             name="status"
