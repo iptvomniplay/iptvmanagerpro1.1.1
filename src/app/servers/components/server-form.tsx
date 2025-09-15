@@ -194,8 +194,8 @@ export function ServerForm({ server }: ServerFormProps) {
   const toggleExpand = (index: number) => {
     setExpandedItems(prev => ({...prev, [index]: !prev[index]}));
   };
-
-  const handleAddPlan = () => {
+  
+  const validateSubServerFields = () => {
     const tempSchema = z.object({
       name: z.string().min(1, t('serverNameRequired')),
       type: z.string().min(1, t('serverTypeRequired')),
@@ -208,12 +208,26 @@ export function ServerForm({ server }: ServerFormProps) {
     
     if (!validationResult.success) {
       const newErrors: Record<string, string> = {};
+      const firstErrorField = validationResult.error.issues[0].path[0] as string;
       validationResult.error.issues.forEach(issue => {
         newErrors[issue.path[0]] = issue.message;
       });
       setSubServerErrors(prev => ({...prev, ...newErrors}));
-      const firstErrorField = validationResult.error.issues[0].path[0] as string;
       (document.getElementsByName(firstErrorField)[0] as HTMLElement)?.focus();
+      return false;
+    }
+    setSubServerErrors({});
+    return true;
+  }
+
+  const handlePlansFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (!validateSubServerFields()) {
+      e.target.blur();
+    }
+  }
+
+  const handleAddPlan = () => {
+    if (!validateSubServerFields()) {
       return;
     }
     
@@ -757,7 +771,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <FormLabel>{t('subServerName')}</FormLabel>
                                 <FormControl>
                                     <Input 
-                                        name="subServerName"
+                                        name="name"
                                         value={subServerFormState.name}
                                         onChange={e => {
                                             setSubServerFormState(p => ({ ...p, name: e.target.value }));
@@ -772,7 +786,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <FormLabel>{t('subServerType')}</FormLabel>
                                 <FormControl>
                                     <Input 
-                                        name="subServerType"
+                                        name="type"
                                         value={subServerFormState.type}
                                         onChange={e => {
                                             setSubServerFormState(p => ({ ...p, type: e.target.value }));
@@ -807,6 +821,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                     <Input
                                         name="plans"
                                         value={currentPlanInput}
+                                        onFocus={handlePlansFocus}
                                         onChange={(e) => setCurrentPlanInput(e.target.value)}
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') {
@@ -919,6 +934,7 @@ export function ServerForm({ server }: ServerFormProps) {
     
 
     
+
 
 
 
