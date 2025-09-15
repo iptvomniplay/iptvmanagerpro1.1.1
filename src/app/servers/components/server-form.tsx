@@ -249,7 +249,9 @@ export function ServerForm({ server }: ServerFormProps) {
     let finalValues = values;
 
     const subServerResult = subServerSchema.safeParse(subServerFormState);
-    if (Object.values(subServerFormState).some(v => (Array.isArray(v) ? v.length > 0 : v))) {
+    const isSubServerFormEmpty = Object.values(subServerFormState).every(v => (Array.isArray(v) ? v.length === 0 : !v));
+
+    if (!isSubServerFormEmpty) {
          if (subServerResult.success) {
             finalValues = {
                 ...values,
@@ -257,6 +259,11 @@ export function ServerForm({ server }: ServerFormProps) {
             };
         } else {
             setHasSubmissionError(true);
+            const firstErrorField = subServerResult.error.issues[0].path[0] as string;
+            const el = document.getElementsByName(firstErrorField)[0];
+             if (el) {
+                el.focus();
+            }
             toast({
                 variant: 'destructive',
                 title: t('validationError'),
@@ -273,8 +280,6 @@ export function ServerForm({ server }: ServerFormProps) {
 
   const onInvalid = (errors: any) => {
     if (!hasSubmissionError) {
-        const errorKeys = Object.keys(errors);
-        const errorMessages = errorKeys.map(key => `- ${errors[key].message || t(key as any)}`).join('\n');
         toast({
             variant: "destructive",
             title: t('validationError'),
@@ -282,7 +287,7 @@ export function ServerForm({ server }: ServerFormProps) {
                 <div className="flex flex-col gap-1">
                     <p>{t('fillAllFieldsWarning')}</p>
                     <ul className="list-disc pl-5">
-                       {errorKeys.map(key => <li key={key}>{errors[key].message || t(key as any)}</li>)}
+                       {Object.keys(errors).map(key => <li key={key}>{errors[key].message || t(key as any)}</li>)}
                     </ul>
                 </div>
             )
@@ -345,7 +350,7 @@ export function ServerForm({ server }: ServerFormProps) {
       setSubServerFormState(initialSubServerValues);
       setCurrentPlanInput('');
       if (!addMore) {
-        setHasSubmissionError(true);
+        handleSubmit(form.getValues());
       }
     }
   };
@@ -821,3 +826,5 @@ export function ServerForm({ server }: ServerFormProps) {
     </>
   );
 }
+
+    
