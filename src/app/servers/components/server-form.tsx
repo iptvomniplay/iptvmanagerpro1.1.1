@@ -149,6 +149,7 @@ export function ServerForm({ server }: ServerFormProps) {
   const [serverDataToConfirm, setServerDataToConfirm] = React.useState<ServerFormValues | null>(null);
   const [isAddMoreServerModalOpen, setIsAddMoreServerModalOpen] = React.useState(false);
   const [hasSubmissionError, setHasSubmissionError] = React.useState(false);
+  const [noServersAddedError, setNoServersAddedError] = React.useState(false);
   
   const [subServerFormState, setSubServerFormState] = React.useState<SubServerFormValues>(initialSubServerValues);
   const [currentPlanInput, setCurrentPlanInput] = React.useState('');
@@ -232,7 +233,7 @@ export function ServerForm({ server }: ServerFormProps) {
     const planInput = currentPlanInput.trim();
     
     if (planInput && !formStateWithCurrentPlan.plans.includes(planInput)) {
-        formStateWithCurrentPlan.plans.push(planInput);
+        formStateWithCurrentPlan.plans = [...formStateWithCurrentPlan.plans, planInput];
     }
     return formStateWithCurrentPlan;
   }
@@ -300,6 +301,7 @@ export function ServerForm({ server }: ServerFormProps) {
     }
     
     if (!finalValues.subServers || finalValues.subServers.length === 0) {
+        setNoServersAddedError(true);
         toast({
             variant: "destructive",
             title: t('validationError'),
@@ -309,6 +311,7 @@ export function ServerForm({ server }: ServerFormProps) {
     }
 
     setHasSubmissionError(false);
+    setNoServersAddedError(false);
     setServerDataToConfirm(finalValues);
     setIsConfirmationModalOpen(true);
   };
@@ -389,7 +392,6 @@ export function ServerForm({ server }: ServerFormProps) {
            // Form is cleared, ready for the next one
         } else {
             // User doesn't want to add more, they will click save next.
-            // We can add a visual cue to the save button.
             const saveButton = document.getElementById('main-save-button');
             saveButton?.classList.add('animate-flash');
             setTimeout(() => saveButton?.classList.remove('animate-flash'), 1500);
@@ -810,8 +812,8 @@ export function ServerForm({ server }: ServerFormProps) {
                         ))}
                     </div>
                 
-                    {(fields.length === 0 && !hasSubServers) && (
-                        <div className="text-center text-muted-foreground py-4">
+                    {fields.length === 0 && !hasSubServers && (
+                        <div className={cn("text-center py-4", noServersAddedError ? "text-destructive" : "text-muted-foreground")}>
                             {t('noSubServers')}
                         </div>
                     )}
@@ -866,5 +868,3 @@ export function ServerForm({ server }: ServerFormProps) {
     </>
   );
 }
-
-    
