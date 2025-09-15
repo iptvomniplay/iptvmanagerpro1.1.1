@@ -651,9 +651,9 @@ export function ServerForm({ server }: ServerFormProps) {
                             {t('addMoreServers')}
                         </Button>
                     </div>
-                     <div>
-                        <FormLabel>{t('plans')}</FormLabel>
-                        <div className="flex gap-2">
+                     <div className="grid grid-cols-[1fr_auto] gap-4 items-end">
+                        <div className="space-y-2">
+                            <FormLabel>{t('plans')}</FormLabel>
                             <Input
                                 value={currentPlanInput}
                                 onChange={(e) => setCurrentPlanInput(e.target.value)}
@@ -665,13 +665,12 @@ export function ServerForm({ server }: ServerFormProps) {
                                 }}
                                 placeholder={t('plansPlaceholder')}
                             />
-                            <Button type="button" onClick={handleAddPlan}>
-                                {t('addPlan')}
-                            </Button>
+                            {subServerErrors.plans && <p className="text-sm font-medium text-destructive mt-2">{subServerErrors.plans}</p>}
                         </div>
-                        {subServerErrors.plans && <p className="text-sm font-medium text-destructive mt-2">{subServerErrors.plans}</p>}
-
-                        <div className="flex flex-wrap gap-2 pt-2">
+                        <Button type="button" onClick={handleAddPlan}>
+                            {t('addPlan')}
+                        </Button>
+                        <div className="col-span-2 flex flex-wrap gap-2 pt-2">
                             {subServerFormState.plans.map((plan, planIndex) => (
                                 <Badge key={planIndex} variant="secondary" className="flex items-center gap-2">
                                     {plan}
