@@ -20,6 +20,7 @@ export type Server = {
   id: string;
   name: string;
   url: string;
+  status: 'Online' | 'Offline';
   responsibleName: string;
   nickname?: string;
   phone?: string;

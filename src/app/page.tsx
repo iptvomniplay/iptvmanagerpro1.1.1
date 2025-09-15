@@ -105,7 +105,7 @@ export default function Dashboard() {
             </CardHeader>
             <CardFooter>
               <Button asChild size="lg">
-                <Link href="/clients">
+                <Link href="/clients/new">
                   {t('manageClients')} <PlusCircle />
                 </Link>
               </Button>

@@ -32,6 +32,17 @@ export default function ServersPage() {
   const { t } = useLanguage();
   const router = useRouter();
   const { servers } = useData();
+  
+  const getStatusVariant = (status: Server['status']) => {
+    switch (status) {
+      case 'Online':
+        return 'success';
+      case 'Offline':
+        return 'destructive';
+      default:
+        return 'outline';
+    }
+  };
 
   return (
     <>
@@ -64,7 +75,12 @@ export default function ServersPage() {
             <Card key={server.id}>
               <CardHeader className="p-6">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-xl">{server.name}</CardTitle>
+                  <div className='flex items-center gap-4'>
+                    <CardTitle className="text-xl">{server.name}</CardTitle>
+                    <Badge variant={getStatusVariant(server.status)}>
+                        {t(server.status.toLowerCase() as any)}
+                    </Badge>
+                  </div>
                   <Badge variant={server.paymentType === 'prepaid' ? 'default' : 'secondary'}>
                     {t(server.paymentType as any)}
                   </Badge>

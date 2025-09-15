@@ -201,16 +201,20 @@ export function ServerForm({ server }: ServerFormProps) {
   const handleConfirmSave = () => {
     if (!serverDataToConfirm) return;
     
-    const serverData: Server = {
-        ...serverDataToConfirm,
-        id: server?.id || '',
-        status: server?.status || 'Online',
-        subServers: serverDataToConfirm.subServers || [],
-    };
-
     if (server) {
-        updateServer(serverData);
+      const serverData: Server = {
+          ...serverDataToConfirm,
+          id: server.id,
+          status: server.status,
+          subServers: serverDataToConfirm.subServers || [],
+      };
+      updateServer(serverData);
     } else {
+        const { login, password, ...rest } = serverDataToConfirm;
+        const serverData: Omit<Server, 'id' | 'status'> = {
+            ...rest,
+            subServers: serverDataToConfirm.subServers || [],
+        };
         addServer(serverData);
     }
     setIsConfirmationModalOpen(false);
