@@ -171,8 +171,6 @@ export function ServerForm({ server }: ServerFormProps) {
     name: 'subServers',
   });
 
-  const [isPanelFormVisible, setIsPanelFormVisible] = React.useState(!!server);
-  
   const subServerSchema = createSubServerSchema(t);
 
   const handleAddPlan = () => {
@@ -275,7 +273,8 @@ export function ServerForm({ server }: ServerFormProps) {
 
   const onInvalid = (errors: any) => {
     if (!hasSubmissionError) {
-        const errorMessages = Object.keys(errors).map(key => `- ${t(key as any)}`);
+        const errorKeys = Object.keys(errors);
+        const errorMessages = errorKeys.map(key => `- ${errors[key].message || t(key as any)}`).join('\n');
         toast({
             variant: "destructive",
             title: t('validationError'),
@@ -283,7 +282,7 @@ export function ServerForm({ server }: ServerFormProps) {
                 <div className="flex flex-col gap-1">
                     <p>{t('fillAllFieldsWarning')}</p>
                     <ul className="list-disc pl-5">
-                       {Object.keys(errors).map(key => <li key={key}>{t(key as any)}</li>)}
+                       {errorKeys.map(key => <li key={key}>{errors[key].message || t(key as any)}</li>)}
                     </ul>
                 </div>
             )
@@ -334,7 +333,6 @@ export function ServerForm({ server }: ServerFormProps) {
       reset(getInitialValues(null));
       setSubServerFormState(initialSubServerValues);
       remove();
-      setIsPanelFormVisible(false);
     }
   };
 
@@ -357,19 +355,7 @@ export function ServerForm({ server }: ServerFormProps) {
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit, onInvalid)} className="space-y-6 p-6">
-          <Button
-            type="button"
-            onClick={() => setIsPanelFormVisible(!isPanelFormVisible)}
-            disabled={!!server}
-            className="w-48"
-          >
-            <PlusCircle className="mr-2 h-5 w-5" />
-            {t('addNewPanel')}
-          </Button>
-
-          <div
-            className={cn('space-y-6', isPanelFormVisible ? 'block' : 'hidden')}
-          >
+          <div className="space-y-6">
             <div className="md:w-1/2">
               <FormField
                 control={control}
@@ -659,7 +645,7 @@ export function ServerForm({ server }: ServerFormProps) {
             )}
           </div>
           
-          <div className={cn('space-y-4', isPanelFormVisible ? 'block' : 'hidden')}>
+          <div className="space-y-4">
             <Card>
                 <CardHeader>
                     <CardTitle>{t('servers')}</CardTitle>
@@ -672,7 +658,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <FormLabel>{t('subServerName')}</FormLabel>
                                 <FormControl>
                                     <Input 
-                                        name="subServerName"
+                                        name="name"
                                         value={subServerFormState.name}
                                         onChange={e => {
                                             setSubServerFormState(p => ({ ...p, name: e.target.value }));
@@ -687,7 +673,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <FormLabel>{t('subServerType')}</FormLabel>
                                 <FormControl>
                                     <Input 
-                                        name="subServerType"
+                                        name="type"
                                         value={subServerFormState.type}
                                         onChange={e => {
                                             setSubServerFormState(p => ({ ...p, type: e.target.value }));
@@ -703,7 +689,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <FormControl>
                                     <Input
                                         type="number"
-                                        name="subServerScreens"
+                                        name="screens"
                                         value={subServerFormState.screens || ''}
                                         onChange={e => {
                                             setSubServerFormState(p => ({ ...p, screens: e.target.value === '' ? undefined : Number(e.target.value) }));
@@ -720,7 +706,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <FormLabel>{t('plans')}</FormLabel>
                                 <FormControl>
                                     <Input
-                                        name="subServerPlans"
+                                        name="plans"
                                         value={currentPlanInput}
                                         onChange={(e) => setCurrentPlanInput(e.target.value)}
                                         onKeyDown={(e) => {
