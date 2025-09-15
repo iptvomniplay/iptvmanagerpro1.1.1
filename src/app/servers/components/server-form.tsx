@@ -647,6 +647,9 @@ export function ServerForm({ server }: ServerFormProps) {
                             />
                             {subServerErrors.screens && <p className="text-sm font-medium text-destructive">{subServerErrors.screens}</p>}
                         </div>
+                        <Button type="button" onClick={handleAddSubServer}>
+                            {t('addMoreServers')}
+                        </Button>
                     </div>
                      <div>
                         <FormLabel>{t('plans')}</FormLabel>
@@ -678,11 +681,6 @@ export function ServerForm({ server }: ServerFormProps) {
                                 </Badge>
                             ))}
                         </div>
-                    </div>
-                     <div className="flex justify-end">
-                        <Button type="button" onClick={handleAddSubServer}>
-                            {t('addMoreServers')}
-                        </Button>
                     </div>
                   </div>
 
