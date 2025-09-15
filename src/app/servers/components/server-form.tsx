@@ -349,6 +349,8 @@ export function ServerForm({ server }: ServerFormProps) {
           ...serverDataToConfirm,
           id: server.id,
           status: server.status,
+          login: serverDataToConfirm.login,
+          password: serverDataToConfirm.password,
           subServers: serverDataToConfirm.subServers || [],
       };
       updateServer(serverData);
@@ -457,7 +459,7 @@ export function ServerForm({ server }: ServerFormProps) {
                   <FormItem>
                     <FormLabel>{t('login')}</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder={t('loginPlaceholder')} />
+                      <Input autoComplete="username" {...field} placeholder={t('loginPlaceholder')} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -474,6 +476,7 @@ export function ServerForm({ server }: ServerFormProps) {
                     <FormControl>
                       <Input
                         type="password"
+                        autoComplete="current-password"
                         {...field}
                         placeholder={t('passwordPlaceholder')}
                       />
@@ -874,5 +877,3 @@ export function ServerForm({ server }: ServerFormProps) {
     </>
   );
 }
-
-    
