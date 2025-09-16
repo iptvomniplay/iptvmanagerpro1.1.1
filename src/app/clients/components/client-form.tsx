@@ -80,10 +80,10 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   });
 
   const { control, reset, trigger } = form;
-  const { fields: phoneFields, append: appendPhone, remove: removePhone, replace: replacePhones } = useFieldArray({ control, name: 'phones' });
+  const { fields: phoneFields, replace: replacePhones } = useFieldArray({ control, name: 'phones' });
 
   const handlePhoneSave = (newPhones: string[]) => {
-    replacePhones(newPhones.map(p => ({ value: p })));
+    replacePhones(newPhones.map(phone => ({ value: phone })));
     trigger('phones');
     setIsPhoneModalOpen(false);
   };
@@ -191,27 +191,27 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
           </div>
           
           <div className="w-full md:w-1/2 space-y-4">
-             <FormField
-                control={form.control}
-                name="phones"
-                render={() => (
-                    <FormItem>
-                        <FormLabel>{t('phone')}</FormLabel>
-                        <FormControl>
-                           <Button type="button" variant="outline" onClick={() => setIsPhoneModalOpen(true)}>
-                                {t('managePhones')}
-                            </Button>
-                        </FormControl>
-                        <div className="flex flex-wrap gap-2 pt-2">
-                            {phoneFields.map((field, index) => (
-                                <Badge key={field.id} variant="secondary" className="text-base">
-                                    {(field as any).value}
-                                </Badge>
-                            ))}
-                        </div>
-                        <FormMessage />
-                    </FormItem>
-                )}
+            <FormField
+              control={form.control}
+              name="phones"
+              render={() => (
+                <FormItem>
+                  <FormLabel>{t('phone')}</FormLabel>
+                  <FormControl>
+                    <Button type="button" variant="outline" onClick={() => setIsPhoneModalOpen(true)}>
+                      {t('managePhones')}
+                    </Button>
+                  </FormControl>
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {phoneFields.map((field) => (
+                      <Badge key={field.id} variant="secondary" className="text-base">
+                        {(field as any).value}
+                      </Badge>
+                    ))}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
           </div>
 

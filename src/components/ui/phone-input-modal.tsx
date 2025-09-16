@@ -11,13 +11,8 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Form,
-  FormControl,
-  FormItem,
-  FormLabel,
-} from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/use-language';
 import { X } from 'lucide-react';
@@ -38,6 +33,8 @@ export function PhoneInputModal({ isOpen, onClose, onSave, initialPhones }: Phon
   React.useEffect(() => {
     if (isOpen) {
       setPhones(initialPhones);
+      setCurrentPhone('');
+      setPhoneType('celular');
     }
   }, [isOpen, initialPhones]);
 
@@ -88,7 +85,6 @@ export function PhoneInputModal({ isOpen, onClose, onSave, initialPhones }: Phon
   
   const handleSave = () => {
     onSave(phones);
-    onClose();
   };
 
   const phonePlaceholders = {
@@ -106,27 +102,27 @@ export function PhoneInputModal({ isOpen, onClose, onSave, initialPhones }: Phon
         </DialogHeader>
         
         <div className="space-y-4 py-4">
-            <FormItem>
-                <FormLabel>{t('phoneType')}</FormLabel>
-                <RadioGroup
-                    value={phoneType}
-                    onValueChange={(value) => setPhoneType(value as any)}
-                    className="flex space-x-4"
-                >
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                        <FormControl><RadioGroupItem value="celular" /></FormControl>
-                        <FormLabel className="font-normal">{t('mobile')}</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                        <FormControl><RadioGroupItem value="fixo" /></FormControl>
-                        <FormLabel className="font-normal">{t('landline')}</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                        <FormControl><RadioGroupItem value="ddi" /></FormControl>
-                        <FormLabel className="font-normal">{t('ddi')}</FormLabel>
-                    </FormItem>
-                </RadioGroup>
-            </FormItem>
+          <div className='space-y-2'>
+            <Label>{t('phoneType')}</Label>
+            <RadioGroup
+                value={phoneType}
+                onValueChange={(value) => setPhoneType(value as any)}
+                className="flex space-x-4"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="celular" id="celular"/>
+                <Label htmlFor="celular" className="font-normal">{t('mobile')}</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="fixo" id="fixo"/>
+                <Label htmlFor="fixo" className="font-normal">{t('landline')}</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="ddi" id="ddi"/>
+                <Label htmlFor="ddi" className="font-normal">{t('ddi')}</Label>
+              </div>
+            </RadioGroup>
+          </div>
             <div className="flex items-start gap-2">
               <div className="flex-1">
                 <Input
@@ -145,7 +141,7 @@ export function PhoneInputModal({ isOpen, onClose, onSave, initialPhones }: Phon
             </div>
           
             <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">{t('addedPhones')}</p>
+                <Label>{t('addedPhones')}</Label>
                 <div className="flex flex-wrap gap-2 p-2 rounded-md border min-h-[40px]">
                     {phones.length > 0 ? phones.map((phone, index) => (
                         <Badge key={index} variant="secondary" className="flex items-center gap-2 text-base">

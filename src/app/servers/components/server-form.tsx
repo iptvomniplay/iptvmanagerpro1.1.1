@@ -600,22 +600,22 @@ export function ServerForm({ server }: ServerFormProps) {
                 control={form.control}
                 name="phones"
                 render={() => (
-                    <FormItem>
-                        <FormLabel>{t('phone')}</FormLabel>
-                        <FormControl>
-                           <Button type="button" variant="outline" onClick={() => setIsPhoneModalOpen(true)}>
-                                {t('managePhones')}
-                            </Button>
-                        </FormControl>
-                         <div className="flex flex-wrap gap-2 pt-2">
-                            {phoneFields.map((field, index) => (
-                                <Badge key={field.id} variant="secondary" className="text-base">
-                                    {(field as any).value}
-                                </Badge>
-                            ))}
-                        </div>
-                        <FormMessage />
-                    </FormItem>
+                  <FormItem>
+                    <FormLabel>{t('phone')}</FormLabel>
+                    <FormControl>
+                      <Button type="button" variant="outline" onClick={() => setIsPhoneModalOpen(true)}>
+                        {t('managePhones')}
+                      </Button>
+                    </FormControl>
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      {phoneFields.map((field) => (
+                        <Badge key={field.id} variant="secondary" className="text-base">
+                          {(field as any).value}
+                        </Badge>
+                      ))}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
                 )}
               />
             </div>
