@@ -277,6 +277,13 @@ export function ServerForm({ server }: ServerFormProps) {
     }
   };
 
+  const handleRemovePlan = (index: number) => {
+    setSubServerFormState(prev => ({
+        ...prev,
+        plans: prev.plans.filter((_, i) => i !== index)
+    }));
+  };
+
   const handleCurrencyChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     fieldName: keyof ServerFormValues
@@ -846,7 +853,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                  {subServerErrors.screens && <p className="text-sm font-medium text-destructive">{subServerErrors.screens}</p>}
                             </FormItem>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_auto] gap-4 items-end">
+                        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-end">
                              <FormItem>
                                 <FormLabel>{t('plans')}</FormLabel>
                                 <FormControl>
@@ -871,10 +878,33 @@ export function ServerForm({ server }: ServerFormProps) {
                              <Button type="button" onClick={handleAddPlan} variant="default">
                                 {t('addPlan')}
                             </Button>
-                            <Button type="button" onClick={handleAddServerClick} variant="default">
-                                {t('addServer')}
-                            </Button>
                         </div>
+                        {subServerFormState.plans.length > 0 && (
+                            <Collapsible className="space-y-2">
+                                <CollapsibleTrigger asChild>
+                                    <div className="flex items-center justify-between p-3 rounded-md border bg-background cursor-pointer">
+                                        <span className="font-semibold">{t('plans')} - {subServerFormState.plans.length} {t('registered')}</span>
+                                        <div className="flex items-center">
+                                            <Badge variant="secondary">{subServerFormState.plans.length}</Badge>
+                                            <ChevronDown className="h-5 w-5 ml-2" />
+                                        </div>
+                                    </div>
+                                </CollapsibleTrigger>
+                                <CollapsibleContent className="space-y-2">
+                                    {subServerFormState.plans.map((plan, index) => (
+                                        <div key={index} className="flex items-center justify-between p-2 pl-4 rounded-md border">
+                                            <span className="text-sm">{plan}</span>
+                                            <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleRemovePlan(index)}>
+                                                <X className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </CollapsibleContent>
+                            </Collapsible>
+                        )}
+                        <Button type="button" onClick={handleAddServerClick} variant="default" className="justify-self-end">
+                           {t('addServer')}
+                        </Button>
                     </div>
 
                     <div className="space-y-2">
