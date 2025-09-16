@@ -23,14 +23,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Trash2, FilePenLine } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
 
 interface ServerDetailsModalProps {
   isOpen: boolean;
@@ -38,7 +30,6 @@ interface ServerDetailsModalProps {
   server: Server | null;
   onEdit: () => void;
   onDelete: () => void;
-  onStatusChange: (server: Server, newStatus: Server['status']) => void;
 }
 
 const DetailItem = ({ label, value }: { label: string; value?: string | number | null; }) => {
@@ -53,13 +44,24 @@ const DetailItem = ({ label, value }: { label: string; value?: string | number |
   );
 };
 
-export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete, onStatusChange }: ServerDetailsModalProps) {
+export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }: ServerDetailsModalProps) {
   const { t } = useLanguage();
 
   if (!server) return null;
 
-  const handleStatusChange = (newStatus: Server['status']) => {
-    onStatusChange(server, newStatus);
+  const getStatusVariant = (status: Server['status']) => {
+    switch (status) {
+      case 'Online':
+        return 'success';
+      case 'Offline':
+        return 'inactive';
+      case 'Suspended':
+        return 'destructive';
+      case 'Maintenance':
+        return 'warning';
+      default:
+        return 'outline';
+    }
   };
 
   return (
@@ -76,19 +78,11 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete, 
             <DetailItem label={t('responsibleName')} value={server.responsibleName} />
             <DetailItem label={t('nickname')} value={server.nickname} />
             <DetailItem label={t('phone')} value={server.phone} />
-            <div className="space-y-2">
-              <Label htmlFor="status-select" className="text-sm font-medium text-muted-foreground">{t('status')}</Label>
-              <Select onValueChange={handleStatusChange} value={server.status}>
-                <SelectTrigger id="status-select" className="h-11">
-                  <SelectValue placeholder={t('selectStatus')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Online">{t('online')}</SelectItem>
-                  <SelectItem value="Offline">{t('offline')}</SelectItem>
-                  <SelectItem value="Suspended">{t('suspended')}</SelectItem>
-                  <SelectItem value="Maintenance">{t('maintenance')}</SelectItem>
-                </SelectContent>
-              </Select>
+             <div>
+              <p className="text-sm font-medium text-muted-foreground">{t('status')}</p>
+              <Badge variant={getStatusVariant(server.status)} className="text-base mt-1">
+                {t(server.status.toLowerCase().replace(' ', '') as any)}
+              </Badge>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">{t('paymentMethod')}</p>
