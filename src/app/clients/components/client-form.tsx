@@ -196,7 +196,6 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
               name="phones"
               render={() => (
                 <FormItem>
-                  <FormLabel>{t('phone')}</FormLabel>
                   <FormControl>
                     <Button type="button" variant="outline" onClick={() => setIsPhoneModalOpen(true)}>
                       {t('managePhones')}

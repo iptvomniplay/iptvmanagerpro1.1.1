@@ -601,7 +601,6 @@ export function ServerForm({ server }: ServerFormProps) {
                 name="phones"
                 render={() => (
                   <FormItem>
-                    <FormLabel>{t('phone')}</FormLabel>
                     <FormControl>
                       <Button type="button" variant="outline" onClick={() => setIsPhoneModalOpen(true)}>
                         {t('managePhones')}
