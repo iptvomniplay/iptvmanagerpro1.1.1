@@ -37,6 +37,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { X } from 'lucide-react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 
 const createFormSchema = (t: (key: string) => string) => z.object({
@@ -63,6 +64,8 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = React.useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false);
   const [clientDataToConfirm, setClientDataToConfirm] = React.useState<ClientFormValues | null>(null);
+  
+  const [phoneType, setPhoneType] = React.useState<'celular' | 'fixo' | 'ddi'>('celular');
   const [currentPhone, setCurrentPhone] = React.useState('');
 
   const formSchema = createFormSchema(t);
@@ -79,27 +82,35 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
     },
   });
 
-  const { control, reset, getValues, trigger } = form;
+  const { control, reset, trigger } = form;
   const { fields, append, remove } = useFieldArray({ control, name: 'phones' });
 
   const handlePhoneInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value.replace(/\D/g, '');
     let formattedValue = rawValue;
 
-    if (rawValue.length > 2) {
-      if (rawValue.length <= 10) { // Landline phone
-        formattedValue = `(${rawValue.substring(0, 2)}) ${rawValue.substring(2, 6)}`;
-        if (rawValue.length > 6) {
-          formattedValue += `-${rawValue.substring(6, 10)}`;
+    if (phoneType === 'celular') {
+        formattedValue = rawValue.slice(0, 11);
+        if (formattedValue.length > 2) {
+            formattedValue = `(${formattedValue.substring(0, 2)}) ${formattedValue.substring(2, 7)}`;
+            if (rawValue.length > 7) {
+                formattedValue += `-${rawValue.substring(7, 11)}`;
+            }
+        } else if (rawValue.length > 0) {
+            formattedValue = `(${rawValue}`;
         }
-      } else { // Mobile phone
-        formattedValue = `(${rawValue.substring(0, 2)}) ${rawValue.substring(2, 7)}`;
-        if (rawValue.length > 7) {
-          formattedValue += `-${rawValue.substring(7, 11)}`;
+    } else if (phoneType === 'fixo') {
+        formattedValue = rawValue.slice(0, 10);
+        if (rawValue.length > 2) {
+            formattedValue = `(${rawValue.substring(0, 2)}) ${rawValue.substring(2, 6)}`;
+            if (rawValue.length > 6) {
+                formattedValue += `-${rawValue.substring(6, 10)}`;
+            }
+        } else if (rawValue.length > 0) {
+            formattedValue = `(${rawValue}`;
         }
-      }
-    } else if (rawValue.length > 0) {
-      formattedValue = `(${rawValue}`;
+    } else { // ddi
+        formattedValue = e.target.value;
     }
     
     setCurrentPhone(formattedValue);
@@ -162,6 +173,12 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
     }
   }
 
+  const phonePlaceholders = {
+      celular: 'Ex: (11) 91234-5678',
+      fixo: 'Ex: (11) 3456-7890',
+      ddi: 'Ex: +44 20 7946 0958'
+  }
+
   return (
     <>
       <Form {...form}>
@@ -214,18 +231,36 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
             />
           </div>
           
-          <div className="w-full md:w-1/2">
+          <div className="w-full md:w-1/2 space-y-4">
              <FormField
               control={form.control}
               name="phones"
               render={() => (
                 <FormItem>
                   <FormLabel>{t('phone')}</FormLabel>
+                  <RadioGroup
+                      value={phoneType}
+                      onValueChange={(value) => setPhoneType(value as any)}
+                      className="flex space-x-4"
+                  >
+                      <FormItem className="flex items-center space-x-2 space-y-0">
+                          <FormControl><RadioGroupItem value="celular" /></FormControl>
+                          <FormLabel className="font-normal">Celular</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-2 space-y-0">
+                          <FormControl><RadioGroupItem value="fixo" /></FormControl>
+                          <FormLabel className="font-normal">Fixo</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-2 space-y-0">
+                          <FormControl><RadioGroupItem value="ddi" /></FormControl>
+                          <FormLabel className="font-normal">DDI</FormLabel>
+                      </FormItem>
+                  </RadioGroup>
                   <div className="flex gap-2">
                     <Input 
                         value={currentPhone}
                         onChange={handlePhoneInputChange}
-                        placeholder={t('phonePtBRPlaceholder')}
+                        placeholder={phonePlaceholders[phoneType]}
                     />
                     <Button type="button" onClick={handleAddPhone}>{t('add')}</Button>
                   </div>
@@ -233,7 +268,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                 </FormItem>
               )}
             />
-             <div className="flex flex-wrap gap-2 mt-2">
+             <div className="flex flex-wrap gap-2 pt-1">
               {fields.map((field, index) => (
                 <Badge key={field.id} variant="secondary" className="flex items-center gap-2 text-base">
                   {field.value}
