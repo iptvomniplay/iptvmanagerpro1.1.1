@@ -23,7 +23,7 @@ export type Server = {
   url: string;
   login: string;
   password?: string;
-  status: 'Online' | 'Offline';
+  status: 'Online' | 'Offline' | 'Suspended' | 'Maintenance';
   responsibleName: string;
   nickname?: string;
   phone?: string;

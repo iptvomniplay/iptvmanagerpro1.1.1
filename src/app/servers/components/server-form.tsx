@@ -62,6 +62,7 @@ const createFormSchema = (t: (key: any) => string) =>
   z
     .object({
       name: z.string().min(2, { message: t('nameMustBeAtLeast2') }),
+      status: z.enum(['Online', 'Offline', 'Suspended', 'Maintenance']).optional(),
       url: z.string().min(1, { message: t('urlIsRequired') }),
       login: z.string().min(1, { message: t('loginIsRequired') }),
       password: z.string().min(1, { message: t('passwordIsRequired') }),
@@ -127,6 +128,7 @@ const initialSubServerValues: SubServerFormValues = {
 
 const getInitialValues = (server: Server | null): ServerFormValues => ({
   name: server?.name || '',
+  status: server?.status || 'Online',
   url: server?.url || '',
   login: server?.login || '',
   password: server?.password || '',
@@ -389,9 +391,10 @@ export function ServerForm({ server }: ServerFormProps) {
     
     if (server) {
       const serverData: Server = {
+          ...server,
           ...serverDataToConfirm,
           id: server.id,
-          status: server.status,
+          status: serverDataToConfirm.status || server.status,
           subServers: serverDataToConfirm.subServers || [],
       };
       updateServer(serverData);
@@ -487,7 +490,7 @@ export function ServerForm({ server }: ServerFormProps) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit, onInvalid)} className="space-y-6">
           <div className="space-y-6">
-            <div className="md:w-1/2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={control}
                 name="name"
@@ -505,6 +508,31 @@ export function ServerForm({ server }: ServerFormProps) {
                   </FormItem>
                 )}
               />
+               {server && (
+                <FormField
+                  control={control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('status')}</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={t('selectStatus')} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Online">{t('online')}</SelectItem>
+                          <SelectItem value="Offline">{t('offline')}</SelectItem>
+                          <SelectItem value="Suspended">{t('suspended')}</SelectItem>
+                          <SelectItem value="Maintenance">{t('maintenance')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
             </div>
             <div className="md:w-1/2">
               <FormField

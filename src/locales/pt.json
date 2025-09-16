@@ -59,6 +59,8 @@
     "addPanel": "Add Painel",
     "online": "Online",
     "offline": "Offline",
+    "suspended": "Suspenso",
+    "maintenance": "Em Manutenção",
     "connections": "Conexões",
     "cpuLoad": "Carga da CPU (%)",
     "configure": "Configurar",

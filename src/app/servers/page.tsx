@@ -36,7 +36,11 @@ export default function ServersPage() {
       case 'Online':
         return 'success';
       case 'Offline':
+        return 'inactive';
+      case 'Suspended':
         return 'destructive';
+      case 'Maintenance':
+        return 'warning';
       default:
         return 'outline';
     }
@@ -115,7 +119,7 @@ export default function ServersPage() {
                           <TableCell className="font-medium">{server.name}</TableCell>
                           <TableCell className="text-right">
                              <Badge variant={getStatusVariant(server.status)}>
-                                {t(server.status.toLowerCase() as any)}
+                                {t(server.status.toLowerCase().replace(' ', '') as any)}
                             </Badge>
                           </TableCell>
                         </TableRow>
