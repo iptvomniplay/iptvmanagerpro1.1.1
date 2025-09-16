@@ -235,6 +235,6 @@
     "validationError": "Validation Error",
     "fillAllFieldsWarning": "Please fill in all required fields",
     "fillAllSubServerFields": "Please fill in all sub-server fields before adding it to the list.",
-    "registeredServersList": "List of Registered Servers",
+    "registeredServersList": "Registered Servers",
     "details": "Details"
 }

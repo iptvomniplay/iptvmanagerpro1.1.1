@@ -23,7 +23,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ServerDetailsModal } from './components/server-details-modal';
 import { DeleteServerAlert } from './components/delete-server-alert';
 
@@ -118,7 +118,7 @@ export default function ServersPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>{t('servers')}</TableHead>
+                      <TableHead></TableHead>
                       <TableHead className="w-[180px] text-right"></TableHead>
                     </TableRow>
                   </TableHeader>
