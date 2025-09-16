@@ -142,10 +142,10 @@ export function PhoneInputModal({ isOpen, onClose, onSave, initialPhones }: Phon
           
             <div className="space-y-2">
                 <Label>{t('addedPhones')}</Label>
-                <div className="flex flex-wrap gap-2 p-2 rounded-md border min-h-[40px]">
+                <div className="flex flex-col gap-2 p-2 rounded-md border min-h-[40px]">
                     {phones.length > 0 ? phones.map((phone, index) => (
-                        <Badge key={index} variant="secondary" className="flex items-center gap-2 text-base">
-                        {phone}
+                        <Badge key={index} variant="secondary" className="flex items-center justify-between text-base">
+                        <span>{phone}</span>
                         <button type="button" onClick={() => handleRemovePhone(index)} className="rounded-full hover:bg-muted-foreground/20 p-0.5">
                             <X className="h-3 w-3" />
                         </button>
