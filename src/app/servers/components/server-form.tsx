@@ -209,7 +209,7 @@ export function ServerForm({ server }: ServerFormProps) {
   }, [hasInitialStock, setValue, form]);
 
   const handlePhoneSave = (newPhones: string[]) => {
-    replacePhones(newPhones.map(phone => phone));
+    replacePhones(newPhones);
     trigger('phones');
     setIsPhoneModalOpen(false);
   };
@@ -596,12 +596,12 @@ export function ServerForm({ server }: ServerFormProps) {
             </div>
 
             <div className="w-full md:w-1/2 space-y-4">
-               <FormField
+              <FormField
                 control={form.control}
                 name="phones"
                 render={() => (
                   <>
-                    <Button type="button" onClick={() => setIsPhoneModalOpen(true)}>
+                    <Button type="button" variant="outline" onClick={() => setIsPhoneModalOpen(true)}>
                       {t('addPhone')}
                     </Button>
                     <div className="flex flex-wrap gap-2 pt-2">
@@ -626,22 +626,24 @@ export function ServerForm({ server }: ServerFormProps) {
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className="flex space-x-4"
+                      value={field.value}
+                      className="flex gap-4"
                     >
-                      <FormItem className="flex items-center space-x-2 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="prepaid" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
+                      <FormItem className="flex-1">
+                        <RadioGroupItem value="prepaid" id="prepaid" className="peer sr-only" />
+                        <FormLabel
+                          htmlFor="prepaid"
+                          className="flex h-full cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-4 text-base hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-primary [&:has([data-state=checked])]:border-primary"
+                        >
                           {t('prepaid')}
                         </FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-2 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="postpaid" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
+                      <FormItem className="flex-1">
+                        <RadioGroupItem value="postpaid" id="postpaid" className="peer sr-only" />
+                        <FormLabel
+                          htmlFor="postpaid"
+                          className="flex h-full cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-4 text-base hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-primary [&:has([data-state=checked])]:border-primary"
+                        >
                           {t('postpaid')}
                         </FormLabel>
                       </FormItem>
@@ -913,7 +915,7 @@ export function ServerForm({ server }: ServerFormProps) {
         isOpen={isPhoneModalOpen}
         onClose={() => setIsPhoneModalOpen(false)}
         onSave={handlePhoneSave}
-        initialPhones={phoneFields.map(f => f.value)}
+        initialPhones={phoneFields.map(field => field.value)}
       />
 
       {serverDataToConfirm && (
