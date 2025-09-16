@@ -118,7 +118,7 @@ export default function ServersPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>{t('serverName')}</TableHead>
-                      <TableHead className="w-[150px] text-right">{t('status')}</TableHead>
+                      <TableHead className="w-[180px] text-right">{t('status')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
