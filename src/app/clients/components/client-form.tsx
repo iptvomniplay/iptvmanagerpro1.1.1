@@ -83,21 +83,26 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   const { fields, append, remove } = useFieldArray({ control, name: 'phones' });
 
   const handlePhoneInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, '');
-    
-    if (value.length > 11) value = value.slice(0, 11);
+    const rawValue = e.target.value.replace(/\D/g, '');
+    let formattedValue = rawValue;
 
-    if (value.length > 10) {
-      value = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
-    } else if (value.length > 5) {
-      value = value.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
-    } else if (value.length > 2) {
-      value = value.replace(/^(\d{2})(\d{0,5}).*/, '($1) $2');
-    } else {
-      value = value.replace(/^(\d*)/, '($1');
+    if (rawValue.length > 2) {
+      if (rawValue.length <= 10) { // Landline phone
+        formattedValue = `(${rawValue.substring(0, 2)}) ${rawValue.substring(2, 6)}`;
+        if (rawValue.length > 6) {
+          formattedValue += `-${rawValue.substring(6, 10)}`;
+        }
+      } else { // Mobile phone
+        formattedValue = `(${rawValue.substring(0, 2)}) ${rawValue.substring(2, 7)}`;
+        if (rawValue.length > 7) {
+          formattedValue += `-${rawValue.substring(7, 11)}`;
+        }
+      }
+    } else if (rawValue.length > 0) {
+      formattedValue = `(${rawValue}`;
     }
     
-    setCurrentPhone(value);
+    setCurrentPhone(formattedValue);
   };
 
   const handleAddPhone = () => {
