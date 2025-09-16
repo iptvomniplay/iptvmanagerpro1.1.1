@@ -190,7 +190,7 @@
     "phonePtBRPlaceholder": "(11) 99999-9999",
     "ok": "OK",
     "currencyPlaceholderUSD": "$ 0.00",
-    "currencyPlaceholderBRL": "R$ 0,00",
+    "currencyPlaceholderBRL": "R$ 0.00",
     "dashboardClientsDesc": "A representation of managing clients.",
     "dashboardServersDesc": "A representation of servers.",
     "serverNameRequired": "Server name is required",
