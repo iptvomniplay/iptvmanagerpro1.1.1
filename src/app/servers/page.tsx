@@ -99,14 +99,6 @@ export default function ServersPage() {
               {t('addPanel')}
             </Button>
           </div>
-          <div className="flex items-center justify-end gap-4">
-            <Button asChild size="lg">
-              <Link href="/servers/configure">
-                <Settings className="mr-2 h-5 w-5" />
-                {t('validateConfiguration')}
-              </Link>
-            </Button>
-          </div>
         </div>
 
         <Card>
