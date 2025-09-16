@@ -3,8 +3,7 @@ export type Client = {
   name: string;
   nickname?: string;
   email: string;
-  phone: string;
-  hasDDI?: boolean;
+  phones: string[];
   birthDate: string;
   status: 'Active' | 'Inactive' | 'Expired' | 'Test';
   registeredDate: string;
@@ -26,8 +25,7 @@ export type Server = {
   status: 'Online' | 'Offline' | 'Suspended' | 'Maintenance';
   responsibleName: string;
   nickname?: string;
-  phone?: string;
-  hasDDI?: boolean;
+  phones?: string[];
   paymentType: 'prepaid' | 'postpaid';
   panelValue?: string;
   dueDate?: number;

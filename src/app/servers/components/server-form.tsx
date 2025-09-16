@@ -69,8 +69,7 @@ const createFormSchema = (t: (key: any) => string) =>
         .string()
         .min(2, { message: t('responsibleNameIsRequired') }),
       nickname: z.string().optional(),
-      phone: z.string().optional(),
-      hasDDI: z.boolean().default(false).optional(),
+      phones: z.array(z.string()).optional(),
       paymentType: z.enum(['prepaid', 'postpaid']).default('prepaid'),
       panelValue: z.string().optional(),
       dueDate: z.coerce.number().optional(),
@@ -132,8 +131,7 @@ const getInitialValues = (server: Server | null): ServerFormValues => ({
   password: server?.password || '',
   responsibleName: server?.responsibleName || '',
   nickname: server?.nickname || '',
-  phone: server?.phone || '',
-  hasDDI: server?.hasDDI || false,
+  phones: server?.phones || [],
   paymentType: server?.paymentType || 'prepaid',
   panelValue: server?.panelValue || '',
   dueDate: server?.dueDate || undefined,
@@ -158,6 +156,7 @@ export function ServerForm({ server }: ServerFormProps) {
   
   const [subServerFormState, setSubServerFormState] = React.useState<SubServerFormValues>(initialSubServerValues);
   const [currentPlanInput, setCurrentPlanInput] = React.useState('');
+  const [currentPhone, setCurrentPhone] = React.useState('');
   const [subServerErrors, setSubServerErrors] = React.useState<Record<string, string | undefined>>({});
   const [expandedItems, setExpandedItems] = React.useState<Record<number, boolean>>({});
   const [isValidationErrorModalOpen, setIsValidationErrorModalOpen] = React.useState(false);
@@ -180,14 +179,18 @@ export function ServerForm({ server }: ServerFormProps) {
     shouldFocusError: false,
   });
 
-  const { control, watch, setValue, reset, formState: { errors } } = form;
+  const { control, watch, setValue, reset, formState: { errors }, trigger } = form;
   const paymentType = watch('paymentType');
   const hasInitialStock = watch('hasInitialStock');
-  const hasDDI = watch('hasDDI');
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'subServers',
+  });
+
+  const { fields: phoneFields, append: appendPhone, remove: removePhone } = useFieldArray({
+    control,
+    name: 'phones',
   });
   
   const hasSubServers = fields.length > 0 || subServerFormState.name || subServerFormState.type || subServerFormState.screens || subServerFormState.plans.length > 0 || currentPlanInput.trim() !== '';
@@ -279,18 +282,33 @@ export function ServerForm({ server }: ServerFormProps) {
 
     setValue(fieldName as any, formatter.format(numericValue));
   };
-
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  
+  const handlePhoneInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, '');
+    
+    if (value.length > 11) value = value.slice(0, 11);
 
-    if (language === 'pt-BR' && !hasDDI) {
-      if (value.length > 11) value = value.slice(0, 11);
-      value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
-      value = value.replace(/(\d{5})(\d)/, '$1-$2');
+    if (value.length > 10) {
+      value = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+    } else if (value.length > 5) {
+      value = value.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+    } else if (value.length > 2) {
+      value = value.replace(/^(\d{2})(\d{0,5}).*/, '($1) $2');
+    } else {
+      value = value.replace(/^(\d*)/, '($1');
     }
-
-    setValue('phone', value);
+    
+    setCurrentPhone(value);
   };
+  
+  const handleAddPhone = () => {
+    if (currentPhone.trim()) {
+      appendPhone(currentPhone.trim());
+      setCurrentPhone('');
+      trigger('phones');
+    }
+  };
+
   
   const processSubServerForValidation = () => {
     let formStateWithCurrentPlan = { ...subServerFormState };
@@ -596,48 +614,45 @@ export function ServerForm({ server }: ServerFormProps) {
               />
             </div>
 
-            <div className="md:w-1/2">
+            <div className="w-full md:w-1/2">
               <FormField
                 control={control}
-                name="phone"
-                render={({ field }) => (
+                name="phones"
+                render={() => (
                   <FormItem>
-                    <div className="flex justify-between items-center">
-                      <FormLabel>{t('phone')}</FormLabel>
-                      <FormField
-                        control={form.control}
-                        name="hasDDI"
-                        render={({ field: ddiField }) => (
-                          <FormItem className="flex items-center space-x-2 space-y-0">
-                            <FormControl>
-                              <Checkbox
-                                checked={ddiField.value}
-                                onCheckedChange={ddiField.onChange}
-                              />
-                            </FormControl>
-                            <FormLabel className="text-sm font-normal">
-                              {t('hasDDI')}
-                            </FormLabel>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <FormControl>
+                    <FormLabel>{t('phone')}</FormLabel>
+                    <div className="flex gap-2">
                       <Input
-                        {...field}
-                        autoComplete="off"
-                        onChange={handlePhoneChange}
-                        placeholder={
-                          language === 'pt-BR' && !hasDDI
-                            ? t('phonePtBRPlaceholder')
-                            : t('phonePlaceholder')
-                        }
+                        value={currentPhone}
+                        onChange={handlePhoneInputChange}
+                        placeholder={t('phonePtBRPlaceholder')}
                       />
-                    </FormControl>
+                      <Button type="button" onClick={handleAddPhone}>
+                        {t('add')}
+                      </Button>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              <div className="flex flex-wrap gap-2 mt-2">
+                {phoneFields.map((field, index) => (
+                  <Badge
+                    key={field.id}
+                    variant="secondary"
+                    className="flex items-center gap-2 text-base"
+                  >
+                    {field.value}
+                    <button
+                      type="button"
+                      onClick={() => removePhone(index)}
+                      className="rounded-full hover:bg-muted-foreground/20 p-0.5"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                ))}
+              </div>
             </div>
 
             <FormField
@@ -972,6 +987,7 @@ export function ServerForm({ server }: ServerFormProps) {
         <AlertDialogContent>
             <AlertDialogHeader>
                 <AlertDialogTitle>{t('validationError')}</AlertDialogTitle>
+
                 <AlertDialogDescription>
                     {t('fillAllFieldsWarning')}: {mainFormErrorFields.map(field => t(field as any)).join(', ')}
                 </AlertDialogDescription>

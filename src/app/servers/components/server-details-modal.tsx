@@ -77,7 +77,14 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
             <DetailItem label={t('responsibleName')} value={server.responsibleName} />
             <DetailItem label={t('nickname')} value={server.nickname} />
-            <DetailItem label={t('phone')} value={server.phone} />
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">{t('phone')}</p>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {server.phones?.map((phone, index) => (
+                  <Badge key={index} variant="outline" className="text-base">{phone}</Badge>
+                ))}
+              </div>
+            </div>
              <div>
               <p className="text-sm font-medium text-muted-foreground">{t('status')}</p>
               <Badge variant={getStatusVariant(server.status)} className="text-base mt-1">

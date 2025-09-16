@@ -2,12 +2,11 @@
 
 import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import type { Client } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import { useData } from '@/hooks/use-data';
-
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -26,7 +25,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useLanguage } from '@/hooks/use-language';
-import { Checkbox } from '@/components/ui/checkbox';
 import { DatePicker } from '@/components/ui/date-picker';
 import { ConfirmationModal } from './confirmation-modal';
 import {
@@ -37,14 +35,15 @@ import {
   AlertDialogTitle,
   AlertDialogDescription,
 } from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { X } from 'lucide-react';
 
 
 const createFormSchema = (t: (key: string) => string) => z.object({
   name: z.string().min(2, { message: t('nameValidation') }),
   nickname: z.string().optional(),
   email: z.string().email({ message: t('emailValidation') }).optional().or(z.literal('')),
-  phone: z.string().min(1, { message: t('phoneRequired') }),
-  hasDDI: z.boolean().default(false).optional(),
+  phones: z.array(z.string()).min(1, { message: t('phoneRequired') }),
   birthDate: z.date({ required_error: t('birthDateRequired') }),
   status: z.enum(['Active', 'Inactive', 'Expired', 'Test'], { required_error: t('statusRequired') }),
 });
@@ -58,12 +57,13 @@ interface ClientFormProps {
 }
 
 export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const router = useRouter();
   const { addClient, updateClient } = useData();
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = React.useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false);
   const [clientDataToConfirm, setClientDataToConfirm] = React.useState<ClientFormValues | null>(null);
+  const [currentPhone, setCurrentPhone] = React.useState('');
 
   const formSchema = createFormSchema(t);
 
@@ -73,26 +73,39 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       name: client?.name || '',
       nickname: client?.nickname || '',
       email: client?.email || '',
-      phone: client?.phone || '',
-      hasDDI: client?.hasDDI || false,
+      phones: client?.phones || [],
       birthDate: client?.birthDate ? new Date(client.birthDate) : undefined,
       status: client?.status || undefined,
     },
   });
 
-  const { watch, setValue, reset } = form;
-  const hasDDI = watch('hasDDI');
+  const { control, reset, getValues, trigger } = form;
+  const { fields, append, remove } = useFieldArray({ control, name: 'phones' });
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhoneInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, '');
     
-    if (language === 'pt-BR' && !hasDDI) {
-        if (value.length > 11) value = value.slice(0, 11);
-        value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
-        value = value.replace(/(\d{5})(\d)/, '$1-$2');
-    }
+    if (value.length > 11) value = value.slice(0, 11);
 
-    setValue('phone', value);
+    if (value.length > 10) {
+      value = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+    } else if (value.length > 5) {
+      value = value.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+    } else if (value.length > 2) {
+      value = value.replace(/^(\d{2})(\d{0,5}).*/, '($1) $2');
+    } else {
+      value = value.replace(/^(\d*)/, '($1');
+    }
+    
+    setCurrentPhone(value);
+  };
+
+  const handleAddPhone = () => {
+    if (currentPhone.trim()) {
+      append(currentPhone.trim());
+      setCurrentPhone('');
+      trigger('phones');
+    }
   };
 
   const handleSubmit = (values: ClientFormValues) => {
@@ -127,8 +140,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
         name: '',
         nickname: '',
         email: '',
-        phone: '',
-        hasDDI: false,
+        phones: [],
         birthDate: undefined,
         status: undefined,
       });
@@ -196,42 +208,39 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
               )}
             />
           </div>
-          <div className="w-full md:w-[240px]">
-            <FormField
+          
+          <div className="w-full md:w-1/2">
+             <FormField
               control={form.control}
-              name="phone"
-              render={({ field }) => (
+              name="phones"
+              render={() => (
                 <FormItem>
                   <FormLabel>{t('phone')}</FormLabel>
-                  <FormField
-                      control={form.control}
-                      name="hasDDI"
-                      render={({ field: ddiField }) => (
-                          <FormItem className="flex items-center space-x-2 space-y-0 my-2">
-                          <FormControl>
-                              <Checkbox
-                              checked={ddiField.value}
-                              onCheckedChange={ddiField.onChange}
-                              />
-                          </FormControl>
-                          <FormLabel className="text-sm font-normal">
-                              {t('hasDDI')}
-                          </FormLabel>
-                          </FormItem>
-                      )}
-                  />
-                  <FormControl>
+                  <div className="flex gap-2">
                     <Input 
-                        {...field}
-                        onChange={handlePhoneChange}
-                        placeholder={language === 'pt-BR' && !hasDDI ? t('phonePtBRPlaceholder') : t('phonePlaceholder')}
+                        value={currentPhone}
+                        onChange={handlePhoneInputChange}
+                        placeholder={t('phonePtBRPlaceholder')}
                     />
-                  </FormControl>
-                  <FormMessage />
+                    <Button type="button" onClick={handleAddPhone}>{t('add')}</Button>
+                  </div>
+                   <FormMessage />
                 </FormItem>
               )}
             />
+             <div className="flex flex-wrap gap-2 mt-2">
+              {fields.map((field, index) => (
+                <Badge key={field.id} variant="secondary" className="flex items-center gap-2 text-base">
+                  {field.value}
+                  <button type="button" onClick={() => remove(index)} className="rounded-full hover:bg-muted-foreground/20 p-0.5">
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
+              ))}
+            </div>
           </div>
+
+
           <div className="w-full md:w-[240px]">
             <FormField
                 control={form.control}

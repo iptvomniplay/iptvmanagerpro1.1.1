@@ -61,7 +61,14 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, serverData }: Co
             <DetailItem label={t('panelUrl')} value={serverData.url} />
             <DetailItem label={t('responsibleName')} value={serverData.responsibleName} />
             <DetailItem label={t('nickname')} value={serverData.nickname} />
-            <DetailItem label={t('phone')} value={serverData.phone} />
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">{t('phone')}</p>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {serverData.phones?.map((phone, index) => (
+                  <Badge key={index} variant="outline" className="text-base">{phone}</Badge>
+                ))}
+              </div>
+            </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">{t('paymentMethod')}</p>
               <Badge variant={serverData.paymentType === 'prepaid' ? 'default' : 'secondary'} className="text-base mt-1">

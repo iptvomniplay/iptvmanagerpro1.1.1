@@ -72,7 +72,14 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, clientData }: Co
             <DetailItem label={t('fullName')} value={clientData.name} />
             <DetailItem label={t('nickname')} value={clientData.nickname} />
             <DetailItem label={t('emailAddress')} value={clientData.email} />
-            <DetailItem label={t('phone')} value={clientData.phone} />
+             <div>
+              <p className="text-sm font-medium text-muted-foreground">{t('phone')}</p>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {clientData.phones?.map((phone, index) => (
+                  <Badge key={index} variant="outline" className="text-base">{phone}</Badge>
+                ))}
+              </div>
+            </div>
             <DetailItem label={t('birthDate')} value={clientData.birthDate} />
             <div>
               <p className="text-sm font-medium text-muted-foreground">{t('status')}</p>
