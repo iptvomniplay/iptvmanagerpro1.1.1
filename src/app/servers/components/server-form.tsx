@@ -50,7 +50,10 @@ const createSubServerSchema = (t: (key: any) => string) => z.object({
   name: z.string().min(1, t('serverNameRequired')),
   type: z.string().min(1, t('serverTypeRequired')),
   screens: z.coerce
-    .number({ required_error: t('screensRequired') })
+    .number({
+        required_error: t('screensRequired'),
+        invalid_type_error: t('screensRequired'),
+    })
     .min(1, t('screensMin')),
   plans: z.array(z.string()).min(1, t('atLeastOnePlanRequired')),
 });
@@ -72,7 +75,7 @@ const createFormSchema = (t: (key: any) => string) =>
       panelValue: z.string().optional(),
       dueDate: z.coerce.number().optional(),
       hasInitialStock: z.boolean().default(false).optional(),
-      creditStock: z.coerce.number().optional(),
+      creditStock: z.coerce.number({invalid_type_error: t('creditStockIsRequired')}).optional(),
       subServers: z.array(createSubServerSchema(t)).optional(),
     })
     .superRefine((data, ctx) => {
@@ -457,6 +460,7 @@ export function ServerForm({ server }: ServerFormProps) {
                     <FormLabel>{t('serverName')}</FormLabel>
                     <FormControl>
                       <Input
+                        autoComplete="off"
                         placeholder={t('serverNamePlaceholder')}
                         {...field}
                       />
@@ -475,6 +479,7 @@ export function ServerForm({ server }: ServerFormProps) {
                     <FormLabel>{t('panelUrl')}</FormLabel>
                     <FormControl>
                       <Input
+                        autoComplete="off"
                         placeholder={t('serverUrlPlaceholder')}
                         {...field}
                       />
@@ -528,6 +533,7 @@ export function ServerForm({ server }: ServerFormProps) {
                     <FormLabel>{t('responsibleName')}</FormLabel>
                     <FormControl>
                       <Input
+                        autoComplete="off"
                         {...field}
                         placeholder={t('responsibleNamePlaceholder')}
                       />
@@ -545,7 +551,7 @@ export function ServerForm({ server }: ServerFormProps) {
                   <FormItem>
                     <FormLabel>{t('nickname')}</FormLabel>
                     <FormControl>
-                      <Input placeholder={t('nicknamePlaceholder')} {...field} />
+                      <Input autoComplete="off" placeholder={t('nicknamePlaceholder')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -582,6 +588,7 @@ export function ServerForm({ server }: ServerFormProps) {
                     <FormControl>
                       <Input
                         {...field}
+                        autoComplete="off"
                         onChange={handlePhoneChange}
                         placeholder={
                           language === 'pt-BR' && !hasDDI
@@ -642,6 +649,7 @@ export function ServerForm({ server }: ServerFormProps) {
                       <FormControl>
                         <Input
                           {...field}
+                          autoComplete="off"
                           value={field.value ?? ''}
                           onChange={(e) => handleCurrencyChange(e, 'panelValue')}
                           placeholder={
@@ -715,6 +723,7 @@ export function ServerForm({ server }: ServerFormProps) {
                       <FormControl>
                         <Input
                           type="number"
+                          autoComplete="off"
                           {...field}
                           disabled={!hasInitialStock}
                           value={field.value ?? ''}
@@ -752,6 +761,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <FormControl>
                                     <Input 
                                         name="name"
+                                        autoComplete="off"
                                         value={subServerFormState.name}
                                         onChange={e => {
                                             setSubServerFormState(p => ({ ...p, name: e.target.value }));
@@ -767,6 +777,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <FormControl>
                                     <Input 
                                         name="type"
+                                        autoComplete="off"
                                         value={subServerFormState.type}
                                         onChange={e => {
                                             setSubServerFormState(p => ({ ...p, type: e.target.value }));
@@ -783,6 +794,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                     <Input
                                         type="number"
                                         name="screens"
+                                        autoComplete="off"
                                         value={subServerFormState.screens || ''}
                                         onChange={e => {
                                             setSubServerFormState(p => ({ ...p, screens: e.target.value === '' ? undefined : Number(e.target.value) }));
@@ -800,6 +812,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <FormControl>
                                     <Input
                                         name="plans"
+                                        autoComplete="off"
                                         value={currentPlanInput}
                                         onFocus={handlePlansFocus}
                                         onChange={(e) => setCurrentPlanInput(e.target.value)}
@@ -833,16 +846,6 @@ export function ServerForm({ server }: ServerFormProps) {
                                             <p className="text-sm text-muted-foreground">{t('screens')}: {field.screens}</p>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => remove(index)}
-                                                className="h-7 w-7 text-destructive"
-                                            >
-                                                <X className="h-5 w-5" />
-                                                <span className="sr-only">{t('delete')}</span>
-                                            </Button>
                                             <CollapsibleTrigger asChild>
                                                 <Button
                                                     type="button"
@@ -924,3 +927,4 @@ export function ServerForm({ server }: ServerFormProps) {
 }
 
     
+
