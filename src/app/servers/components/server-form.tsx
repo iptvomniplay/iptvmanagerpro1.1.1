@@ -601,7 +601,7 @@ export function ServerForm({ server }: ServerFormProps) {
                 name="phones"
                 render={() => (
                   <>
-                    <Button type="button" variant="outline" onClick={() => setIsPhoneModalOpen(true)}>
+                    <Button type="button" onClick={() => setIsPhoneModalOpen(true)}>
                       {t('addPhone')}
                     </Button>
                     <div className="flex flex-wrap gap-2 pt-2">

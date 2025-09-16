@@ -83,7 +83,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   const { fields: phoneFields, replace: replacePhones } = useFieldArray({ control, name: 'phones' });
 
   const handlePhoneSave = (newPhones: string[]) => {
-    replacePhones(newPhones.map(phone => phone));
+    replacePhones(newPhones);
     trigger('phones');
     setIsPhoneModalOpen(false);
   };
@@ -194,15 +194,15 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
             <FormField
               control={form.control}
               name="phones"
-              render={() => (
+              render={({ field }) => (
                 <>
                   <Button type="button" onClick={() => setIsPhoneModalOpen(true)}>
                     {t('addPhone')}
                   </Button>
                   <div className="flex flex-wrap gap-2 pt-2">
-                    {phoneFields.map((field) => (
-                      <Badge key={field.id} variant="secondary" className="text-base">
-                        {field.value}
+                    {phoneFields.map((phoneField) => (
+                      <Badge key={phoneField.id} variant="secondary" className="text-base">
+                        {phoneField.value}
                       </Badge>
                     ))}
                   </div>
