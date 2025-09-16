@@ -85,13 +85,19 @@ export default function ServersPage() {
     <>
       <div className="space-y-8">
         <div className="space-y-4">
-          <div className="rounded-xl border bg-card text-card-foreground p-6 shadow-sm">
-            <h1 className="text-3xl font-bold tracking-tight">
-              {t('serverManagement')}
-            </h1>
-            <p className="mt-2 text-lg text-muted-foreground">
-              {t('serverManagementDescription')}
-            </p>
+          <div className="rounded-xl border bg-card text-card-foreground p-6 shadow-sm flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">
+                {t('serverManagement')}
+              </h1>
+              <p className="mt-2 text-lg text-muted-foreground">
+                {t('serverManagementDescription')}
+              </p>
+            </div>
+            <Button size="lg" onClick={() => router.push('/servers/new')}>
+              <PlusCircle className="mr-2 h-5 w-5" />
+              {t('addPanel')}
+            </Button>
           </div>
           <div className="flex items-center justify-end gap-4">
             <Button asChild size="lg">
@@ -99,10 +105,6 @@ export default function ServersPage() {
                 <Settings className="mr-2 h-5 w-5" />
                 {t('validateConfiguration')}
               </Link>
-            </Button>
-            <Button size="lg" onClick={() => router.push('/servers/new')}>
-              <PlusCircle className="mr-2 h-5 w-5" />
-              {t('addPanel')}
             </Button>
           </div>
         </div>
