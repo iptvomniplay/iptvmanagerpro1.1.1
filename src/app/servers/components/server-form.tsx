@@ -160,6 +160,8 @@ export function ServerForm({ server }: ServerFormProps) {
   const [currentPlanInput, setCurrentPlanInput] = React.useState('');
   const [subServerErrors, setSubServerErrors] = React.useState<Record<string, string | undefined>>({});
   const [expandedItems, setExpandedItems] = React.useState<Record<number, boolean>>({});
+  const [subServerInlineError, setSubServerInlineError] = React.useState<string | null>(null);
+
 
   const subServerNameRef = React.useRef<HTMLInputElement>(null);
   const subServerTypeRef = React.useRef<HTMLInputElement>(null);
@@ -228,12 +230,7 @@ export function ServerForm({ server }: ServerFormProps) {
       });
       
       setSubServerErrors(prev => ({...prev, ...newErrors}));
-      
-      toast({
-        variant: 'destructive',
-        title: t('validationError'),
-        description: `${t('fillAllFieldsWarning')}: ${missingFields.join(', ')}`,
-      });
+      setSubServerInlineError(`${t('fillAllFieldsWarning')}: ${missingFields.join(', ')}`);
       
       const refs = {
         name: subServerNameRef,
@@ -249,6 +246,7 @@ export function ServerForm({ server }: ServerFormProps) {
       return false;
     }
     setSubServerErrors({});
+    setSubServerInlineError(null);
     return true;
   }
 
@@ -337,6 +335,7 @@ export function ServerForm({ server }: ServerFormProps) {
     }
 
     setSubServerErrors({});
+    setSubServerInlineError(null);
     setIsAddMoreServerModalOpen(true);
   };
 
@@ -784,6 +783,7 @@ export function ServerForm({ server }: ServerFormProps) {
                 </CardHeader>
                 <CardContent className="space-y-4 pt-4">
                     <div className="p-4 border rounded-lg grid gap-4 bg-accent/50">
+                        {subServerInlineError && <p className="text-center text-sm font-medium text-destructive">{subServerInlineError}</p>}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
                             <FormItem>
                                 <FormLabel>{t('subServerName')}</FormLabel>
@@ -796,6 +796,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                         onChange={e => {
                                             setSubServerFormState(p => ({ ...p, name: e.target.value }));
                                             setSubServerErrors(p => ({...p, name: undefined}));
+                                            setSubServerInlineError(null);
                                         }}
                                         placeholder={t('subServerNamePlaceholder')} 
                                     />
@@ -813,6 +814,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                         onChange={e => {
                                             setSubServerFormState(p => ({ ...p, type: e.target.value }));
                                             setSubServerErrors(p => ({...p, type: undefined}));
+                                            setSubServerInlineError(null);
                                         }}
                                         placeholder={t('subServerTypePlaceholder')} 
                                     />
@@ -831,6 +833,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                         onChange={e => {
                                             setSubServerFormState(p => ({ ...p, screens: e.target.value === '' ? undefined : Number(e.target.value) }));
                                             setSubServerErrors(p => ({...p, screens: undefined}));
+                                            setSubServerInlineError(null);
                                         }}
                                         placeholder={t('subServerScreensPlaceholder')}
                                     />
