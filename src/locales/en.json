@@ -42,6 +42,7 @@
     "registerNewClientDescription": "Fill in the form to add a new client to the system.",
     "areYouSure": "Are you absolutely sure?",
     "deleteClientWarning": "This action cannot be undone. This will permanently delete the client record for",
+    "deleteServerWarning": "This action cannot be undone. This will permanently delete the server record for",
     "cancel": "Cancel",
     "continue": "Continue",
     "fullName": "Full Name",
@@ -168,6 +169,7 @@
     "screens": "Screens",
     "subServerScreensPlaceholder": "Ex:1",
     "noSubServers": "No servers have been added yet. Fill out the form above to get started.",
+    "noServersFound": "No servers found.",
     "noSubServersMessage": "No servers registered for this panel.",
     "addClient": "Add Client",
     "collapse": "Collapse",
@@ -230,5 +232,6 @@
     "no": "No",
     "validationError": "Validation Error",
     "fillAllFieldsWarning": "Please fill in all required fields",
-    "fillAllSubServerFields": "Please fill in all sub-server fields before adding it to the list."
+    "fillAllSubServerFields": "Please fill in all sub-server fields before adding it to the list.",
+    "registeredServersList": "List of all registered servers in the system."
 }

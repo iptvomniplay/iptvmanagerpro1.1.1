@@ -2,19 +2,10 @@
 
 import * as React from 'react';
 import type { Server } from '@/lib/types';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
-import { PlusCircle, Settings, Users } from 'lucide-react';
+import { PlusCircle, Settings } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
 import { useData } from '@/hooks/use-data';
@@ -26,13 +17,20 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ServerDetailsModal } from './components/server-details-modal';
+import { DeleteServerAlert } from './components/delete-server-alert';
 
 
 export default function ServersPage() {
   const { t } = useLanguage();
   const router = useRouter();
-  const { servers } = useData();
-  
+  const { servers, deleteServer } = useData();
+
+  const [selectedServer, setSelectedServer] = React.useState<Server | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = React.useState(false);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = React.useState(false);
+
   const getStatusVariant = (status: Server['status']) => {
     switch (status) {
       case 'Online':
@@ -43,6 +41,32 @@ export default function ServersPage() {
         return 'outline';
     }
   };
+
+  const handleRowClick = (server: Server) => {
+    setSelectedServer(server);
+    setIsDetailsModalOpen(true);
+  };
+  
+  const handleEdit = () => {
+    if (selectedServer) {
+      setIsDetailsModalOpen(false);
+      router.push(`/servers/${selectedServer.id}/edit`);
+    }
+  };
+  
+  const handleDeleteRequest = () => {
+    setIsDetailsModalOpen(false);
+    setIsDeleteAlertOpen(true);
+  };
+  
+  const confirmDelete = () => {
+    if (selectedServer) {
+      deleteServer(selectedServer.id);
+    }
+    setIsDeleteAlertOpen(false);
+    setSelectedServer(null);
+  };
+
 
   return (
     <>
@@ -70,65 +94,64 @@ export default function ServersPage() {
           </div>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2">
-          {servers.map((server) => (
-            <Card key={server.id}>
-              <CardHeader className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className='flex items-center gap-4'>
-                    <CardTitle className="text-xl">{server.name}</CardTitle>
-                    <Badge variant={getStatusVariant(server.status)}>
-                        {t(server.status.toLowerCase() as any)}
-                    </Badge>
-                  </div>
-                  <Badge variant={server.paymentType === 'prepaid' ? 'default' : 'secondary'}>
-                    {t(server.paymentType as any)}
-                  </Badge>
-                </div>
-                <CardDescription className="pt-1 text-base">
-                  {server.url}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6 px-6 pb-6">
-                {server.subServers && server.subServers.length > 0 ? (
-                  <div className="rounded-md border">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>{t('subServerName')}</TableHead>
-                          <TableHead>{t('subServerType')}</TableHead>
-                          <TableHead className="text-right">{t('subServerScreens')}</TableHead>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('servers')}</CardTitle>
+            <CardDescription>{t('registeredServersList')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-xl border shadow-sm">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t('serverName')}</TableHead>
+                      <TableHead className="w-[150px] text-right">{t('status')}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {servers.length > 0 ? (
+                      servers.map((server) => (
+                        <TableRow key={server.id} onClick={() => handleRowClick(server)} className="cursor-pointer">
+                          <TableCell className="font-medium">{server.name}</TableCell>
+                          <TableCell className="text-right">
+                             <Badge variant={getStatusVariant(server.status)}>
+                                {t(server.status.toLowerCase() as any)}
+                            </Badge>
+                          </TableCell>
                         </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {server.subServers.map((sub, index) => (
-                          <TableRow key={index}>
-                            <TableCell>{sub.name}</TableCell>
-                            <TableCell>{sub.type}</TableCell>
-                            <TableCell className="text-right">{sub.screens}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                ) : (
-                  <div className="text-center text-muted-foreground py-4">
-                    {t('noSubServersMessage')}
-                  </div>
-                )}
-              </CardContent>
-              <CardFooter className="px-6 pb-6">
-                 <Button asChild variant="outline" className="w-full" size="lg">
-                    <Link href={`/servers/${server.id}/edit`}>
-                      <Settings className="mr-2 h-5 w-5" />
-                      {t('edit')}
-                    </Link>
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={2} className="h-28 text-center text-lg">
+                          {t('noServersFound')}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
+       {selectedServer && (
+        <ServerDetailsModal
+          isOpen={isDetailsModalOpen}
+          onClose={() => setIsDetailsModalOpen(false)}
+          server={selectedServer}
+          onEdit={handleEdit}
+          onDelete={handleDeleteRequest}
+        />
+      )}
+      
+      {selectedServer && (
+        <DeleteServerAlert
+          isOpen={isDeleteAlertOpen}
+          onClose={() => setIsDeleteAlertOpen(false)}
+          onConfirm={confirmDelete}
+          serverName={selectedServer.name}
+        />
+      )}
     </>
   );
 }

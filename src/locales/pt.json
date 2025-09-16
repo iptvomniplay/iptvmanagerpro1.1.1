@@ -42,6 +42,7 @@
     "registerNewClientDescription": "Preencha o formulário para adicionar um novo cliente ao sistema.",
     "areYouSure": "Você tem certeza absoluta?",
     "deleteClientWarning": "Esta ação não pode ser desfeita. Isso excluirá permanentemente o registro do cliente para",
+    "deleteServerWarning": "Esta ação não pode ser desfeita. Isso excluirá permanentemente o registro do servidor para",
     "cancel": "Cancelar",
     "continue": "Continuar",
     "fullName": "Nome Completo",
@@ -168,6 +169,7 @@
     "screens": "Telas",
     "subServerScreensPlaceholder": "Ex:1",
     "noSubServers": "Nenhum servidor foi adicionado ainda. Preencha o formulário acima para começar.",
+    "noServersFound": "Nenhum servidor encontrado.",
     "noSubServersMessage": "Nenhum servidor cadastrado para este painel.",
     "addClient": "Add Cliente",
     "collapse": "Recolher",
@@ -230,5 +232,6 @@
     "no": "Não",
     "validationError": "Erro de Validação",
     "fillAllFieldsWarning": "Por favor, preencha todos os campos obrigatórios",
-    "fillAllSubServerFields": "Por favor, preencha todos os campos do sub-servidor antes de adicioná-lo à lista."
+    "fillAllSubServerFields": "Por favor, preencha todos os campos do sub-servidor antes de adicioná-lo à lista.",
+    "registeredServersList": "Lista de todos os servidores cadastrados no sistema."
 }
