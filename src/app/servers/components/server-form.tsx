@@ -162,6 +162,9 @@ export function ServerForm({ server }: ServerFormProps) {
   const [expandedItems, setExpandedItems] = React.useState<Record<number, boolean>>({});
   const [isValidationErrorModalOpen, setIsValidationErrorModalOpen] = React.useState(false);
   const [validationErrorField, setValidationErrorField] = React.useState<string | null>(null);
+  const [isMainFormValidationErrorModalOpen, setIsMainFormValidationErrorModalOpen] = React.useState(false);
+  const [mainFormErrorFields, setMainFormErrorFields] = React.useState<string[]>([]);
+  
 
 
   const subServerNameRef = React.useRef<HTMLInputElement>(null);
@@ -375,16 +378,9 @@ export function ServerForm({ server }: ServerFormProps) {
   };
 
   const onInvalid = (errors: any) => {
-    toast({
-        variant: "destructive",
-        title: t('validationError'),
-        description: t('fillAllFieldsWarning'),
-    });
-    const firstErrorField = Object.keys(errors)[0];
-    const el = document.getElementsByName(firstErrorField)[0];
-    if (el) {
-      el.focus();
-    }
+    const errorKeys = Object.keys(errors);
+    setMainFormErrorFields(errorKeys);
+    setIsMainFormValidationErrorModalOpen(true);
   };
 
 
@@ -471,6 +467,19 @@ export function ServerForm({ server }: ServerFormProps) {
     }
     setValidationErrorField(null);
   }
+
+  const handleMainFormValidationModalClose = () => {
+    setIsMainFormValidationErrorModalOpen(false);
+    if (mainFormErrorFields.length > 0) {
+      const firstErrorField = mainFormErrorFields[0];
+      const element = document.getElementsByName(firstErrorField)[0];
+      if (element) {
+        element.focus();
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+    setMainFormErrorFields([]);
+  };
 
 
   return (
@@ -956,6 +965,20 @@ export function ServerForm({ server }: ServerFormProps) {
                   {t('ok')}
               </AlertDialogAction>
           </AlertDialogContent>
+      </AlertDialog>
+
+       <AlertDialog open={isMainFormValidationErrorModalOpen} onOpenChange={setIsMainFormValidationErrorModalOpen}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>{t('validationError')}</AlertDialogTitle>
+                <AlertDialogDescription>
+                    {t('fillAllFieldsWarning')}: {mainFormErrorFields.map(field => t(field as any)).join(', ')}
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogAction onClick={handleMainFormValidationModalClose}>
+                {t('ok')}
+            </AlertDialogAction>
+        </AlertDialogContent>
       </AlertDialog>
 
 
