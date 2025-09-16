@@ -118,7 +118,7 @@ export default function ServersPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>{t('servers')}</TableHead>
-                      <TableHead className="w-[180px] text-right">{t('actions')}</TableHead>
+                      <TableHead className="w-[180px] text-right"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
