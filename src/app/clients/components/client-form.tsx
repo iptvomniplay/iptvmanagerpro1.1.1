@@ -83,7 +83,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   const { fields: phoneFields, replace: replacePhones } = useFieldArray({ control, name: 'phones' });
 
   const handlePhoneSave = (newPhones: string[]) => {
-    replacePhones(newPhones.map(phone => ({ value: phone })));
+    replacePhones(newPhones);
     trigger('phones');
     setIsPhoneModalOpen(false);
   };
@@ -203,9 +203,9 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                     </Button>
                   </FormControl>
                   <div className="flex flex-wrap gap-2 pt-2">
-                    {phoneFields.map((field) => (
+                    {phoneFields.map((field, index) => (
                       <Badge key={field.id} variant="secondary" className="text-base">
-                        {(field as any).value}
+                        {field.value}
                       </Badge>
                     ))}
                   </div>
@@ -277,7 +277,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
         isOpen={isPhoneModalOpen}
         onClose={() => setIsPhoneModalOpen(false)}
         onSave={handlePhoneSave}
-        initialPhones={phoneFields.map(f => (f as any).value)}
+        initialPhones={phoneFields.map(f => f.value)}
       />
 
       {clientDataToConfirm && (

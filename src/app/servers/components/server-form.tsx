@@ -209,7 +209,7 @@ export function ServerForm({ server }: ServerFormProps) {
   }, [hasInitialStock, setValue, form]);
 
   const handlePhoneSave = (newPhones: string[]) => {
-    replacePhones(newPhones.map(p => ({ value: p })));
+    replacePhones(newPhones);
     trigger('phones');
     setIsPhoneModalOpen(false);
   };
@@ -608,9 +608,9 @@ export function ServerForm({ server }: ServerFormProps) {
                       </Button>
                     </FormControl>
                     <div className="flex flex-wrap gap-2 pt-2">
-                      {phoneFields.map((field) => (
+                      {phoneFields.map((field, index) => (
                         <Badge key={field.id} variant="secondary" className="text-base">
-                          {(field as any).value}
+                          {field.value}
                         </Badge>
                       ))}
                     </div>
@@ -916,7 +916,7 @@ export function ServerForm({ server }: ServerFormProps) {
         isOpen={isPhoneModalOpen}
         onClose={() => setIsPhoneModalOpen(false)}
         onSave={handlePhoneSave}
-        initialPhones={phoneFields.map(f => (f as any).value)}
+        initialPhones={phoneFields.map(f => f.value)}
       />
 
       {serverDataToConfirm && (
