@@ -197,14 +197,14 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
               render={() => (
                 <FormItem>
                   <FormControl>
-                    <Button type="button" variant="outline" onClick={() => setIsPhoneModalOpen(true)}>
-                      {t('managePhones')}
+                    <Button type="button" onClick={() => setIsPhoneModalOpen(true)}>
+                      {t('addPhone')}
                     </Button>
                   </FormControl>
                   <div className="flex flex-wrap gap-2 pt-2">
                     {phoneFields.map((field, index) => (
-                      <Badge key={field.id} variant="secondary" className="text-base">
-                        {field.value}
+                      <Badge key={index} variant="secondary" className="text-base">
+                        {field}
                       </Badge>
                     ))}
                   </div>
@@ -276,7 +276,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
         isOpen={isPhoneModalOpen}
         onClose={() => setIsPhoneModalOpen(false)}
         onSave={handlePhoneSave}
-        initialPhones={phoneFields.map(f => f.value)}
+        initialPhones={phoneFields.map(f => f)}
       />
 
       {clientDataToConfirm && (

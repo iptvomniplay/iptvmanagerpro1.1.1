@@ -247,5 +247,6 @@
     "insert": "Insert",
     "addedPhones": "Added Phones",
     "noPhonesAdded": "No phones added yet.",
-    "savePhones": "Save Phones"
+    "savePhones": "Save Phones",
+    "addPhone": "Add Phone"
 }

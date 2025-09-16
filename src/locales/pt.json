@@ -247,5 +247,6 @@
     "insert": "Inserir",
     "addedPhones": "Telefones Adicionados",
     "noPhonesAdded": "Nenhum telefone adicionado.",
-    "savePhones": "Salvar Telefones"
+    "savePhones": "Salvar Telefones",
+    "addPhone": "Add Telefone"
 }
