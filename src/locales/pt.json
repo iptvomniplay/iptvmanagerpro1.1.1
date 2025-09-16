@@ -229,6 +229,6 @@
     "yes": "Sim",
     "no": "Não",
     "validationError": "Erro de Validação",
-    "fillAllFieldsWarning": "Por favor, preencha todos os campos obrigatórios antes de salvar.",
+    "fillAllFieldsWarning": "Por favor, preencha todos os campos obrigatórios",
     "fillAllSubServerFields": "Por favor, preencha todos os campos do sub-servidor antes de adicioná-lo à lista."
 }

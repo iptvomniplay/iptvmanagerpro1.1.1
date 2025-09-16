@@ -211,12 +211,28 @@ export function ServerForm({ server }: ServerFormProps) {
     
     if (!validationResult.success) {
       const newErrors: Record<string, string> = {};
+      const missingFields: string[] = [];
       const firstErrorField = validationResult.error.issues[0].path[0] as string;
+      
       validationResult.error.issues.forEach(issue => {
         newErrors[issue.path[0]] = issue.message;
+        if (issue.path[0] === 'name') missingFields.push(t('subServerName'));
+        if (issue.path[0] === 'type') missingFields.push(t('subServerType'));
+        if (issue.path[0] === 'screens') missingFields.push(t('subServerScreens'));
       });
+      
       setSubServerErrors(prev => ({...prev, ...newErrors}));
-      (document.getElementsByName(firstErrorField)[0] as HTMLElement)?.focus();
+      
+      toast({
+        variant: 'destructive',
+        title: t('validationError'),
+        description: `${t('fillAllFieldsWarning')}: ${missingFields.join(', ')}`,
+      });
+      
+      const el = document.getElementsByName(firstErrorField)[0] as HTMLElement;
+      if (el) {
+        el.focus();
+      }
       return false;
     }
     setSubServerErrors({});

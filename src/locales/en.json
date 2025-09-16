@@ -229,6 +229,6 @@
     "yes": "Yes",
     "no": "No",
     "validationError": "Validation Error",
-    "fillAllFieldsWarning": "Please fill in all required fields before saving.",
+    "fillAllFieldsWarning": "Please fill in all required fields",
     "fillAllSubServerFields": "Please fill in all sub-server fields before adding it to the list."
 }
