@@ -111,8 +111,7 @@ export default function ServersPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('servers')}</CardTitle>
-            <CardDescription>{t('registeredServersList')}</CardDescription>
+            <CardTitle>{t('registeredServersList')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="rounded-xl border shadow-sm">
