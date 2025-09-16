@@ -5,7 +5,7 @@ import type { Server } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { PlusCircle, Settings, MoreVertical, ChevronDown } from 'lucide-react';
+import { PlusCircle, Settings, ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
 import { useData } from '@/hooks/use-data';
@@ -94,7 +94,7 @@ export default function ServersPage() {
                 {t('serverManagementDescription')}
               </p>
             </div>
-            <Button size="lg" onClick={() => router.push('/servers/new')}>
+            <Button onClick={() => router.push('/servers/new')}>
               <PlusCircle className="mr-2 h-5 w-5" />
               {t('addPanel')}
             </Button>
