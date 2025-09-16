@@ -5,7 +5,7 @@ import type { Server } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { PlusCircle, Settings, MoreVertical } from 'lucide-react';
+import { PlusCircle, Settings, MoreVertical, ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
 import { useData } from '@/hooks/use-data';
@@ -118,7 +118,7 @@ export default function ServersPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>{t('servers')}</TableHead>
-                      <TableHead className="w-[50px] text-right">{t('actions')}</TableHead>
+                      <TableHead className="w-[180px] text-right">{t('actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -150,10 +150,31 @@ export default function ServersPage() {
                             </div>
                           </TableCell>
                           <TableCell className="text-right">
-                             <Button variant="ghost" size="icon" onClick={() => handleRowClick(server)}>
-                                <MoreVertical className="h-5 w-5" />
-                                <span className="sr-only">{t('openMenu')}</span>
-                            </Button>
+                             <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" size="sm">
+                                        {t('actions')}
+                                        <ChevronDown className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => handleRowClick(server)}>
+                                        {t('details')}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => {
+                                        setSelectedServer(server);
+                                        handleEdit();
+                                    }}>
+                                        {t('edit')}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => {
+                                        setSelectedServer(server);
+                                        handleDeleteRequest();
+                                    }} className="text-destructive focus:text-destructive">
+                                        {t('delete')}
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                           </TableCell>
                         </TableRow>
                       ))

@@ -235,5 +235,6 @@
     "validationError": "Erro de Validação",
     "fillAllFieldsWarning": "Por favor, preencha todos os campos obrigatórios",
     "fillAllSubServerFields": "Por favor, preencha todos os campos do sub-servidor antes de adicioná-lo à lista.",
-    "registeredServersList": "Lista de todos os servidores cadastrados no sistema."
+    "registeredServersList": "Lista de todos os servidores cadastrados no sistema.",
+    "details": "Detalhes"
 }
