@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import type { Phone } from '@/lib/types';
 import {
   Dialog,
   DialogContent,
@@ -20,13 +21,13 @@ import { X } from 'lucide-react';
 interface PhoneInputModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (phones: string[]) => void;
-  initialPhones: string[];
+  onSave: (phones: Phone[]) => void;
+  initialPhones: Phone[];
 }
 
 export function PhoneInputModal({ isOpen, onClose, onSave, initialPhones }: PhoneInputModalProps) {
   const { t } = useLanguage();
-  const [phones, setPhones] = React.useState<string[]>(initialPhones);
+  const [phones, setPhones] = React.useState<Phone[]>(initialPhones);
   const [phoneType, setPhoneType] = React.useState<'celular' | 'fixo' | 'ddi'>('celular');
   const [currentPhone, setCurrentPhone] = React.useState('');
 
@@ -74,7 +75,7 @@ export function PhoneInputModal({ isOpen, onClose, onSave, initialPhones }: Phon
   
   const handleAddPhone = () => {
     if (currentPhone.trim()) {
-      setPhones(prev => [...prev, currentPhone.trim()]);
+      setPhones(prev => [...prev, { type: phoneType, number: currentPhone.trim() }]);
       setCurrentPhone('');
     }
   };
@@ -145,7 +146,7 @@ export function PhoneInputModal({ isOpen, onClose, onSave, initialPhones }: Phon
                 <div className="flex flex-col gap-2 p-2 rounded-md border min-h-[40px]">
                     {phones.length > 0 ? phones.map((phone, index) => (
                         <Badge key={index} variant="secondary" className="flex items-center justify-between text-base">
-                        <span>{phone}</span>
+                        <span>{phone.number}</span>
                         <button type="button" onClick={() => handleRemovePhone(index)} className="rounded-full hover:bg-muted-foreground/20 p-0.5">
                             <X className="h-3 w-3" />
                         </button>

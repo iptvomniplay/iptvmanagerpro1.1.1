@@ -4,7 +4,7 @@ import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import type { Server } from '@/lib/types';
+import type { Server, Phone } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -59,6 +59,11 @@ const createSubServerSchema = (t: (key: any) => string) => z.object({
   plans: z.array(z.string()).min(1, t('atLeastOnePlanRequired')),
 });
 
+const phoneSchema = z.object({
+  type: z.enum(['celular', 'fixo', 'ddi']),
+  number: z.string(),
+});
+
 const createFormSchema = (t: (key: any) => string) =>
   z
     .object({
@@ -70,7 +75,7 @@ const createFormSchema = (t: (key: any) => string) =>
         .string()
         .min(2, { message: t('responsibleNameIsRequired') }),
       nickname: z.string().optional(),
-      phones: z.array(z.string()).min(1, { message: t('phoneRequired') }),
+      phones: z.array(phoneSchema).min(1, { message: t('phoneRequired') }),
       paymentType: z.enum(['prepaid', 'postpaid']).default('prepaid'),
       panelValue: z.string().optional(),
       dueDate: z.coerce.number().optional(),
@@ -191,7 +196,7 @@ export function ServerForm({ server }: ServerFormProps) {
     name: 'subServers',
   });
 
-  const { fields: phoneFields, replace: replacePhones } = useFieldArray({
+  const { fields: phoneFields, replace: replacePhones, remove: removePhone } = useFieldArray({
     control,
     name: 'phones',
   });
@@ -208,7 +213,7 @@ export function ServerForm({ server }: ServerFormProps) {
     }
   }, [hasInitialStock, setValue, form]);
 
-  const handlePhoneSave = (newPhones: string[]) => {
+  const handlePhoneSave = (newPhones: Phone[]) => {
     replacePhones(newPhones);
     trigger('phones');
     setIsPhoneModalOpen(false);
@@ -595,26 +600,42 @@ export function ServerForm({ server }: ServerFormProps) {
               />
             </div>
 
-            <div className="w-full md:w-1/2 space-y-4">
-              <FormField
-                control={form.control}
-                name="phones"
-                render={() => (
-                  <>
-                    <Button type="button" onClick={() => setIsPhoneModalOpen(true)} variant="default">
-                      {t('addPhone')}
-                    </Button>
-                    <div className="flex flex-wrap gap-2 pt-2">
-                      {phoneFields.map((field) => (
-                        <Badge key={field.id} variant="secondary" className="text-base">
-                          {field.value}
-                        </Badge>
-                      ))}
-                    </div>
-                    <FormMessage />
-                  </>
-                )}
-              />
+            <div className="w-full md:w-1/2 space-y-2">
+                <Button type="button" variant="default" onClick={() => setIsPhoneModalOpen(true)}>
+                  {t('addPhone')}
+                </Button>
+                <FormField
+                  control={form.control}
+                  name="phones"
+                  render={() => (
+                    <FormItem>
+                      {phoneFields.length > 0 && (
+                        <Collapsible className="space-y-2">
+                           <CollapsibleTrigger asChild>
+                             <div className="flex items-center justify-between p-3 rounded-md border bg-muted cursor-pointer">
+                                <span className="font-semibold">{t('phone')} - {phoneFields.length} {t('registered')}</span>
+                                <div className="flex items-center">
+                                    <Badge variant="secondary">{phoneFields.length}</Badge>
+                                    <ChevronDown className="h-5 w-5 ml-2" />
+                                </div>
+                             </div>
+                           </CollapsibleTrigger>
+                          <CollapsibleContent className="space-y-2">
+                            {phoneFields.map((field, index) => (
+                              <div key={field.id} className="flex items-center justify-between p-2 pl-4 rounded-md border">
+                                <span className="text-sm">({t(field.type as any)}) {field.number}</span>
+                                <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={() => removePhone(index)}>
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                          </CollapsibleContent>
+                        </Collapsible>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
             </div>
 
             <FormField
@@ -915,7 +936,7 @@ export function ServerForm({ server }: ServerFormProps) {
         isOpen={isPhoneModalOpen}
         onClose={() => setIsPhoneModalOpen(false)}
         onSave={handlePhoneSave}
-        initialPhones={phoneFields.map(field => field.value)}
+        initialPhones={phoneFields}
       />
 
       {serverDataToConfirm && (

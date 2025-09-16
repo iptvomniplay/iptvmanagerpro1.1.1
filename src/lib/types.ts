@@ -1,9 +1,14 @@
+export type Phone = {
+  type: 'celular' | 'fixo' | 'ddi';
+  number: string;
+};
+
 export type Client = {
   id: string;
   name: string;
   nickname?: string;
   email: string;
-  phones: string[];
+  phones: Phone[];
   birthDate: string;
   status: 'Active' | 'Inactive' | 'Expired' | 'Test';
   registeredDate: string;
@@ -25,7 +30,7 @@ export type Server = {
   status: 'Online' | 'Offline' | 'Suspended' | 'Maintenance';
   responsibleName: string;
   nickname?: string;
-  phones?: string[];
+  phones?: Phone[];
   paymentType: 'prepaid' | 'postpaid';
   panelValue?: string;
   dueDate?: number;

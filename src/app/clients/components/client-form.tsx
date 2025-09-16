@@ -4,7 +4,7 @@ import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
-import type { Client } from '@/lib/types';
+import type { Client, Phone } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import { useData } from '@/hooks/use-data';
 import { Button } from '@/components/ui/button';
@@ -37,13 +37,20 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { PhoneInputModal } from '@/components/ui/phone-input-modal';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ChevronDown, ChevronRight, X } from 'lucide-react';
 
+
+const phoneSchema = z.object({
+  type: z.enum(['celular', 'fixo', 'ddi']),
+  number: z.string(),
+});
 
 const createFormSchema = (t: (key: string) => string) => z.object({
   name: z.string().min(2, { message: t('nameValidation') }),
   nickname: z.string().optional(),
   email: z.string().email({ message: t('emailValidation') }).optional().or(z.literal('')),
-  phones: z.array(z.string()).min(1, { message: t('phoneRequired') }),
+  phones: z.array(phoneSchema).min(1, { message: t('phoneRequired') }),
   birthDate: z.date({ required_error: t('birthDateRequired') }),
   status: z.enum(['Active', 'Inactive', 'Expired', 'Test'], { required_error: t('statusRequired') }),
 });
@@ -80,9 +87,9 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   });
 
   const { control, reset, trigger } = form;
-  const { fields: phoneFields, replace: replacePhones } = useFieldArray({ control, name: 'phones' });
+  const { fields: phoneFields, replace: replacePhones, remove: removePhone } = useFieldArray({ control, name: 'phones' });
 
-  const handlePhoneSave = (newPhones: string[]) => {
+  const handlePhoneSave = (newPhones: Phone[]) => {
     replacePhones(newPhones);
     trigger('phones');
     setIsPhoneModalOpen(false);
@@ -190,24 +197,41 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
             />
           </div>
           
-          <div className="w-full md:w-1/2 space-y-4">
+          <div className="w-full md:w-1/2 space-y-2">
+            <Button type="button" variant="default" onClick={() => setIsPhoneModalOpen(true)}>
+              {t('addPhone')}
+            </Button>
+            
             <FormField
               control={form.control}
               name="phones"
-              render={({ field }) => (
-                <>
-                  <Button type="button" onClick={() => setIsPhoneModalOpen(true)}>
-                    {t('addPhone')}
-                  </Button>
-                  <div className="flex flex-wrap gap-2 pt-2">
-                    {phoneFields.map((phoneField) => (
-                      <Badge key={phoneField.id} variant="secondary" className="text-base">
-                        {phoneField.value}
-                      </Badge>
-                    ))}
-                  </div>
+              render={() => (
+                <FormItem>
+                  {phoneFields.length > 0 && (
+                    <Collapsible className="space-y-2">
+                       <CollapsibleTrigger asChild>
+                         <div className="flex items-center justify-between p-3 rounded-md border bg-muted cursor-pointer">
+                            <span className="font-semibold">{t('phone')} - {phoneFields.length} {t('registered')}</span>
+                            <div className="flex items-center">
+                                <Badge variant="secondary">{phoneFields.length}</Badge>
+                                <ChevronDown className="h-5 w-5 ml-2" />
+                            </div>
+                         </div>
+                       </CollapsibleTrigger>
+                      <CollapsibleContent className="space-y-2">
+                        {phoneFields.map((field, index) => (
+                           <div key={field.id} className="flex items-center justify-between p-2 pl-4 rounded-md border">
+                            <span className="text-sm">({t(field.type as any)}) {field.number}</span>
+                            <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={() => removePhone(index)}>
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </CollapsibleContent>
+                    </Collapsible>
+                  )}
                   <FormMessage />
-                </>
+                </FormItem>
               )}
             />
           </div>
@@ -274,7 +298,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
         isOpen={isPhoneModalOpen}
         onClose={() => setIsPhoneModalOpen(false)}
         onSave={handlePhoneSave}
-        initialPhones={phoneFields.map(f => f.value)}
+        initialPhones={phoneFields}
       />
 
       {clientDataToConfirm && (

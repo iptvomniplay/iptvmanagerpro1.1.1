@@ -27,6 +27,7 @@
     "clientManagementDescription": "Visualize, adicione, edite e gerencie seus clientes.",
     "searchClientPlaceholder": "Buscar por nome, telefone ou apelido...",
     "register": "Cadastro",
+    "registered": "cadastrados",
     "clientID": "ID do Cliente",
     "name": "Nome",
     "status": "Status",

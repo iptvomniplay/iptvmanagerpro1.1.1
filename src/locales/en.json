@@ -27,6 +27,7 @@
     "clientManagementDescription": "View, add, edit, and manage your clients.",
     "searchClientPlaceholder": "Search by name, phone or nickname...",
     "register": "Register",
+    "registered": "registered",
     "clientID": "Client ID",
     "name": "Name",
     "status": "Status",

@@ -65,7 +65,7 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, serverData }: Co
               <p className="text-sm font-medium text-muted-foreground">{t('phone')}</p>
               <div className="flex flex-wrap gap-2 mt-1">
                 {serverData.phones?.map((phone, index) => (
-                  <Badge key={index} variant="outline" className="text-base">{phone}</Badge>
+                  <Badge key={index} variant="outline" className="text-base">{phone.number}</Badge>
                 ))}
               </div>
             </div>
