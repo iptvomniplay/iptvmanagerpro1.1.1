@@ -17,6 +17,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ServerDetailsModal } from './components/server-details-modal';
 import { DeleteServerAlert } from './components/delete-server-alert';
@@ -25,7 +31,7 @@ import { DeleteServerAlert } from './components/delete-server-alert';
 export default function ServersPage() {
   const { t } = useLanguage();
   const router = useRouter();
-  const { servers, deleteServer } = useData();
+  const { servers, updateServer, deleteServer } = useData();
 
   const [selectedServer, setSelectedServer] = React.useState<Server | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = React.useState(false);
@@ -69,6 +75,10 @@ export default function ServersPage() {
     }
     setIsDeleteAlertOpen(false);
     setSelectedServer(null);
+  };
+  
+  const handleStatusChange = (server: Server, status: Server['status']) => {
+    updateServer({ ...server, status });
   };
 
   return (
@@ -117,9 +127,19 @@ export default function ServersPage() {
                         <TableRow key={server.id} onClick={() => handleRowClick(server)} className="cursor-pointer">
                           <TableCell className="font-medium">{server.name}</TableCell>
                           <TableCell className="text-right">
-                             <Badge variant={getStatusVariant(server.status)}>
-                                {t(server.status.toLowerCase().replace(' ', '') as any)}
-                            </Badge>
+                             <DropdownMenu>
+                                <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                  <Badge variant={getStatusVariant(server.status)} className="cursor-pointer">
+                                      {t(server.status.toLowerCase().replace(' ', '') as any)}
+                                  </Badge>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Online')}>{t('online')}</DropdownMenuItem>
+                                  <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Offline')}>{t('offline')}</DropdownMenuItem>
+                                  <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Suspended')}>{t('suspended')}</DropdownMenuItem>
+                                  <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Maintenance')}>{t('maintenance')}</DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
                           </TableCell>
                         </TableRow>
                       ))
