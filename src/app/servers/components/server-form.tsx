@@ -203,7 +203,7 @@ export function ServerForm({ server }: ServerFormProps) {
       name: z.string().min(1, t('serverNameRequired')),
       type: z.string().min(1, t('serverTypeRequired')),
       screens: z.coerce
-        .number({ required_error: t('screensRequired') })
+        .number({ required_error: t('screensRequired'), invalid_type_error: t('screensRequired') })
         .min(1, t('screensMin')),
     });
     
