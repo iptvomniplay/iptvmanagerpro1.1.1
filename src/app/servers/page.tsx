@@ -25,7 +25,7 @@ import { DeleteServerAlert } from './components/delete-server-alert';
 export default function ServersPage() {
   const { t } = useLanguage();
   const router = useRouter();
-  const { servers, deleteServer } = useData();
+  const { servers, deleteServer, updateServer } = useData();
 
   const [selectedServer, setSelectedServer] = React.useState<Server | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = React.useState(false);
@@ -69,6 +69,10 @@ export default function ServersPage() {
     }
     setIsDeleteAlertOpen(false);
     setSelectedServer(null);
+  };
+
+  const handleStatusChange = (server: Server, newStatus: Server['status']) => {
+    updateServer({ ...server, status: newStatus });
   };
 
 
@@ -145,6 +149,7 @@ export default function ServersPage() {
           server={selectedServer}
           onEdit={handleEdit}
           onDelete={handleDeleteRequest}
+          onStatusChange={handleStatusChange}
         />
       )}
       
