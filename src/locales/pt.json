@@ -237,5 +237,15 @@
     "fillAllFieldsWarning": "Por favor, preencha todos os campos obrigatórios",
     "fillAllSubServerFields": "Por favor, preencha todos os campos do sub-servidor antes de adicioná-lo à lista.",
     "registeredServersList": "Servidores cadastrados",
-    "details": "Detalhes"
+    "details": "Detalhes",
+    "managePhones": "Gerenciar Telefones",
+    "managePhonesDescription": "Adicione, edite ou remova números de telefone.",
+    "phoneType": "Tipo de Telefone",
+    "mobile": "Celular",
+    "landline": "Fixo",
+    "ddi": "DDI",
+    "insert": "Inserir",
+    "addedPhones": "Telefones Adicionados",
+    "noPhonesAdded": "Nenhum telefone adicionado.",
+    "savePhones": "Salvar Telefones"
 }

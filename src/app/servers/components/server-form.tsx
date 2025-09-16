@@ -44,6 +44,7 @@ import { Badge } from '@/components/ui/badge';
 import { AddServerModal } from './add-server-modal';
 import { useToast } from '@/hooks/use-toast';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { PhoneInputModal } from '@/components/ui/phone-input-modal';
 
 
 const createSubServerSchema = (t: (key: any) => string) => z.object({
@@ -157,8 +158,7 @@ export function ServerForm({ server }: ServerFormProps) {
   const [subServerFormState, setSubServerFormState] = React.useState<SubServerFormValues>(initialSubServerValues);
   const [currentPlanInput, setCurrentPlanInput] = React.useState('');
 
-  const [phoneType, setPhoneType] = React.useState<'celular' | 'fixo' | 'ddi'>('celular');
-  const [currentPhone, setCurrentPhone] = React.useState('');
+  const [isPhoneModalOpen, setIsPhoneModalOpen] = React.useState(false);
   
   const [subServerErrors, setSubServerErrors] = React.useState<Record<string, string | undefined>>({});
   const [expandedItems, setExpandedItems] = React.useState<Record<number, boolean>>({});
@@ -191,7 +191,7 @@ export function ServerForm({ server }: ServerFormProps) {
     name: 'subServers',
   });
 
-  const { fields: phoneFields, append: appendPhone, remove: removePhone } = useFieldArray({
+  const { fields: phoneFields, replace: replacePhones } = useFieldArray({
     control,
     name: 'phones',
   });
@@ -207,6 +207,12 @@ export function ServerForm({ server }: ServerFormProps) {
         setValue('creditStock', 0);
     }
   }, [hasInitialStock, setValue, form]);
+
+  const handlePhoneSave = (newPhones: string[]) => {
+    replacePhones(newPhones.map(p => ({ value: p })));
+    trigger('phones');
+    setIsPhoneModalOpen(false);
+  };
 
 
   const subServerSchema = createSubServerSchema(t);
@@ -285,46 +291,6 @@ export function ServerForm({ server }: ServerFormProps) {
 
     setValue(fieldName as any, formatter.format(numericValue));
   };
-  
-  const handlePhoneInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value.replace(/\D/g, '');
-    let formattedValue = rawValue;
-
-    if (phoneType === 'celular') {
-        formattedValue = rawValue.slice(0, 11);
-        if (formattedValue.length > 2) {
-            formattedValue = `(${formattedValue.substring(0, 2)}) ${formattedValue.substring(2, 7)}`;
-            if (rawValue.length > 7) {
-                formattedValue += `-${rawValue.substring(7, 11)}`;
-            }
-        } else if (rawValue.length > 0) {
-            formattedValue = `(${rawValue}`;
-        }
-    } else if (phoneType === 'fixo') {
-        formattedValue = rawValue.slice(0, 10);
-        if (rawValue.length > 2) {
-            formattedValue = `(${rawValue.substring(0, 2)}) ${rawValue.substring(2, 6)}`;
-            if (rawValue.length > 6) {
-                formattedValue += `-${rawValue.substring(6, 10)}`;
-            }
-        } else if (rawValue.length > 0) {
-            formattedValue = `(${rawValue}`;
-        }
-    } else { // ddi
-        formattedValue = e.target.value;
-    }
-    
-    setCurrentPhone(formattedValue);
-  };
-  
-  const handleAddPhone = () => {
-    if (currentPhone.trim()) {
-      appendPhone(currentPhone.trim());
-      setCurrentPhone('');
-      trigger('phones');
-    }
-  };
-
   
   const processSubServerForValidation = () => {
     let formStateWithCurrentPlan = { ...subServerFormState };
@@ -516,12 +482,6 @@ export function ServerForm({ server }: ServerFormProps) {
     setMainFormErrorFields([]);
   };
 
-  const phonePlaceholders = {
-      celular: 'Ex: (11) 91234-5678',
-      fixo: 'Ex: (11) 3456-7890',
-      ddi: 'Ex: +44 20 7946 0958'
-  }
-
   return (
     <>
       <Form {...form}>
@@ -640,65 +600,24 @@ export function ServerForm({ server }: ServerFormProps) {
                 control={form.control}
                 name="phones"
                 render={() => (
-                  <FormItem>
-                    <FormLabel>{t('phone')}</FormLabel>
-                    <RadioGroup
-                      value={phoneType}
-                      onValueChange={(value) => setPhoneType(value as any)}
-                      className="flex space-x-4"
-                    >
-                      <FormItem className="flex items-center space-x-2 space-y-0">
+                    <FormItem>
+                        <FormLabel>{t('phone')}</FormLabel>
                         <FormControl>
-                          <RadioGroupItem value="celular" />
+                           <Button type="button" variant="outline" onClick={() => setIsPhoneModalOpen(true)}>
+                                {t('managePhones')}
+                            </Button>
                         </FormControl>
-                        <FormLabel className="font-normal">Celular</FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-2 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="fixo" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Fixo</FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-2 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="ddi" />
-                        </FormControl>
-                        .
-                        <FormLabel className="font-normal">DDI</FormLabel>
-                      </FormItem>
-                    </RadioGroup>
-                    <div className="flex gap-2">
-                      <Input
-                        value={currentPhone}
-                        onChange={handlePhoneInputChange}
-                        placeholder={phonePlaceholders[phoneType]}
-                      />
-                      <Button type="button" onClick={handleAddPhone}>
-                        {t('add')}
-                      </Button>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
+                         <div className="flex flex-wrap gap-2 pt-2">
+                            {phoneFields.map((field, index) => (
+                                <Badge key={field.id} variant="secondary" className="text-base">
+                                    {(field as any).value}
+                                </Badge>
+                            ))}
+                        </div>
+                        <FormMessage />
+                    </FormItem>
                 )}
               />
-              <div className="flex flex-wrap gap-2 pt-1">
-                {phoneFields.map((field, index) => (
-                  <Badge
-                    key={field.id}
-                    variant="secondary"
-                    className="flex items-center gap-2 text-base"
-                  >
-                    {field.value}
-                    <button
-                      type="button"
-                      onClick={() => removePhone(index)}
-                      className="rounded-full hover:bg-muted-foreground/20 p-0.5"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                ))}
-              </div>
             </div>
 
             <FormField
@@ -993,6 +912,13 @@ export function ServerForm({ server }: ServerFormProps) {
         </form>
       </Form>
       
+      <PhoneInputModal
+        isOpen={isPhoneModalOpen}
+        onClose={() => setIsPhoneModalOpen(false)}
+        onSave={handlePhoneSave}
+        initialPhones={phoneFields.map(f => (f as any).value)}
+      />
+
       {serverDataToConfirm && (
         <ConfirmationModal
             isOpen={isConfirmationModalOpen}
@@ -1064,5 +990,3 @@ export function ServerForm({ server }: ServerFormProps) {
     </>
   );
 }
-
-    
