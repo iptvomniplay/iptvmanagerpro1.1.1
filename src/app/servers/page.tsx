@@ -5,7 +5,7 @@ import type { Server } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { PlusCircle, Settings } from 'lucide-react';
+import { PlusCircle, Settings, MoreVertical } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
 import { useData } from '@/hooks/use-data';
@@ -117,19 +117,26 @@ export default function ServersPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>{t('serverName')}</TableHead>
-                      <TableHead className="w-[180px] text-right">{t('status')}</TableHead>
+                      <TableHead>{t('servers')}</TableHead>
+                      <TableHead className="w-[50px] text-right">{t('actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {servers.length > 0 ? (
                       servers.map((server) => (
-                        <TableRow key={server.id} onClick={() => handleRowClick(server)} className="cursor-pointer">
-                          <TableCell className="font-medium">{server.name}</TableCell>
-                          <TableCell className="text-right">
-                             <DropdownMenu>
+                        <TableRow key={server.id}>
+                          <TableCell className="font-medium">
+                            <div className="flex items-center gap-3">
+                               <Badge 
+                                  variant="secondary" 
+                                  className="cursor-pointer text-base py-1 px-3 hover:bg-muted"
+                                  onClick={() => handleRowClick(server)}
+                                >
+                                {server.name}
+                              </Badge>
+                              <DropdownMenu>
                                 <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                  <Badge variant={getStatusVariant(server.status)} className="cursor-pointer">
+                                  <Badge variant={getStatusVariant(server.status)} className="cursor-pointer text-base py-1 px-3">
                                       {t(server.status.toLowerCase().replace(' ', '') as any)}
                                   </Badge>
                                 </DropdownMenuTrigger>
@@ -140,6 +147,13 @@ export default function ServersPage() {
                                   <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Maintenance')}>{t('maintenance')}</DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                             <Button variant="ghost" size="icon" onClick={() => handleRowClick(server)}>
+                                <MoreVertical className="h-5 w-5" />
+                                <span className="sr-only">{t('openMenu')}</span>
+                            </Button>
                           </TableCell>
                         </TableRow>
                       ))
