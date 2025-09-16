@@ -160,7 +160,8 @@ export function ServerForm({ server }: ServerFormProps) {
   const [currentPlanInput, setCurrentPlanInput] = React.useState('');
   const [subServerErrors, setSubServerErrors] = React.useState<Record<string, string | undefined>>({});
   const [expandedItems, setExpandedItems] = React.useState<Record<number, boolean>>({});
-  const [subServerInlineError, setSubServerInlineError] = React.useState<string | null>(null);
+  const [isValidationErrorModalOpen, setIsValidationErrorModalOpen] = React.useState(false);
+  const [validationErrorField, setValidationErrorField] = React.useState<string | null>(null);
 
 
   const subServerNameRef = React.useRef<HTMLInputElement>(null);
@@ -218,35 +219,19 @@ export function ServerForm({ server }: ServerFormProps) {
     
     if (!validationResult.success) {
       const newErrors: Record<string, string> = {};
-      const missingFields: string[] = [];
       const firstErrorIssue = validationResult.error.issues[0];
       const firstErrorField = firstErrorIssue.path[0] as string;
       
       validationResult.error.issues.forEach(issue => {
         newErrors[issue.path[0]] = issue.message;
-        if (issue.path[0] === 'name') missingFields.push(t('subServerName'));
-        if (issue.path[0] === 'type') missingFields.push(t('subServerType'));
-        if (issue.path[0] === 'screens') missingFields.push(t('subServerScreens'));
       });
       
       setSubServerErrors(prev => ({...prev, ...newErrors}));
-      setSubServerInlineError(`${t('fillAllFieldsWarning')}: ${missingFields.join(', ')}`);
-      
-      const refs = {
-        name: subServerNameRef,
-        type: subServerTypeRef,
-        screens: subServerScreensRef,
-      }
-      
-      const fieldRef = refs[firstErrorField as keyof typeof refs];
-      if (fieldRef?.current) {
-        fieldRef.current.focus();
-        fieldRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      setValidationErrorField(firstErrorField);
+      setIsValidationErrorModalOpen(true);
       return false;
     }
     setSubServerErrors({});
-    setSubServerInlineError(null);
     return true;
   }
 
@@ -326,16 +311,12 @@ export function ServerForm({ server }: ServerFormProps) {
             newErrors[issue.path[0]] = issue.message;
         });
         setSubServerErrors(newErrors);
-        
-        const el = document.getElementsByName(firstErrorField as string)[0];
-        if (el) {
-          el.focus();
-        }
+        setValidationErrorField(firstErrorField as string);
+        setIsValidationErrorModalOpen(true);
         return;
     }
 
     setSubServerErrors({});
-    setSubServerInlineError(null);
     setIsAddMoreServerModalOpen(true);
   };
 
@@ -472,6 +453,24 @@ export function ServerForm({ server }: ServerFormProps) {
       }
     }
   };
+
+  const handleValidationModalClose = () => {
+    setIsValidationErrorModalOpen(false);
+    const refs: { [key: string]: React.RefObject<HTMLInputElement> } = {
+        name: subServerNameRef,
+        type: subServerTypeRef,
+        screens: subServerScreensRef,
+    };
+
+    if (validationErrorField) {
+        const fieldRef = refs[validationErrorField];
+        if (fieldRef?.current) {
+            fieldRef.current.focus();
+            fieldRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+    setValidationErrorField(null);
+  }
 
 
   return (
@@ -783,7 +782,6 @@ export function ServerForm({ server }: ServerFormProps) {
                 </CardHeader>
                 <CardContent className="space-y-4 pt-4">
                     <div className="p-4 border rounded-lg grid gap-4 bg-accent/50">
-                        {subServerInlineError && <p className="text-center text-sm font-medium text-destructive">{subServerInlineError}</p>}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
                             <FormItem>
                                 <FormLabel>{t('subServerName')}</FormLabel>
@@ -796,7 +794,6 @@ export function ServerForm({ server }: ServerFormProps) {
                                         onChange={e => {
                                             setSubServerFormState(p => ({ ...p, name: e.target.value }));
                                             setSubServerErrors(p => ({...p, name: undefined}));
-                                            setSubServerInlineError(null);
                                         }}
                                         placeholder={t('subServerNamePlaceholder')} 
                                     />
@@ -814,7 +811,6 @@ export function ServerForm({ server }: ServerFormProps) {
                                         onChange={e => {
                                             setSubServerFormState(p => ({ ...p, type: e.target.value }));
                                             setSubServerErrors(p => ({...p, type: undefined}));
-                                            setSubServerInlineError(null);
                                         }}
                                         placeholder={t('subServerTypePlaceholder')} 
                                     />
@@ -833,7 +829,6 @@ export function ServerForm({ server }: ServerFormProps) {
                                         onChange={e => {
                                             setSubServerFormState(p => ({ ...p, screens: e.target.value === '' ? undefined : Number(e.target.value) }));
                                             setSubServerErrors(p => ({...p, screens: undefined}));
-                                            setSubServerInlineError(null);
                                         }}
                                         placeholder={t('subServerScreensPlaceholder')}
                                     />
@@ -940,6 +935,28 @@ export function ServerForm({ server }: ServerFormProps) {
         isOpen={isAddMoreServerModalOpen}
         onResponse={handleAddMoreResponse}
       />
+
+      <AlertDialog open={isValidationErrorModalOpen} onOpenChange={setIsValidationErrorModalOpen}>
+          <AlertDialogContent>
+              <AlertDialogHeader>
+                  <AlertDialogTitle>{t('validationError')}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                      {t('fillAllFieldsWarning')}: {
+                        Object.entries(subServerErrors)
+                            .filter(([, message]) => message)
+                            .map(([field]) => t(
+                                field === 'name' ? 'subServerName' : 
+                                field === 'type' ? 'subServerType' : 
+                                'subServerScreens'
+                            )).join(', ')
+                      }
+                  </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogAction onClick={handleValidationModalClose}>
+                  {t('ok')}
+              </AlertDialogAction>
+          </AlertDialogContent>
+      </AlertDialog>
 
 
       <AlertDialog
