@@ -209,7 +209,7 @@ export function ServerForm({ server }: ServerFormProps) {
   }, [hasInitialStock, setValue, form]);
 
   const handlePhoneSave = (newPhones: string[]) => {
-    replacePhones(newPhones);
+    replacePhones(newPhones.map(phone => phone));
     trigger('phones');
     setIsPhoneModalOpen(false);
   };
@@ -596,25 +596,23 @@ export function ServerForm({ server }: ServerFormProps) {
             </div>
 
             <div className="w-full md:w-1/2 space-y-4">
-              <FormField
+               <FormField
                 control={form.control}
                 name="phones"
                 render={() => (
-                  <FormItem>
-                    <FormControl>
-                      <Button type="button" onClick={() => setIsPhoneModalOpen(true)}>
-                        {t('addPhone')}
-                      </Button>
-                    </FormControl>
+                  <>
+                    <Button type="button" onClick={() => setIsPhoneModalOpen(true)}>
+                      {t('addPhone')}
+                    </Button>
                     <div className="flex flex-wrap gap-2 pt-2">
-                      {phoneFields.map((field, index) => (
-                        <Badge key={index} variant="secondary" className="text-base">
-                          {field}
+                      {phoneFields.map((field) => (
+                        <Badge key={field.id} variant="secondary" className="text-base">
+                          {field.value}
                         </Badge>
                       ))}
                     </div>
                     <FormMessage />
-                  </FormItem>
+                  </>
                 )}
               />
             </div>
@@ -915,7 +913,7 @@ export function ServerForm({ server }: ServerFormProps) {
         isOpen={isPhoneModalOpen}
         onClose={() => setIsPhoneModalOpen(false)}
         onSave={handlePhoneSave}
-        initialPhones={phoneFields.map(f => f)}
+        initialPhones={phoneFields.map(f => f.value)}
       />
 
       {serverDataToConfirm && (
