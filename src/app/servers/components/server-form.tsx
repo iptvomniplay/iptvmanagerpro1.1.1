@@ -161,6 +161,11 @@ export function ServerForm({ server }: ServerFormProps) {
   const [subServerErrors, setSubServerErrors] = React.useState<Record<string, string | undefined>>({});
   const [expandedItems, setExpandedItems] = React.useState<Record<number, boolean>>({});
 
+  const subServerNameRef = React.useRef<HTMLInputElement>(null);
+  const subServerTypeRef = React.useRef<HTMLInputElement>(null);
+  const subServerScreensRef = React.useRef<HTMLInputElement>(null);
+  const plansInputRef = React.useRef<HTMLInputElement>(null);
+
   const formSchema = createFormSchema(t);
 
   const form = useForm<ServerFormValues>({
@@ -212,7 +217,8 @@ export function ServerForm({ server }: ServerFormProps) {
     if (!validationResult.success) {
       const newErrors: Record<string, string> = {};
       const missingFields: string[] = [];
-      const firstErrorField = validationResult.error.issues[0].path[0] as string;
+      const firstErrorIssue = validationResult.error.issues[0];
+      const firstErrorField = firstErrorIssue.path[0] as string;
       
       validationResult.error.issues.forEach(issue => {
         newErrors[issue.path[0]] = issue.message;
@@ -229,9 +235,16 @@ export function ServerForm({ server }: ServerFormProps) {
         description: `${t('fillAllFieldsWarning')}: ${missingFields.join(', ')}`,
       });
       
-      const el = document.getElementsByName(firstErrorField)[0] as HTMLElement;
-      if (el) {
-        el.focus();
+      const refs = {
+        name: subServerNameRef,
+        type: subServerTypeRef,
+        screens: subServerScreensRef,
+      }
+      
+      const fieldRef = refs[firstErrorField as keyof typeof refs];
+      if (fieldRef?.current) {
+        fieldRef.current.focus();
+        fieldRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
       return false;
     }
@@ -776,6 +789,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <FormLabel>{t('subServerName')}</FormLabel>
                                 <FormControl>
                                     <Input 
+                                        ref={subServerNameRef}
                                         name="name"
                                         autoComplete="off"
                                         value={subServerFormState.name}
@@ -792,6 +806,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <FormLabel>{t('subServerType')}</FormLabel>
                                 <FormControl>
                                     <Input 
+                                        ref={subServerTypeRef}
                                         name="type"
                                         autoComplete="off"
                                         value={subServerFormState.type}
@@ -808,6 +823,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <FormLabel>{t('subServerScreens')}</FormLabel>
                                 <FormControl>
                                     <Input
+                                        ref={subServerScreensRef}
                                         type="number"
                                         name="screens"
                                         autoComplete="off"
@@ -827,6 +843,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <FormLabel>{t('plans')}</FormLabel>
                                 <FormControl>
                                     <Input
+                                        ref={plansInputRef}
                                         name="plans"
                                         autoComplete="off"
                                         value={currentPlanInput}
@@ -944,3 +961,5 @@ export function ServerForm({ server }: ServerFormProps) {
 
     
  
+
+    
