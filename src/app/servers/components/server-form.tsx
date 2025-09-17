@@ -701,7 +701,7 @@ export function ServerForm({ server }: ServerFormProps) {
                               <RadioGroupItem value="postpaid" id="postpaid" className="peer sr-only" />
                               <FormLabel
                                 htmlFor="postpaid"
-                                className="flex h-full cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-4 text-base hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-primary [&:has([data-state=checked])]:border-primary"
+                                className="flex h-full cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-4 text-base hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-secondary-foreground peer-data-[state=checked]:text-secondary-foreground [&:has([data-state=checked])]:border-secondary-foreground"
                               >
                                 {t('postpaid')}
                               </FormLabel>
