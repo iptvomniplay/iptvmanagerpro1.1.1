@@ -106,10 +106,16 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, serverData }: Co
                     </CollapsibleTrigger>
                     <CollapsibleContent className="p-4 pt-0">
                         <div className="space-y-3 pt-3 border-t">
-                            <p><span className="font-semibold">{t('subServerType')}:</span> {sub.type}</p>
-                            <p><span className="font-semibold">{t('screens')}:</span> {sub.screens}</p>
                             <div>
-                                <p className="font-semibold">{t('plans')}:</p>
+                                <p className="text-sm font-semibold text-muted-foreground">{t('subServerType')}:</p>
+                                <p>{sub.type}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm font-semibold text-muted-foreground">{t('screens')}:</p>
+                                <p>{sub.screens}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm font-semibold text-muted-foreground">{t('plans')}:</p>
                                 <div className="flex flex-wrap gap-1 mt-1">
                                     {sub.plans.map((plan, planIndex) => (
                                         <Badge key={planIndex} variant="outline">{plan}</Badge>
