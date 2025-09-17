@@ -116,44 +116,47 @@ export default function ServersPage() {
           </div>
         </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>{t('registeredServersList')}</CardTitle>
-             <div className="relative w-full max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder={t('searchPanelPlaceholder')}
-                className="pl-10"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <Collapsible open={isListOpen} onOpenChange={setIsListOpen}>
-              <CollapsibleTrigger asChild>
-                <div className="flex items-center justify-between p-3 rounded-md border bg-muted cursor-pointer mb-4">
-                  <span className="font-semibold">{t('registeredServers')} ({filteredServers.length})</span>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    {isListOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-                  </Button>
+        <Collapsible open={isListOpen} onOpenChange={setIsListOpen} asChild>
+          <Card>
+            <CardHeader className="p-4 border-b">
+              <div className="flex items-center justify-between gap-4">
+                <CollapsibleTrigger asChild>
+                    <div className="flex items-center gap-4 cursor-pointer">
+                      <h3 className="text-lg font-semibold">
+                        {t('registeredServersList')} ({filteredServers.length})
+                      </h3>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 data-[state=open]:rotate-180">
+                          <ChevronDown className="h-5 w-5 transition-transform" />
+                      </Button>
+                    </div>
+                </CollapsibleTrigger>
+                <div className="relative w-full max-w-md">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder={t('searchPanelPlaceholder')}
+                    className="pl-10 h-10"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
                 </div>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <div className="rounded-xl border shadow-sm">
+              </div>
+            </CardHeader>
+            <CollapsibleContent asChild>
+              <CardContent className="p-0">
+                <div className="rounded-b-xl overflow-hidden">
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead></TableHead>
-                          <TableHead className="w-[180px] text-right"></TableHead>
+                          <TableHead>{t('serverName')}</TableHead>
+                          <TableHead className="w-[180px] text-right">{t('actions')}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {filteredServers.length > 0 ? (
                           filteredServers.map((server) => (
                             <TableRow key={server.id}>
-                              <TableCell className="font-medium">
+                              <TableCell className="font-medium p-4">
                                 <div className="flex items-center gap-3">
                                   <Badge 
                                       variant="secondary" 
@@ -177,7 +180,7 @@ export default function ServersPage() {
                                   </DropdownMenu>
                                 </div>
                               </TableCell>
-                              <TableCell className="text-right">
+                              <TableCell className="text-right p-4">
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button variant="outline" size="sm">
@@ -208,18 +211,24 @@ export default function ServersPage() {
                           ))
                         ) : (
                           <TableRow>
-                            <TableCell colSpan={2} className="h-28 text-center text-lg">
-                              {t('noServersFound')}
+                            <TableCell colSpan={2} className="p-0">
+                               <div className="flex flex-col items-center justify-center gap-3 text-center h-48">
+                                <Server className="w-12 h-12 text-muted-foreground/60" />
+                                <h3 className="text-xl font-semibold">{t('noServersFound')}</h3>
+                                <p className="text-muted-foreground max-w-xs">
+                                  {t('noServersFoundMessage')}
+                                </p>
+                              </div>
                             </TableCell>
                           </TableRow>
                         )}
                       </TableBody>
                     </Table>
                 </div>
-              </CollapsibleContent>
-            </Collapsible>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </CollapsibleContent>
+          </Card>
+        </Collapsible>
       </div>
 
        {selectedServer && (
