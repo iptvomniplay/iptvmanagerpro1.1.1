@@ -164,7 +164,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
 
           <ScrollArea className="flex-1">
              <Form {...form}>
-              <form id="test-form" onSubmit={form.handleSubmit(handleSubmit)} className="p-6 h-full grid md:grid-cols-2 gap-8 md:gap-12">
+              <form id="test-form" onSubmit={form.handleSubmit(handleSubmit)} className="p-6 h-full space-y-8">
                   <div className="space-y-6">
                     <div className="space-y-2">
                       <h3 className="text-xl font-semibold">{t('searchClient')}</h3>
@@ -332,18 +332,20 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                                           className="flex items-center justify-between p-3 cursor-pointer"
                                           onClick={() => setSelectedSubServer(sub)}
                                       >
-                                          <div className='flex items-center gap-4'>
-                                            <p className="font-semibold">{sub.name}</p>
-                                            <Badge variant={getStatusVariant(sub.status)} className="text-base">
-                                                  {t(sub.status.toLowerCase().replace(' ', '') as any)}
-                                              </Badge>
-                                          </div>
-                                          <CollapsibleTrigger asChild>
-                                              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
-                                                  <ChevronRight className="h-5 w-5 transition-transform data-[state=open]:rotate-90" />
-                                                  <span className="sr-only">Details</span>
-                                              </Button>
-                                          </CollapsibleTrigger>
+                                        <div className="flex items-center gap-4">
+                                            <p className="font-semibold truncate mr-4">{sub.name}</p>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <Badge variant={getStatusVariant(sub.status)} className="cursor-pointer text-base">
+                                                {t(sub.status.toLowerCase().replace(' ', '') as any)}
+                                            </Badge>
+                                            <CollapsibleTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
+                                                    <ChevronRight className="h-5 w-5 transition-transform data-[state=open]:rotate-90" />
+                                                    <span className="sr-only">Details</span>
+                                                </Button>
+                                            </CollapsibleTrigger>
+                                        </div>
                                       </div>
                                       <CollapsibleContent className="px-3 pb-3">
                                           <div className="space-y-2 pt-2 border-t text-sm text-muted-foreground">
