@@ -255,5 +255,7 @@
     "celular": "Mobile",
     "fixo": "Landline",
     "pleaseEnterPhoneNumber": "Please enter a phone number before saving.",
-    "clickInsertToAddPhone": "Click 'Insert' to add the number to the list before saving."
+    "clickInsertToAddPhone": "Click 'Insert' to add the number to the list before saving.",
+    "registeredPanel": "Registered Panel",
+    "registeredServers": "Registered Server(s)"
 }

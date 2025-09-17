@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import type { Server, SubServer } from '@/lib/types';
+import type { Server } from '@/lib/types';
 import {
   Dialog,
   DialogContent,
@@ -15,13 +15,11 @@ import { useLanguage } from '@/hooks/use-language';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -45,9 +43,14 @@ const DetailItem = ({ label, value }: { label: string; value?: string | number |
 
 export function ConfirmationModal({ isOpen, onClose, onConfirm, serverData }: ConfirmationModalProps) {
   const { t } = useLanguage();
+  const [openStates, setOpenStates] = React.useState<Record<string, boolean>>({});
+
+  const toggleOpen = (name: string) => {
+    setOpenStates(prev => ({ ...prev, [name]: !prev[name] }));
+  };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="text-2xl">{t('reviewRegistration')}</DialogTitle>
@@ -55,7 +58,7 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, serverData }: Co
         </DialogHeader>
 
         <div className="max-h-[60vh] overflow-y-auto space-y-6 p-4">
-          <h3 className="text-xl font-semibold text-primary">{t('panelDetails')}</h3>
+          <h3 className="text-xl font-semibold text-primary">{t('registeredPanel')}</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
             <DetailItem label={t('serverName')} value={serverData.name} />
             <DetailItem label={t('panelUrl')} value={serverData.url} />
@@ -88,34 +91,35 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, serverData }: Co
           {serverData.subServers && serverData.subServers.length > 0 && (
             <>
               <Separator />
-              <h3 className="text-xl font-semibold text-primary">{t('subServerDetails')}</h3>
-               <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t('subServerName')}</TableHead>
-                      <TableHead>{t('subServerType')}</TableHead>
-                      <TableHead>{t('plans')}</TableHead>
-                      <TableHead className="text-right">{t('subServerScreens')}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {serverData.subServers.map((sub, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{sub.name}</TableCell>
-                        <TableCell>{sub.type}</TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {sub.plans.map((plan, planIndex) => (
-                                <Badge key={planIndex} variant="outline">{plan}</Badge>
-                            ))}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">{sub.screens}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+              <h3 className="text-xl font-semibold text-primary">{t('registeredServers')}</h3>
+               <div className="space-y-2">
+                {serverData.subServers.map((sub, index) => (
+                  <Collapsible
+                    key={index}
+                    open={openStates[sub.name] || false}
+                    onOpenChange={() => toggleOpen(sub.name)}
+                    className="border rounded-lg"
+                  >
+                    <CollapsibleTrigger className="flex items-center justify-between w-full p-3 font-semibold">
+                      <span>{sub.name}</span>
+                      {openStates[sub.name] ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="p-4 pt-0">
+                        <div className="space-y-3 pt-3 border-t">
+                            <p><span className="font-semibold">{t('subServerType')}:</span> {sub.type}</p>
+                            <p><span className="font-semibold">{t('screens')}:</span> {sub.screens}</p>
+                            <div>
+                                <p className="font-semibold">{t('plans')}:</p>
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                    {sub.plans.map((plan, planIndex) => (
+                                        <Badge key={planIndex} variant="outline">{plan}</Badge>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+                ))}
               </div>
             </>
           )}
