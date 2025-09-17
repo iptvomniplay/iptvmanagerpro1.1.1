@@ -69,7 +69,7 @@ const createFormSchema = (t: (key: any) => string) =>
   z
     .object({
       name: z.string().min(2, { message: t('nameMustBeAtLeast2') }),
-      url: z.string().url({ message: t('invalidUrl') }).min(1, { message: t('urlIsRequired') }),
+      url: z.string().min(1, { message: t('urlIsRequired') }),
       login: z.string().min(1, { message: t('loginIsRequired') }),
       password: z.string().min(1, { message: t('passwordIsRequired') }),
       responsibleName: z
@@ -1106,3 +1106,4 @@ export function ServerForm({ server }: ServerFormProps) {
     
 
     
+
