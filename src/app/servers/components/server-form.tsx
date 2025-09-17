@@ -913,7 +913,7 @@ export function ServerForm({ server }: ServerFormProps) {
                       <Collapsible defaultOpen className="space-y-2">
                           <CollapsibleTrigger asChild>
                               <div className="flex items-center justify-between p-3 rounded-md border bg-muted cursor-pointer">
-                                  <span className="font-semibold">{t('registeredServersList')}</span>
+                                  <span className="font-semibold">{t('registeredServersList')} ({fields.length} {t('registered')})</span>
                                   <div className="flex items-center">
                                       <Badge variant="secondary">{fields.length}</Badge>
                                       <ChevronDown className="h-5 w-5 ml-2" />
