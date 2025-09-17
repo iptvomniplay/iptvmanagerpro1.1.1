@@ -69,7 +69,7 @@ const createFormSchema = (t: (key: any) => string) =>
   z
     .object({
       name: z.string().min(2, { message: t('nameMustBeAtLeast2') }),
-      url: z.string().min(1, { message: t('urlIsRequired') }),
+      url: z.string().url({ message: t('invalidUrl') }).min(1, { message: t('urlIsRequired') }),
       login: z.string().min(1, { message: t('loginIsRequired') }),
       password: z.string().min(1, { message: t('passwordIsRequired') }),
       responsibleName: z
@@ -686,7 +686,7 @@ export function ServerForm({ server }: ServerFormProps) {
                         <RadioGroup
                           onValueChange={field.onChange}
                           value={field.value}
-                          className="flex gap-4"
+                          className="grid grid-cols-2 gap-4"
                         >
                           <FormItem className="flex-1">
                             <RadioGroupItem value="prepaid" id="prepaid" className="peer sr-only" />
@@ -1099,5 +1099,7 @@ export function ServerForm({ server }: ServerFormProps) {
     </>
   );
 }
+
+    
 
     
