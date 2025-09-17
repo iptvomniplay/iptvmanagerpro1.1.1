@@ -291,13 +291,11 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                                             "rounded-md border transition-colors",
                                             selectedSubServer?.name === sub.name && "bg-primary/10 border-primary ring-2 ring-primary"
                                         )}>
-                                            <div className="flex items-center justify-between p-3">
-                                                <div 
-                                                    className="flex-1 cursor-pointer"
-                                                    onClick={() => setSelectedSubServer(sub)}
-                                                >
-                                                    <p className="font-semibold">{sub.name}</p>
-                                                </div>
+                                            <div 
+                                                className="flex items-center justify-between p-3 cursor-pointer"
+                                                onClick={() => setSelectedSubServer(sub)}
+                                            >
+                                                <p className="font-semibold">{sub.name}</p>
                                                 <CollapsibleTrigger asChild>
                                                     <Button variant="ghost" size="icon" className="h-8 w-8">
                                                         <Info className="h-4 w-4" />
