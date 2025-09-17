@@ -145,7 +145,7 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
                  {server.subServers.map((sub, index) => (
                     <Collapsible key={index} className="border rounded-lg">
                        <CollapsibleTrigger className="flex items-center justify-between w-full p-4 font-semibold text-left">
-                          <span>{sub.name}</span>
+                          <span className="truncate mr-4">{sub.name}</span>
                           <div className="flex items-center gap-4">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
@@ -160,7 +160,7 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
                                     <DropdownMenuItem onSelect={() => handleSubServerStatusChange(sub.name, 'Maintenance')}>{t('maintenance')}</DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
-                            <ChevronRight className="h-5 w-5 transition-transform data-[state=open]:rotate-90" />
+                            <ChevronRight className="h-5 w-5 transition-transform data-[state=open]:rotate-90 shrink-0" />
                           </div>
                        </CollapsibleTrigger>
                        <CollapsibleContent className="p-4 pt-0">
