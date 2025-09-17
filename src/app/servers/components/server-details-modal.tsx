@@ -20,7 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Trash2, FilePenLine, ChevronDown, ChevronRight } from 'lucide-react';
+import { Trash2, FilePenLine, ChevronRight, ChevronsUpDown } from 'lucide-react';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { useData } from '@/hooks/use-data';
 
@@ -50,7 +50,7 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
 
   if (!server) return null;
 
-  const getStatusVariant = (status: Server['status']) => {
+  const getStatusVariant = (status: Server['status'] | SubServer['status']) => {
     switch (status) {
       case 'Online':
         return 'success';
@@ -64,6 +64,10 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
         return 'outline';
     }
   };
+  
+  const handlePanelStatusChange = (newStatus: Server['status']) => {
+    updateServer({ ...server, status: newStatus });
+  };
 
   const handleSubServerStatusChange = (subServerName: string, newStatus: SubServer['status']) => {
     const updatedSubServers = server.subServers?.map(sub => 
@@ -75,7 +79,7 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="sm:max-w-2xl" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle className="text-2xl">{server.name}</DialogTitle>
           <DialogDescription>{server.url}</DialogDescription>
@@ -96,9 +100,19 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
             </div>
              <div>
               <p className="text-sm font-medium text-muted-foreground">{t('status')}</p>
-              <Badge variant={getStatusVariant(server.status)} className="text-base mt-1">
-                {t(server.status.toLowerCase().replace(' ', '') as any)}
-              </Badge>
+               <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Badge variant={getStatusVariant(server.status)} className="cursor-pointer text-base mt-1">
+                            {t(server.status.toLowerCase().replace(' ', '') as any)}
+                        </Badge>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start">
+                        <DropdownMenuItem onSelect={() => handlePanelStatusChange('Online')}>{t('online')}</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => handlePanelStatusChange('Offline')}>{t('offline')}</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => handlePanelStatusChange('Suspended')}>{t('suspended')}</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => handlePanelStatusChange('Maintenance')}>{t('maintenance')}</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">{t('paymentMethod')}</p>
@@ -119,34 +133,40 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
           {server.subServers && server.subServers.length > 0 && (
             <>
               <Separator />
-              <h3 className="text-xl font-semibold text-primary">{t('subServerDetails')}</h3>
-               <div className="space-y-2">
+               <Collapsible>
+                <CollapsibleTrigger className="flex items-center justify-between w-full font-semibold text-xl text-primary">
+                    <div className="flex items-center gap-2">
+                        <h3>{t('subServerDetails')}</h3>
+                        <Badge variant="secondary">{server.subServers.length}</Badge>
+                    </div>
+                    <ChevronsUpDown className="h-5 w-5" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-2 pt-4">
                  {server.subServers.map((sub, index) => (
                     <Collapsible key={index} className="border rounded-lg">
                        <CollapsibleTrigger className="flex items-center justify-between w-full p-4 font-semibold text-left">
-                          <span>{sub.name}</span>
+                          <div className="flex items-center gap-4">
+                            <span>{sub.name}</span>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                    <Badge variant={getStatusVariant(sub.status)} className="cursor-pointer text-base">
+                                        {t(sub.status.toLowerCase().replace(' ', '') as any)}
+                                    </Badge>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="start">
+                                    <DropdownMenuItem onSelect={() => handleSubServerStatusChange(sub.name, 'Online')}>{t('online')}</DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => handleSubServerStatusChange(sub.name, 'Offline')}>{t('offline')}</DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => handleSubServerStatusChange(sub.name, 'Suspended')}>{t('suspended')}</DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => handleSubServerStatusChange(sub.name, 'Maintenance')}>{t('maintenance')}</DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
                           <ChevronRight className="h-5 w-5 transition-transform data-[state=open]:rotate-90" />
                        </CollapsibleTrigger>
                        <CollapsibleContent className="p-4 pt-0">
                            <div className="space-y-3 pt-4 border-t">
                               <DetailItem label={t('subServerType')} value={sub.type} />
                               <DetailItem label={t('screens')} value={sub.screens} />
-                              <div>
-                                  <p className="text-sm font-medium text-muted-foreground">{t('status')}:</p>
-                                  <DropdownMenu>
-                                      <DropdownMenuTrigger asChild>
-                                          <Badge variant={getStatusVariant(sub.status)} className="cursor-pointer text-base mt-1">
-                                              {t(sub.status.toLowerCase().replace(' ', '') as any)}
-                                          </Badge>
-                                      </DropdownMenuTrigger>
-                                      <DropdownMenuContent align="start">
-                                          <DropdownMenuItem onSelect={() => handleSubServerStatusChange(sub.name, 'Online')}>{t('online')}</DropdownMenuItem>
-                                          <DropdownMenuItem onSelect={() => handleSubServerStatusChange(sub.name, 'Offline')}>{t('offline')}</DropdownMenuItem>
-                                          <DropdownMenuItem onSelect={() => handleSubServerStatusChange(sub.name, 'Suspended')}>{t('suspended')}</DropdownMenuItem>
-                                          <DropdownMenuItem onSelect={() => handleSubServerStatusChange(sub.name, 'Maintenance')}>{t('maintenance')}</DropdownMenuItem>
-                                      </DropdownMenuContent>
-                                  </DropdownMenu>
-                              </div>
                               <div>
                                   <p className="text-sm font-medium text-muted-foreground">{t('plans')}:</p>
                                   <div className="flex flex-wrap gap-1 mt-1">
@@ -159,7 +179,8 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
                        </CollapsibleContent>
                     </Collapsible>
                  ))}
-               </div>
+               </CollapsibleContent>
+              </Collapsible>
             </>
           )}
         </div>
