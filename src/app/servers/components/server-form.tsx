@@ -881,7 +881,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 {t('addPlan')}
                             </Button>
                         </div>
-                        {subServerFormState.plans.length > 0 && (
+                         {subServerFormState.plans.length > 0 && (
                             <Collapsible className="space-y-2">
                                 <CollapsibleTrigger asChild>
                                     <div className="flex items-center justify-between p-3 rounded-md border bg-background cursor-pointer">
@@ -922,27 +922,25 @@ export function ServerForm({ server }: ServerFormProps) {
                           </CollapsibleTrigger>
                           <CollapsibleContent className="space-y-2 pt-2">
                               {fields.map((field, index) => (
-                                  <Collapsible key={field.id} open={expandedItems[index] === true} onOpenChange={() => toggleExpand(index)} asChild>
+                                  <Collapsible key={field.id} open={expandedItems[index] ?? false} onOpenChange={() => toggleExpand(index)} asChild>
                                       <div className="p-4 border rounded-lg bg-card">
-                                          <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleExpand(index)}>
-                                              <div>
-                                                  <p className="font-semibold">{field.name} ({field.type})</p>
-                                                  <p className="text-sm text-muted-foreground">{t('screens')}: {field.screens}</p>
-                                              </div>
-                                              <div className="flex items-center gap-2">
-                                                  <CollapsibleTrigger asChild>
-                                                      <Button
-                                                          type="button"
-                                                          variant="ghost"
-                                                          size="icon"
-                                                          className="h-7 w-7 text-muted-foreground"
-                                                      >
-                                                          {expandedItems[index] === true ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-                                                          <span className="sr-only">{expandedItems[index] === true ? t('collapse') : t('expand')}</span>
-                                                      </Button>
-                                                  </CollapsibleTrigger>
-                                              </div>
-                                          </div>
+                                          <CollapsibleTrigger asChild>
+                                            <div className="flex items-center justify-between cursor-pointer">
+                                                <div>
+                                                    <p className="font-semibold">{field.name} ({field.type})</p>
+                                                    <p className="text-sm text-muted-foreground">{t('screens')}: {field.screens}</p>
+                                                </div>
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-7 w-7 text-muted-foreground"
+                                                >
+                                                    {expandedItems[index] === true ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                                                    <span className="sr-only">{expandedItems[index] === true ? t('collapse') : t('expand')}</span>
+                                                </Button>
+                                            </div>
+                                          </CollapsibleTrigger>
                                           <CollapsibleContent>
                                               <div className="flex flex-wrap gap-1 mt-2">
                                                   {field.plans.map((plan, planIndex) => (
