@@ -661,12 +661,14 @@ export function ServerForm({ server }: ServerFormProps) {
                   <FormItem className="space-y-3">
                     <FormLabel>{t('paymentMethod')}</FormLabel>
                     {!isPaymentTypeVisible && (
-                       <div
-                        className="flex h-11 w-full cursor-pointer items-center rounded-lg border border-input bg-background px-4 py-2 text-base text-muted-foreground ring-offset-background"
+                       <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full justify-start text-muted-foreground font-normal"
                         onClick={() => setIsPaymentTypeVisible(true)}
                        >
                          {t('choosePaymentMethod')}
-                       </div>
+                       </Button>
                     )}
                     {isPaymentTypeVisible && (
                       <FormControl>
@@ -940,7 +942,7 @@ export function ServerForm({ server }: ServerFormProps) {
                           </CollapsibleTrigger>
                           <CollapsibleContent className="space-y-2 pt-2">
                               {fields.map((field, index) => (
-                                  <Collapsible key={field.id} open={expandedItems[index] ?? false} onOpenChange={() => toggleExpand(index)} asChild>
+                                  <Collapsible key={field.id} open={expandedItems[index]} onOpenChange={() => toggleExpand(index)} asChild>
                                       <div className="p-4 border rounded-lg bg-card">
                                           <CollapsibleTrigger asChild>
                                             <div className="flex items-center justify-between cursor-pointer w-full">
@@ -951,8 +953,8 @@ export function ServerForm({ server }: ServerFormProps) {
                                                     size="icon"
                                                     className="h-7 w-7 text-muted-foreground"
                                                 >
-                                                    {expandedItems[index] === true ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-                                                    <span className="sr-only">{expandedItems[index] === true ? t('collapse') : t('expand')}</span>
+                                                    {expandedItems[index] ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                                                    <span className="sr-only">{expandedItems[index] ? t('collapse') : t('expand')}</span>
                                                 </Button>
                                             </div>
                                           </CollapsibleTrigger>
