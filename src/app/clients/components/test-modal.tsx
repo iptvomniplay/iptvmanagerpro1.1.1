@@ -168,7 +168,6 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                   <div className="space-y-6">
                     <div className="space-y-2">
                       <h3 className="text-xl font-semibold">{t('searchClient')}</h3>
-                      <p className="text-muted-foreground">{t('selectClientPrompt')}</p>
                     </div>
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -395,6 +394,8 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
     </>
   );
 }
+
+    
 
     
 
