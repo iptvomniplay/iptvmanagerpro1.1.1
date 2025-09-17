@@ -5,7 +5,7 @@ import type { Server } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { PlusCircle, Search, ChevronDown } from 'lucide-react';
+import { PlusCircle, Search, ChevronDown, Server as ServerIcon } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
 import { useData } from '@/hooks/use-data';
@@ -29,7 +29,6 @@ import { DeleteServerAlert } from './components/delete-server-alert';
 import { Input } from '@/components/ui/input';
 import { normalizeString } from '@/lib/utils';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Server as ServerIcon } from 'lucide-react';
 
 export default function ServersPage() {
   const { t } = useLanguage();
@@ -149,7 +148,7 @@ export default function ServersPage() {
                       <TableHeader>
                         <TableRow>
                           <TableHead>{t('serverName')}</TableHead>
-                           <TableHead>{t('status')}</TableHead>
+                          <TableHead>{t('status')}</TableHead>
                           <TableHead className="w-[180px] text-right">{t('actions')}</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -160,14 +159,13 @@ export default function ServersPage() {
                               <TableCell className="font-medium p-4">
                                 <Button
                                   variant="outline"
-                                  size="sm"
                                   className="h-auto font-semibold"
                                   onClick={() => handleRowClick(server)}
                                 >
                                   {server.name}
                                 </Button>
                               </TableCell>
-                               <TableCell>
+                              <TableCell>
                                 <DropdownMenu>
                                   <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                                     <Badge variant={getStatusVariant(server.status)} className="cursor-pointer text-base py-1 px-3">
