@@ -76,7 +76,7 @@ const createFormSchema = (t: (key: any) => string) =>
         .min(2, { message: t('responsibleNameIsRequired') }),
       nickname: z.string().optional(),
       phones: z.array(phoneSchema).min(1, { message: t('phoneRequired') }),
-      paymentType: z.enum(['prepaid', 'postpaid']).default('prepaid'),
+      paymentType: z.enum(['prepaid', 'postpaid'], { required_error: t('paymentMethodRequired') }),
       panelValue: z.string().optional(),
       dueDate: z.coerce.number().optional(),
       hasInitialStock: z.boolean().default(false).optional(),
@@ -138,7 +138,7 @@ const getInitialValues = (server: Server | null): ServerFormValues => ({
   responsibleName: server?.responsibleName || '',
   nickname: server?.nickname || '',
   phones: server?.phones || [],
-  paymentType: server?.paymentType || 'prepaid',
+  paymentType: server?.paymentType || undefined,
   panelValue: server?.panelValue || '',
   dueDate: server?.dueDate || undefined,
   hasInitialStock: !!server?.creditStock,
@@ -171,6 +171,7 @@ export function ServerForm({ server }: ServerFormProps) {
   const [validationErrorField, setValidationErrorField] = React.useState<string | null>(null);
   const [isMainFormValidationErrorModalOpen, setIsMainFormValidationErrorModalOpen] = React.useState(false);
   const [mainFormErrorFields, setMainFormErrorFields] = React.useState<string[]>([]);
+  const [isPaymentTypeVisible, setIsPaymentTypeVisible] = React.useState(false);
   
 
 
@@ -212,6 +213,13 @@ export function ServerForm({ server }: ServerFormProps) {
         setValue('creditStock', 0);
     }
   }, [hasInitialStock, setValue, form]);
+  
+  React.useEffect(() => {
+    if (server?.paymentType) {
+        setIsPaymentTypeVisible(true);
+    }
+  }, [server]);
+
 
   const handlePhoneSave = (newPhones: Phone[]) => {
     replacePhones(newPhones);
@@ -646,38 +654,48 @@ export function ServerForm({ server }: ServerFormProps) {
             </div>
             
             <div className="md:w-1/2">
-              <FormField
+               <FormField
                 control={control}
                 name="paymentType"
                 render={({ field }) => (
                   <FormItem className="space-y-3">
                     <FormLabel>{t('paymentMethod')}</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        value={field.value}
-                        className="flex gap-4"
-                      >
-                        <FormItem className="flex-1">
-                          <RadioGroupItem value="prepaid" id="prepaid" className="peer sr-only" />
-                          <FormLabel
-                            htmlFor="prepaid"
-                            className="flex h-full cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-4 text-base hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-primary [&:has([data-state=checked])]:border-primary"
-                          >
-                            {t('prepaid')}
-                          </FormLabel>
-                        </FormItem>
-                        <FormItem className="flex-1">
-                          <RadioGroupItem value="postpaid" id="postpaid" className="peer sr-only" />
-                          <FormLabel
-                            htmlFor="postpaid"
-                            className="flex h-full cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-4 text-base hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-primary [&:has([data-state=checked])]:border-primary"
-                          >
-                            {t('postpaid')}
-                          </FormLabel>
-                        </FormItem>
-                      </RadioGroup>
-                    </FormControl>
+                    {!isPaymentTypeVisible && (
+                       <div
+                        className="flex h-11 w-full cursor-pointer items-center rounded-lg border border-input bg-background px-4 py-2 text-base text-muted-foreground ring-offset-background"
+                        onClick={() => setIsPaymentTypeVisible(true)}
+                       >
+                         {t('choosePaymentMethod')}
+                       </div>
+                    )}
+                    {isPaymentTypeVisible && (
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          className="flex gap-4"
+                        >
+                          <FormItem className="flex-1">
+                            <RadioGroupItem value="prepaid" id="prepaid" className="peer sr-only" />
+                            <FormLabel
+                              htmlFor="prepaid"
+                              className="flex h-full cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-4 text-base hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-primary [&:has([data-state=checked])]:border-primary"
+                            >
+                              {t('prepaid')}
+                            </FormLabel>
+                          </FormItem>
+                          <FormItem className="flex-1">
+                            <RadioGroupItem value="postpaid" id="postpaid" className="peer sr-only" />
+                            <FormLabel
+                              htmlFor="postpaid"
+                              className="flex h-full cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-4 text-base hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-primary [&:has([data-state=checked])]:border-primary"
+                            >
+                              {t('postpaid')}
+                            </FormLabel>
+                          </FormItem>
+                        </RadioGroup>
+                      </FormControl>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}

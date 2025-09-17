@@ -156,6 +156,8 @@
     "panelValueIsRequired": "Panel value is required.",
     "dueDateIsRequired": "Due date must be between 1 and 31.",
     "creditStockIsRequired": "Credit stock must be a positive number.",
+    "paymentMethodRequired": "Payment method is required.",
+    "choosePaymentMethod": "Choose the payment method for panel credits",
     "hasDDI": "Has DDI?",
     "phonePlaceholder": "Enter number",
     "loginPlaceholder": "Enter your login",

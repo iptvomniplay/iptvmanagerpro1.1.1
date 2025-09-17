@@ -156,6 +156,8 @@
     "panelValueIsRequired": "O valor do painel é obrigatório.",
     "dueDateIsRequired": "O dia de vencimento deve ser entre 1 e 31.",
     "creditStockIsRequired": "O estoque de crédito deve ser um número positivo.",
+    "paymentMethodRequired": "A forma de pagamento é obrigatória.",
+    "choosePaymentMethod": "Escolha a forma de pagamento de créditos do painel",
     "hasDDI": "Tem DDI?",
     "phonePlaceholder": "Digite o número",
     "loginPlaceholder": "Digite seu login",
