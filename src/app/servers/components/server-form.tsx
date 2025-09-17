@@ -664,7 +664,7 @@ export function ServerForm({ server }: ServerFormProps) {
                 />
             </div>
             
-            <div className="md:w-1/2">
+            <div className="w-full md:w-1/2">
               <FormField
                 control={control}
                 name="paymentType"
