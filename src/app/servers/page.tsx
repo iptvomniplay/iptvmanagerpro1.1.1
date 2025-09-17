@@ -5,7 +5,7 @@ import type { Server } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { PlusCircle, Settings, ChevronDown } from 'lucide-react';
+import { PlusCircle, Search, ChevronDown, ChevronUp } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
 import { useData } from '@/hooks/use-data';
@@ -26,6 +26,9 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ServerDetailsModal } from './components/server-details-modal';
 import { DeleteServerAlert } from './components/delete-server-alert';
+import { Input } from '@/components/ui/input';
+import { normalizeString } from '@/lib/utils';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 
 export default function ServersPage() {
@@ -36,6 +39,18 @@ export default function ServersPage() {
   const [selectedServer, setSelectedServer] = React.useState<Server | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = React.useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = React.useState(false);
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [isListOpen, setIsListOpen] = React.useState(true);
+
+  const filteredServers = servers.filter((server) => {
+    const normalizedSearchTerm = normalizeString(searchTerm);
+    return (
+      normalizeString(server.name).includes(normalizedSearchTerm) ||
+      (server.nickname &&
+        normalizeString(server.nickname).includes(normalizedSearchTerm)) ||
+      normalizeString(server.status).includes(normalizedSearchTerm)
+    );
+  });
 
   const getStatusVariant = (status: Server['status']) => {
     switch (status) {
@@ -102,85 +117,107 @@ export default function ServersPage() {
         </div>
 
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>{t('registeredServersList')}</CardTitle>
+             <div className="relative w-full max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder={t('searchPanelPlaceholder')}
+                className="pl-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="rounded-xl border shadow-sm">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead></TableHead>
-                      <TableHead className="w-[180px] text-right"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {servers.length > 0 ? (
-                      servers.map((server) => (
-                        <TableRow key={server.id}>
-                          <TableCell className="font-medium">
-                            <div className="flex items-center gap-3">
-                               <Badge 
-                                  variant="secondary" 
-                                  className="cursor-pointer text-base py-1 px-3 hover:bg-muted"
-                                  onClick={() => handleRowClick(server)}
-                                >
-                                {server.name}
-                              </Badge>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                  <Badge variant={getStatusVariant(server.status)} className="cursor-pointer text-base py-1 px-3">
-                                      {t(server.status.toLowerCase().replace(' ', '') as any)}
-                                  </Badge>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Online')}>{t('online')}</DropdownMenuItem>
-                                  <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Offline')}>{t('offline')}</DropdownMenuItem>
-                                  <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Suspended')}>{t('suspended')}</DropdownMenuItem>
-                                  <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Maintenance')}>{t('maintenance')}</DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right">
-                             <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" size="sm">
-                                        {t('actions')}
-                                        <ChevronDown className="ml-2 h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onClick={() => handleRowClick(server)}>
-                                        {t('details')}
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => {
-                                        setSelectedServer(server);
-                                        handleEdit();
-                                    }}>
-                                        {t('edit')}
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => {
-                                        setSelectedServer(server);
-                                        handleDeleteRequest();
-                                    }} className="text-destructive focus:text-destructive">
-                                        {t('delete')}
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                          </TableCell>
+            <Collapsible open={isListOpen} onOpenChange={setIsListOpen}>
+              <CollapsibleTrigger asChild>
+                <div className="flex items-center justify-between p-3 rounded-md border bg-muted cursor-pointer mb-4">
+                  <span className="font-semibold">{t('registeredServers')} ({filteredServers.length})</span>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    {isListOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                  </Button>
+                </div>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="rounded-xl border shadow-sm">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead></TableHead>
+                          <TableHead className="w-[180px] text-right"></TableHead>
                         </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={2} className="h-28 text-center text-lg">
-                          {t('noServersFound')}
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-            </div>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredServers.length > 0 ? (
+                          filteredServers.map((server) => (
+                            <TableRow key={server.id}>
+                              <TableCell className="font-medium">
+                                <div className="flex items-center gap-3">
+                                  <Badge 
+                                      variant="secondary" 
+                                      className="cursor-pointer text-base py-1 px-3 hover:bg-muted"
+                                      onClick={() => handleRowClick(server)}
+                                    >
+                                    {server.name}
+                                  </Badge>
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                      <Badge variant={getStatusVariant(server.status)} className="cursor-pointer text-base py-1 px-3">
+                                          {t(server.status.toLowerCase().replace(' ', '') as any)}
+                                      </Badge>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                      <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Online')}>{t('online')}</DropdownMenuItem>
+                                      <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Offline')}>{t('offline')}</DropdownMenuItem>
+                                      <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Suspended')}>{t('suspended')}</DropdownMenuItem>
+                                      <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Maintenance')}>{t('maintenance')}</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                </div>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" size="sm">
+                                            {t('actions')}
+                                            <ChevronDown className="ml-2 h-4 w-4" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuItem onClick={() => handleRowClick(server)}>
+                                            {t('details')}
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => {
+                                            setSelectedServer(server);
+                                            handleEdit();
+                                        }}>
+                                            {t('edit')}
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => {
+                                            setSelectedServer(server);
+                                            handleDeleteRequest();
+                                        }} className="text-destructive focus:text-destructive">
+                                            {t('delete')}
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        ) : (
+                          <TableRow>
+                            <TableCell colSpan={2} className="h-28 text-center text-lg">
+                              {t('noServersFound')}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
           </CardContent>
         </Card>
       </div>
