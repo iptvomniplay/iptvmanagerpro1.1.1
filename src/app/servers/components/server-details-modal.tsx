@@ -133,7 +133,7 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
           {server.subServers && server.subServers.length > 0 && (
             <>
               <Separator />
-               <Collapsible>
+               <Collapsible defaultOpen={false}>
                 <CollapsibleTrigger className="flex items-center justify-between w-full font-semibold text-xl text-primary">
                     <div className="flex items-center gap-2">
                         <h3>{t('subServerDetails')}</h3>
@@ -145,8 +145,8 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
                  {server.subServers.map((sub, index) => (
                     <Collapsible key={index} className="border rounded-lg">
                        <CollapsibleTrigger className="flex items-center justify-between w-full p-4 font-semibold text-left">
+                          <span>{sub.name}</span>
                           <div className="flex items-center gap-4">
-                            <span>{sub.name}</span>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                                     <Badge variant={getStatusVariant(sub.status)} className="cursor-pointer text-base">
@@ -160,8 +160,8 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
                                     <DropdownMenuItem onSelect={() => handleSubServerStatusChange(sub.name, 'Maintenance')}>{t('maintenance')}</DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
+                            <ChevronRight className="h-5 w-5 transition-transform data-[state=open]:rotate-90" />
                           </div>
-                          <ChevronRight className="h-5 w-5 transition-transform data-[state=open]:rotate-90" />
                        </CollapsibleTrigger>
                        <CollapsibleContent className="p-4 pt-0">
                            <div className="space-y-3 pt-4 border-t">
