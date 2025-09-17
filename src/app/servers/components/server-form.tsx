@@ -273,7 +273,7 @@ export function ServerForm({ server }: ServerFormProps) {
         plans: [...prev.plans, planInput],
       }));
       setCurrentPlanInput('');
-      setSubServerErrors(prev => ({ ...prev, plans: undefined }));
+      setSubServerErrors(p => ({ ...p, plans: undefined }));
     }
   };
 
