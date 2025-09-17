@@ -909,40 +909,53 @@ export function ServerForm({ server }: ServerFormProps) {
                         </Button>
                     </div>
 
-                    <div className="space-y-2">
-                         {fields.map((field, index) => (
-                            <Collapsible key={field.id} open={expandedItems[index] === true} onOpenChange={() => toggleExpand(index)} asChild>
-                                <div className="p-4 border rounded-lg bg-card">
-                                    <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleExpand(index)}>
-                                        <div>
-                                            <p className="font-semibold">{field.name} ({field.type})</p>
-                                            <p className="text-sm text-muted-foreground">{t('screens')}: {field.screens}</p>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <CollapsibleTrigger asChild>
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="h-7 w-7 text-muted-foreground"
-                                                >
-                                                    {expandedItems[index] === true ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-                                                    <span className="sr-only">{expandedItems[index] === true ? t('collapse') : t('expand')}</span>
-                                                </Button>
-                                            </CollapsibleTrigger>
-                                        </div>
-                                    </div>
-                                    <CollapsibleContent>
-                                        <div className="flex flex-wrap gap-1 mt-2">
-                                            {field.plans.map((plan, planIndex) => (
-                                                <Badge key={planIndex} variant="outline">{plan}</Badge>
-                                            ))}
-                                        </div>
-                                    </CollapsibleContent>
-                                </div>
-                            </Collapsible>
-                        ))}
-                    </div>
+                   {fields.length > 0 && (
+                      <Collapsible defaultOpen className="space-y-2">
+                          <CollapsibleTrigger asChild>
+                              <div className="flex items-center justify-between p-3 rounded-md border bg-muted cursor-pointer">
+                                  <span className="font-semibold">{t('registeredServersList')}</span>
+                                  <div className="flex items-center">
+                                      <Badge variant="secondary">{fields.length}</Badge>
+                                      <ChevronDown className="h-5 w-5 ml-2" />
+                                  </div>
+                              </div>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent className="space-y-2 pt-2">
+                              {fields.map((field, index) => (
+                                  <Collapsible key={field.id} open={expandedItems[index] === true} onOpenChange={() => toggleExpand(index)} asChild>
+                                      <div className="p-4 border rounded-lg bg-card">
+                                          <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleExpand(index)}>
+                                              <div>
+                                                  <p className="font-semibold">{field.name} ({field.type})</p>
+                                                  <p className="text-sm text-muted-foreground">{t('screens')}: {field.screens}</p>
+                                              </div>
+                                              <div className="flex items-center gap-2">
+                                                  <CollapsibleTrigger asChild>
+                                                      <Button
+                                                          type="button"
+                                                          variant="ghost"
+                                                          size="icon"
+                                                          className="h-7 w-7 text-muted-foreground"
+                                                      >
+                                                          {expandedItems[index] === true ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                                                          <span className="sr-only">{expandedItems[index] === true ? t('collapse') : t('expand')}</span>
+                                                      </Button>
+                                                  </CollapsibleTrigger>
+                                              </div>
+                                          </div>
+                                          <CollapsibleContent>
+                                              <div className="flex flex-wrap gap-1 mt-2">
+                                                  {field.plans.map((plan, planIndex) => (
+                                                      <Badge key={planIndex} variant="outline">{plan}</Badge>
+                                                  ))}
+                                              </div>
+                                          </CollapsibleContent>
+                                      </div>
+                                  </Collapsible>
+                              ))}
+                          </CollapsibleContent>
+                      </Collapsible>
+                    )}
                 
                     {fields.length === 0 && (
                         <div className={cn("text-center py-4", noServersAddedError ? "text-destructive" : "text-muted-foreground")}>
