@@ -169,7 +169,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className="h-screen w-screen max-w-none flex flex-col p-0">
           <DialogHeader className="p-6 pb-4 border-b">
-            <DialogTitle>Configure 1 teste</DialogTitle>
+            <DialogTitle className="text-2xl">Configure 1 teste</DialogTitle>
           </DialogHeader>
 
           <ScrollArea className="flex-1">
@@ -402,5 +402,3 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
     </>
   );
 }
-
-    
