@@ -19,7 +19,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight, ChevronsUpDown } from 'lucide-react';
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -91,42 +91,50 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, serverData }: Co
           {serverData.subServers && serverData.subServers.length > 0 && (
             <>
               <Separator />
-              <h3 className="text-xl font-semibold text-primary">{t('registeredServers')}</h3>
-               <div className="space-y-2">
-                {serverData.subServers.map((sub, index) => (
-                  <Collapsible
-                    key={index}
-                    open={openStates[sub.name] || false}
-                    onOpenChange={() => toggleOpen(sub.name)}
-                    className="border rounded-lg"
-                  >
-                    <CollapsibleTrigger className="flex items-center justify-between w-full p-3 font-semibold">
-                      <span>{sub.name}</span>
-                      {openStates[sub.name] ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="p-4 pt-0">
-                        <div className="space-y-3 pt-3 border-t">
-                            <div>
-                                <p className="text-sm font-semibold text-muted-foreground">{t('subServerType')}:</p>
-                                <p>{sub.type}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm font-semibold text-muted-foreground">{t('screens')}:</p>
-                                <p>{sub.screens}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm font-semibold text-muted-foreground">{t('plans')}:</p>
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                    {sub.plans.map((plan, planIndex) => (
-                                        <Badge key={planIndex} variant="outline">{plan}</Badge>
-                                    ))}
+               <Collapsible defaultOpen>
+                  <CollapsibleTrigger className="flex items-center justify-between w-full font-semibold text-xl text-primary">
+                    <h3>{t('registeredServers')}</h3>
+                    <div className="flex items-center">
+                        <Badge variant="secondary" className="mr-2">{serverData.subServers.length}</Badge>
+                        <ChevronsUpDown className="h-5 w-5" />
+                    </div>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="space-y-2 pt-4">
+                    {serverData.subServers.map((sub, index) => (
+                      <Collapsible
+                        key={index}
+                        open={openStates[sub.name] || false}
+                        onOpenChange={() => toggleOpen(sub.name)}
+                        className="border rounded-lg"
+                      >
+                        <CollapsibleTrigger className="flex items-center justify-between w-full p-3 font-semibold">
+                          <span>{sub.name}</span>
+                          {openStates[sub.name] ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="p-4 pt-0">
+                            <div className="space-y-3 pt-3 border-t">
+                                <div>
+                                    <p className="text-sm font-semibold text-muted-foreground">{t('subServerType')}:</p>
+                                    <p>{sub.type}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-semibold text-muted-foreground">{t('screens')}:</p>
+                                    <p>{sub.screens}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-semibold text-muted-foreground">{t('plans')}:</p>
+                                    <div className="flex flex-wrap gap-1 mt-1">
+                                        {sub.plans.map((plan, planIndex) => (
+                                            <Badge key={planIndex} variant="outline">{plan}</Badge>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </CollapsibleContent>
-                  </Collapsible>
-                ))}
-              </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    ))}
+                  </CollapsibleContent>
+                </Collapsible>
             </>
           )}
         </div>
