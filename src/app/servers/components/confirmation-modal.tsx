@@ -19,7 +19,8 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import { ChevronDown, ChevronRight, ChevronsUpDown } from 'lucide-react';
+import { ChevronDown, ChevronRight, ChevronsUpDown, Eye, EyeOff } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -41,6 +42,30 @@ const DetailItem = ({ label, value }: { label: string; value?: string | number |
   );
 };
 
+const PasswordDisplay = ({ password }: { password?: string }) => {
+    const { t } = useLanguage();
+    const [isVisible, setIsVisible] = React.useState(false);
+
+    if (!password) return null;
+    
+    return (
+        <div>
+            <p className="text-sm font-medium text-muted-foreground">{t('password')}</p>
+            <div className="flex items-center gap-2">
+                <Input
+                    type={isVisible ? 'text' : 'password'}
+                    value={password}
+                    readOnly
+                    className="text-lg border-0 bg-transparent p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsVisible(!isVisible)}>
+                    {isVisible ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </Button>
+            </div>
+        </div>
+    )
+}
+
 export function ConfirmationModal({ isOpen, onClose, onConfirm, serverData }: ConfirmationModalProps) {
   const { t } = useLanguage();
   const [openStates, setOpenStates] = React.useState<Record<string, boolean>>({});
@@ -61,7 +86,12 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, serverData }: Co
           <h3 className="text-xl font-semibold text-primary">{t('registeredPanel')}</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
             <DetailItem label={t('serverName')} value={serverData.name} />
-            <DetailItem label={t('panelUrl')} value={serverData.url} />
+            <div className="col-span-2 md:col-span-3">
+              <DetailItem label={t('panelUrl')} value={serverData.url} />
+            </div>
+            <DetailItem label={t('login')} value={serverData.login} />
+            <PasswordDisplay password={serverData.password} />
+             <Separator className="col-span-2 md:col-span-3 my-2"/>
             <DetailItem label={t('responsibleName')} value={serverData.responsibleName} />
             <DetailItem label={t('nickname')} value={serverData.nickname} />
             <div>
@@ -74,9 +104,11 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, serverData }: Co
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">{t('paymentMethod')}</p>
-              <Badge variant={serverData.paymentType === 'prepaid' ? 'default' : 'secondary'} className="text-base mt-1">
-                {t(serverData.paymentType as any)}
-              </Badge>
+              {serverData.paymentType && (
+                <Badge variant={serverData.paymentType === 'prepaid' ? 'default' : 'secondary'} className="text-base mt-1">
+                  {t(serverData.paymentType as any)}
+                </Badge>
+              )}
             </div>
 
             {serverData.paymentType === 'postpaid' && (
