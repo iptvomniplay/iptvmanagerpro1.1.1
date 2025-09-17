@@ -124,7 +124,7 @@
     "add": "Adicionar",
     "login": "Login",
     "password": "Senha",
-    "paymentMethod": "Forma de Pagamento",
+    "paymentMethod": "Pagamento",
     "prepaid": "Pré-pago",
     "postpaid": "Pós-pago",
     "quantityOfCredits": "Quantidade de Créditos",
@@ -265,3 +265,5 @@
     "registeredPanel": "Painel Cadastrado",
     "registeredServers": "Servidor(es) Cadastrado(s)"
 }
+
+    
