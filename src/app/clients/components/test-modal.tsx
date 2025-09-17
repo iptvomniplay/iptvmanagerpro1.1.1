@@ -32,12 +32,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Search, User, Server as ServerIcon } from 'lucide-react';
+import { Search, User, Server as ServerIcon, Info, ChevronDown } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { normalizeString, cn } from '@/lib/utils';
 import { PanelSelectionModal } from './panel-selection-modal';
 import { Badge } from '@/components/ui/badge';
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 
 const testFormSchema = (t: (key: string) => string) => z.object({
   duration: z.coerce.number().min(1, { message: 'Duration is required.' }),
@@ -256,38 +257,56 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                                 </div>
                               </div>
 
-                              {selectedPanel && (
-                                <div className="space-y-4">
-                                  <h4 className="font-semibold">{t('subServerDetails')}</h4>
-                                  {selectedPanel.subServers && selectedPanel.subServers.length > 0 ? (
-                                     <ul className="grid gap-2">
-                                        {selectedPanel.subServers.map((sub, index) => (
-                                          <li
-                                            key={index}
-                                            className={cn(
-                                              "flex flex-col justify-between items-start rounded-md border p-3 cursor-pointer hover:bg-accent transition-colors",
-                                              selectedSubServer?.name === sub.name && "bg-primary/10 border-primary ring-2 ring-primary"
-                                            )}
-                                            onClick={() => setSelectedSubServer(sub)}
-                                          >
-                                            <p className="font-semibold">{sub.name}</p>
-                                            <div className="flex justify-between w-full text-sm text-muted-foreground mt-1">
-                                                <p>{sub.type}</p>
-                                                <p>{t('screens')}: {sub.screens}</p>
+                            {selectedPanel && selectedPanel.subServers && selectedPanel.subServers.length > 0 && (
+                                <Collapsible className="space-y-2">
+                                <CollapsibleTrigger asChild>
+                                    <div className="flex items-center justify-between p-3 rounded-md border bg-muted cursor-pointer">
+                                        <span className="font-semibold">{t('subServerDetails')}</span>
+                                        <div className="flex items-center">
+                                            <Badge variant="secondary">{selectedPanel.subServers.length}</Badge>
+                                            <ChevronDown className="h-5 w-5 ml-2" />
+                                        </div>
+                                    </div>
+                                </CollapsibleTrigger>
+                                <CollapsibleContent className="space-y-2 pt-2">
+                                    {selectedPanel.subServers.map((sub) => (
+                                    <Collapsible key={sub.name} asChild>
+                                        <div className={cn(
+                                            "rounded-md border transition-colors",
+                                            selectedSubServer?.name === sub.name && "bg-primary/10 border-primary ring-2 ring-primary"
+                                        )}>
+                                            <div className="flex items-center justify-between p-3">
+                                                <div 
+                                                    className="flex-1 cursor-pointer"
+                                                    onClick={() => setSelectedSubServer(sub)}
+                                                >
+                                                    <p className="font-semibold">{sub.name}</p>
+                                                </div>
+                                                <CollapsibleTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                        <Info className="h-4 w-4" />
+                                                        <span className="sr-only">Details</span>
+                                                    </Button>
+                                                </CollapsibleTrigger>
                                             </div>
-                                             <div className="flex flex-wrap gap-1 mt-2">
-                                                {sub.plans.map((plan, planIndex) => (
-                                                    <Badge key={planIndex} variant="secondary">{plan}</Badge>
-                                                ))}
-                                            </div>
-                                          </li>
-                                        ))}
-                                      </ul>
-                                  ) : (
-                                    <p className="text-muted-foreground text-sm">{t('noSubServersMessage')}</p>
-                                  )}
-                                </div>
-                              )}
+                                            <CollapsibleContent className="px-3 pb-3">
+                                                <div className="space-y-1 pt-2 border-t text-sm text-muted-foreground">
+                                                     <p>{t('subServerType')}: {sub.type}</p>
+                                                     <p>{t('screens')}: {sub.screens}</p>
+                                                      <div className="flex flex-wrap items-center gap-1 pt-1">
+                                                        <span>{t('plans')}:</span>
+                                                        {sub.plans.map((plan, planIndex) => (
+                                                            <Badge key={planIndex} variant="secondary">{plan}</Badge>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </CollapsibleContent>
+                                        </div>
+                                    </Collapsible>
+                                    ))}
+                                </CollapsibleContent>
+                                </Collapsible>
+                            )}
                           </div>
                         </>
                       )}
