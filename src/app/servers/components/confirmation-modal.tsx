@@ -50,8 +50,8 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, serverData }: Co
   };
 
   return (
-    <Dialog open={isOpen}>
-      <DialogContent className="sm:max-w-2xl">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-2xl" onPointerDownOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle className="text-2xl">{t('reviewRegistration')}</DialogTitle>
           <DialogDescription>{t('reviewRegistrationDescription')}</DialogDescription>
