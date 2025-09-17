@@ -4,7 +4,7 @@ import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import type { Server, Phone } from '@/lib/types';
+import type { Server, Phone, SubServer } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -57,6 +57,7 @@ const createSubServerSchema = (t: (key: any) => string) => z.object({
     })
     .min(1, t('screensMin')),
   plans: z.array(z.string()).min(1, t('atLeastOnePlanRequired')),
+  status: z.enum(['Online', 'Offline', 'Suspended', 'Maintenance']).default('Online'),
 });
 
 const phoneSchema = z.object({
@@ -123,7 +124,7 @@ interface ServerFormProps {
 type ServerFormValues = z.infer<ReturnType<typeof createFormSchema>>;
 type SubServerFormValues = z.infer<ReturnType<typeof createSubServerSchema>>;
 
-const initialSubServerValues: SubServerFormValues = {
+const initialSubServerValues: Omit<SubServerFormValues, 'status'> = {
     name: '',
     type: '',
     screens: undefined as any,
@@ -160,7 +161,7 @@ export function ServerForm({ server }: ServerFormProps) {
   const [hasSubmissionError, setHasSubmissionError] = React.useState(false);
   const [noServersAddedError, setNoServersAddedError] = React.useState(false);
   
-  const [subServerFormState, setSubServerFormState] = React.useState<SubServerFormValues>(initialSubServerValues);
+  const [subServerFormState, setSubServerFormState] = React.useState<Omit<SubServerFormValues, 'status'>>(initialSubServerValues);
   const [currentPlanInput, setCurrentPlanInput] = React.useState('');
 
   const [isPhoneModalOpen, setIsPhoneModalOpen] = React.useState(false);
@@ -319,7 +320,7 @@ export function ServerForm({ server }: ServerFormProps) {
     if (planInput && !formStateWithCurrentPlan.plans.includes(planInput)) {
         formStateWithCurrentPlan.plans = [...formStateWithCurrentPlan.plans, planInput];
     }
-    return formStateWithCurrentPlan;
+    return { ...formStateWithCurrentPlan, status: 'Online' as const };
   }
   
   const handleAddServerClick = () => {
@@ -344,13 +345,13 @@ export function ServerForm({ server }: ServerFormProps) {
   };
 
   const processAndValidateSubServer = () => {
-    const subServerToValidate = processSubServerForValidation();
-    
     const isSubServerFormEmpty = Object.values(subServerFormState).every(v => (Array.isArray(v) ? v.length === 0 : !v)) && !currentPlanInput.trim();
 
     if (isSubServerFormEmpty) {
       return { isValid: true, subServer: null };
     }
+    
+    const subServerToValidate = processSubServerForValidation();
 
     const result = subServerSchema.safeParse(subServerToValidate);
 

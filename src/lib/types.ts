@@ -19,6 +19,7 @@ export type SubServer = {
   type: string;
   screens: number;
   plans: string[];
+  status: 'Online' | 'Offline' | 'Suspended' | 'Maintenance';
 };
 
 export type Server = {

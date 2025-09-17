@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import type { Server } from '@/lib/types';
+import type { Server, SubServer } from '@/lib/types';
 import {
   Dialog,
   DialogContent,
@@ -15,14 +15,14 @@ import { useLanguage } from '@/hooks/use-language';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Trash2, FilePenLine } from 'lucide-react';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Trash2, FilePenLine, ChevronDown, ChevronRight } from 'lucide-react';
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
+import { useData } from '@/hooks/use-data';
 
 interface ServerDetailsModalProps {
   isOpen: boolean;
@@ -46,6 +46,7 @@ const DetailItem = ({ label, value }: { label: string; value?: string | number |
 
 export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }: ServerDetailsModalProps) {
   const { t } = useLanguage();
+  const { updateServer } = useData();
 
   if (!server) return null;
 
@@ -63,6 +64,14 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
         return 'outline';
     }
   };
+
+  const handleSubServerStatusChange = (subServerName: string, newStatus: SubServer['status']) => {
+    const updatedSubServers = server.subServers?.map(sub => 
+      sub.name === subServerName ? { ...sub, status: newStatus } : sub
+    );
+    updateServer({ ...server, subServers: updatedSubServers });
+  };
+
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -111,26 +120,46 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
             <>
               <Separator />
               <h3 className="text-xl font-semibold text-primary">{t('subServerDetails')}</h3>
-               <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t('subServerName')}</TableHead>
-                      <TableHead>{t('subServerType')}</TableHead>
-                      <TableHead className="text-right">{t('subServerScreens')}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {server.subServers.map((sub, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{sub.name}</TableCell>
-                        <TableCell>{sub.type}</TableCell>
-                        <TableCell className="text-right">{sub.screens}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+               <div className="space-y-2">
+                 {server.subServers.map((sub, index) => (
+                    <Collapsible key={index} className="border rounded-lg">
+                       <CollapsibleTrigger className="flex items-center justify-between w-full p-4 font-semibold text-left">
+                          <span>{sub.name}</span>
+                          <ChevronRight className="h-5 w-5 transition-transform data-[state=open]:rotate-90" />
+                       </CollapsibleTrigger>
+                       <CollapsibleContent className="p-4 pt-0">
+                           <div className="space-y-3 pt-4 border-t">
+                              <DetailItem label={t('subServerType')} value={sub.type} />
+                              <DetailItem label={t('screens')} value={sub.screens} />
+                              <div>
+                                  <p className="text-sm font-medium text-muted-foreground">{t('status')}:</p>
+                                  <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                          <Badge variant={getStatusVariant(sub.status)} className="cursor-pointer text-base mt-1">
+                                              {t(sub.status.toLowerCase().replace(' ', '') as any)}
+                                          </Badge>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent align="start">
+                                          <DropdownMenuItem onSelect={() => handleSubServerStatusChange(sub.name, 'Online')}>{t('online')}</DropdownMenuItem>
+                                          <DropdownMenuItem onSelect={() => handleSubServerStatusChange(sub.name, 'Offline')}>{t('offline')}</DropdownMenuItem>
+                                          <DropdownMenuItem onSelect={() => handleSubServerStatusChange(sub.name, 'Suspended')}>{t('suspended')}</DropdownMenuItem>
+                                          <DropdownMenuItem onSelect={() => handleSubServerStatusChange(sub.name, 'Maintenance')}>{t('maintenance')}</DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                  </DropdownMenu>
+                              </div>
+                              <div>
+                                  <p className="text-sm font-medium text-muted-foreground">{t('plans')}:</p>
+                                  <div className="flex flex-wrap gap-1 mt-1">
+                                      {sub.plans.map((plan, planIndex) => (
+                                          <Badge key={planIndex} variant="outline">{plan}</Badge>
+                                      ))}
+                                  </div>
+                              </div>
+                           </div>
+                       </CollapsibleContent>
+                    </Collapsible>
+                 ))}
+               </div>
             </>
           )}
         </div>
