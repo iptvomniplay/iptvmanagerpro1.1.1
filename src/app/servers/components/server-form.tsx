@@ -627,7 +627,7 @@ export function ServerForm({ server }: ServerFormProps) {
             </div>
 
             <div className="w-full md:w-1/2 space-y-2">
-                <Button type="button" variant="default" onClick={() => setIsPhoneModalOpen(true)}>
+                <Button type="button" variant="default" onClick={() => setIsPhoneModalOpen(true)} className="w-full">
                   {t('addPhone')}
                 </Button>
                 <FormField
