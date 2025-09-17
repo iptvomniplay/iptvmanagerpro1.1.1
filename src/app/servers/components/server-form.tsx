@@ -626,7 +626,7 @@ export function ServerForm({ server }: ServerFormProps) {
               />
             </div>
 
-            <div className="w-full md:w-1/2 space-y-2">
+            <div className="w-full md:w-1/4 space-y-2">
                 <Button type="button" variant="default" onClick={() => setIsPhoneModalOpen(true)} className="w-full">
                   {t('addPhone')}
                 </Button>
@@ -664,7 +664,7 @@ export function ServerForm({ server }: ServerFormProps) {
                 />
             </div>
             
-            <div className="w-full md:w-1/2">
+            <div className="w-full md:w-1/4">
               <FormField
                 control={control}
                 name="paymentType"
