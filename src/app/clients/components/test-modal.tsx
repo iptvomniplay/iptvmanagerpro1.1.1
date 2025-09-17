@@ -122,6 +122,22 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
     }, 300)
   }
 
+  const getStatusVariant = (status: SubServer['status']) => {
+    switch (status) {
+      case 'Online':
+        return 'success';
+      case 'Offline':
+        return 'inactive';
+      case 'Suspended':
+        return 'destructive';
+      case 'Maintenance':
+        return 'warning';
+      default:
+        return 'outline';
+    }
+  };
+
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -290,9 +306,15 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                                                 </CollapsibleTrigger>
                                             </div>
                                             <CollapsibleContent className="px-3 pb-3">
-                                                <div className="space-y-1 pt-2 border-t text-sm text-muted-foreground">
+                                                <div className="space-y-2 pt-2 border-t text-sm text-muted-foreground">
                                                      <p>{t('subServerType')}: {sub.type}</p>
                                                      <p>{t('screens')}: {sub.screens}</p>
+                                                      <div className="flex items-center gap-2">
+                                                        <p>{t('status')}:</p>
+                                                        <Badge variant={getStatusVariant(sub.status)} className="text-base">
+                                                          {t(sub.status.toLowerCase().replace(' ', '') as any)}
+                                                        </Badge>
+                                                      </div>
                                                       <div className="flex flex-wrap items-center gap-1 pt-1">
                                                         <span>{t('plans')}:</span>
                                                         {sub.plans.map((plan, planIndex) => (
