@@ -499,7 +499,7 @@ export function ServerForm({ server }: ServerFormProps) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit, onInvalid)} className="space-y-6">
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="md:w-1/2">
               <FormField
                 control={control}
                 name="name"
