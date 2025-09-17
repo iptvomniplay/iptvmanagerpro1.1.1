@@ -153,7 +153,7 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
                                         {t(sub.status.toLowerCase().replace(' ', '') as any)}
                                     </Badge>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="start">
+                                <DropdownMenuContent align="end">
                                     <DropdownMenuItem onSelect={() => handleSubServerStatusChange(sub.name, 'Online')}>{t('online')}</DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => handleSubServerStatusChange(sub.name, 'Offline')}>{t('offline')}</DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => handleSubServerStatusChange(sub.name, 'Suspended')}>{t('suspended')}</DropdownMenuItem>
