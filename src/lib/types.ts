@@ -48,4 +48,5 @@ export type Server = {
   dueDate?: number;
   creditStock: number;
   subServers?: SubServer[];
+  observations?: string;
 };

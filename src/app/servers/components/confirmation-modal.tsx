@@ -119,6 +119,16 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, serverData }: Co
             )}
              <DetailItem label={t('creditBalance')} value={serverData.creditStock} />
           </div>
+          
+          {serverData.observations && (
+            <>
+              <Separator />
+              <div>
+                <h3 className="text-xl font-semibold text-primary mb-2">{t('observations')}</h3>
+                <p className="text-base text-muted-foreground whitespace-pre-wrap">{serverData.observations}</p>
+              </div>
+            </>
+          )}
 
           {serverData.subServers && serverData.subServers.length > 0 && (
             <>

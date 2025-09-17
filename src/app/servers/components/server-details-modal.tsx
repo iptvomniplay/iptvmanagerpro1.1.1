@@ -20,10 +20,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Trash2, FilePenLine, ChevronRight, ChevronsUpDown, Eye, EyeOff } from 'lucide-react';
+import { Trash2, FilePenLine, ChevronRight, ChevronsUpDown, Eye, EyeOff, BookText } from 'lucide-react';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { useData } from '@/hooks/use-data';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 interface ServerDetailsModalProps {
   isOpen: boolean;
@@ -72,8 +73,25 @@ const PasswordDisplay = ({ password }: { password?: string }) => {
 export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }: ServerDetailsModalProps) {
   const { t } = useLanguage();
   const { updateServer } = useData();
+  const [observations, setObservations] = React.useState(server?.observations || '');
+
+  React.useEffect(() => {
+    if (server) {
+      setObservations(server.observations || '');
+    }
+  }, [server]);
 
   if (!server) return null;
+
+  const handleObservationsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setObservations(e.target.value);
+  };
+
+  const handleObservationsBlur = () => {
+    if (server && server.observations !== observations) {
+      updateServer({ ...server, observations });
+    }
+  };
 
   const getStatusVariant = (status: Server['status'] | SubServer['status']) => {
     switch (status) {
@@ -213,6 +231,26 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
               </Collapsible>
             </>
           )}
+
+          <Separator />
+          <Collapsible>
+            <CollapsibleTrigger className="flex items-center justify-between w-full font-semibold text-xl text-primary">
+                <div className="flex items-center gap-2">
+                    <BookText className="h-5 w-5" />
+                    <h3>{t('observations')}</h3>
+                </div>
+                <ChevronsUpDown className="h-5 w-5" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pt-4">
+                <Textarea
+                    value={observations}
+                    onChange={handleObservationsChange}
+                    onBlur={handleObservationsBlur}
+                    placeholder={t('observationsPlaceholder')}
+                    className="min-h-[120px] text-base"
+                />
+            </CollapsibleContent>
+          </Collapsible>
         </div>
 
         <DialogFooter className="pt-6 justify-between">

@@ -45,6 +45,7 @@ import { AddServerModal } from './add-server-modal';
 import { useToast } from '@/hooks/use-toast';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { PhoneInputModal } from '@/components/ui/phone-input-modal';
+import { Textarea } from '@/components/ui/textarea';
 
 
 const createSubServerSchema = (t: (key: any) => string) => z.object({
@@ -83,6 +84,7 @@ const createFormSchema = (t: (key: any) => string) =>
       hasInitialStock: z.boolean().default(false).optional(),
       creditStock: z.coerce.number({invalid_type_error: t('creditStockIsRequired')}).optional(),
       subServers: z.array(createSubServerSchema(t)).optional(),
+      observations: z.string().optional(),
     })
     .superRefine((data, ctx) => {
       if (data.paymentType === 'postpaid') {
@@ -145,6 +147,7 @@ const getInitialValues = (server: Server | null): ServerFormValues => ({
   hasInitialStock: !!server?.creditStock && server.creditStock > 0,
   creditStock: server?.creditStock,
   subServers: server?.subServers && server.subServers.length > 0 ? server.subServers : [],
+  observations: server?.observations || '',
 });
 
 
@@ -1010,6 +1013,25 @@ export function ServerForm({ server }: ServerFormProps) {
                 </CardContent>
             </Card>
           </div>
+          
+          <div className="md:w-1/2">
+            <FormField
+              control={control}
+              name="observations"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('observations')}</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder={t('observationsPlaceholder')}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
           <div className="flex justify-end gap-4 pt-6">
               <Button type="button" variant="outline" onClick={handleCancel}>
@@ -1100,10 +1122,3 @@ export function ServerForm({ server }: ServerFormProps) {
     </>
   );
 }
-
-    
-
-    
-
-    
-
