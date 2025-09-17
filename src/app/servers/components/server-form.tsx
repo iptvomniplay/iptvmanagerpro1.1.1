@@ -663,8 +663,8 @@ export function ServerForm({ server }: ServerFormProps) {
                     {!isPaymentTypeVisible && (
                        <Button
                         type="button"
-                        variant="outline"
-                        className="w-full justify-start text-muted-foreground font-normal"
+                        variant="default"
+                        className="w-full"
                         onClick={() => setIsPaymentTypeVisible(true)}
                        >
                          {t('choosePaymentMethod')}
