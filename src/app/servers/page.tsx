@@ -5,7 +5,7 @@ import type { Server } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { PlusCircle, Search, ChevronDown, Server as ServerIcon } from 'lucide-react';
+import { PlusCircle, Search, ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
 import { useData } from '@/hooks/use-data';
@@ -29,7 +29,7 @@ import { DeleteServerAlert } from './components/delete-server-alert';
 import { Input } from '@/components/ui/input';
 import { normalizeString } from '@/lib/utils';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-
+import { Server as ServerIcon } from 'lucide-react';
 
 export default function ServersPage() {
   const { t } = useLanguage();
@@ -158,12 +158,14 @@ export default function ServersPage() {
                           filteredServers.map((server) => (
                             <TableRow key={server.id}>
                               <TableCell className="font-medium p-4">
-                                <span
-                                  className="cursor-pointer hover:underline"
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-auto font-semibold"
                                   onClick={() => handleRowClick(server)}
                                 >
                                   {server.name}
-                                </span>
+                                </Button>
                               </TableCell>
                                <TableCell>
                                 <DropdownMenu>
