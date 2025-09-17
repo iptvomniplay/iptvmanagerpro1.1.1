@@ -54,7 +54,7 @@ interface TestModalProps {
 
 export function TestModal({ isOpen, onClose }: TestModalProps) {
   const { t } = useLanguage();
-  const { clients } = useData();
+  const { clients, updateClient } = useData();
   const [searchTerm, setSearchTerm] = React.useState('');
   const [searchResults, setSearchResults] = React.useState<Client[]>([]);
   const [selectedClient, setSelectedClient] = React.useState<Client | null>(null);
@@ -106,6 +106,9 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
   };
 
   const handleSubmit = (values: TestFormValues) => {
+    if (selectedClient) {
+      updateClient({ ...selectedClient, status: 'Test' });
+    }
     console.log('Test data:', { ...values, clientId: selectedClient?.id, panelId: selectedPanel?.id, subServer: selectedSubServer });
     handleClose();
   };
