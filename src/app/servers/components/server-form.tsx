@@ -81,7 +81,6 @@ const createFormSchema = (t: (key: any) => string) =>
       dueDate: z.coerce.number().optional(),
       hasInitialStock: z.boolean().default(false).optional(),
       creditStock: z.coerce.number({invalid_type_error: t('creditStockIsRequired')}).optional(),
-      subServers: z.array(createSubServerSchema(t)).optional(),
     })
     .superRefine((data, ctx) => {
       if (data.paymentType === 'postpaid') {
@@ -141,8 +140,8 @@ const getInitialValues = (server: Server | null): ServerFormValues => ({
   paymentType: server?.paymentType || undefined,
   panelValue: server?.panelValue || '',
   dueDate: server?.dueDate || undefined,
-  hasInitialStock: !!server?.creditStock,
-  creditStock: server?.creditStock || 0,
+  hasInitialStock: !!server?.creditStock && server.creditStock > 0,
+  creditStock: server?.creditStock || undefined,
   subServers: server?.subServers && server.subServers.length > 0 ? server.subServers : [],
 });
 
@@ -210,7 +209,7 @@ export function ServerForm({ server }: ServerFormProps) {
             setValue('creditStock', undefined);
         }
     } else {
-        setValue('creditStock', 0);
+        setValue('creditStock', undefined);
     }
   }, [hasInitialStock, setValue, form]);
   
@@ -407,19 +406,27 @@ export function ServerForm({ server }: ServerFormProps) {
   const handleConfirmSave = () => {
     if (!serverDataToConfirm) return;
     
+    // Ensure creditStock is a number, defaulting to 0 if not provided
+    const creditStock = serverDataToConfirm.creditStock || 0;
+    
+    const processedData = {
+      ...serverDataToConfirm,
+      creditStock: creditStock,
+    };
+    
     if (server) {
       const serverData: Server = {
           ...server,
-          ...serverDataToConfirm,
+          ...processedData,
           id: server.id,
-          status: server.status, // Keep original status, it's changed in modal
-          subServers: serverDataToConfirm.subServers || [],
+          status: server.status,
+          subServers: processedData.subServers || [],
       };
       updateServer(serverData);
     } else {
         const serverData: Omit<Server, 'id' | 'status'> = {
-            ...serverDataToConfirm,
-            subServers: serverDataToConfirm.subServers || [],
+            ...processedData,
+            subServers: processedData.subServers || [],
         };
         addServer(serverData);
     }
@@ -967,11 +974,11 @@ export function ServerForm({ server }: ServerFormProps) {
                                                 <div className="space-y-2 mt-2 pt-2 border-t">
                                                     <div>
                                                         <p className="text-sm font-semibold text-muted-foreground">{t('subServerType')}:</p>
-                                                        <p className="text-sm">{field.type}</p>
+                                                        <p>{field.type}</p>
                                                     </div>
                                                     <div>
                                                         <p className="text-sm font-semibold text-muted-foreground">{t('screens')}:</p>
-                                                        <p className="text-sm">{field.screens}</p>
+                                                        <p>{field.screens}</p>
                                                     </div>
                                                     <div>
                                                         <p className="text-sm font-semibold text-muted-foreground">{t('plans')}:</p>
@@ -1088,3 +1095,5 @@ export function ServerForm({ server }: ServerFormProps) {
     </>
   );
 }
+
+    
