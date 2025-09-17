@@ -44,7 +44,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 const testFormSchema = (t: (key: string) => string) => z.object({
   durationValue: z.coerce.number().positive({ message: t('durationPositive') }),
   durationUnit: z.enum(['hours', 'days'], { required_error: t('durationUnitRequired') }),
-  package: z.string().min(1, { message: 'Package is required.' }),
+  package: z.string().min(1, { message: t('plansRequired') }),
 });
 
 type TestFormValues = z.infer<ReturnType<typeof testFormSchema>>;
@@ -63,6 +63,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
   const [isPanelModalOpen, setIsPanelModalOpen] = React.useState(false);
   const [selectedPanel, setSelectedPanel] = React.useState<Server | null>(null);
   const [selectedSubServer, setSelectedSubServer] = React.useState<SubServer | null>(null);
+  const [availablePackages, setAvailablePackages] = React.useState<string[]>([]);
 
 
   const form = useForm<TestFormValues>({
@@ -70,7 +71,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
     defaultValues: {
       durationValue: 24,
       durationUnit: 'hours',
-      package: 'all_channels',
+      package: undefined,
     },
   });
 
@@ -105,6 +106,13 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
   const handleSelectPanel = (panel: Server) => {
     setSelectedPanel(panel);
     setSelectedSubServer(null);
+
+    const packages = panel.subServers?.flatMap(sub => sub.plans) || [];
+    const uniquePackages = Array.from(new Set(packages));
+    setAvailablePackages(uniquePackages);
+    
+    form.resetField('package');
+
     setIsPanelModalOpen(false);
   };
 
@@ -124,6 +132,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
         setSelectedSubServer(null);
         setSearchTerm('');
         setSearchResults([]);
+        setAvailablePackages([]);
         form.reset();
     }, 300)
   }
@@ -270,16 +279,16 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                                   render={({ field }) => (
                                   <FormItem>
                                       <FormLabel>{t('testPackage')}</FormLabel>
-                                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                      <Select onValueChange={field.onChange} value={field.value} disabled={availablePackages.length === 0}>
                                       <FormControl>
                                           <SelectTrigger>
-                                          <SelectValue placeholder="Select a package" />
+                                          <SelectValue placeholder={t('selectPackagePlaceholder')} />
                                           </SelectTrigger>
                                       </FormControl>
                                       <SelectContent>
-                                          <SelectItem value="all_channels">All Channels</SelectItem>
-                                          <SelectItem value="sports_only">Sports Only</SelectItem>
-                                          <SelectItem value="movies_only">Movies Only</SelectItem>
+                                          {availablePackages.map((pkg) => (
+                                            <SelectItem key={pkg} value={pkg}>{pkg}</SelectItem>
+                                          ))}
                                       </SelectContent>
                                       </Select>
                                       <FormMessage />
@@ -325,18 +334,18 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                                                 className="flex items-center justify-between p-3 cursor-pointer"
                                                 onClick={() => setSelectedSubServer(sub)}
                                             >
-                                                <p className="font-semibold">{sub.name}</p>
-                                                <div className="flex items-center gap-4">
-                                                    <Badge variant={getStatusVariant(sub.status)} className="text-base">
+                                                <div className='flex items-center gap-4'>
+                                                  <p className="font-semibold">{sub.name}</p>
+                                                  <Badge variant={getStatusVariant(sub.status)} className="text-base">
                                                         {t(sub.status.toLowerCase().replace(' ', '') as any)}
                                                     </Badge>
-                                                    <CollapsibleTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
-                                                            <ChevronRight className="h-5 w-5 transition-transform data-[state=open]:rotate-90" />
-                                                            <span className="sr-only">Details</span>
-                                                        </Button>
-                                                    </CollapsibleTrigger>
                                                 </div>
+                                                <CollapsibleTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
+                                                        <ChevronRight className="h-5 w-5 transition-transform data-[state=open]:rotate-90" />
+                                                        <span className="sr-only">Details</span>
+                                                    </Button>
+                                                </CollapsibleTrigger>
                                             </div>
                                             <CollapsibleContent className="px-3 pb-3">
                                                 <div className="space-y-2 pt-2 border-t text-sm text-muted-foreground">
