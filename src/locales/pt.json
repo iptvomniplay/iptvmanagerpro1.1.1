@@ -81,7 +81,7 @@
     "validationResult": "Resultado da Validação",
     "validationFailed": "Falha na Validação",
     "validationReport": "Relatório de Validação",
-    "awaitingInput": "Aguardando Entrada...",
+    "awaitingInput": "Aguardando cliente.",
     "validationReportMessage": "O relatório de validação da IA aparecerá aqui assim que você enviar a configuração.",
     "settingsDescription": "Gerencie as preferências e configurações do seu aplicativo.",
     "appearance": "Aparência",
