@@ -665,49 +665,51 @@ export function ServerForm({ server }: ServerFormProps) {
             </div>
             
             <div className="md:w-1/2">
-               <FormField
+              <FormField
                 control={control}
                 name="paymentType"
                 render={({ field }) => (
                   <FormItem className="space-y-3">
-                    <FormLabel>{t('paymentMethod')}</FormLabel>
                     {!isPaymentTypeVisible && (
-                       <Button
+                      <Button
                         type="button"
                         variant="default"
                         className="w-full"
                         onClick={() => setIsPaymentTypeVisible(true)}
-                       >
-                         {t('choosePaymentMethod')}
-                       </Button>
+                      >
+                        {t('paymentMethod')}
+                      </Button>
                     )}
                     {isPaymentTypeVisible && (
-                      <FormControl>
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          value={field.value}
-                          className="grid grid-cols-2 gap-4"
-                        >
-                          <FormItem className="flex-1">
-                            <RadioGroupItem value="prepaid" id="prepaid" className="peer sr-only" />
-                            <FormLabel
-                              htmlFor="prepaid"
-                              className="flex h-full cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-4 text-base hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-primary [&:has([data-state=checked])]:border-primary"
-                            >
-                              {t('prepaid')}
-                            </FormLabel>
-                          </FormItem>
-                          <FormItem className="flex-1">
-                            <RadioGroupItem value="postpaid" id="postpaid" className="peer sr-only" />
-                            <FormLabel
-                              htmlFor="postpaid"
-                              className="flex h-full cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-4 text-base hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-primary [&:has([data-state=checked])]:border-primary"
-                            >
-                              {t('postpaid')}
-                            </FormLabel>
-                          </FormItem>
-                        </RadioGroup>
-                      </FormControl>
+                      <>
+                        <FormLabel>{t('paymentMethod')}</FormLabel>
+                        <FormControl>
+                          <RadioGroup
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            className="grid grid-cols-2 gap-4"
+                          >
+                            <FormItem className="flex-1">
+                              <RadioGroupItem value="prepaid" id="prepaid" className="peer sr-only" />
+                              <FormLabel
+                                htmlFor="prepaid"
+                                className="flex h-full cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-4 text-base hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-primary [&:has([data-state=checked])]:border-primary"
+                              >
+                                {t('prepaid')}
+                              </FormLabel>
+                            </FormItem>
+                            <FormItem className="flex-1">
+                              <RadioGroupItem value="postpaid" id="postpaid" className="peer sr-only" />
+                              <FormLabel
+                                htmlFor="postpaid"
+                                className="flex h-full cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-4 text-base hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-primary [&:has([data-state=checked])]:border-primary"
+                              >
+                                {t('postpaid')}
+                              </FormLabel>
+                            </FormItem>
+                          </RadioGroup>
+                        </FormControl>
+                      </>
                     )}
                     <FormMessage />
                   </FormItem>
