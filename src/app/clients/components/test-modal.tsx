@@ -32,7 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Search, User, Server as ServerIcon, Info, ChevronDown } from 'lucide-react';
+import { Search, User, Server as ServerIcon, Info, ChevronDown, ChevronRight } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { normalizeString, cn } from '@/lib/utils';
@@ -296,12 +296,17 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                                                 onClick={() => setSelectedSubServer(sub)}
                                             >
                                                 <p className="font-semibold">{sub.name}</p>
-                                                <CollapsibleTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                        <Info className="h-4 w-4" />
-                                                        <span className="sr-only">Details</span>
-                                                    </Button>
-                                                </CollapsibleTrigger>
+                                                <div className="flex items-center gap-4">
+                                                    <Badge variant={getStatusVariant(sub.status)} className="text-base">
+                                                        {t(sub.status.toLowerCase().replace(' ', '') as any)}
+                                                    </Badge>
+                                                    <CollapsibleTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
+                                                            <ChevronRight className="h-5 w-5 transition-transform data-[state=open]:rotate-90" />
+                                                            <span className="sr-only">Details</span>
+                                                        </Button>
+                                                    </CollapsibleTrigger>
+                                                </div>
                                             </div>
                                             <CollapsibleContent className="px-3 pb-3">
                                                 <div className="space-y-2 pt-2 border-t text-sm text-muted-foreground">
