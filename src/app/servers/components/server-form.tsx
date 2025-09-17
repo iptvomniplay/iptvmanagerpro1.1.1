@@ -925,11 +925,8 @@ export function ServerForm({ server }: ServerFormProps) {
                                   <Collapsible key={field.id} open={expandedItems[index] ?? false} onOpenChange={() => toggleExpand(index)} asChild>
                                       <div className="p-4 border rounded-lg bg-card">
                                           <CollapsibleTrigger asChild>
-                                            <div className="flex items-center justify-between cursor-pointer">
-                                                <div>
-                                                    <p className="font-semibold">{field.name} ({field.type})</p>
-                                                    <p className="text-sm text-muted-foreground">{t('screens')}: {field.screens}</p>
-                                                </div>
+                                            <div className="flex items-center justify-between cursor-pointer w-full">
+                                                <p className="font-semibold">{field.name}</p>
                                                 <Button
                                                     type="button"
                                                     variant="ghost"
@@ -942,10 +939,15 @@ export function ServerForm({ server }: ServerFormProps) {
                                             </div>
                                           </CollapsibleTrigger>
                                           <CollapsibleContent>
-                                              <div className="flex flex-wrap gap-1 mt-2">
-                                                  {field.plans.map((plan, planIndex) => (
-                                                      <Badge key={planIndex} variant="outline">{plan}</Badge>
-                                                  ))}
+                                              <div className="space-y-2 mt-2 pt-2 border-t">
+                                                <p className="text-sm text-muted-foreground">
+                                                  {t('subServerType')}: {field.type}, {t('screens')}: {field.screens}
+                                                </p>
+                                                <div className="flex flex-wrap gap-1">
+                                                    {field.plans.map((plan, planIndex) => (
+                                                        <Badge key={planIndex} variant="outline">{plan}</Badge>
+                                                    ))}
+                                                </div>
                                               </div>
                                           </CollapsibleContent>
                                       </div>
