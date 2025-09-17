@@ -911,9 +911,9 @@ export function ServerForm({ server }: ServerFormProps) {
 
                     <div className="space-y-2">
                          {fields.map((field, index) => (
-                            <Collapsible key={field.id} open={expandedItems[index] !== false} onOpenChange={() => toggleExpand(index)} asChild>
+                            <Collapsible key={field.id} open={expandedItems[index] === true} onOpenChange={() => toggleExpand(index)} asChild>
                                 <div className="p-4 border rounded-lg bg-card">
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleExpand(index)}>
                                         <div>
                                             <p className="font-semibold">{field.name} ({field.type})</p>
                                             <p className="text-sm text-muted-foreground">{t('screens')}: {field.screens}</p>
@@ -926,8 +926,8 @@ export function ServerForm({ server }: ServerFormProps) {
                                                     size="icon"
                                                     className="h-7 w-7 text-muted-foreground"
                                                 >
-                                                    {expandedItems[index] !== false ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-                                                    <span className="sr-only">{expandedItems[index] !== false ? t('collapse') : t('expand')}</span>
+                                                    {expandedItems[index] === true ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                                                    <span className="sr-only">{expandedItems[index] === true ? t('collapse') : t('expand')}</span>
                                                 </Button>
                                             </CollapsibleTrigger>
                                         </div>
@@ -1042,3 +1042,5 @@ export function ServerForm({ server }: ServerFormProps) {
     </>
   );
 }
+
+    
