@@ -760,57 +760,62 @@ export function ServerForm({ server }: ServerFormProps) {
                 />
               </div>
             )}
-            <FormField
-              control={control}
-              name="hasInitialStock"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow-sm md:w-1/2">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>{t('hasPanelCredits')}</FormLabel>
-                  </div>
-                </FormItem>
-              )}
-            />
-
-            {hasInitialStock && (
-              <div className="md:w-1/2">
+            
+            {isPaymentTypeVisible && (
+              <>
                 <FormField
                   control={control}
-                  name="creditStock"
+                  name="hasInitialStock"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('panelCreditStock')}</FormLabel>
+                    <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow-sm md:w-1/2">
                       <FormControl>
-                        <Input
-                          type="number"
-                          autoComplete="off"
-                          {...field}
-                          disabled={!hasInitialStock}
-                          value={field.value ?? ''}
-                          onChange={(e) =>
-                            field.onChange(
-                              e.target.value === ''
-                                ? undefined
-                                : Number(e.target.value)
-                            )
-                          }
-                          placeholder={t('creditStockPlaceholder')}
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
                         />
                       </FormControl>
-                      <FormDescription>
-                        {t('panelCreditStockDescription')}
-                      </FormDescription>
-                      <FormMessage />
+                      <div className="space-y-1 leading-none">
+                        <FormLabel>{t('hasPanelCredits')}</FormLabel>
+                      </div>
                     </FormItem>
                   )}
                 />
-              </div>
+
+                {hasInitialStock && (
+                  <div className="md:w-1/2">
+                    <FormField
+                      control={control}
+                      name="creditStock"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('panelCreditStock')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              autoComplete="off"
+                              {...field}
+                              disabled={!hasInitialStock}
+                              value={field.value ?? ''}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value === ''
+                                    ? undefined
+                                    : Number(e.target.value)
+                                )
+                              }
+                              placeholder={t('creditStockPlaceholder')}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            {t('panelCreditStockDescription')}
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
+              </>
             )}
           </div>
           
