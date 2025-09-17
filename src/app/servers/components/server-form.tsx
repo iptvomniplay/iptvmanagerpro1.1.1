@@ -965,12 +965,14 @@ export function ServerForm({ server }: ServerFormProps) {
                                           </CollapsibleTrigger>
                                           <CollapsibleContent>
                                                 <div className="space-y-2 mt-2 pt-2 border-t">
-                                                    <p className="text-sm text-muted-foreground">
-                                                        <span className="font-semibold">{t('subServerType')}:</span> {field.type}
-                                                    </p>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        <span className="font-semibold">{t('screens')}:</span> {field.screens}
-                                                    </p>
+                                                    <div>
+                                                        <p className="text-sm font-semibold text-muted-foreground">{t('subServerType')}:</p>
+                                                        <p className="text-sm">{field.type}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm font-semibold text-muted-foreground">{t('screens')}:</p>
+                                                        <p className="text-sm">{field.screens}</p>
+                                                    </div>
                                                     <div>
                                                         <p className="text-sm font-semibold text-muted-foreground">{t('plans')}:</p>
                                                         <div className="flex flex-wrap gap-1 mt-1">
@@ -1086,5 +1088,3 @@ export function ServerForm({ server }: ServerFormProps) {
     </>
   );
 }
-
-    
