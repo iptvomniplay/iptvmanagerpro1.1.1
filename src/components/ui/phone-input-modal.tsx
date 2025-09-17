@@ -17,6 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/use-language';
 import { X } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface PhoneInputModalProps {
   isOpen: boolean;
@@ -27,6 +28,7 @@ interface PhoneInputModalProps {
 
 export function PhoneInputModal({ isOpen, onClose, onSave, initialPhones }: PhoneInputModalProps) {
   const { t } = useLanguage();
+  const { toast } = useToast();
   const [phones, setPhones] = React.useState<Phone[]>(initialPhones);
   const [phoneType, setPhoneType] = React.useState<'celular' | 'fixo' | 'ddi'>('celular');
   const [currentPhone, setCurrentPhone] = React.useState('');
@@ -85,6 +87,23 @@ export function PhoneInputModal({ isOpen, onClose, onSave, initialPhones }: Phon
   };
   
   const handleSave = () => {
+    if (currentPhone.trim() !== '') {
+        toast({
+            variant: 'destructive',
+            title: t('validationError'),
+            description: t('clickInsertToAddPhone'),
+        });
+        return;
+    }
+
+    if (phones.length === 0) {
+        toast({
+            variant: 'destructive',
+            title: t('validationError'),
+            description: t('pleaseEnterPhoneNumber'),
+        });
+        return;
+    }
     onSave(phones);
   };
 
@@ -146,7 +165,7 @@ export function PhoneInputModal({ isOpen, onClose, onSave, initialPhones }: Phon
                 <div className="flex flex-col gap-2 p-2 rounded-md border min-h-[40px]">
                     {phones.length > 0 ? phones.map((phone, index) => (
                         <Badge key={index} variant="secondary" className="flex items-center justify-between text-base">
-                        <span>{phone.number}</span>
+                        <span>({t(phone.type as any)}) {phone.number}</span>
                         <button type="button" onClick={() => handleRemovePhone(index)} className="rounded-full hover:bg-muted-foreground/20 p-0.5">
                             <X className="h-3 w-3" />
                         </button>

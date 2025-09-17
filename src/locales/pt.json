@@ -249,5 +249,9 @@
     "addedPhones": "Telefones Adicionados",
     "noPhonesAdded": "Nenhum telefone adicionado.",
     "savePhones": "Salvar Telefones",
-    "addPhone": "Add Telefone"
+    "addPhone": "Add Telefone",
+    "celular": "Celular",
+    "fixo": "Fixo",
+    "pleaseEnterPhoneNumber": "Por favor, insira um número de telefone antes de salvar.",
+    "clickInsertToAddPhone": "Clique em 'Inserir' para adicionar o número à lista antes de salvar."
 }
