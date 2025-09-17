@@ -664,7 +664,7 @@ export function ServerForm({ server }: ServerFormProps) {
                 />
             </div>
             
-            <div className="w-full md:w-1/4">
+            <div className="w-full md:w-1/2">
               <FormField
                 control={control}
                 name="paymentType"
@@ -674,7 +674,7 @@ export function ServerForm({ server }: ServerFormProps) {
                       <Button
                         type="button"
                         onClick={() => setIsPaymentTypeVisible(true)}
-                        className="w-full"
+                        className="w-full md:w-1/2"
                       >
                         {t('paymentMethod')}
                       </Button>
@@ -1106,3 +1106,4 @@ export function ServerForm({ server }: ServerFormProps) {
     
 
     
+
