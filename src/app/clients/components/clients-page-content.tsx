@@ -69,7 +69,7 @@ export default function ClientsPageContent() {
 
   const filteredClients = clients.filter((client) => {
     const normalizedSearchTerm = normalizeString(searchTerm);
-    const phoneMatch = client.phones.some(phone => normalizeString(phone).replace(/\D/g, '').includes(normalizedSearchTerm.replace(/\D/g, '')));
+    const phoneMatch = client.phones.some(phone => normalizeString(phone.number).replace(/\D/g, '').includes(normalizedSearchTerm.replace(/\D/g, '')));
     return (
       normalizeString(client.name).includes(normalizedSearchTerm) ||
       (client.nickname &&
