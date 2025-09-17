@@ -5,7 +5,7 @@ import type { Server } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { PlusCircle, Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { PlusCircle, Search, ChevronDown, Server as ServerIcon } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
 import { useData } from '@/hooks/use-data';
@@ -23,7 +23,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { ServerDetailsModal } from './components/server-details-modal';
 import { DeleteServerAlert } from './components/delete-server-alert';
 import { Input } from '@/components/ui/input';
@@ -213,7 +213,7 @@ export default function ServersPage() {
                           <TableRow>
                             <TableCell colSpan={2} className="p-0">
                                <div className="flex flex-col items-center justify-center gap-3 text-center h-48">
-                                <Server className="w-12 h-12 text-muted-foreground/60" />
+                                <ServerIcon className="w-12 h-12 text-muted-foreground/60" />
                                 <h3 className="text-xl font-semibold">{t('noServersFound')}</h3>
                                 <p className="text-muted-foreground max-w-xs">
                                   {t('noServersFoundMessage')}
