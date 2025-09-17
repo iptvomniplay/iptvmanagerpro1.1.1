@@ -4,7 +4,7 @@ import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import type { Client, Server } from '@/lib/types';
+import type { Client, Server, SubServer } from '@/lib/types';
 import { useData } from '@/hooks/use-data';
 import { useLanguage } from '@/hooks/use-language';
 import { Button } from '@/components/ui/button';
@@ -35,8 +35,9 @@ import {
 import { Search, User, Server as ServerIcon } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
-import { normalizeString } from '@/lib/utils';
+import { normalizeString, cn } from '@/lib/utils';
 import { PanelSelectionModal } from './panel-selection-modal';
+import { Badge } from '@/components/ui/badge';
 
 const testFormSchema = (t: (key: string) => string) => z.object({
   duration: z.coerce.number().min(1, { message: 'Duration is required.' }),
@@ -58,6 +59,8 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
   const [selectedClient, setSelectedClient] = React.useState<Client | null>(null);
   const [isPanelModalOpen, setIsPanelModalOpen] = React.useState(false);
   const [selectedPanel, setSelectedPanel] = React.useState<Server | null>(null);
+  const [selectedSubServer, setSelectedSubServer] = React.useState<SubServer | null>(null);
+
 
   const form = useForm<TestFormValues>({
     resolver: zodResolver(testFormSchema(t)),
@@ -97,11 +100,12 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
 
   const handleSelectPanel = (panel: Server) => {
     setSelectedPanel(panel);
+    setSelectedSubServer(null);
     setIsPanelModalOpen(false);
   };
 
   const handleSubmit = (values: TestFormValues) => {
-    console.log('Test data:', { ...values, clientId: selectedClient?.id, panelId: selectedPanel?.id });
+    console.log('Test data:', { ...values, clientId: selectedClient?.id, panelId: selectedPanel?.id, subServer: selectedSubServer });
     handleClose();
   };
 
@@ -110,6 +114,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
     setTimeout(() => {
         setSelectedClient(null);
         setSelectedPanel(null);
+        setSelectedSubServer(null);
         setSearchTerm('');
         setSearchResults([]);
         form.reset();
@@ -257,9 +262,24 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                                   {selectedPanel.subServers && selectedPanel.subServers.length > 0 ? (
                                      <ul className="grid gap-2">
                                         {selectedPanel.subServers.map((sub, index) => (
-                                          <li key={index} className="flex justify-between items-center rounded-md border p-3">
-                                            <p>{sub.name} ({sub.type})</p>
-                                            <p className="text-muted-foreground">{t('screens')}: {sub.screens}</p>
+                                          <li
+                                            key={index}
+                                            className={cn(
+                                              "flex flex-col justify-between items-start rounded-md border p-3 cursor-pointer hover:bg-accent transition-colors",
+                                              selectedSubServer?.name === sub.name && "bg-primary/10 border-primary ring-2 ring-primary"
+                                            )}
+                                            onClick={() => setSelectedSubServer(sub)}
+                                          >
+                                            <p className="font-semibold">{sub.name}</p>
+                                            <div className="flex justify-between w-full text-sm text-muted-foreground mt-1">
+                                                <p>{sub.type}</p>
+                                                <p>{t('screens')}: {sub.screens}</p>
+                                            </div>
+                                             <div className="flex flex-wrap gap-1 mt-2">
+                                                {sub.plans.map((plan, planIndex) => (
+                                                    <Badge key={planIndex} variant="secondary">{plan}</Badge>
+                                                ))}
+                                            </div>
                                           </li>
                                         ))}
                                       </ul>
@@ -280,7 +300,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
             <Button variant="outline" onClick={handleClose}>
               {t('cancel')}
             </Button>
-            {selectedClient && selectedPanel && (
+            {selectedClient && selectedPanel && selectedSubServer && (
               <Button type="submit" form="test-form">{t('addTest')}</Button>
             )}
           </DialogFooter>
@@ -294,5 +314,3 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
     </>
   );
 }
-
-    
