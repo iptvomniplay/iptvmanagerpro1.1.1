@@ -81,6 +81,7 @@ const createFormSchema = (t: (key: any) => string) =>
       dueDate: z.coerce.number().optional(),
       hasInitialStock: z.boolean().default(false).optional(),
       creditStock: z.coerce.number({invalid_type_error: t('creditStockIsRequired')}).optional(),
+      subServers: z.array(createSubServerSchema(t)).optional(),
     })
     .superRefine((data, ctx) => {
       if (data.paymentType === 'postpaid') {
@@ -141,7 +142,7 @@ const getInitialValues = (server: Server | null): ServerFormValues => ({
   panelValue: server?.panelValue || '',
   dueDate: server?.dueDate || undefined,
   hasInitialStock: !!server?.creditStock && server.creditStock > 0,
-  creditStock: server?.creditStock || undefined,
+  creditStock: server?.creditStock,
   subServers: server?.subServers && server.subServers.length > 0 ? server.subServers : [],
 });
 
@@ -205,8 +206,8 @@ export function ServerForm({ server }: ServerFormProps) {
 
   React.useEffect(() => {
     if (hasInitialStock) {
-        if (form.getValues('creditStock') === 0) {
-            setValue('creditStock', undefined);
+        if (form.getValues('creditStock') === undefined) {
+             setValue('creditStock', undefined);
         }
     } else {
         setValue('creditStock', undefined);
@@ -376,9 +377,12 @@ export function ServerForm({ server }: ServerFormProps) {
     if (!isValid) return;
 
     let finalValues = { ...values };
+    
+    let allSubServers = [...(values.subServers || [])];
     if (subServer) {
-        finalValues.subServers = [...(values.subServers || []), subServer];
+        allSubServers.push(subServer);
     }
+    finalValues.subServers = allSubServers;
     
     if (!finalValues.subServers || finalValues.subServers.length === 0) {
         setNoServersAddedError(true);
@@ -406,8 +410,7 @@ export function ServerForm({ server }: ServerFormProps) {
   const handleConfirmSave = () => {
     if (!serverDataToConfirm) return;
     
-    // Ensure creditStock is a number, defaulting to 0 if not provided
-    const creditStock = serverDataToConfirm.creditStock || 0;
+    const creditStock = serverDataToConfirm.hasInitialStock ? (serverDataToConfirm.creditStock || 0) : 0;
     
     const processedData = {
       ...serverDataToConfirm,

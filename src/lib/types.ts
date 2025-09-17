@@ -34,6 +34,6 @@ export type Server = {
   paymentType: 'prepaid' | 'postpaid';
   panelValue?: string;
   dueDate?: number;
-  creditStock?: number;
+  creditStock: number;
   subServers?: SubServer[];
 };
