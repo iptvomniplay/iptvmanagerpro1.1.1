@@ -45,8 +45,9 @@ export default function ServersPage() {
     const normalizedSearchTerm = normalizeString(searchTerm);
     return (
       normalizeString(server.name).includes(normalizedSearchTerm) ||
-      (server.nickname &&
-        normalizeString(server.nickname).includes(normalizedSearchTerm)) ||
+      (server.nickname && normalizeString(server.nickname).includes(normalizedSearchTerm)) ||
+      normalizeString(server.url).includes(normalizedSearchTerm) ||
+      normalizeString(server.login).includes(normalizedSearchTerm) ||
       normalizeString(server.status).includes(normalizedSearchTerm)
     );
   });

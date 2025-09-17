@@ -20,9 +20,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Trash2, FilePenLine, ChevronRight, ChevronsUpDown } from 'lucide-react';
+import { Trash2, FilePenLine, ChevronRight, ChevronsUpDown, Eye, EyeOff } from 'lucide-react';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { useData } from '@/hooks/use-data';
+import { Input } from '@/components/ui/input';
 
 interface ServerDetailsModalProps {
   isOpen: boolean;
@@ -43,6 +44,30 @@ const DetailItem = ({ label, value }: { label: string; value?: string | number |
     </div>
   );
 };
+
+const PasswordDisplay = ({ password }: { password?: string }) => {
+    const { t } = useLanguage();
+    const [isVisible, setIsVisible] = React.useState(false);
+
+    if (!password) return null;
+    
+    return (
+        <div>
+            <p className="text-sm font-medium text-muted-foreground">{t('password')}</p>
+            <div className="flex items-center gap-2">
+                <Input
+                    type={isVisible ? 'text' : 'password'}
+                    value={password}
+                    readOnly
+                    className="text-lg border-0 bg-transparent p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsVisible(!isVisible)}>
+                    {isVisible ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </Button>
+            </div>
+        </div>
+    )
+}
 
 export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }: ServerDetailsModalProps) {
   const { t } = useLanguage();
@@ -82,12 +107,17 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
       <DialogContent className="sm:max-w-2xl" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle className="text-2xl">{server.name}</DialogTitle>
-          <DialogDescription>{server.url}</DialogDescription>
+          <DialogDescription>{t('panelDetails')}</DialogDescription>
         </DialogHeader>
 
         <div className="max-h-[60vh] overflow-y-auto space-y-6 p-4">
-          <h3 className="text-xl font-semibold text-primary">{t('panelDetails')}</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="col-span-2 md:col-span-3">
+              <DetailItem label={t('panelUrl')} value={server.url} />
+            </div>
+            <DetailItem label={t('login')} value={server.login} />
+            <PasswordDisplay password={server.password} />
+            <Separator className="col-span-2 md:col-span-3 my-2"/>
             <DetailItem label={t('responsibleName')} value={server.responsibleName} />
             <DetailItem label={t('nickname')} value={server.nickname} />
             <div>
