@@ -78,7 +78,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
     const results = clients.filter((client) => {
         const normalizedName = normalizeString(client.name);
         const normalizedNickname = client.nickname ? normalizeString(client.nickname) : '';
-        const clientPhoneMatch = client.phones.some(phone => normalizeString(phone).replace(/\D/g, '').includes(normalizedTerm.replace(/\D/g, '')));
+        const clientPhoneMatch = client.phones.some(phone => normalizeString(phone.number).replace(/\D/g, '').includes(normalizedTerm.replace(/\D/g, '')));
         
         return (
             normalizedName.includes(normalizedTerm) ||
@@ -154,7 +154,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                             >
                               <div>
                                 <p className="font-semibold">{client.name}</p>
-                                <p className="text-sm text-muted-foreground">{client.phones[0]}</p>
+                                <p className="text-sm text-muted-foreground">{client.phones[0]?.number}</p>
                               </div>
                               <Button variant="outline" size="sm">{t('selectClient')}</Button>
                             </div>
@@ -294,3 +294,5 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
     </>
   );
 }
+
+    
