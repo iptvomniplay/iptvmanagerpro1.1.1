@@ -242,7 +242,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                                 <FormLabel>{t('testDuration')}</FormLabel>
                                   <div className="flex items-start gap-4">
                                         <FormControl className="flex-1">
-                                            <Input type="number" {...field} value={field.value ?? ''} placeholder='0' />
+                                            <Input type="number" {...field} value={field.value ?? ''} placeholder='' />
                                         </FormControl>
                                         <FormField
                                             control={form.control}
@@ -395,5 +395,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
     </>
   );
 }
+
+    
 
     
