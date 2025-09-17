@@ -215,10 +215,10 @@ export function ServerForm({ server }: ServerFormProps) {
   }, [hasInitialStock, setValue, form]);
   
   React.useEffect(() => {
-    if (server?.paymentType) {
+    if (server?.paymentType || isPaymentTypeVisible) {
         setIsPaymentTypeVisible(true);
     }
-  }, [server]);
+  }, [server, isPaymentTypeVisible]);
 
 
   const handlePhoneSave = (newPhones: Phone[]) => {
@@ -1080,5 +1080,3 @@ export function ServerForm({ server }: ServerFormProps) {
     </>
   );
 }
-
-    
