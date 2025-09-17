@@ -3,6 +3,16 @@ export type Phone = {
   number: string;
 };
 
+export type Test = {
+  clientId: string;
+  panelId: string;
+  subServerName: string;
+  package: string;
+  durationValue: number;
+  durationUnit: 'hours' | 'days';
+  creationDate: string;
+}
+
 export type Client = {
   id: string;
   name: string;
@@ -12,6 +22,7 @@ export type Client = {
   birthDate: string;
   status: 'Active' | 'Inactive' | 'Expired' | 'Test';
   registeredDate: string;
+  tests?: Test[];
 };
 
 export type SubServer = {

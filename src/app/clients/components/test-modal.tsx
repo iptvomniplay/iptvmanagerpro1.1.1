@@ -39,9 +39,11 @@ import { normalizeString, cn } from '@/lib/utils';
 import { PanelSelectionModal } from './panel-selection-modal';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const testFormSchema = (t: (key: string) => string) => z.object({
-  duration: z.coerce.number().min(1, { message: 'Duration is required.' }),
+  durationValue: z.coerce.number().positive({ message: t('durationPositive') }),
+  durationUnit: z.enum(['hours', 'days'], { required_error: t('durationUnitRequired') }),
   package: z.string().min(1, { message: 'Package is required.' }),
 });
 
@@ -66,7 +68,8 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
   const form = useForm<TestFormValues>({
     resolver: zodResolver(testFormSchema(t)),
     defaultValues: {
-      duration: 24,
+      durationValue: 24,
+      durationUnit: 'hours',
       package: 'all_channels',
     },
   });
@@ -224,15 +227,39 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                         <>
                           <div className="space-y-4">
                             <h3 className="text-xl font-semibold">{t('testDetails')}</h3>
-                              <FormField
+                               <FormField
                                   control={form.control}
-                                  name="duration"
+                                  name="durationValue"
                                   render={({ field }) => (
                                   <FormItem>
                                       <FormLabel>{t('testDuration')}</FormLabel>
-                                      <FormControl>
-                                      <Input type="number" {...field} />
-                                      </FormControl>
+                                       <div className="flex items-start gap-4">
+                                            <FormControl className="flex-1">
+                                                <Input type="number" {...field} />
+                                            </FormControl>
+                                            <FormField
+                                                control={form.control}
+                                                name="durationUnit"
+                                                render={({ field: unitField }) => (
+                                                    <FormControl>
+                                                        <RadioGroup
+                                                            onValueChange={unitField.onChange}
+                                                            defaultValue={unitField.value}
+                                                            className="flex items-center space-x-4 pt-2"
+                                                        >
+                                                            <FormItem className="flex items-center space-x-2">
+                                                                <RadioGroupItem value="hours" id="hours" />
+                                                                <Label htmlFor="hours" className="font-normal cursor-pointer">{t('hours')}</Label>
+                                                            </FormItem>
+                                                            <FormItem className="flex items-center space-x-2">
+                                                                <RadioGroupItem value="days" id="days" />
+                                                                <Label htmlFor="days" className="font-normal cursor-pointer">{t('days')}</Label>
+                                                            </FormItem>
+                                                        </RadioGroup>
+                                                    </FormControl>
+                                                )}
+                                            />
+                                       </div>
                                       <FormMessage />
                                   </FormItem>
                                   )}
