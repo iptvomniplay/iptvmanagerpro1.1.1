@@ -69,7 +69,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
   const form = useForm<TestFormValues>({
     resolver: zodResolver(testFormSchema(t)),
     defaultValues: {
-      durationValue: 24,
+      durationValue: undefined,
       durationUnit: 'hours',
       package: undefined,
     },
@@ -232,149 +232,145 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                   </div>
               
                 <div className="space-y-6">
-                    {selectedClient && (
-                        <>
-                          <div className="space-y-4">
-                            <h3 className="text-xl font-semibold">{t('testDetails')}</h3>
-                               <FormField
-                                  control={form.control}
-                                  name="durationValue"
-                                  render={({ field }) => (
-                                  <FormItem>
-                                      <FormLabel>{t('testDuration')}</FormLabel>
-                                       <div className="flex items-start gap-4">
-                                            <FormControl className="flex-1">
-                                                <Input type="number" {...field} />
-                                            </FormControl>
-                                            <FormField
-                                                control={form.control}
-                                                name="durationUnit"
-                                                render={({ field: unitField }) => (
-                                                    <FormControl>
-                                                        <RadioGroup
-                                                            onValueChange={unitField.onChange}
-                                                            defaultValue={unitField.value}
-                                                            className="flex items-center space-x-4 pt-2"
-                                                        >
-                                                            <FormItem className="flex items-center space-x-2">
-                                                                <RadioGroupItem value="hours" id="hours" />
-                                                                <Label htmlFor="hours" className="font-normal cursor-pointer">{t('hours')}</Label>
-                                                            </FormItem>
-                                                            <FormItem className="flex items-center space-x-2">
-                                                                <RadioGroupItem value="days" id="days" />
-                                                                <Label htmlFor="days" className="font-normal cursor-pointer">{t('days')}</Label>
-                                                            </FormItem>
-                                                        </RadioGroup>
-                                                    </FormControl>
-                                                )}
-                                            />
-                                       </div>
-                                      <FormMessage />
-                                  </FormItem>
-                                  )}
-                              />
-                              <FormField
-                                  control={form.control}
-                                  name="package"
-                                  render={({ field }) => (
-                                  <FormItem>
-                                      <FormLabel>{t('testPackage')}</FormLabel>
-                                      <Select onValueChange={field.onChange} value={field.value} disabled={availablePackages.length === 0}>
-                                      <FormControl>
-                                          <SelectTrigger>
-                                          <SelectValue placeholder={t('selectPackagePlaceholder')} />
-                                          </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent>
-                                          {availablePackages.map((pkg) => (
-                                            <SelectItem key={pkg} value={pkg}>{pkg}</SelectItem>
-                                          ))}
-                                      </SelectContent>
-                                      </Select>
-                                      <FormMessage />
-                                  </FormItem>
-                                  )}
-                              />
-                          </div>
-
-                          <div className="space-y-4">
-                              <div className="space-y-2">
-                                <Label>{t('panel')}</Label>
-                                <div className="relative">
-                                  <Input
-                                    placeholder={t('selectPanelPlaceholder')}
-                                    value={selectedPanel ? selectedPanel.name : ''}
-                                    readOnly
-                                    onClick={() => setIsPanelModalOpen(true)}
-                                    className="cursor-pointer"
-                                  />
-                                   <ServerIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                                </div>
-                              </div>
-
-                            {selectedPanel && selectedPanel.subServers && selectedPanel.subServers.length > 0 && (
-                                <Collapsible className="space-y-2">
-                                <CollapsibleTrigger asChild>
-                                    <div className="flex items-center justify-between p-3 rounded-md border bg-muted cursor-pointer">
-                                        <span className="font-semibold">{t('subServerDetails')}</span>
-                                        <div className="flex items-center">
-                                            <Badge variant="secondary">{selectedPanel.subServers.length}</Badge>
-                                            <ChevronDown className="h-5 w-5 ml-2" />
-                                        </div>
-                                    </div>
-                                </CollapsibleTrigger>
-                                <CollapsibleContent className="space-y-2 pt-2">
-                                    {selectedPanel.subServers.map((sub) => (
-                                    <Collapsible key={sub.name} asChild>
-                                        <div className={cn(
-                                            "rounded-md border transition-colors",
-                                            selectedSubServer?.name === sub.name && "bg-primary/10 border-primary ring-2 ring-primary"
-                                        )}>
-                                            <div 
-                                                className="flex items-center justify-between p-3 cursor-pointer"
-                                                onClick={() => setSelectedSubServer(sub)}
-                                            >
-                                                <div className='flex items-center gap-4'>
-                                                  <p className="font-semibold">{sub.name}</p>
-                                                  <Badge variant={getStatusVariant(sub.status)} className="text-base">
-                                                        {t(sub.status.toLowerCase().replace(' ', '') as any)}
-                                                    </Badge>
-                                                </div>
-                                                <CollapsibleTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
-                                                        <ChevronRight className="h-5 w-5 transition-transform data-[state=open]:rotate-90" />
-                                                        <span className="sr-only">Details</span>
-                                                    </Button>
-                                                </CollapsibleTrigger>
-                                            </div>
-                                            <CollapsibleContent className="px-3 pb-3">
-                                                <div className="space-y-2 pt-2 border-t text-sm text-muted-foreground">
-                                                     <p>{t('subServerType')}: {sub.type}</p>
-                                                     <p>{t('screens')}: {sub.screens}</p>
-                                                      <div className="flex items-center gap-2">
-                                                        <p>{t('status')}:</p>
-                                                        <Badge variant={getStatusVariant(sub.status)} className="text-base">
-                                                          {t(sub.status.toLowerCase().replace(' ', '') as any)}
-                                                        </Badge>
-                                                      </div>
-                                                      <div className="flex flex-wrap items-center gap-1 pt-1">
-                                                        <span>{t('plans')}:</span>
-                                                        {sub.plans.map((plan, planIndex) => (
-                                                            <Badge key={planIndex} variant="secondary">{plan}</Badge>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            </CollapsibleContent>
-                                        </div>
-                                    </Collapsible>
-                                    ))}
-                                </CollapsibleContent>
-                                </Collapsible>
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-semibold">{t('testDetails')}</h3>
+                          <FormField
+                            control={form.control}
+                            name="durationValue"
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>{t('testDuration')}</FormLabel>
+                                  <div className="flex items-start gap-4">
+                                        <FormControl className="flex-1">
+                                            <Input type="number" {...field} value={field.value ?? ''} placeholder='0' />
+                                        </FormControl>
+                                        <FormField
+                                            control={form.control}
+                                            name="durationUnit"
+                                            render={({ field: unitField }) => (
+                                                <FormControl>
+                                                    <RadioGroup
+                                                        onValueChange={unitField.onChange}
+                                                        defaultValue={unitField.value}
+                                                        className="flex items-center space-x-4 pt-2"
+                                                    >
+                                                        <FormItem className="flex items-center space-x-2">
+                                                            <RadioGroupItem value="hours" id="hours" />
+                                                            <Label htmlFor="hours" className="font-normal cursor-pointer">{t('hours')}</Label>
+                                                        </FormItem>
+                                                        <FormItem className="flex items-center space-x-2">
+                                                            <RadioGroupItem value="days" id="days" />
+                                                            <Label htmlFor="days" className="font-normal cursor-pointer">{t('days')}</Label>
+                                                        </FormItem>
+                                                    </RadioGroup>
+                                                </FormControl>
+                                            )}
+                                        />
+                                  </div>
+                                <FormMessage />
+                            </FormItem>
                             )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="package"
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>{t('testPackage')}</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value} disabled={availablePackages.length === 0}>
+                                <FormControl>
+                                    <SelectTrigger>
+                                    <SelectValue placeholder={t('selectPackagePlaceholder')} />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    {availablePackages.map((pkg) => (
+                                      <SelectItem key={pkg} value={pkg}>{pkg}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                    </div>
+
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label>{t('panel')}</Label>
+                          <div className="relative">
+                            <Input
+                              placeholder={t('selectPanelPlaceholder')}
+                              value={selectedPanel ? selectedPanel.name : ''}
+                              readOnly
+                              onClick={() => setIsPanelModalOpen(true)}
+                              className="cursor-pointer"
+                            />
+                              <ServerIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                           </div>
-                        </>
+                        </div>
+
+                      {selectedPanel && selectedPanel.subServers && selectedPanel.subServers.length > 0 && (
+                          <Collapsible className="space-y-2">
+                          <CollapsibleTrigger asChild>
+                              <div className="flex items-center justify-between p-3 rounded-md border bg-muted cursor-pointer">
+                                  <span className="font-semibold">{t('subServerDetails')}</span>
+                                  <div className="flex items-center">
+                                      <Badge variant="secondary">{selectedPanel.subServers.length}</Badge>
+                                      <ChevronDown className="h-5 w-5 ml-2" />
+                                  </div>
+                              </div>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent className="space-y-2 pt-2">
+                              {selectedPanel.subServers.map((sub) => (
+                              <Collapsible key={sub.name} asChild>
+                                  <div className={cn(
+                                      "rounded-md border transition-colors",
+                                      selectedSubServer?.name === sub.name && "bg-primary/10 border-primary ring-2 ring-primary"
+                                  )}>
+                                      <div 
+                                          className="flex items-center justify-between p-3 cursor-pointer"
+                                          onClick={() => setSelectedSubServer(sub)}
+                                      >
+                                          <div className='flex items-center gap-4'>
+                                            <p className="font-semibold">{sub.name}</p>
+                                            <Badge variant={getStatusVariant(sub.status)} className="text-base">
+                                                  {t(sub.status.toLowerCase().replace(' ', '') as any)}
+                                              </Badge>
+                                          </div>
+                                          <CollapsibleTrigger asChild>
+                                              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
+                                                  <ChevronRight className="h-5 w-5 transition-transform data-[state=open]:rotate-90" />
+                                                  <span className="sr-only">Details</span>
+                                              </Button>
+                                          </CollapsibleTrigger>
+                                      </div>
+                                      <CollapsibleContent className="px-3 pb-3">
+                                          <div className="space-y-2 pt-2 border-t text-sm text-muted-foreground">
+                                                <div className="flex items-center gap-2">
+                                                  <p className="font-semibold">{t('status')}:</p>
+                                                  <Badge variant={getStatusVariant(sub.status)} className="text-base">
+                                                    {t(sub.status.toLowerCase().replace(' ', '') as any)}
+                                                  </Badge>
+                                                </div>
+                                               <p><span className='font-semibold'>{t('subServerType')}:</span> {sub.type}</p>
+                                               <p><span className='font-semibold'>{t('screens')}:</span> {sub.screens}</p>
+                                                <div className="flex flex-wrap items-center gap-1 pt-1">
+                                                  <span className='font-semibold'>{t('plans')}:</span>
+                                                  {sub.plans.map((plan, planIndex) => (
+                                                      <Badge key={planIndex} variant="secondary">{plan}</Badge>
+                                                  ))}
+                                              </div>
+                                          </div>
+                                      </CollapsibleContent>
+                                  </div>
+                              </Collapsible>
+                              ))}
+                          </CollapsibleContent>
+                          </Collapsible>
                       )}
-                  </div>
+                    </div>
+                </div>
                 </form>
             </Form>
           </ScrollArea>
@@ -397,3 +393,5 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
     </>
   );
 }
+
+    
