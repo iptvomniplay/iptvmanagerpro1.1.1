@@ -135,23 +135,10 @@ export default function ClientsPageContent() {
     <>
       <div className="space-y-4">
         <div className="flex items-center justify-end gap-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button size="lg" variant="outline">
-                    <FileSignature className="mr-2 h-5 w-5" />
-                    {t('subscription')}
-                    <ChevronDown className="ml-2 h-5 w-5" />
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => router.push('/subscription')}>
-                    {t('addSubscription')}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push('/subscription/tests')}>
-                    {t('viewTests')}
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Button size="lg" variant="outline" onClick={() => router.push('/subscription')}>
+              <FileSignature className="mr-2 h-5 w-5" />
+              {t('subscription')}
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button size="lg" variant="outline">
