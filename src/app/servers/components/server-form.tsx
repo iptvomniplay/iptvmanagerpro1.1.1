@@ -669,10 +669,11 @@ export function ServerForm({ server }: ServerFormProps) {
                  <Button
                     type="button"
                     onClick={() => setIsObservationsVisible(prev => !prev)}
-                    className="w-full"
+                    className="w-full justify-between"
                     variant="default"
                   >
                     {t('observations')}
+                    <ChevronsUpDown className="h-5 w-5" />
                   </Button>
 
                   {isObservationsVisible && (
