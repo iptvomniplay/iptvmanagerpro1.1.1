@@ -81,15 +81,15 @@ export default function SubscriptionPage() {
       {selectedClient && (
         <Tabs defaultValue="client" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="client">
+            <TabsTrigger value="client" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <User className="mr-2" />
               {t('client')}
             </TabsTrigger>
-            <TabsTrigger value="plans">
+            <TabsTrigger value="plans" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <FileText className="mr-2" />
                 {t('subscriptionPlans')}
             </TabsTrigger>
-            <TabsTrigger value="apps">
+            <TabsTrigger value="apps" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <AppWindow className="mr-2" />
                 {t('applications')}
             </TabsTrigger>
