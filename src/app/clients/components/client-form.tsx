@@ -25,7 +25,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useLanguage } from '@/hooks/use-language';
-import { DatePicker } from '@/components/ui/date-picker';
 import { ConfirmationModal } from './confirmation-modal';
 import {
   AlertDialog,
@@ -41,6 +40,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { ChevronDown, ChevronRight, X, CalendarIcon } from 'lucide-react';
 import { format, parse } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 
 
 const phoneSchema = z.object({
@@ -66,7 +66,7 @@ interface ClientFormProps {
 }
 
 export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const router = useRouter();
   const { addClient, updateClient } = useData();
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = React.useState(false);
@@ -74,11 +74,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   const [clientDataToConfirm, setClientDataToConfirm] = React.useState<ClientFormValues | null>(null);
   const [isPhoneModalOpen, setIsPhoneModalOpen] = React.useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
-  const [calendarDate, setCalendarDate] = React.useState<Date | undefined>(
-    client?.birthDate ? new Date(client.birthDate) : undefined
-  );
-
-
+  
   const formSchema = createFormSchema(t);
 
   const form = useForm<ClientFormValues>({
@@ -93,9 +89,15 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
     },
   });
   
+  const [calendarDate, setCalendarDate] = React.useState<Date | undefined>(
+    form.getValues('birthDate')
+  );
+  
   React.useEffect(() => {
-    setCalendarDate(form.getValues('birthDate'));
-  }, [form.getValues('birthDate')]);
+    if (isCalendarOpen) {
+      setCalendarDate(form.getValues('birthDate'));
+    }
+  }, [isCalendarOpen, form]);
 
 
   const { control, reset, trigger } = form;
@@ -159,9 +161,15 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   
   const handleDateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
+    // Allow empty input to clear the date
+    if (rawValue === '') {
+      form.setValue('birthDate', undefined, { shouldValidate: true });
+      return;
+    }
     const parsedDate = parse(rawValue, 'dd/MM/yyyy', new Date());
     if (!isNaN(parsedDate.getTime())) {
       form.setValue('birthDate', parsedDate, { shouldValidate: true });
+      setCalendarDate(parsedDate);
     }
   }
 
@@ -281,16 +289,18 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                           </PopoverTrigger>
                       </div>
                       <PopoverContent className="w-auto p-0" align="start">
-                        <DatePicker
-                          value={calendarDate}
-                          onChange={(date) => {
-                            setCalendarDate(date);
-                          }}
+                        <Calendar
+                          mode="single"
+                          selected={calendarDate}
+                          onSelect={setCalendarDate}
+                          initialFocus
+                          captionLayout="dropdown-buttons"
+                          fromYear={new Date().getFullYear() - 120}
+                          toYear={new Date().getFullYear()}
                         />
                          <div className="flex justify-end gap-2 p-4 border-t">
                             <Button variant="ghost" onClick={() => {
                               setIsCalendarOpen(false);
-                              setCalendarDate(field.value);
                             }}>{t('cancel')}</Button>
                             <Button onClick={() => {
                               form.setValue('birthDate', calendarDate, { shouldValidate: true });
