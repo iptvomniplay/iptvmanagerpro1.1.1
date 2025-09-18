@@ -47,7 +47,6 @@ export function ApplicationsForm({
   onUpdateClient,
 }: ApplicationsFormProps) {
   const { t, language } = useLanguage();
-  const { updateClient } = useData();
   const { toast } = useToast();
   const [applications, setApplications] = React.useState<Application[]>([]);
   const [currentApp, setCurrentApp] = React.useState(initialAppState);
@@ -57,6 +56,7 @@ export function ApplicationsForm({
       setApplications(selectedClient.applications || []);
     } else {
       setApplications([]);
+      setCurrentApp(initialAppState);
     }
   }, [selectedClient]);
 
@@ -97,7 +97,6 @@ export function ApplicationsForm({
     if (selectedClient) {
       const updatedClient = { ...selectedClient, applications: updatedApps };
       onUpdateClient(updatedClient);
-      updateClient(updatedClient);
     }
     setCurrentApp(initialAppState);
   };
@@ -108,7 +107,6 @@ export function ApplicationsForm({
     if (selectedClient) {
       const updatedClient = { ...selectedClient, applications: updatedApps };
       onUpdateClient(updatedClient);
-      updateClient(updatedClient);
     }
   };
 
@@ -163,7 +161,7 @@ export function ApplicationsForm({
             </div>
              <div className="space-y-2">
               <Label>{t('licenseType')}</Label>
-              <div className="flex items-center space-x-4 rounded-md border p-3 h-11">
+              <div className="flex items-center space-x-4 rounded-md border p-3 h-11 bg-background">
                 <Label htmlFor="license-type-switch" className="cursor-pointer">{t('free')}</Label>
                 <Switch
                   id="license-type-switch"

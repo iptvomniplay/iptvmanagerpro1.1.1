@@ -17,9 +17,12 @@ import { Badge } from '@/components/ui/badge';
 import { User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SubscriptionPlanForm } from './components/subscription-plan-form';
+import { ApplicationsForm } from './components/applications-form';
+import { useData } from '@/hooks/use-data';
 
 export default function SubscriptionPage() {
   const { t } = useLanguage();
+  const { updateClient } = useData();
   const [selectedClient, setSelectedClient] = React.useState<Client | null>(
     null
   );
@@ -43,6 +46,12 @@ export default function SubscriptionPage() {
   const displayedId =
     manualId || (selectedClient?.status === 'Active' ? selectedClient.id : 'N/A');
   const isIdPending = manualId !== '' && manualId !== selectedClient?.id;
+
+  const handleUpdateClient = (updatedClient: Client) => {
+    setSelectedClient(updatedClient);
+    updateClient(updatedClient);
+  };
+
 
   return (
     <div className="space-y-8">
@@ -127,6 +136,18 @@ export default function SubscriptionPage() {
         </CardHeader>
         <CardContent>
           <SubscriptionPlanForm />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('applications')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ApplicationsForm 
+            selectedClient={selectedClient} 
+            onUpdateClient={handleUpdateClient} 
+          />
         </CardContent>
       </Card>
     </div>
