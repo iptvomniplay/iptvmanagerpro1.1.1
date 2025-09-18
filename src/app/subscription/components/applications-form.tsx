@@ -12,31 +12,22 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
-import { DatePicker } from '@/components/ui/date-picker';
-import { Calendar as CalendarIcon, ChevronDown, X } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
-import { cn } from '@/lib/utils';
-import { useData } from '@/hooks/use-data';
+import { ChevronDown, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { BirthdateInput } from '@/components/ui/birthdate-input';
 
 interface ApplicationsFormProps {
   selectedClient: Client | null;
   onUpdateClient: (client: Client) => void;
 }
 
-const initialAppState: Omit<Application, 'licenseType'> & {
-  licenseType: 'Free' | 'Anual';
-} = {
+const initialAppState: Application = {
   name: '',
   macAddress: '',
   keyId: '',
   licenseType: 'Free',
+  licenseDueDate: '',
   device: '',
   location: '',
 };
@@ -59,16 +50,25 @@ export function ApplicationsForm({
     }
   }, [selectedClient]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field?: keyof Application
+  ) => {
+    const name = field || e.target.name;
+    const value = e.target.value;
     setCurrentApp((prev) => ({ ...prev, [name]: value }));
   };
+
+  const handleDateChange = (value: string) => {
+    setCurrentApp((prev) => ({...prev, licenseDueDate: value}));
+  }
 
   const handleLicenseTypeChange = (checked: boolean) => {
     const newLicenseType = checked ? 'Anual' : 'Free';
     setCurrentApp((prev) => ({
       ...prev,
       licenseType: newLicenseType,
+      licenseDueDate: newLicenseType === 'Free' ? '' : prev.licenseDueDate,
     }));
   };
 
@@ -93,12 +93,25 @@ export function ApplicationsForm({
   };
 
   const handleRemoveApplication = (indexToRemove: number) => {
-    const updatedApps = applications.filter((_, index) => index !== indexToRemove);
+    const updatedApps = applications.filter(
+      (_, index) => index !== indexToRemove
+    );
     setApplications(updatedApps);
     if (selectedClient) {
       const updatedClient = { ...selectedClient, applications: updatedApps };
       onUpdateClient(updatedClient);
     }
+  };
+
+  const birthdateField = {
+    value: currentApp.licenseDueDate,
+    onChange: (e: React.ChangeEvent<HTMLInputElement> | string) => {
+        if (typeof e === 'string') {
+            handleDateChange(e);
+        } else {
+            handleDateChange(e.target.value);
+        }
+    },
   };
 
   return (
@@ -138,19 +151,35 @@ export function ApplicationsForm({
                 disabled={!selectedClient}
               />
             </div>
-             <div className="space-y-2">
+            <div className="space-y-2">
               <Label>{t('licenseType')}</Label>
               <div className="flex items-center space-x-4 rounded-md border p-3 h-11 bg-background">
-                <Label htmlFor="license-type-switch" className="cursor-pointer">{t('free')}</Label>
+                <Label
+                  htmlFor="license-type-switch"
+                  className="cursor-pointer"
+                >
+                  {t('free')}
+                </Label>
                 <Switch
                   id="license-type-switch"
                   checked={currentApp.licenseType === 'Anual'}
                   onCheckedChange={handleLicenseTypeChange}
                   disabled={!selectedClient}
                 />
-                <Label htmlFor="license-type-switch" className="cursor-pointer">{t('anual')}</Label>
+                <Label
+                  htmlFor="license-type-switch"
+                  className="cursor-pointer"
+                >
+                  {t('anual')}
+                </Label>
               </div>
             </div>
+            {currentApp.licenseType === 'Anual' && (
+              <div className="space-y-2">
+                <Label htmlFor="license-due-date">{t('licenseDueDate')}</Label>
+                <BirthdateInput field={birthdateField} language={language} />
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="device">{t('device')}</Label>
               <Input
@@ -221,7 +250,7 @@ export function ApplicationsForm({
                       <span className="font-semibold">{t('device')}:</span>{' '}
                       {app.device}
                     </p>
-                     <p>
+                    <p>
                       <span className="font-semibold">{t('location')}:</span>{' '}
                       {app.location}
                     </p>
@@ -229,6 +258,12 @@ export function ApplicationsForm({
                       <span className="font-semibold">{t('licenseType')}:</span>{' '}
                       {t((app.licenseType || 'free').toLowerCase() as any)}
                     </p>
+                     {app.licenseType === 'Anual' && app.licenseDueDate && (
+                       <p>
+                          <span className="font-semibold">{t('licenseDueDate')}:</span>{' '}
+                          {app.licenseDueDate}
+                       </p>
+                     )}
                   </CardContent>
                 </CollapsibleContent>
               </Card>
