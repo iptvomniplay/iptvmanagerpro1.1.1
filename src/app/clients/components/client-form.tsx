@@ -148,13 +148,6 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
     }
   }
   
-  const handleDateChange = (date: Date | undefined) => {
-    if (date) {
-      form.setValue('birthDate', date, { shouldValidate: true });
-    }
-    setIsCalendarOpen(false);
-  }
-  
   const handleDateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
     const parsedDate = parse(rawValue, 'dd/MM/yyyy', new Date());
@@ -255,42 +248,45 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
           </div>
 
 
-          <div className="w-full md:w-[240px]">
+          <div className="w-full md:w-1/2">
             <FormField
                 control={form.control}
                 name="birthDate"
                 render={({ field }) => (
-                <FormItem>
+                  <FormItem>
                     <FormLabel>{t('birthDate')}</FormLabel>
-                    <div className="flex items-center gap-2">
-                        <FormControl>
-                           <Input 
+                     <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                      <div className="flex items-center gap-2">
+                          <FormControl>
+                            <Input 
                                 placeholder="DD/MM/AAAA"
                                 value={field.value ? format(field.value, 'dd/MM/yyyy') : ''}
                                 onChange={handleDateInput}
                                 autoComplete="off"
-                            />
-                        </FormControl>
-                        <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                              />
+                          </FormControl>
                           <PopoverTrigger asChild>
                             <Button type="button" variant="outline" size="icon">
                               <CalendarIcon className="h-5 w-5" />
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <DatePicker
-                              value={field.value}
-                              onChange={handleDateChange}
-                            />
-                          </PopoverContent>
-                        </Popover>
-                    </div>
+                      </div>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <DatePicker
+                          value={field.value}
+                          onChange={(date) => {
+                            field.onChange(date);
+                            setIsCalendarOpen(false);
+                          }}
+                        />
+                      </PopoverContent>
+                    </Popover>
                     <FormMessage />
-                </FormItem>
+                  </FormItem>
                 )}
             />
           </div>
-          <div className="w-full md:w-[240px]">
+          <div className="w-full md:w-1/2">
             <FormField
               control={form.control}
               name="status"

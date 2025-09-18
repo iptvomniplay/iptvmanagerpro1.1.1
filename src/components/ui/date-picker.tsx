@@ -7,7 +7,6 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { CaptionProps } from 'react-day-picker';
 
 import { useLanguage } from '@/hooks/use-language';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -42,9 +41,9 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
   };
 
   const handleCancelClick = () => {
-    // Reset to original value on cancel
+    // Reset to original value on cancel and close
     setSelectedDate(value);
-    onChange(value); // Close popover by calling onChange with original value
+    onChange(undefined);
   };
   
   function CustomCaption(props: CaptionProps) {
