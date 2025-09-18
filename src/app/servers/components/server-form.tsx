@@ -667,7 +667,35 @@ export function ServerForm({ server }: ServerFormProps) {
                 />
             </div>
             
-            <div className="w-full md:w-1/2">
+            <div className="md:w-1/2">
+              <Collapsible defaultOpen>
+                <CollapsibleTrigger className="flex items-center justify-between w-full p-2 font-semibold">
+                  <FormLabel>{t('observations')}</FormLabel>
+                  <ChevronsUpDown className="h-5 w-5 text-muted-foreground" />
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <FormField
+                    control={control}
+                    name="observations"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Textarea
+                            placeholder={t('observationsPlaceholder')}
+                            {...field}
+                            className="mt-2"
+                            autoComplete="off"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
+
+            <div className="md:w-1/2">
               <FormField
                 control={control}
                 name="paymentType"
@@ -1014,35 +1042,6 @@ export function ServerForm({ server }: ServerFormProps) {
             </Card>
           </div>
           
-          <div className="md:w-1/2">
-            <Collapsible defaultOpen>
-              <CollapsibleTrigger className="flex items-center justify-between w-full p-2 font-semibold">
-                <FormLabel>{t('observations')}</FormLabel>
-                <ChevronsUpDown className="h-5 w-5 text-muted-foreground" />
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <FormField
-                  control={control}
-                  name="observations"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Textarea
-                          placeholder={t('observationsPlaceholder')}
-                          {...field}
-                          className="mt-2"
-                          autoComplete="off"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CollapsibleContent>
-            </Collapsible>
-          </div>
-
-
           <div className="flex justify-end gap-4 pt-6">
               <Button type="button" variant="outline" onClick={handleCancel}>
               {t('cancel')}
