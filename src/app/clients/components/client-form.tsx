@@ -206,6 +206,39 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
             </Button>
             
             <FormField
+              control={form.control}
+              name="phones"
+              render={() => (
+                <FormItem>
+                  {phoneFields.length > 0 && (
+                    <Collapsible className="space-y-2">
+                       <CollapsibleTrigger asChild>
+                         <div className="flex items-center justify-between p-3 rounded-md border bg-muted cursor-pointer">
+                            <span className="font-semibold">{t('phone')} - {phoneFields.length} {t('registered')}</span>
+                            <div className="flex items-center">
+                                <Badge variant="secondary">{phoneFields.length}</Badge>
+                                <ChevronDown className="h-5 w-5 ml-2" />
+                            </div>
+                         </div>
+                       </CollapsibleTrigger>
+                      <CollapsibleContent className="space-y-2">
+                        {phoneFields.map((field, index) => (
+                           <div key={field.id} className="flex items-center justify-between p-2 pl-4 rounded-md border">
+                            <span className="text-sm">({t(field.type as any)}) {field.number}</span>
+                            <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={() => removePhone(index)}>
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </CollapsibleContent>
+                    </Collapsible>
+                  )}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
               control={control}
               name="birthDate"
               render={({ field }) => (
@@ -249,39 +282,6 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                   />
               </CollapsibleContent>
             </Collapsible>
-            
-            <FormField
-              control={form.control}
-              name="phones"
-              render={() => (
-                <FormItem>
-                  {phoneFields.length > 0 && (
-                    <Collapsible className="space-y-2">
-                       <CollapsibleTrigger asChild>
-                         <div className="flex items-center justify-between p-3 rounded-md border bg-muted cursor-pointer">
-                            <span className="font-semibold">{t('phone')} - {phoneFields.length} {t('registered')}</span>
-                            <div className="flex items-center">
-                                <Badge variant="secondary">{phoneFields.length}</Badge>
-                                <ChevronDown className="h-5 w-5 ml-2" />
-                            </div>
-                         </div>
-                       </CollapsibleTrigger>
-                      <CollapsibleContent className="space-y-2">
-                        {phoneFields.map((field, index) => (
-                           <div key={field.id} className="flex items-center justify-between p-2 pl-4 rounded-md border">
-                            <span className="text-sm">({t(field.type as any)}) {field.number}</span>
-                            <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={() => removePhone(index)}>
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        ))}
-                      </CollapsibleContent>
-                    </Collapsible>
-                  )}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
           </div>
 
           <div className="w-full md:w-1/2">
