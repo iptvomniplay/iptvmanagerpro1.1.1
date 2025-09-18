@@ -226,7 +226,7 @@ export function ApplicationsForm({
                   </div>
 
                   {currentApp.hasResponsible && (
-                    <>
+                    <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
                       <div className="space-y-2">
                         <Label htmlFor="responsible-name">{t('responsibleName')}</Label>
                         <Input
@@ -243,11 +243,12 @@ export function ApplicationsForm({
                             variant="default"
                             onClick={() => setIsPhoneModalOpen(true)}
                             disabled={!selectedClient}
+                            className="w-full"
                           >
                             {t('addPhone')}
                           </Button>
                       </div>
-                    </>
+                    </div>
                   )}
 
                    <div className="space-y-2">
