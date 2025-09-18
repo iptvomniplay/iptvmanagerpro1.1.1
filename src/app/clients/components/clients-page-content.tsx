@@ -133,6 +133,9 @@ export default function ClientsPageContent() {
     <>
       <div className="space-y-4">
         <div className="flex items-center justify-end gap-4">
+          <Button onClick={() => router.push('/subscription')} size="lg">
+            Assinatura
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button size="lg" variant="outline">
