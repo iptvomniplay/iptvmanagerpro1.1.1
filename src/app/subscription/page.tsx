@@ -26,7 +26,7 @@ export default function SubscriptionPage() {
       <Card>
         <CardContent className="pt-6">
           <div className="w-full md:w-1/2 space-y-2">
-            <Label htmlFor="manual-client-id">ID do Cliente (Manual)</Label>
+            <Label htmlFor="manual-client-id">ID do Cliente</Label>
             <Input
               id="manual-client-id"
               placeholder="Insira o ID do cliente gerado no painel"
