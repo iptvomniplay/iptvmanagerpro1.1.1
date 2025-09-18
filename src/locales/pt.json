@@ -236,7 +236,7 @@
     "plansPlaceholder": "Digite o plano",
     "plansRequired": "O pacote é obrigatório.",
     "atLeastOnePlanRequired": "Pelo menos um plano deve ser adicionado.",
-    "addPlan": "Add + Planos",
+    "addPlan": "Add Plano",
     "addServer": "Add Servidor",
     "addMoreServerTitle": "Servidor Adicionado!",
     "addMoreServerDescription": "Deseja adicionar mais um servidor a este painel?",
@@ -269,5 +269,14 @@
     "subscription": "Assinatura",
     "addSubscription": "Adicionar Assinatura",
     "subscriptionManagement": "Gerenciamento de Assinaturas",
-    "subscriptionManagementDescription": "Gerencie todas as assinaturas de clientes."
+    "subscriptionManagementDescription": "Gerencie todas as assinaturas de clientes.",
+    "clientIdManualPlaceholder": "Insira o ID gerado no painel",
+    "searchClientHere": "Ache seu cliente aqui",
+    "subscriptionPlans": "Planos da Assinatura",
+    "addedPlans": "Planos Adicionados",
+    "screensAvailable": "Telas (Disponível)",
+    "screensToHire": "Telas (Contratar)",
+    "value": "Valor",
+    "screensToHirePlaceholder": "1",
+    "select": "Selecionar"
 }

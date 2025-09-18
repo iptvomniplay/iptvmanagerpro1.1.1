@@ -66,7 +66,6 @@ export function SubscriptionPlanForm() {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        {/* Panel Selection */}
         <div className="space-y-2">
           <Label>{t('panel')}</Label>
           <Select value={selectedPanelId} onValueChange={setSelectedPanelId}>
@@ -83,7 +82,6 @@ export function SubscriptionPlanForm() {
           </Select>
         </div>
 
-        {/* Server Selection */}
         <div className="space-y-2">
           <Label>{t('servers')}</Label>
           <Select value={selectedServerName} onValueChange={setSelectedServerName} disabled={!selectedPanelId}>
@@ -100,7 +98,6 @@ export function SubscriptionPlanForm() {
           </Select>
         </div>
 
-        {/* Plan Selection */}
         <div className="space-y-2">
           <Label>{t('plans')}</Label>
           <Select value={selectedPlanName} onValueChange={setSelectedPlanName} disabled={!selectedServerName}>
@@ -117,9 +114,8 @@ export function SubscriptionPlanForm() {
           </Select>
         </div>
 
-        {/* Screens Info */}
         <div className="space-y-2">
-            <Label>Telas (Disponível)</Label>
+            <Label>{t('screensAvailable')}</Label>
             <Input
                 value={selectedServer ? selectedServer.screens : ''}
                 readOnly
@@ -127,16 +123,15 @@ export function SubscriptionPlanForm() {
             />
         </div>
 
-        {/* Screens Input */}
         <div className="space-y-2">
-          <Label>{t('screens')} (Contratar)</Label>
+          <Label>{t('screensToHire')}</Label>
           <Input
             type="number"
             min="1"
             value={numberOfScreens}
             onChange={(e) => setNumberOfScreens(parseInt(e.target.value, 10) || 1)}
             disabled={!selectedPlanName}
-            placeholder='1'
+            placeholder={t('screensToHirePlaceholder')}
           />
         </div>
       </div>
@@ -149,7 +144,7 @@ export function SubscriptionPlanForm() {
 
       {addedPlans.length > 0 && (
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">Planos Adicionados</h3>
+          <h3 className="text-lg font-medium">{t('addedPlans')}</h3>
           {addedPlans.map((item, index) => (
             <Card key={index} className="bg-muted/50">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -171,7 +166,7 @@ export function SubscriptionPlanForm() {
                         <Badge variant="secondary">{item.screens}</Badge>
                     </div>
                     <div>
-                        <span className="font-semibold">Valor: </span>
+                        <span className="font-semibold">{t('value')}: </span>
                         <Badge variant="outline" className="text-base">{formatCurrency(item.plan.value)}</Badge>
                     </div>
                  </div>

@@ -86,7 +86,7 @@ export default function SubscriptionPage() {
             <Label htmlFor="manual-client-id">{t('clientID')}</Label>
             <Input
               id="manual-client-id"
-              placeholder="Insira o ID do cliente gerado no painel"
+              placeholder={t('clientIdManualPlaceholder')}
               autoComplete="off"
               value={manualId}
               onChange={(e) => setManualId(e.target.value)}
@@ -98,7 +98,7 @@ export default function SubscriptionPage() {
       
       <Card>
         <CardHeader>
-            <CardTitle>Planos da Assinatura</CardTitle>
+            <CardTitle>{t('subscriptionPlans')}</CardTitle>
         </CardHeader>
         <CardContent>
             <SubscriptionPlanForm />

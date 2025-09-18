@@ -87,7 +87,7 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
         <Search className="h-5 w-5" />
       </div>
       <Input
-        placeholder="Ache seu cliente aqui"
+        placeholder={t('searchClientHere')}
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         onFocus={() => setIsFocused(true)}
