@@ -12,9 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/use-language';
-import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { format } from 'date-fns';
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -23,13 +21,10 @@ interface ConfirmationModalProps {
   clientData: ClientFormValues;
 }
 
-const DetailItem = ({ label, value }: { label: string; value?: string | number | Date | null; }) => {
+const DetailItem = ({ label, value }: { label: string; value?: string | number | null; }) => {
   if (!value) return null;
   
   let displayValue = String(value);
-  if (value instanceof Date) {
-    displayValue = format(value, 'dd/MM/yyyy');
-  }
 
   return (
     <div>
@@ -80,7 +75,6 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, clientData }: Co
                 ))}
               </div>
             </div>
-            <DetailItem label={t('birthDate')} value={clientData.birthDate} />
             <div>
               <p className="text-sm font-medium text-muted-foreground">{t('status')}</p>
               {clientData.status && (

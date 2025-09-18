@@ -19,7 +19,6 @@ export type Client = {
   nickname?: string;
   email: string;
   phones: Phone[];
-  birthDate: string;
   status: 'Active' | 'Inactive' | 'Expired' | 'Test';
   registeredDate: string;
   tests?: Test[];

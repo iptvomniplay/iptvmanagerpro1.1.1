@@ -37,10 +37,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { PhoneInputModal } from '@/components/ui/phone-input-modal';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, ChevronRight, X, CalendarIcon } from 'lucide-react';
-import { format, parse, isValid } from 'date-fns';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
+import { ChevronDown, X } from 'lucide-react';
 
 
 const phoneSchema = z.object({
@@ -53,7 +50,6 @@ const createFormSchema = (t: (key: string) => string) => z.object({
   nickname: z.string().optional(),
   email: z.string().email({ message: t('emailValidation') }).optional().or(z.literal('')),
   phones: z.array(phoneSchema).min(1, { message: t('phoneRequired') }),
-  birthDate: z.date({ required_error: t('birthDateRequired') }),
   status: z.enum(['Active', 'Inactive', 'Expired', 'Test'], { required_error: t('statusRequired') }),
 });
 
@@ -66,19 +62,15 @@ interface ClientFormProps {
 }
 
 export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const router = useRouter();
   const { addClient, updateClient } = useData();
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = React.useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false);
   const [clientDataToConfirm, setClientDataToConfirm] = React.useState<ClientFormValues | null>(null);
   const [isPhoneModalOpen, setIsPhoneModalOpen] = React.useState(false);
-  const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
   
   const formSchema = createFormSchema(t);
-  
-  const dateFormat = language === 'pt-BR' ? 'dd/MM/yyyy' : 'MM/dd/yyyy';
-  const datePlaceholder = language === 'pt-BR' ? 'DD/MM/AAAA' : 'MM/DD/YYYY';
 
   const form = useForm<ClientFormValues>({
     resolver: zodResolver(formSchema),
@@ -87,21 +79,9 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       nickname: client?.nickname || '',
       email: client?.email || '',
       phones: client?.phones || [],
-      birthDate: client?.birthDate ? parse(client.birthDate, 'yyyy-MM-dd', new Date()) : undefined,
       status: client?.status || undefined,
     },
   });
-  
-  const [calendarDate, setCalendarDate] = React.useState<Date | undefined>(
-    form.getValues('birthDate')
-  );
-  
-  React.useEffect(() => {
-    if (isCalendarOpen) {
-      setCalendarDate(form.getValues('birthDate'));
-    }
-  }, [isCalendarOpen, form]);
-
 
   const { control, reset, trigger } = form;
   const { fields: phoneFields, replace: replacePhones, remove: removePhone } = useFieldArray({ control, name: 'phones' });
@@ -122,7 +102,6 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
     
     const clientData = {
       ...clientDataToConfirm,
-      birthDate: clientDataToConfirm.birthDate.toISOString().split('T')[0],
       phones: clientDataToConfirm.phones,
     };
 
@@ -146,7 +125,6 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
         nickname: '',
         email: '',
         phones: [],
-        birthDate: undefined,
         status: undefined,
       });
       router.push('/clients');
@@ -159,39 +137,6 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       onCancel();
     } else {
       router.back();
-    }
-  }
-
-  const handleDateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value.replace(/\D/g, '');
-    let formattedValue = '';
-
-    if (language === 'pt-BR') {
-      if (rawValue.length <= 2) {
-        formattedValue = rawValue;
-      } else if (rawValue.length <= 4) {
-        formattedValue = `${rawValue.slice(0, 2)}/${rawValue.slice(2)}`;
-      } else {
-        formattedValue = `${rawValue.slice(0, 2)}/${rawValue.slice(2, 4)}/${rawValue.slice(4, 8)}`;
-      }
-    } else { // en-US
-      if (rawValue.length <= 2) {
-        formattedValue = rawValue;
-      } else if (rawValue.length <= 4) {
-        formattedValue = `${rawValue.slice(0, 2)}/${rawValue.slice(2)}`;
-      } else {
-        formattedValue = `${rawValue.slice(0, 2)}/${rawValue.slice(2, 4)}/${rawValue.slice(4, 8)}`;
-      }
-    }
-
-    e.target.value = formattedValue;
-    
-    const parsedDate = parse(formattedValue, dateFormat, new Date());
-    if (isValid(parsedDate) && formattedValue.length === 10) {
-      form.setValue('birthDate', parsedDate, { shouldValidate: true });
-      setCalendarDate(parsedDate);
-    } else if (formattedValue.length < 10) {
-      form.setValue('birthDate', undefined, { shouldValidate: true });
     }
   }
 
@@ -286,53 +231,6 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
             />
           </div>
 
-
-          <div className="w-full md:w-1/2">
-            <FormField
-                control={form.control}
-                name="birthDate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('birthDate')}</FormLabel>
-                     <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-                      <div className="flex items-center gap-2">
-                          <FormControl>
-                            <Input 
-                                placeholder={datePlaceholder}
-                                value={field.value ? format(field.value, dateFormat) : ''}
-                                onChange={handleDateInput}
-                                autoComplete="off"
-                              />
-                          </FormControl>
-                          <PopoverTrigger asChild>
-                            <Button type="button" variant="outline" size="icon">
-                              <CalendarIcon className="h-5 w-5" />
-                            </Button>
-                          </PopoverTrigger>
-                      </div>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={calendarDate}
-                          onSelect={(date) => {
-                            setCalendarDate(date);
-                            if (date) {
-                              form.setValue('birthDate', date, { shouldValidate: true });
-                              setIsCalendarOpen(false);
-                            }
-                          }}
-                          initialFocus
-                          captionLayout="dropdown-buttons"
-                          fromYear={new Date().getFullYear() - 120}
-                          toYear={new Date().getFullYear()}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-            />
-          </div>
           <div className="w-full md:w-1/2">
             <FormField
               control={form.control}
