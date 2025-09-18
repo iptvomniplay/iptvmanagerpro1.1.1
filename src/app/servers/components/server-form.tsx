@@ -670,7 +670,7 @@ export function ServerForm({ server }: ServerFormProps) {
                     type="button"
                     onClick={() => setIsObservationsVisible(prev => !prev)}
                     className="w-full"
-                    variant="outline"
+                    variant="default"
                   >
                     {t('observations')}
                   </Button>
