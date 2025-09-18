@@ -28,6 +28,7 @@ export function SubscriptionPlanForm() {
   const [selectedPlanName, setSelectedPlanName] = React.useState<string>('');
   const [numberOfScreens, setNumberOfScreens] = React.useState<number>(1);
   const [addedPlans, setAddedPlans] = React.useState<SelectedPlan[]>([]);
+  const [dueDate, setDueDate] = React.useState<number | undefined>();
 
   const selectedPanel = panels.find((p) => p.id === selectedPanelId);
   const availableServers = selectedPanel?.subServers || [];
@@ -133,6 +134,27 @@ export function SubscriptionPlanForm() {
             disabled={!selectedPlanName}
             placeholder={t('screensToHirePlaceholder')}
           />
+        </div>
+        
+        <div className="space-y-2">
+           <Label htmlFor="due-date">{t('dueDate')}</Label>
+           <Select
+              value={dueDate ? String(dueDate) : ''}
+              onValueChange={(value) => setDueDate(parseInt(value, 10))}
+            >
+              <SelectTrigger id="due-date">
+                <SelectValue placeholder={t('selectDay')} />
+              </SelectTrigger>
+              <SelectContent>
+                {Array.from({ length: 31 }, (_, i) => i + 1).map(
+                  (day) => (
+                    <SelectItem key={day} value={String(day)}>
+                      {day}
+                    </SelectItem>
+                  )
+                )}
+              </SelectContent>
+            </Select>
         </div>
       </div>
       

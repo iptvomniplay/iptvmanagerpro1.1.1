@@ -17,16 +17,7 @@ export default function SubscriptionPage() {
   const { t } = useLanguage();
   const [selectedClient, setSelectedClient] = React.useState<Client | null>(null);
   const [manualId, setManualId] = React.useState('');
-  const [dueDate, setDueDate] = React.useState<number | undefined>(selectedClient?.dueDate);
-
-  React.useEffect(() => {
-    if (selectedClient) {
-      setDueDate(selectedClient.dueDate);
-    } else {
-      setDueDate(undefined);
-    }
-  }, [selectedClient]);
-
+  
   const getStatusVariant = (status: Client['status']) => {
     switch (status) {
       case 'Active':
@@ -102,27 +93,6 @@ export default function SubscriptionPage() {
               onChange={(e) => setManualId(e.target.value)}
               disabled={!selectedClient}
             />
-          </div>
-          <div className="w-full space-y-2">
-             <Label htmlFor="due-date">{t('dueDate')}</Label>
-             <Select
-                value={dueDate ? String(dueDate) : ''}
-                onValueChange={(value) => setDueDate(parseInt(value, 10))}
-                disabled={!selectedClient}
-              >
-                <SelectTrigger id="due-date">
-                  <SelectValue placeholder={t('selectDay')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.from({ length: 31 }, (_, i) => i + 1).map(
-                    (day) => (
-                      <SelectItem key={day} value={String(day)}>
-                        {day}
-                      </SelectItem>
-                    )
-                  )}
-                </SelectContent>
-              </Select>
           </div>
         </CardContent>
       </Card>
