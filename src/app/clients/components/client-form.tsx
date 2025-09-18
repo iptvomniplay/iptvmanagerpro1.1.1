@@ -204,7 +204,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
             <Button type="button" variant="default" onClick={() => setIsPhoneModalOpen(true)}>
               {t('addPhone')}
             </Button>
-
+            
             <FormField
               control={control}
               name="birthDate"
@@ -224,7 +224,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                 <Button
                   type="button"
                   className="w-full justify-between"
-                  variant="outline"
+                  variant="default"
                 >
                   {t('observations')}
                   <ChevronsUpDown className="h-5 w-5" />
