@@ -89,7 +89,7 @@ export function ClientSearch() {
             {selectedClient ? <User className="h-5 w-5" /> : <Search className="h-5 w-5" />}
         </div>
         <Input
-          placeholder={t('searchClientPlaceholder')}
+          placeholder="Ache seu cliente aqui"
           value={searchTerm}
           onChange={(e) => {
             if (selectedClient) handleClearSelection();
