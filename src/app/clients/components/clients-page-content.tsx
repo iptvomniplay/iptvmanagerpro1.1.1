@@ -180,7 +180,9 @@ export default function ClientsPageContent() {
                       {t(client.status.toLowerCase() as any)}
                     </Badge>
                   </TableCell>
-                  <TableCell className="font-medium">{client.id}</TableCell>
+                  <TableCell className="font-medium">
+                    {client.status === 'Active' ? client.id : ''}
+                  </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
