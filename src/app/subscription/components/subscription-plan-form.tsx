@@ -65,9 +65,9 @@ export function SubscriptionPlanForm() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
         {/* Panel Selection */}
-        <div className="space-y-2">
+        <div className="space-y-2 md:col-span-1">
           <Label>{t('panel')}</Label>
           <Select value={selectedPanelId} onValueChange={setSelectedPanelId}>
             <SelectTrigger>
@@ -84,7 +84,7 @@ export function SubscriptionPlanForm() {
         </div>
 
         {/* Server Selection */}
-        <div className="space-y-2">
+        <div className="space-y-2 md:col-span-1">
           <Label>{t('servers')}</Label>
           <Select value={selectedServerName} onValueChange={setSelectedServerName} disabled={!selectedPanelId}>
             <SelectTrigger>
@@ -101,7 +101,7 @@ export function SubscriptionPlanForm() {
         </div>
 
         {/* Plan Selection */}
-        <div className="space-y-2">
+        <div className="space-y-2 md:col-span-1">
           <Label>{t('plans')}</Label>
           <Select value={selectedPlanName} onValueChange={setSelectedPlanName} disabled={!selectedServerName}>
             <SelectTrigger>
@@ -110,21 +110,31 @@ export function SubscriptionPlanForm() {
             <SelectContent>
               {availablePlans.map((plan) => (
                 <SelectItem key={plan.name} value={plan.name}>
-                  {plan.name} ({formatCurrency(plan.value)})
+                  {plan.name} {plan.value ? `(${formatCurrency(plan.value)})` : ''}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
 
+        {/* Screens Info */}
+        <div className="space-y-2">
+            <Label>Telas (Disponível)</Label>
+            <Input
+                value={selectedServer ? selectedServer.screens : ''}
+                readOnly
+                className="bg-muted"
+            />
+        </div>
+
         {/* Screens Input */}
         <div className="space-y-2">
-          <Label>{t('screens')}</Label>
+          <Label>{t('screens')} (Contratar)</Label>
           <Input
             type="number"
             min="1"
             value={numberOfScreens}
-            onChange={(e) => setNumberOfScreens(parseInt(e.target.value, 10))}
+            onChange={(e) => setNumberOfScreens(parseInt(e.target.value, 10) || 1)}
             disabled={!selectedPlanName}
             placeholder='1'
           />
