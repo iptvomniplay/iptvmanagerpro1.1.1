@@ -50,6 +50,7 @@ const createFormSchema = (t: (key: string) => string) => z.object({
   nickname: z.string().optional(),
   email: z.string().email({ message: t('emailValidation') }).optional().or(z.literal('')),
   phones: z.array(phoneSchema).min(1, { message: t('phoneRequired') }),
+  birthDate: z.string().optional(),
   status: z.enum(['Active', 'Inactive', 'Expired', 'Test'], { required_error: t('statusRequired') }),
 });
 
@@ -62,7 +63,7 @@ interface ClientFormProps {
 }
 
 export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const router = useRouter();
   const { addClient, updateClient } = useData();
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = React.useState(false);
@@ -79,6 +80,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       nickname: client?.nickname || '',
       email: client?.email || '',
       phones: client?.phones || [],
+      birthDate: client?.birthDate || '',
       status: client?.status || undefined,
     },
   });
@@ -139,6 +141,21 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       router.back();
     }
   }
+  
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>, field: any) => {
+    let value = e.target.value.replace(/\D/g, '');
+    const isPtBr = language === 'pt-BR';
+    
+    if (isPtBr) { // DD/MM/AAAA
+      if (value.length > 2) value = `${value.slice(0, 2)}/${value.slice(2)}`;
+      if (value.length > 5) value = `${value.slice(0, 5)}/${value.slice(5, 9)}`;
+    } else { // MM/DD/AAAA
+      if (value.length > 2) value = `${value.slice(0, 2)}/${value.slice(2)}`;
+      if (value.length > 5) value = `${value.slice(0, 5)}/${value.slice(5, 9)}`;
+    }
+    
+    field.onChange(value);
+  };
 
   return (
     <>
@@ -196,6 +213,26 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
             <Button type="button" variant="default" onClick={() => setIsPhoneModalOpen(true)}>
               {t('addPhone')}
             </Button>
+            
+            <FormField
+              control={control}
+              name="birthDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('birthDate')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={language === 'pt-BR' ? 'DD/MM/AAAA' : 'MM/DD/AAAA'}
+                      {...field}
+                      onChange={(e) => handleDateChange(e, field)}
+                      maxLength={10}
+                      autoComplete="off"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             
             <FormField
               control={form.control}
