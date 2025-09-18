@@ -62,11 +62,13 @@ export default function SubscriptionPage() {
             {t('subscriptionManagementDescription')}
           </CardDescription>
         </CardHeader>
-        <CardContent className="w-full md:w-1/2 space-y-4">
-          <ClientSearch
-            onSelectClient={setSelectedClient}
-            selectedClient={selectedClient}
-          />
+        <CardContent className="space-y-4">
+          <div className="w-full md:w-1/2">
+            <ClientSearch
+              onSelectClient={setSelectedClient}
+              selectedClient={selectedClient}
+            />
+          </div>
           {selectedClient && (
             <Card className="bg-muted/30">
               <CardHeader>
@@ -76,7 +78,7 @@ export default function SubscriptionPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
                   <div>
                     <p className="font-medium text-muted-foreground">
                       {t('nickname')}
@@ -94,7 +96,13 @@ export default function SubscriptionPage() {
                       {t(selectedClient.status.toLowerCase() as any)}
                     </Badge>
                   </div>
-                  <div className="overflow-hidden">
+                  <div>
+                    <p className="font-medium text-muted-foreground">
+                      {t('emailAddress')}
+                    </p>
+                    <p className="mt-1 truncate" title={selectedClient.email}>{selectedClient.email || '---'}</p>
+                  </div>
+                   <div className="overflow-hidden">
                     <p className="font-medium text-muted-foreground">
                       {t('clientID')}
                     </p>
