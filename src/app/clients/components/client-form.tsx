@@ -149,7 +149,9 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   }
   
   const handleDateChange = (date: Date | undefined) => {
-    form.setValue('birthDate', date, { shouldValidate: true });
+    if (date) {
+      form.setValue('birthDate', date, { shouldValidate: true });
+    }
     setIsCalendarOpen(false);
   }
   

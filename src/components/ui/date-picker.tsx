@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { format } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { CaptionProps } from 'react-day-picker';
 
 import { useLanguage } from '@/hooks/use-language';
@@ -44,7 +44,7 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
   const handleCancelClick = () => {
     // Reset to original value on cancel
     setSelectedDate(value);
-    onChange(undefined); // Or you can close the popover by calling a function passed via props
+    onChange(value); // Close popover by calling onChange with original value
   };
   
   function CustomCaption(props: CaptionProps) {
