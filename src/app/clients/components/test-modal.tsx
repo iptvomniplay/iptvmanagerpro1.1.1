@@ -186,6 +186,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
                           className="pl-10"
+                          autoComplete="off"
                         />
                       </div>
                       
@@ -219,6 +220,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                                       value={selectedClient.name}
                                       readOnly
                                       className="bg-transparent border-0 text-lg font-semibold focus-visible:ring-0 focus-visible:ring-offset-0"
+                                      autoComplete="off"
                                   />
                               </div>
                           </div>
@@ -250,7 +252,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                                     <FormLabel>{t('testDuration')}</FormLabel>
                                       <div className="flex items-start gap-4">
                                             <FormControl className="flex-1">
-                                                <Input type="number" {...field} value={field.value ?? ''} placeholder='' />
+                                                <Input type="number" {...field} value={field.value ?? ''} placeholder='' autoComplete="off" />
                                             </FormControl>
                                             <FormField
                                                 control={form.control}
@@ -313,6 +315,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                                   readOnly
                                   onClick={() => setIsPanelModalOpen(true)}
                                   className="cursor-pointer"
+                                  autoComplete="off"
                                 />
                                   <ServerIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                               </div>

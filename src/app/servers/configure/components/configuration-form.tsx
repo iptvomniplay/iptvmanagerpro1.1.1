@@ -75,6 +75,7 @@ export function ConfigurationForm() {
             required
             defaultValue={defaultJson}
             className="text-base"
+            autoComplete="off"
           />
         </div>
         <div className="space-y-3">

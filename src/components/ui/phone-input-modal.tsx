@@ -152,6 +152,7 @@ export function PhoneInputModal({ isOpen, onClose, onSave, initialPhones }: Phon
                     value={currentPhone}
                     onChange={handlePhoneInputChange}
                     placeholder={phonePlaceholders[phoneType]}
+                    autoComplete="off"
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                             e.preventDefault();

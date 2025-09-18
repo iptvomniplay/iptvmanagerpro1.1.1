@@ -567,7 +567,7 @@ export function ServerForm({ server }: ServerFormProps) {
                   <FormItem>
                     <FormLabel>{t('login')}</FormLabel>
                     <FormControl>
-                      <Input autoComplete="username" {...field} placeholder={t('loginPlaceholder')} />
+                      <Input autoComplete="off" {...field} placeholder={t('loginPlaceholder')} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -584,7 +584,7 @@ export function ServerForm({ server }: ServerFormProps) {
                     <FormControl>
                       <Input
                         type="password"
-                        autoComplete="current-password"
+                        autoComplete="off"
                         {...field}
                         placeholder={t('passwordPlaceholder')}
                       />

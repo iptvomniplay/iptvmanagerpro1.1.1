@@ -138,6 +138,7 @@ export default function ServersPage() {
                     className="pl-10 h-10"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
+                    autoComplete="off"
                   />
                 </div>
               </div>

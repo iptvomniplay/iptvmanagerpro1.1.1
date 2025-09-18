@@ -157,7 +157,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                 <FormItem>
                   <FormLabel>{t('fullName')}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('namePlaceholder')} {...field} />
+                    <Input placeholder={t('namePlaceholder')} {...field} autoComplete="off" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -172,7 +172,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                 <FormItem>
                   <FormLabel>{t('nickname')}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('nicknamePlaceholder')} {...field} />
+                    <Input placeholder={t('nicknamePlaceholder')} {...field} autoComplete="off" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -189,7 +189,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                     {t('emailAddress')}
                   </FormLabel>
                   <FormControl>
-                    <Input placeholder={t('emailPlaceholder')} {...field} />
+                    <Input placeholder={t('emailPlaceholder')} {...field} autoComplete="off" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

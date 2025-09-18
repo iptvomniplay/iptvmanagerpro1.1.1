@@ -57,6 +57,7 @@ const PasswordDisplay = ({ password }: { password?: string }) => {
                     value={password}
                     readOnly
                     className="text-lg border-0 bg-transparent p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
+                    autoComplete="off"
                 />
                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsVisible(!isVisible)}>
                     {isVisible ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}

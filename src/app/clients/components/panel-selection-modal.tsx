@@ -46,6 +46,7 @@ export function PanelSelectionModal({ isOpen, onClose, onSelectPanel }: PanelSel
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
+                autoComplete="off"
             />
         </div>
         <ScrollArea className="h-72 rounded-md border">

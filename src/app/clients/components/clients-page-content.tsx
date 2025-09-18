@@ -128,6 +128,7 @@ export default function ClientsPageContent() {
             className="pl-10"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            autoComplete="off"
           />
         </div>
         <div className="flex items-center gap-4">
