@@ -5,7 +5,7 @@ import { useData } from '@/hooks/use-data';
 import type { Client } from '@/lib/types';
 import { normalizeString } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Search, User, X } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
@@ -16,18 +16,23 @@ export function ClientSearch() {
   const { clients } = useData();
   const [searchTerm, setSearchTerm] = React.useState('');
   const [searchResults, setSearchResults] = React.useState<Client[]>([]);
-  const [selectedClient, setSelectedClient] = React.useState<Client | null>(null);
+  const [selectedClients, setSelectedClients] = React.useState<Client[]>([]);
   const [isFocused, setIsFocused] = React.useState(false);
   const searchRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    if (searchTerm.trim() === '' || selectedClient) {
+    if (searchTerm.trim() === '') {
       setSearchResults([]);
       return;
     }
 
     const normalizedTerm = normalizeString(searchTerm);
     const results = clients.filter((client) => {
+      const isAlreadySelected = selectedClients.some(
+        (selected) => selected.id === client.id
+      );
+      if (isAlreadySelected) return false;
+
       const phoneMatch = client.phones.some((phone) =>
         normalizeString(phone.number)
           .replace(/\D/g, '')
@@ -40,8 +45,8 @@ export function ClientSearch() {
       );
     });
     setSearchResults(results);
-  }, [searchTerm, clients, selectedClient]);
-  
+  }, [searchTerm, clients, selectedClients]);
+
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
@@ -52,17 +57,15 @@ export function ClientSearch() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-
   const handleSelectClient = (client: Client) => {
-    setSelectedClient(client);
-    setSearchTerm(client.name);
+    setSelectedClients((prev) => [...prev, client]);
+    setSearchTerm('');
     setSearchResults([]);
     setIsFocused(false);
   };
-  
-  const handleClearSelection = () => {
-    setSelectedClient(null);
-    setSearchTerm('');
+
+  const handleRemoveClient = (clientId: string) => {
+    setSelectedClients((prev) => prev.filter((client) => client.id !== clientId));
   };
 
   const getStatusVariant = (status: Client['status']) => {
@@ -80,59 +83,91 @@ export function ClientSearch() {
     }
   };
 
-  const showResults = isFocused && searchResults.length > 0 && !selectedClient;
+  const showResults = isFocused && searchResults.length > 0;
 
   return (
-    <div className="w-full md:w-1/2 relative" ref={searchRef}>
-      <div className="relative">
+    <div className="w-full md:w-1/2 space-y-4">
+      <div className="relative" ref={searchRef}>
         <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-            {selectedClient ? <User className="h-5 w-5" /> : <Search className="h-5 w-5" />}
+          <Search className="h-5 w-5" />
         </div>
         <Input
           placeholder="Ache seu cliente aqui"
           value={searchTerm}
-          onChange={(e) => {
-            if (selectedClient) handleClearSelection();
-            setSearchTerm(e.target.value)
-          }}
+          onChange={(e) => setSearchTerm(e.target.value)}
           onFocus={() => setIsFocused(true)}
-          className="pl-10 pr-10"
+          className="pl-10"
           autoComplete="off"
         />
-        {selectedClient && (
-            <Button 
-                variant="ghost" 
-                size="icon" 
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
-                onClick={handleClearSelection}
-            >
-                <X className="h-5 w-5 text-muted-foreground" />
-            </Button>
+
+        {showResults && (
+          <Card className="absolute top-full mt-2 w-full z-10 max-h-80 overflow-y-auto">
+            <CardContent className="p-2">
+              {searchResults.map((client) => (
+                <div
+                  key={client.id}
+                  className="flex items-center justify-between p-3 rounded-md hover:bg-accent cursor-pointer"
+                  onClick={() => handleSelectClient(client)}
+                >
+                  <div className="flex flex-col">
+                    <p className="font-semibold">{client.name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      ID: {client.status === 'Active' ? client.id : 'N/A'}
+                    </p>
+                  </div>
+                  <Badge variant={getStatusVariant(client.status)}>
+                    {t(client.status.toLowerCase() as any)}
+                  </Badge>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
         )}
       </div>
 
-      {showResults && (
-        <Card className="absolute top-full mt-2 w-full z-10 max-h-80 overflow-y-auto">
-          <CardContent className="p-2">
-            {searchResults.map((client) => (
-              <div
-                key={client.id}
-                className="flex items-center justify-between p-3 rounded-md hover:bg-accent cursor-pointer"
-                onClick={() => handleSelectClient(client)}
+      {selectedClients.length > 0 && (
+        <div className="space-y-4">
+          {selectedClients.map((client) => (
+            <Card key={client.id} className="relative bg-muted/30">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-2 right-2 h-7 w-7"
+                onClick={() => handleRemoveClient(client.id)}
               >
-                <div className="flex flex-col">
-                  <p className="font-semibold">{client.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    ID: {client.status === 'Active' ? client.id : 'N/A'}
-                  </p>
+                <X className="h-4 w-4" />
+              </Button>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-4">
+                  <User className="h-6 w-6" />
+                  <span>{client.name}</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <span className="w-20 text-sm text-muted-foreground">
+                    {t('nickname')}
+                  </span>
+                  <Input value={client.nickname || '---'} readOnly />
                 </div>
-                <Badge variant={getStatusVariant(client.status)}>
-                  {t(client.status.toLowerCase() as any)}
-                </Badge>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+                <div className="flex items-center gap-3">
+                  <span className="w-20 text-sm text-muted-foreground">
+                    {t('status')}
+                  </span>
+                   <Badge variant={getStatusVariant(client.status)} className="text-base">
+                      {t(client.status.toLowerCase() as any)}
+                    </Badge>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="w-20 text-sm text-muted-foreground">
+                    {t('clientID')}
+                  </span>
+                  <Input value={client.status === 'Active' ? client.id : 'N/A'} readOnly />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       )}
     </div>
   );
