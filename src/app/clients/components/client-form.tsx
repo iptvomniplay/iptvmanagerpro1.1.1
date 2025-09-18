@@ -38,7 +38,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { PhoneInputModal } from '@/components/ui/phone-input-modal';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, ChevronRight, X } from 'lucide-react';
+import { ChevronDown, ChevronRight, X, CalendarIcon } from 'lucide-react';
+import { format, parse } from 'date-fns';
 
 
 const phoneSchema = z.object({
@@ -71,6 +72,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false);
   const [clientDataToConfirm, setClientDataToConfirm] = React.useState<ClientFormValues | null>(null);
   const [isPhoneModalOpen, setIsPhoneModalOpen] = React.useState(false);
+  const [isDatePickerOpen, setIsDatePickerOpen] = React.useState(false);
 
   const formSchema = createFormSchema(t);
 
@@ -142,6 +144,19 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       onCancel();
     } else {
       router.back();
+    }
+  }
+  
+  const handleDateChange = (date: Date | undefined) => {
+    form.setValue('birthDate', date);
+    setIsDatePickerOpen(false);
+  }
+  
+  const handleDateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value;
+    const parsedDate = parse(rawValue, 'dd/MM/yyyy', new Date());
+    if (!isNaN(parsedDate.getTime())) {
+      form.setValue('birthDate', parsedDate);
     }
   }
 
@@ -244,12 +259,26 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                 render={({ field }) => (
                 <FormItem>
                     <FormLabel>{t('birthDate')}</FormLabel>
-                    <FormControl>
+                    <div className="flex items-center gap-2">
+                        <FormControl>
+                           <Input 
+                                placeholder="DD/MM/AAAA"
+                                value={field.value ? format(field.value, 'dd/MM/yyyy') : ''}
+                                onChange={handleDateInput}
+                                autoComplete="off"
+                            />
+                        </FormControl>
                         <DatePicker 
                             value={field.value}
-                            onChange={field.onChange}
-                        />
-                    </FormControl>
+                            onChange={handleDateChange}
+                            isOpen={isDatePickerOpen}
+                            onOpenChange={setIsDatePickerOpen}
+                        >
+                            <Button type="button" variant="outline" size="icon" onClick={() => setIsDatePickerOpen(true)}>
+                                <CalendarIcon className="h-5 w-5" />
+                            </Button>
+                        </DatePicker>
+                    </div>
                     <FormMessage />
                 </FormItem>
                 )}

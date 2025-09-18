@@ -26,11 +26,13 @@ import { Calendar } from '@/components/ui/calendar';
 interface DatePickerProps {
   value?: Date;
   onChange: (date?: Date) => void;
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  children: React.ReactNode;
 }
 
-export function DatePicker({ value, onChange }: DatePickerProps) {
+export function DatePicker({ value, onChange, isOpen, onOpenChange, children }: DatePickerProps) {
   const { t, language } = useLanguage();
-  const [open, setOpen] = React.useState(false);
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(value);
   const [month, setMonth] = React.useState<Date>(value || new Date());
   
@@ -43,14 +45,14 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
 
   const handleOkClick = () => {
     onChange(selectedDate);
-    setOpen(false);
+    onOpenChange(false);
   };
 
   const handleCancelClick = () => {
     // Reset to original value on cancel
     setSelectedDate(value);
     setMonth(value || new Date());
-    setOpen(false);
+    onOpenChange(false);
   };
   
   function CustomCaption(props: CaptionProps) {
@@ -74,6 +76,7 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
     return (
        <div className="flex justify-center items-center relative gap-2 mb-4">
         <Button
+          type="button"
           variant="outline"
           size="icon"
           className="h-9 w-9"
@@ -115,6 +118,7 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
           </Select>
 
         <Button
+          type="button"
           variant="outline"
           size="icon"
           className="h-9 w-9"
@@ -127,18 +131,9 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={isOpen} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>
-        <Button
-          variant={'outline'}
-          className={cn(
-            'w-full justify-start text-left font-normal',
-            !value && 'text-muted-foreground'
-          )}
-        >
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          {value ? format(value, 'dd/MM/yyyy', { locale }) : <span>{t('pickADate')}</span>}
-        </Button>
+        {children}
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0 bg-background" align="start">
         <Calendar
