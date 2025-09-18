@@ -6,12 +6,7 @@ import type { Application, Client } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Collapsible,
   CollapsibleContent,
@@ -71,10 +66,11 @@ export function ApplicationsForm({
   };
 
   const handleLicenseTypeChange = (checked: boolean) => {
+    const newLicenseType = checked ? 'Anual' : 'Free';
     setCurrentApp((prev) => ({
       ...prev,
-      licenseType: checked ? 'Anual' : 'Free',
-      licenseDueDate: checked ? prev.licenseDueDate : undefined,
+      licenseType: newLicenseType,
+      licenseDueDate: newLicenseType === 'Free' ? undefined : prev.licenseDueDate,
     }));
   };
 
@@ -119,8 +115,9 @@ export function ApplicationsForm({
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'N/A';
     try {
+      const localeModule = language === 'pt-BR' ? require('date-fns/locale/pt-BR') : require('date-fns/locale/en-US');
       return format(parseISO(dateString), 'P', {
-        locale: language === 'pt-BR' ? require('date-fns/locale/pt-BR') : require('date-fns/locale/en-US'),
+        locale: localeModule.default || localeModule,
       });
     } catch (e) {
       return dateString;
@@ -164,39 +161,17 @@ export function ApplicationsForm({
                 disabled={!selectedClient}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="device">{t('device')}</Label>
-              <Input
-                id="device"
-                name="device"
-                value={currentApp.device}
-                onChange={handleInputChange}
-                placeholder={t('devicePlaceholder')}
-                disabled={!selectedClient}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="location">{t('location')}</Label>
-              <Input
-                id="location"
-                name="location"
-                value={currentApp.location}
-                onChange={handleInputChange}
-                placeholder={t('locationPlaceholder')}
-                disabled={!selectedClient}
-              />
-            </div>
-            <div className="space-y-2">
+             <div className="space-y-2">
               <Label>{t('licenseType')}</Label>
-              <div className="flex items-center space-x-4 rounded-md border p-3">
-                <Label htmlFor="license-type-switch">{t('free')}</Label>
+              <div className="flex items-center space-x-4 rounded-md border p-3 h-11">
+                <Label htmlFor="license-type-switch" className="cursor-pointer">{t('free')}</Label>
                 <Switch
                   id="license-type-switch"
                   checked={currentApp.licenseType === 'Anual'}
                   onCheckedChange={handleLicenseTypeChange}
                   disabled={!selectedClient}
                 />
-                <Label htmlFor="license-type-switch">{t('anual')}</Label>
+                <Label htmlFor="license-type-switch" className="cursor-pointer">{t('anual')}</Label>
               </div>
             </div>
             {currentApp.licenseType === 'Anual' && (
@@ -207,7 +182,7 @@ export function ApplicationsForm({
                     <Button
                       variant={'outline'}
                       className={cn(
-                        'w-full justify-start text-left font-normal',
+                        'w-full justify-start text-left font-normal h-11',
                         !currentApp.licenseDueDate && 'text-muted-foreground'
                       )}
                       disabled={!selectedClient}
@@ -233,8 +208,30 @@ export function ApplicationsForm({
                 </Popover>
               </div>
             )}
+            <div className="space-y-2">
+              <Label htmlFor="device">{t('device')}</Label>
+              <Input
+                id="device"
+                name="device"
+                value={currentApp.device}
+                onChange={handleInputChange}
+                placeholder={t('devicePlaceholder')}
+                disabled={!selectedClient}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="location">{t('location')}</Label>
+              <Input
+                id="location"
+                name="location"
+                value={currentApp.location}
+                onChange={handleInputChange}
+                placeholder={t('locationPlaceholder')}
+                disabled={!selectedClient}
+              />
+            </div>
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-end pt-4">
             <Button
               onClick={handleAddApplication}
               disabled={!selectedClient || !currentApp.name}
@@ -287,7 +284,7 @@ export function ApplicationsForm({
                     </p>
                     <p>
                       <span className="font-semibold">{t('licenseType')}:</span>{' '}
-                      {t(app.licenseType.toLowerCase() as any)}
+                      {t((app.licenseType || 'free').toLowerCase() as any)}
                     </p>
                     {app.licenseType === 'Anual' && (
                       <p>
