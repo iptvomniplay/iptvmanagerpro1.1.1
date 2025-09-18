@@ -277,7 +277,7 @@
     "screensAvailable": "Screens (Available)",
     "screensToHire": "Screens (To Hire)",
     "value": "Value",
-    "screensToHirePlaceholder": "1",
+    "screensToHirePlaceholder": "",
     "select": "Select",
     "applications": "Applications",
     "appName": "Application Name",

@@ -29,7 +29,7 @@ export function SubscriptionPlanForm() {
   const [selectedPanelId, setSelectedPanelId] = React.useState<string>('');
   const [selectedServerName, setSelectedServerName] = React.useState<string>('');
   const [selectedPlanName, setSelectedPlanName] = React.useState<string>('');
-  const [numberOfScreens, setNumberOfScreens] = React.useState<number>(1);
+  const [numberOfScreens, setNumberOfScreens] = React.useState<number | ''>('');
   const [addedPlans, setAddedPlans] = React.useState<SelectedPlan[]>([]);
   const [dueDate, setDueDate] = React.useState<number | undefined>();
   const [planValue, setPlanValue] = React.useState('');
@@ -69,7 +69,7 @@ export function SubscriptionPlanForm() {
 
 
   const handleAddPlan = () => {
-    if (selectedPanel && selectedServer && selectedPlan) {
+    if (selectedPanel && selectedServer && selectedPlan && numberOfScreens) {
       const numericValue = parseFloat(planValue.replace(/[^0-9,-]+/g, "").replace(',', '.')) || 0;
       setAddedPlans([
         ...addedPlans,
@@ -86,7 +86,7 @@ export function SubscriptionPlanForm() {
       setSelectedPanelId('');
       setSelectedServerName('');
       setSelectedPlanName('');
-      setNumberOfScreens(1);
+      setNumberOfScreens('');
       setDueDate(undefined);
       setPlanValue('');
       setIsCourtesy(false);
@@ -171,9 +171,9 @@ export function SubscriptionPlanForm() {
             type="number"
             min="1"
             value={numberOfScreens}
-            onChange={(e) => setNumberOfScreens(parseInt(e.target.value, 10) || 1)}
+            onChange={(e) => setNumberOfScreens(e.target.value ? parseInt(e.target.value, 10) : '')}
             disabled={!selectedPlanName}
-            placeholder={t('screensToHirePlaceholder')}
+            placeholder=""
           />
         </div>
         
