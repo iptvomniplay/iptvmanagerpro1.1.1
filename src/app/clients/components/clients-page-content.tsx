@@ -212,8 +212,8 @@ export default function ClientsPageContent() {
             <TableRow>
               <TableHead>{t('name')}</TableHead>
               <TableHead>{t('status')}</TableHead>
-              <TableHead>{t('clientID')}</TableHead>
               <TableHead>Expira em</TableHead>
+              <TableHead>{t('clientID')}</TableHead>
               <TableHead className="text-right">{t('actions')}</TableHead>
             </TableRow>
           </TableHeader>
@@ -231,10 +231,7 @@ export default function ClientsPageContent() {
                       {t(client.status.toLowerCase() as any)}
                     </Badge>
                   </TableCell>
-                  <TableCell className="font-medium">
-                    {client.status === 'Active' ? client.id : ''}
-                  </TableCell>
-                  <TableCell>
+                   <TableCell>
                     {client.expirationDate && client.status === 'Active' ? (
                         <ClientExpiration 
                             clientId={client.id}
@@ -243,6 +240,9 @@ export default function ClientsPageContent() {
                             onExpire={() => updateClient({...client, status: 'Expired'})}
                         />
                     ) : null}
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    {client.status === 'Active' ? client.id : ''}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
