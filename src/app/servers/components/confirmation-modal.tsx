@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import type { Server } from '@/lib/types';
+import type { Server, SubServer } from '@/lib/types';
 import {
   Dialog,
   DialogContent,
@@ -168,7 +168,7 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, serverData }: Co
                                     <p className="text-sm font-semibold text-muted-foreground">{t('plans')}:</p>
                                     <div className="flex flex-wrap gap-1 mt-1">
                                         {sub.plans.map((plan, planIndex) => (
-                                            <Badge key={planIndex} variant="outline">{plan}</Badge>
+                                            <Badge key={planIndex} variant="outline">{typeof plan === 'string' ? plan : plan.name}</Badge>
                                         ))}
                                     </div>
                                 </div>

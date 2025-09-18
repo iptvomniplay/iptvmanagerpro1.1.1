@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
-import type { Client, Server } from '@/lib/types';
+import type { Client, Server, Test } from '@/lib/types';
 import { format } from 'date-fns';
 
 interface DataContextType {
@@ -13,6 +13,7 @@ interface DataContextType {
   addServer: (serverData: Omit<Server, 'id' | 'status'>) => void;
   updateServer: (serverData: Server) => void;
   deleteServer: (serverId: string) => void;
+  addTestToClient: (clientId: string, testData: Omit<Test, 'creationDate'>) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -35,32 +36,27 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
-    // This effect runs only on the client side to clear and load data.
     try {
-      // Force remove old data to ensure a clean start.
-      localStorage.removeItem('clients');
-      localStorage.removeItem('servers');
-      
-      // After cleaning, initialize with empty arrays.
-      setClients([]);
-      setServers([]);
+      const storedClients = localStorage.getItem('clients');
+      const storedServers = localStorage.getItem('servers');
+      setClients(safelyParseJSON(storedClients, []));
+      setServers(safelyParseJSON(storedServers, []));
     } catch (error) {
-        console.error("Failed to clear or load data from localStorage", error);
+        console.error("Failed to load data from localStorage", error);
         setClients([]);
         setServers([]);
     }
-    // Mark data as "loaded" to render children.
     setIsDataLoaded(true);
   }, []);
 
   useEffect(() => {
-    if (isDataLoaded && clients.length > 0) {
+    if (isDataLoaded) {
       localStorage.setItem('clients', JSON.stringify(clients));
     }
   }, [clients, isDataLoaded]);
 
   useEffect(() => {
-    if (isDataLoaded && servers.length > 0) {
+    if (isDataLoaded) {
       localStorage.setItem('servers', JSON.stringify(servers));
     }
   }, [servers, isDataLoaded]);
@@ -72,6 +68,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             ...clientData,
             id: `C${(Math.random() * 1000).toFixed(0).padStart(3, '0')}`,
             registeredDate: format(new Date(), 'yyyy-MM-dd'),
+            birthDate: clientData.birthDate || '',
         };
         return [newClient, ...prevClients];
     });
@@ -109,6 +106,22 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setServers(prevServers => prevServers.filter(s => s.id !== serverId));
   }, []);
 
+  const addTestToClient = useCallback((clientId: string, testData: Omit<Test, 'creationDate'>) => {
+    const newTest: Test = {
+      ...testData,
+      creationDate: new Date().toISOString(),
+    };
+    setClients(prev => prev.map(client => {
+      if (client.id === clientId) {
+        return {
+          ...client,
+          tests: [...(client.tests || []), newTest]
+        }
+      }
+      return client;
+    }));
+  }, []);
+
   const value = {
     clients,
     servers,
@@ -118,6 +131,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     addServer,
     updateServer,
     deleteServer,
+    addTestToClient,
   };
   
   // Render children only after data is loaded from localStorage to prevent hydration mismatch

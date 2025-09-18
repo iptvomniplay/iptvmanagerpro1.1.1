@@ -23,12 +23,13 @@ export type Client = {
   registeredDate: string;
   expirationDate?: string;
   tests?: Test[];
+  birthDate?: string;
   observations?: string;
 };
 
 export type Plan = {
   name: string;
-  value: number;
+  value?: number;
 }
 
 export type SubServer = {

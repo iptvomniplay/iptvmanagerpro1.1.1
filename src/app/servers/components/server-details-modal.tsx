@@ -220,7 +220,7 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
                                   <p className="text-sm font-medium text-muted-foreground">{t('plans')}:</p>
                                   <div className="flex flex-wrap gap-1 mt-1">
                                       {sub.plans.map((plan, planIndex) => (
-                                          <Badge key={planIndex} variant="outline">{plan}</Badge>
+                                          <Badge key={planIndex} variant="outline">{plan.name}</Badge>
                                       ))}
                                   </div>
                               </div>

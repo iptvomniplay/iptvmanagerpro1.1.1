@@ -201,17 +201,16 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
           </div>
           
           <div className="w-full md:w-1/2 space-y-2">
-            <Button type="button" variant="default" onClick={() => setIsPhoneModalOpen(true)}>
-              {t('addPhone')}
-            </Button>
-            
             <FormField
               control={form.control}
               name="phones"
               render={() => (
                 <FormItem>
+                    <Button type="button" variant="default" onClick={() => setIsPhoneModalOpen(true)}>
+                      {t('addPhone')}
+                    </Button>
                   {phoneFields.length > 0 && (
-                    <Collapsible className="space-y-2">
+                    <Collapsible className="space-y-2 pt-2">
                        <CollapsibleTrigger asChild>
                          <div className="flex items-center justify-between p-3 rounded-md border bg-muted cursor-pointer">
                             <span className="font-semibold">{t('phone')} - {phoneFields.length} {t('registered')}</span>

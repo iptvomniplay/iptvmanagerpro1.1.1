@@ -49,8 +49,7 @@ import { Textarea } from '@/components/ui/textarea';
 
 
 const createPlanSchema = (t: (key: any) => string) => z.object({
-  name: z.string().min(1, t('planNameRequired')),
-  value: z.coerce.number({invalid_type_error: t('planValueIsRequired')}).min(0, t('planValueIsRequired'))
+  name: z.string().min(1, t('planNameRequired'))
 });
 
 const createSubServerSchema = (t: (key: any) => string) => z.object({
@@ -62,7 +61,7 @@ const createSubServerSchema = (t: (key: any) => string) => z.object({
         invalid_type_error: t('screensRequired'),
     })
     .min(1, t('screensMin')),
-  plans: z.array(createPlanSchema(t)).min(1, t('atLeastOnePlanRequired')),
+  plans: z.array(z.string()).min(1, t('atLeastOnePlanRequired')),
   status: z.enum(['Online', 'Offline', 'Suspended', 'Maintenance']).default('Online'),
 });
 
@@ -134,7 +133,6 @@ type PlanFormValues = z.infer<ReturnType<typeof createPlanSchema>>;
 
 const initialPlanValues: PlanFormValues = {
     name: '',
-    value: undefined as any,
 }
 
 const initialSubServerValues: Omit<SubServerFormValues, 'status'> = {
@@ -157,7 +155,7 @@ const getInitialValues = (server: Server | null): ServerFormValues => ({
   dueDate: server?.dueDate || undefined,
   hasInitialStock: !!server?.creditStock && server.creditStock > 0,
   creditStock: server?.creditStock,
-  subServers: server?.subServers && server.subServers.length > 0 ? server.subServers : [],
+  subServers: server?.subServers ? server.subServers.map(s => ({...s, plans: s.plans.map(p => typeof p === 'string' ? p : p.name)})) : [],
   observations: server?.observations || '',
 });
 
@@ -295,7 +293,7 @@ export function ServerForm({ server }: ServerFormProps) {
     if (result.success) {
         setSubServerFormState(prev => ({
             ...prev,
-            plans: [...prev.plans, result.data],
+            plans: [...prev.plans, result.data.name],
         }));
         setCurrentPlan(initialPlanValues);
         setSubServerErrors(p => ({ ...p, plans: undefined }));
@@ -317,29 +315,21 @@ export function ServerForm({ server }: ServerFormProps) {
 
   const handleCurrencyChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    fieldName: keyof ServerFormValues | 'planValue'
+    fieldName: keyof ServerFormValues
   ) => {
     let value = e.target.value;
     value = value.replace(/\D/g, '');
     if (!value) {
-        if (fieldName === 'planValue') {
-            setCurrentPlan(p => ({...p, value: undefined as any}));
-        } else {
-            setValue(fieldName as any, '');
-        }
+      setValue(fieldName as any, '');
       return;
     }
     const numericValue = parseInt(value, 10) / 100;
 
-    if (fieldName === 'planValue') {
-        setCurrentPlan(p => ({...p, value: numericValue}));
-    } else {
-        const formatter = new Intl.NumberFormat(language, {
-          style: 'currency',
-          currency: language === 'pt-BR' ? 'BRL' : 'USD',
-        });
-        setValue(fieldName as any, formatter.format(numericValue));
-    }
+    const formatter = new Intl.NumberFormat(language, {
+      style: 'currency',
+      currency: language === 'pt-BR' ? 'BRL' : 'USD',
+    });
+    setValue(fieldName as any, formatter.format(numericValue));
   };
   
   const processSubServerForValidation = () => {
@@ -347,8 +337,8 @@ export function ServerForm({ server }: ServerFormProps) {
     const planSchema = createPlanSchema(t);
     const result = planSchema.safeParse(currentPlan);
     
-    if (result.success && !formStateWithCurrentPlan.plans.some(p => p.name === result.data.name)) {
-        formStateWithCurrentPlan.plans = [...formStateWithCurrentPlan.plans, result.data];
+    if (result.success && !formStateWithCurrentPlan.plans.some(p => p === result.data.name)) {
+        formStateWithCurrentPlan.plans = [...formStateWithCurrentPlan.plans, result.data.name];
     }
     return { ...formStateWithCurrentPlan, status: 'Online' as const };
   }
@@ -380,7 +370,7 @@ export function ServerForm({ server }: ServerFormProps) {
         !subServerFormState.type && 
         subServerFormState.screens === undefined && 
         subServerFormState.plans.length === 0 && 
-        !currentPlan.name.trim() && currentPlan.value === undefined;
+        !currentPlan.name.trim();
 
     if (isSubServerFormEmpty) {
       return { isValid: true, subServer: null };
@@ -448,9 +438,15 @@ export function ServerForm({ server }: ServerFormProps) {
     
     const creditStock = serverDataToConfirm.hasInitialStock ? (serverDataToConfirm.creditStock || 0) : 0;
     
+    const processedSubServers: SubServer[] = (serverDataToConfirm.subServers || []).map(s => ({
+        ...s,
+        plans: s.plans.map(p => ({name: p}))
+    }));
+
     const processedData = {
       ...serverDataToConfirm,
       creditStock: creditStock,
+      subServers: processedSubServers,
     };
     
     if (server) {
@@ -953,35 +949,21 @@ export function ServerForm({ server }: ServerFormProps) {
                                  {subServerErrors.screens && <p className="text-sm font-medium text-destructive">{subServerErrors.screens}</p>}
                             </FormItem>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr_auto] gap-4 items-end">
-                            <FormItem>
-                                <FormLabel>{t('planName')}</FormLabel>
+                        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-end">
+                           <FormItem>
+                                <FormLabel>{t('plans')}</FormLabel>
                                 <FormControl>
-                                <Input
-                                    ref={plansInputRef}
-                                    name="planName"
-                                    autoComplete="off"
-                                    value={currentPlan.name}
-                                    onFocus={handlePlansFocus}
-                                    onChange={(e) => setCurrentPlan(p => ({...p, name: e.target.value}))}
-                                    placeholder={t('planNamePlaceholder')}
-                                />
+                                    <Input
+                                        ref={plansInputRef}
+                                        name="planName"
+                                        autoComplete="off"
+                                        value={currentPlan.name}
+                                        onFocus={handlePlansFocus}
+                                        onChange={(e) => setCurrentPlan(p => ({...p, name: e.target.value}))}
+                                        placeholder={t('plansPlaceholder')}
+                                    />
                                 </FormControl>
                                 {subServerErrors.name && <p className="text-sm font-medium text-destructive">{subServerErrors.name}</p>}
-                            </FormItem>
-                             <FormItem>
-                                <FormLabel>{t('planValue')}</FormLabel>
-                                <FormControl>
-                                <Input
-                                    name="planValue"
-                                    autoComplete="off"
-                                    value={currentPlan.value ?? ''}
-                                    onFocus={handlePlansFocus}
-                                    onChange={(e) => handleCurrencyChange(e, 'planValue')}
-                                    placeholder={t('currencyPlaceholderBRL')}
-                                />
-                                </FormControl>
-                                {subServerErrors.value && <p className="text-sm font-medium text-destructive">{subServerErrors.value}</p>}
                             </FormItem>
                              <Button type="button" onClick={handleAddPlan} variant="default" className="self-end">
                                 {t('addPlan')}
@@ -1001,7 +983,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <CollapsibleContent className="space-y-2">
                                     {subServerFormState.plans.map((plan, index) => (
                                         <div key={index} className="flex items-center justify-between p-2 pl-4 rounded-md border">
-                                            <span className="text-sm">{plan.name} - R$ {plan.value}</span>
+                                            <span className="text-sm">{plan}</span>
                                             <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleRemovePlan(index)}>
                                                 <X className="h-4 w-4" />
                                             </Button>
@@ -1058,7 +1040,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                                         <p className="text-sm font-semibold text-muted-foreground">{t('plans')}:</p>
                                                         <div className="flex flex-wrap gap-1 mt-1">
                                                             {field.plans.map((plan, planIndex) => (
-                                                                <Badge key={planIndex} variant="outline">{plan.name} - R$ {plan.value}</Badge>
+                                                                <Badge key={planIndex} variant="outline">{plan}</Badge>
                                                             ))}
                                                         </div>
                                                     </div>
