@@ -70,7 +70,7 @@ export default function SubscriptionPage() {
             />
           </div>
           {selectedClient && (
-            <Card className="bg-muted/30">
+            <Card className="bg-muted/30 w-full">
               <CardHeader>
                 <CardTitle className="flex items-center gap-3 text-xl">
                   <User className="h-6 w-6" />
@@ -108,7 +108,7 @@ export default function SubscriptionPage() {
                     </p>
                     <p
                       className={cn(
-                        'mt-1 font-semibold truncate',
+                        'mt-1 font-semibold break-all',
                         isIdPending && 'text-yellow-500 animate-flash'
                       )}
                       title={displayedId}
