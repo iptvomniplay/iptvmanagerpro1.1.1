@@ -2,12 +2,12 @@
 
 import * as React from 'react';
 import { Progress } from '@/components/ui/progress';
-import { parseISO, differenceInSeconds } from 'date-fns';
+import { parseISO, differenceInSeconds, addMonths, setDate, startOfDay, endOfDay } from 'date-fns';
 
 interface ClientExpirationProps {
   clientId: string;
   registeredDate: string;
-  expirationDate: string;
+  dueDate: number;
   onExpire: () => void;
 }
 
@@ -37,7 +37,7 @@ const formatRemainingTime = (totalSeconds: number): string => {
 export function ClientExpiration({
   clientId,
   registeredDate,
-  expirationDate,
+  dueDate,
   onExpire,
 }: ClientExpirationProps) {
   const [remainingSeconds, setRemainingSeconds] = React.useState(0);
@@ -50,10 +50,20 @@ export function ClientExpiration({
   }, []);
 
   React.useEffect(() => {
-    if (!isClient) return;
+    if (!isClient || !dueDate) return;
 
-    const registration = parseISO(registeredDate);
-    const expiration = parseISO(expirationDate);
+    const calculateExpiration = () => {
+      const now = new Date();
+      let expirationDate = setDate(now, dueDate);
+
+      if (now.getDate() > dueDate) {
+        expirationDate = addMonths(expirationDate, 1);
+      }
+      return endOfDay(expirationDate);
+    };
+
+    const expiration = calculateExpiration();
+    const registration = startOfDay(parseISO(registeredDate));
     
     setTotalDuration(differenceInSeconds(expiration, registration));
 
@@ -74,10 +84,10 @@ export function ClientExpiration({
     }, 1000);
 
     return () => clearInterval(intervalId);
-  }, [expirationDate, registeredDate, onExpire, hasExpired, isClient]);
+  }, [dueDate, registeredDate, onExpire, hasExpired, isClient]);
 
-  if (!isClient) {
-    return null; // Don't render on the server
+  if (!isClient || !dueDate) {
+    return null; // Don't render on the server or if no due date
   }
 
   const progressPercentage = (remainingSeconds / totalDuration) * 100;

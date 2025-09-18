@@ -11,11 +11,21 @@ import { Badge } from '@/components/ui/badge';
 import { User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SubscriptionPlanForm } from './components/subscription-plan-form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function SubscriptionPage() {
   const { t } = useLanguage();
   const [selectedClient, setSelectedClient] = React.useState<Client | null>(null);
   const [manualId, setManualId] = React.useState('');
+  const [dueDate, setDueDate] = React.useState<number | undefined>(selectedClient?.dueDate);
+
+  React.useEffect(() => {
+    if (selectedClient) {
+      setDueDate(selectedClient.dueDate);
+    } else {
+      setDueDate(undefined);
+    }
+  }, [selectedClient]);
 
   const getStatusVariant = (status: Client['status']) => {
     switch (status) {
@@ -81,8 +91,8 @@ export default function SubscriptionPage() {
       </Card>
 
       <Card>
-        <CardContent className="pt-6">
-          <div className="w-full md:w-1/2 space-y-2">
+        <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="w-full space-y-2">
             <Label htmlFor="manual-client-id">{t('clientID')}</Label>
             <Input
               id="manual-client-id"
@@ -92,6 +102,27 @@ export default function SubscriptionPage() {
               onChange={(e) => setManualId(e.target.value)}
               disabled={!selectedClient}
             />
+          </div>
+          <div className="w-full space-y-2">
+             <Label htmlFor="due-date">{t('dueDate')}</Label>
+             <Select
+                value={dueDate ? String(dueDate) : ''}
+                onValueChange={(value) => setDueDate(parseInt(value, 10))}
+                disabled={!selectedClient}
+              >
+                <SelectTrigger id="due-date">
+                  <SelectValue placeholder={t('selectDay')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 31 }, (_, i) => i + 1).map(
+                    (day) => (
+                      <SelectItem key={day} value={String(day)}>
+                        {day}
+                      </SelectItem>
+                    )
+                  )}
+                </SelectContent>
+              </Select>
           </div>
         </CardContent>
       </Card>
