@@ -176,6 +176,7 @@ export function ServerForm({ server }: ServerFormProps) {
   const [isMainFormValidationErrorModalOpen, setIsMainFormValidationErrorModalOpen] = React.useState(false);
   const [mainFormErrorFields, setMainFormErrorFields] = React.useState<string[]>([]);
   const [isPaymentTypeVisible, setIsPaymentTypeVisible] = React.useState(false);
+  const [isObservationsVisible, setIsObservationsVisible] = React.useState(false);
   
 
 
@@ -665,36 +666,35 @@ export function ServerForm({ server }: ServerFormProps) {
                     </FormItem>
                   )}
                 />
+                 <Button
+                    type="button"
+                    onClick={() => setIsObservationsVisible(prev => !prev)}
+                    className="w-full"
+                    variant="outline"
+                  >
+                    {t('observations')}
+                  </Button>
+
+                  {isObservationsVisible && (
+                     <FormField
+                        control={control}
+                        name="observations"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Textarea
+                                placeholder={t('observationsPlaceholder')}
+                                {...field}
+                                autoComplete="off"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                  )}
             </div>
             
-            <div className="md:w-1/2">
-              <Collapsible defaultOpen>
-                <CollapsibleTrigger className="flex items-center justify-between w-full p-2 font-semibold">
-                  <FormLabel>{t('observations')}</FormLabel>
-                  <ChevronsUpDown className="h-5 w-5 text-muted-foreground" />
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <FormField
-                    control={control}
-                    name="observations"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Textarea
-                            placeholder={t('observationsPlaceholder')}
-                            {...field}
-                            className="mt-2"
-                            autoComplete="off"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CollapsibleContent>
-              </Collapsible>
-            </div>
-
             <div className="md:w-1/2">
               <FormField
                 control={control}
