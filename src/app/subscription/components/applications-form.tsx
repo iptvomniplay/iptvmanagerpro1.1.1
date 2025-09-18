@@ -238,7 +238,7 @@ export function ApplicationsForm({
                         />
                       </div>
                        <div className="space-y-2">
-                        <Label>{t('phone')}</Label>
+                        
                         <Button
                             type="button"
                             variant="outline"
