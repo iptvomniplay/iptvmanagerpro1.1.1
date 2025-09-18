@@ -695,7 +695,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <RadioGroupItem value="prepaid" id="prepaid" className="peer sr-only" />
                                 <FormLabel
                                   htmlFor="prepaid"
-                                  className="flex h-full cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-4 text-base hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-white peer-data-[state=checked]:bg-[#399e0d] peer-data-[state=checked]:text-primary-foreground"
+                                  className="flex h-full cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-4 text-base hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-white peer-data-[state=checked]:bg-[#2d7e0a] peer-data-[state=checked]:text-primary-foreground"
                                 >
                                   {t('prepaid')}
                                 </FormLabel>
@@ -704,7 +704,7 @@ export function ServerForm({ server }: ServerFormProps) {
                                 <RadioGroupItem value="postpaid" id="postpaid" className="peer sr-only" />
                                 <FormLabel
                                   htmlFor="postpaid"
-                                  className="flex h-full cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-4 text-base hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-white peer-data-[state=checked]:bg-[#399e0d] peer-data-[state=checked]:text-primary-foreground"
+                                  className="flex h-full cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-4 text-base hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-white peer-data-[state=checked]:bg-[#2d7e0a] peer-data-[state=checked]:text-primary-foreground"
                                 >
                                   {t('postpaid')}
                                 </FormLabel>
