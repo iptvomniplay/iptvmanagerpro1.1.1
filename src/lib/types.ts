@@ -24,7 +24,7 @@ export type Application = {
   activationLocation?: string;
   hasResponsible?: boolean;
   responsibleName?: string;
-  responsiblePhone?: string;
+  responsiblePhones?: Phone[];
   activationId?: string;
 };
 
