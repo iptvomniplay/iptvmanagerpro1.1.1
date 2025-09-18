@@ -296,5 +296,8 @@
     "addedApplications": "Added Applications",
     "appNameRequired": "Application name is required.",
     "planValue": "Plan Value",
-    "courtesy": "Courtesy"
+    "courtesy": "Courtesy",
+    "activationLocation": "Activation Location",
+    "responsibleAndPhone": "Responsible and Phone",
+    "activationId": "Activation ID"
 }

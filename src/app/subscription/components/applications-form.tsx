@@ -16,6 +16,7 @@ import { Switch } from '@/components/ui/switch';
 import { ChevronDown, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { BirthdateInput } from '@/components/ui/birthdate-input';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface ApplicationsFormProps {
   selectedClient: Client | null;
@@ -30,6 +31,11 @@ const initialAppState: Application = {
   licenseDueDate: '',
   device: '',
   location: '',
+  activationLocation: '',
+  hasResponsible: false,
+  responsibleName: '',
+  responsiblePhone: '',
+  activationId: '',
 };
 
 export function ApplicationsForm({
@@ -57,6 +63,13 @@ export function ApplicationsForm({
     const name = field || e.target.name;
     const value = e.target.value;
     setCurrentApp((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCheckboxChange = (
+    checked: boolean,
+    field: keyof Application
+  ) => {
+    setCurrentApp((prev) => ({ ...prev, [field]: checked }));
   };
 
   const handleDateChange = (value: string) => {
@@ -174,12 +187,73 @@ export function ApplicationsForm({
                 </Label>
               </div>
             </div>
+            
             {currentApp.licenseType === 'Anual' && (
-              <div className="space-y-2">
-                <Label htmlFor="license-due-date">{t('licenseDueDate')}</Label>
-                <BirthdateInput field={birthdateField} language={language} />
-              </div>
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="license-due-date">{t('licenseDueDate')}</Label>
+                  <BirthdateInput field={birthdateField} language={language} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="activation-location">{t('activationLocation')}</Label>
+                  <Input
+                    id="activation-location"
+                    name="activationLocation"
+                    value={currentApp.activationLocation}
+                    onChange={handleInputChange}
+                    disabled={!selectedClient}
+                  />
+                </div>
+                <div className="space-y-2 col-span-1 md:col-span-2">
+                   <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="has-responsible" 
+                        checked={currentApp.hasResponsible} 
+                        onCheckedChange={(checked) => handleCheckboxChange(checked as boolean, 'hasResponsible')}
+                        disabled={!selectedClient}
+                      />
+                      <Label htmlFor="has-responsible" className="cursor-pointer">{t('responsibleAndPhone')}</Label>
+                   </div>
+                </div>
+
+                {currentApp.hasResponsible && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="responsible-name">{t('responsibleName')}</Label>
+                      <Input
+                        id="responsible-name"
+                        name="responsibleName"
+                        value={currentApp.responsibleName}
+                        onChange={handleInputChange}
+                        disabled={!selectedClient}
+                      />
+                    </div>
+                     <div className="space-y-2">
+                      <Label htmlFor="responsible-phone">{t('phone')}</Label>
+                      <Input
+                        id="responsible-phone"
+                        name="responsiblePhone"
+                        value={currentApp.responsiblePhone}
+                        onChange={handleInputChange}
+                        disabled={!selectedClient}
+                      />
+                    </div>
+                  </>
+                )}
+
+                 <div className="space-y-2">
+                  <Label htmlFor="activation-id">{t('activationId')}</Label>
+                  <Input
+                    id="activation-id"
+                    name="activationId"
+                    value={currentApp.activationId}
+                    onChange={handleInputChange}
+                    disabled={!selectedClient}
+                  />
+                </div>
+              </>
             )}
+
             <div className="space-y-2">
               <Label htmlFor="device">{t('device')}</Label>
               <Input
@@ -258,11 +332,43 @@ export function ApplicationsForm({
                       <span className="font-semibold">{t('licenseType')}:</span>{' '}
                       {t((app.licenseType || 'free').toLowerCase() as any)}
                     </p>
-                     {app.licenseType === 'Anual' && app.licenseDueDate && (
-                       <p>
-                          <span className="font-semibold">{t('licenseDueDate')}:</span>{' '}
-                          {app.licenseDueDate}
-                       </p>
+                     {app.licenseType === 'Anual' && (
+                       <>
+                         {app.licenseDueDate && (
+                           <p>
+                              <span className="font-semibold">{t('licenseDueDate')}:</span>{' '}
+                              {app.licenseDueDate}
+                           </p>
+                         )}
+                         {app.activationLocation && (
+                           <p>
+                              <span className="font-semibold">{t('activationLocation')}:</span>{' '}
+                              {app.activationLocation}
+                           </p>
+                         )}
+                          {app.hasResponsible && (
+                            <>
+                              {app.responsibleName && (
+                                <p>
+                                    <span className="font-semibold">{t('responsibleName')}:</span>{' '}
+                                    {app.responsibleName}
+                                </p>
+                              )}
+                              {app.responsiblePhone && (
+                                <p>
+                                    <span className="font-semibold">{t('phone')}:</span>{' '}
+                                    {app.responsiblePhone}
+                                </p>
+                              )}
+                            </>
+                          )}
+                           {app.activationId && (
+                           <p>
+                              <span className="font-semibold">{t('activationId')}:</span>{' '}
+                              {app.activationId}
+                           </p>
+                         )}
+                       </>
                      )}
                   </CardContent>
                 </CollapsibleContent>

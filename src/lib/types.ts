@@ -18,8 +18,14 @@ export type Application = {
   macAddress: string;
   keyId: string;
   licenseType: 'Free' | 'Anual';
+  licenseDueDate?: string;
   device: string;
   location: string;
+  activationLocation?: string;
+  hasResponsible?: boolean;
+  responsibleName?: string;
+  responsiblePhone?: string;
+  activationId?: string;
 };
 
 export type Client = {

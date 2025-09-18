@@ -13,7 +13,7 @@
     "highCPU": "Carga de CPU alta no Servidor 2",
     "welcome": "Bem-vindo ao IPTV Manager Pro",
     "welcomeMessage": "Seu hub central para gerenciar clientes e servidores. Simplifique suas operações e obtenha uma visão geral clara de sua rede IPTV.",
-    "manageClients": "Gerenciar Clientes",
+    "manageClients": "Gerenciar Clentes",
     "configureServers": "Configurar Servidores",
     "configureServersMessage": "Use nossa ferramenta com tecnologia de IA para validar os parâmetros do servidor para um desempenho ideal.",
     "validateConfiguration": "Validar",
@@ -296,5 +296,8 @@
     "addedApplications": "Aplicativos Adicionados",
     "appNameRequired": "O nome do aplicativo é obrigatório.",
     "planValue": "Valor do Plano",
-    "courtesy": "Cortesia"
+    "courtesy": "Cortesia",
+    "activationLocation": "Local de Ativação",
+    "responsibleAndPhone": "Responsável e Telefone",
+    "activationId": "ID de Ativação"
 }
