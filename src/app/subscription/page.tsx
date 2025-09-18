@@ -2,6 +2,7 @@
 
 import { useLanguage } from '@/hooks/use-language';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ClientSearch } from './components/client-search';
 
 export default function SubscriptionPage() {
   const { t } = useLanguage();
@@ -16,7 +17,8 @@ export default function SubscriptionPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p>{t('awaitingInput')}</p>
+          <ClientSearch />
+          {/* O formulário de assinatura será construído aqui após a seleção do cliente */}
         </CardContent>
       </Card>
     </div>
