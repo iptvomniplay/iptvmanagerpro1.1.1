@@ -53,14 +53,14 @@ import { ClientDetailsModal } from './client-details-modal';
 import { useRouter } from 'next/navigation';
 import { TestModal } from './test-modal';
 import { normalizeString } from '@/lib/utils';
-import { differenceInDays, parseISO } from 'date-fns';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { ClientExpiration } from './client-expiration';
 
 export type ClientFormValues = Omit<Client, 'id' | 'registeredDate'>;
 
 export default function ClientsPageContent() {
   const { t } = useLanguage();
-  const { clients, deleteClient } = useData();
+  const { clients, deleteClient, updateClient } = useData();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = React.useState('');
   const [isFormOpen, setIsFormOpen] = React.useState(false);
@@ -130,15 +130,6 @@ export default function ClientsPageContent() {
     }
   };
 
-  const getExpirationBadgeVariant = (expirationDate?: string) => {
-    if (!expirationDate) return 'outline';
-    const daysUntilExpiration = differenceInDays(parseISO(expirationDate), new Date());
-    if (daysUntilExpiration <= 7) {
-      return 'warning';
-    }
-    return 'outline';
-  };
-
   return (
     <>
       <div className="flex items-center justify-between gap-4">
@@ -185,7 +176,7 @@ export default function ClientsPageContent() {
               <TableHead>{t('name')}</TableHead>
               <TableHead>{t('status')}</TableHead>
               <TableHead>{t('clientID')}</TableHead>
-              <TableHead>Expiration</TableHead>
+              <TableHead>Expira em</TableHead>
               <TableHead className="text-right">{t('actions')}</TableHead>
             </TableRow>
           </TableHeader>
@@ -207,11 +198,14 @@ export default function ClientsPageContent() {
                     {client.status === 'Active' ? client.id : ''}
                   </TableCell>
                   <TableCell>
-                    {client.expirationDate && (
-                      <Badge variant={getExpirationBadgeVariant(client.expirationDate)}>
-                        {client.expirationDate}
-                      </Badge>
-                    )}
+                    {client.expirationDate && client.status === 'Active' ? (
+                        <ClientExpiration 
+                            clientId={client.id}
+                            registeredDate={client.registeredDate} 
+                            expirationDate={client.expirationDate} 
+                            onExpire={() => updateClient({...client, status: 'Expired'})}
+                        />
+                    ) : null}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
