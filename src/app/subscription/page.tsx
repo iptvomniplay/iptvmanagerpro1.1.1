@@ -10,11 +10,17 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs';
 import { ClientSearch } from './components/client-search';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { User } from 'lucide-react';
+import { User, FileText, AppWindow } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SubscriptionPlanForm } from './components/subscription-plan-form';
 import { ApplicationsForm } from './components/applications-form';
@@ -69,16 +75,37 @@ export default function SubscriptionPage() {
               selectedClient={selectedClient}
             />
           </div>
-          {selectedClient && (
-            <Card className="bg-muted/30 w-full">
+        </CardContent>
+      </Card>
+      
+      {selectedClient && (
+        <Tabs defaultValue="client" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="client">
+              <User className="mr-2" />
+              {t('client')}
+            </TabsTrigger>
+            <TabsTrigger value="plans">
+                <FileText className="mr-2" />
+                {t('subscriptionPlans')}
+            </TabsTrigger>
+            <TabsTrigger value="apps">
+                <AppWindow className="mr-2" />
+                {t('applications')}
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="client">
+            <Card className="mt-4">
               <CardHeader>
                 <CardTitle className="flex items-center gap-3 text-xl">
                   <User className="h-6 w-6" />
                   <span>{selectedClient.name}</span>
                 </CardTitle>
+                <CardDescription>{t('clientDetails')}</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-sm">
                   <div>
                     <p className="font-medium text-muted-foreground">
                       {t('nickname')}
@@ -102,63 +129,66 @@ export default function SubscriptionPage() {
                     </p>
                     <p className="mt-1 truncate" title={selectedClient.email}>{selectedClient.email || '---'}</p>
                   </div>
-                   <div className="overflow-hidden">
-                    <p className="font-medium text-muted-foreground">
-                      {t('clientID')}
-                    </p>
-                    <p
-                      className={cn(
-                        'mt-1 font-semibold break-all',
-                        isIdPending && 'text-yellow-500 animate-flash'
-                      )}
-                      title={displayedId}
-                    >
-                      {displayedId}
+                </div>
+                 <div className="w-full md:w-1/2 space-y-2">
+                    <Label htmlFor="manual-client-id">{t('clientID')}</Label>
+                    <Input
+                      id="manual-client-id"
+                      placeholder={t('clientIdManualPlaceholder')}
+                      autoComplete="off"
+                      value={manualId}
+                      onChange={(e) => setManualId(e.target.value)}
+                      disabled={!selectedClient}
+                      className={cn(isIdPending && 'ring-2 ring-yellow-500/80 animate-pulse')}
+                    />
+                     <p className="text-sm text-muted-foreground">
+                      <span className="font-semibold">ID Atual: </span>
+                      <span className={cn(isIdPending && 'text-yellow-500 font-bold')}>{displayedId}</span>
                     </p>
                   </div>
-                </div>
               </CardContent>
             </Card>
-          )}
-        </CardContent>
-      </Card>
+          </TabsContent>
 
-      <Card>
-        <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="w-full space-y-2">
-            <Label htmlFor="manual-client-id">{t('clientID')}</Label>
-            <Input
-              id="manual-client-id"
-              placeholder={t('clientIdManualPlaceholder')}
-              autoComplete="off"
-              value={manualId}
-              onChange={(e) => setManualId(e.target.value)}
-              disabled={!selectedClient}
-            />
-          </div>
-        </CardContent>
-      </Card>
+          <TabsContent value="plans">
+            <Card className="mt-4">
+                <CardHeader>
+                <CardTitle>{t('subscriptionPlans')}</CardTitle>
+                 <CardDescription>{t('addSubscriptionPlanDescription')}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                <SubscriptionPlanForm />
+                </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="apps">
+            <Card className="mt-4">
+                <CardHeader>
+                <CardTitle>{t('applications')}</CardTitle>
+                <CardDescription>{t('addApplicationDescription')}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                <ApplicationsForm 
+                    selectedClient={selectedClient} 
+                    onUpdateClient={handleUpdateClient} 
+                />
+                </CardContent>
+            </Card>
+          </TabsContent>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('subscriptionPlans')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <SubscriptionPlanForm />
-        </CardContent>
-      </Card>
+        </Tabs>
+      )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('applications')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ApplicationsForm 
-            selectedClient={selectedClient} 
-            onUpdateClient={handleUpdateClient} 
-          />
-        </CardContent>
-      </Card>
+      {!selectedClient && (
+         <Card className="flex flex-col items-center justify-center text-center py-20">
+            <CardHeader>
+                <User className="mx-auto h-16 w-16 text-muted-foreground/50" />
+                <CardTitle className="mt-4 text-xl font-semibold">{t('selectClientPrompt')}</CardTitle>
+                <CardDescription className="mt-2 max-w-sm">{t('selectClientPromptDescription')}</CardDescription>
+            </CardHeader>
+        </Card>
+      )}
     </div>
   );
 }
