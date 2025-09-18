@@ -294,5 +294,7 @@
     "locationPlaceholder": "e.g., Living Room",
     "addApplication": "Add Application",
     "addedApplications": "Added Applications",
-    "appNameRequired": "Application name is required."
+    "appNameRequired": "Application name is required.",
+    "planValue": "Plan Value",
+    "courtesy": "Courtesy"
 }

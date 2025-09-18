@@ -11,16 +11,19 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface SelectedPlan {
   panel: Server;
   server: SubServer;
   plan: PlanType;
   screens: number;
+  planValue: number;
+  isCourtesy: boolean;
 }
 
 export function SubscriptionPlanForm() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { servers: panels } = useData();
 
   const [selectedPanelId, setSelectedPanelId] = React.useState<string>('');
@@ -29,15 +32,45 @@ export function SubscriptionPlanForm() {
   const [numberOfScreens, setNumberOfScreens] = React.useState<number>(1);
   const [addedPlans, setAddedPlans] = React.useState<SelectedPlan[]>([]);
   const [dueDate, setDueDate] = React.useState<number | undefined>();
+  const [planValue, setPlanValue] = React.useState('');
+  const [isCourtesy, setIsCourtesy] = React.useState(false);
+
 
   const selectedPanel = panels.find((p) => p.id === selectedPanelId);
   const availableServers = selectedPanel?.subServers || [];
   const selectedServer = availableServers.find((s) => s.name === selectedServerName);
   const availablePlans = selectedServer?.plans || [];
   const selectedPlan = availablePlans.find((p) => p.name === selectedPlanName);
+  
+  React.useEffect(() => {
+    if (selectedPlan && selectedPlan.value) {
+      setPlanValue(formatCurrency(selectedPlan.value));
+    } else {
+      setPlanValue('');
+    }
+  }, [selectedPlan]);
+  
+  React.useEffect(() => {
+    if (isCourtesy) {
+      setPlanValue(formatCurrency(0));
+    }
+  }, [isCourtesy, language]);
+
+  const handleCurrencyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+    value = value.replace(/\D/g, '');
+    if (!value) {
+      setPlanValue('');
+      return;
+    }
+    const numericValue = parseInt(value, 10) / 100;
+    setPlanValue(formatCurrency(numericValue));
+  };
+
 
   const handleAddPlan = () => {
     if (selectedPanel && selectedServer && selectedPlan) {
+      const numericValue = parseFloat(planValue.replace(/[^0-9,-]+/g, "").replace(',', '.')) || 0;
       setAddedPlans([
         ...addedPlans,
         {
@@ -45,6 +78,8 @@ export function SubscriptionPlanForm() {
           server: selectedServer,
           plan: selectedPlan,
           screens: numberOfScreens,
+          planValue: isCourtesy ? 0 : numericValue,
+          isCourtesy: isCourtesy,
         },
       ]);
       // Reset form
@@ -52,6 +87,9 @@ export function SubscriptionPlanForm() {
       setSelectedServerName('');
       setSelectedPlanName('');
       setNumberOfScreens(1);
+      setDueDate(undefined);
+      setPlanValue('');
+      setIsCourtesy(false);
     }
   };
 
@@ -61,7 +99,9 @@ export function SubscriptionPlanForm() {
   
   const formatCurrency = (value?: number) => {
     if (value === undefined) return '';
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+    const currency = language === 'pt-BR' ? 'BRL' : 'USD';
+    const locale = language === 'pt-BR' ? 'pt-BR' : 'en-US';
+    return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(value);
   }
 
   return (
@@ -114,7 +154,7 @@ export function SubscriptionPlanForm() {
             </SelectContent>
           </Select>
         </div>
-
+        
         <div className="space-y-2">
             <Label>{t('screensAvailable')}</Label>
             <Input
@@ -125,8 +165,9 @@ export function SubscriptionPlanForm() {
         </div>
 
         <div className="space-y-2">
-          <Label>{t('screensToHire')}</Label>
+          <Label htmlFor='screens-to-hire'>{t('screensToHire')}</Label>
           <Input
+            id='screens-to-hire'
             type="number"
             min="1"
             value={numberOfScreens}
@@ -156,6 +197,28 @@ export function SubscriptionPlanForm() {
               </SelectContent>
             </Select>
         </div>
+        
+        <div className="space-y-2">
+           <Label htmlFor="plan-value">{t('planValue')}</Label>
+           <Input
+              id='plan-value'
+              value={planValue}
+              onChange={handleCurrencyChange}
+              disabled={isCourtesy}
+              placeholder={formatCurrency(0)}
+            />
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Checkbox id="courtesy" checked={isCourtesy} onCheckedChange={(checked) => setIsCourtesy(checked as boolean)} />
+          <label
+            htmlFor="courtesy"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {t('courtesy')}
+          </label>
+        </div>
+
       </div>
       
        <div className="flex justify-end">
@@ -189,7 +252,9 @@ export function SubscriptionPlanForm() {
                     </div>
                     <div>
                         <span className="font-semibold">{t('value')}: </span>
-                        <Badge variant="outline" className="text-base">{formatCurrency(item.plan.value)}</Badge>
+                        <Badge variant={item.isCourtesy ? 'default' : 'outline'} className="text-base">
+                            {item.isCourtesy ? t('courtesy') : formatCurrency(item.planValue)}
+                        </Badge>
                     </div>
                  </div>
               </CardContent>

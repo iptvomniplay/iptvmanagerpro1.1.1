@@ -294,5 +294,7 @@
     "locationPlaceholder": "Ex: Sala de Estar",
     "addApplication": "Adicionar Aplicativo",
     "addedApplications": "Aplicativos Adicionados",
-    "appNameRequired": "O nome do aplicativo é obrigatório."
+    "appNameRequired": "O nome do aplicativo é obrigatório.",
+    "planValue": "Valor do Plano",
+    "courtesy": "Cortesia"
 }
