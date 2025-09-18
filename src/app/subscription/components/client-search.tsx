@@ -7,16 +7,15 @@ import { normalizeString } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Search, User, X } from 'lucide-react';
+import { Search, User } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
-import { Button } from '@/components/ui/button';
 
 export function ClientSearch() {
   const { t } = useLanguage();
   const { clients } = useData();
   const [searchTerm, setSearchTerm] = React.useState('');
   const [searchResults, setSearchResults] = React.useState<Client[]>([]);
-  const [selectedClients, setSelectedClients] = React.useState<Client[]>([]);
+  const [selectedClient, setSelectedClient] = React.useState<Client | null>(null);
   const [isFocused, setIsFocused] = React.useState(false);
   const searchRef = React.useRef<HTMLDivElement>(null);
 
@@ -28,10 +27,7 @@ export function ClientSearch() {
 
     const normalizedTerm = normalizeString(searchTerm);
     const results = clients.filter((client) => {
-      const isAlreadySelected = selectedClients.some(
-        (selected) => selected.id === client.id
-      );
-      if (isAlreadySelected) return false;
+      if (selectedClient && client.id === selectedClient.id) return false;
 
       const phoneMatch = client.phones.some((phone) =>
         normalizeString(phone.number)
@@ -45,7 +41,7 @@ export function ClientSearch() {
       );
     });
     setSearchResults(results);
-  }, [searchTerm, clients, selectedClients]);
+  }, [searchTerm, clients, selectedClient]);
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -58,14 +54,10 @@ export function ClientSearch() {
   }, []);
 
   const handleSelectClient = (client: Client) => {
-    setSelectedClients((prev) => [...prev, client]);
+    setSelectedClient(client);
     setSearchTerm('');
     setSearchResults([]);
     setIsFocused(false);
-  };
-
-  const handleRemoveClient = (clientId: string) => {
-    setSelectedClients((prev) => prev.filter((client) => client.id !== clientId));
   };
 
   const getStatusVariant = (status: Client['status']) => {
@@ -125,49 +117,33 @@ export function ClientSearch() {
         )}
       </div>
 
-      {selectedClients.length > 0 && (
-        <div className="space-y-4">
-          {selectedClients.map((client) => (
-            <Card key={client.id} className="relative bg-muted/30">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-2 right-2 h-7 w-7"
-                onClick={() => handleRemoveClient(client.id)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-4">
-                  <User className="h-6 w-6" />
-                  <span>{client.name}</span>
+      {selectedClient && (
+        <Card className="bg-muted/30">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-3 text-xl">
+                    <User className="h-6 w-6" />
+                    <span>{selectedClient.name}</span>
                 </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <span className="w-20 text-sm text-muted-foreground">
-                    {t('nickname')}
-                  </span>
-                  <Input value={client.nickname || '---'} readOnly />
+            </CardHeader>
+            <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div>
+                        <p className="font-medium text-muted-foreground">{t('nickname')}</p>
+                        <p className="mt-1">{selectedClient.nickname || '---'}</p>
+                    </div>
+                    <div>
+                        <p className="font-medium text-muted-foreground">{t('status')}</p>
+                         <Badge variant={getStatusVariant(selectedClient.status)} className="text-base mt-1">
+                            {t(selectedClient.status.toLowerCase() as any)}
+                        </Badge>
+                    </div>
+                    <div>
+                        <p className="font-medium text-muted-foreground">{t('clientID')}</p>
+                        <p className="mt-1">{selectedClient.status === 'Active' ? selectedClient.id : 'N/A'}</p>
+                    </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="w-20 text-sm text-muted-foreground">
-                    {t('status')}
-                  </span>
-                   <Badge variant={getStatusVariant(client.status)} className="text-base">
-                      {t(client.status.toLowerCase() as any)}
-                    </Badge>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="w-20 text-sm text-muted-foreground">
-                    {t('clientID')}
-                  </span>
-                  <Input value={client.status === 'Active' ? client.id : 'N/A'} readOnly />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+            </CardContent>
+        </Card>
       )}
     </div>
   );
