@@ -18,7 +18,6 @@ export type Application = {
   macAddress: string;
   keyId: string;
   licenseType: 'Free' | 'Anual';
-  licenseDueDate?: string;
   device: string;
   location: string;
 };

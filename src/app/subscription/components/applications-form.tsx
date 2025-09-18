@@ -37,7 +37,6 @@ const initialAppState: Omit<Application, 'licenseType'> & {
   macAddress: '',
   keyId: '',
   licenseType: 'Free',
-  licenseDueDate: undefined,
   device: '',
   location: '',
 };
@@ -70,14 +69,6 @@ export function ApplicationsForm({
     setCurrentApp((prev) => ({
       ...prev,
       licenseType: newLicenseType,
-      licenseDueDate: newLicenseType === 'Free' ? undefined : prev.licenseDueDate,
-    }));
-  };
-
-  const handleDateChange = (date?: Date) => {
-    setCurrentApp((prev) => ({
-      ...prev,
-      licenseDueDate: date ? format(date, 'yyyy-MM-dd') : undefined,
     }));
   };
 
@@ -107,18 +98,6 @@ export function ApplicationsForm({
     if (selectedClient) {
       const updatedClient = { ...selectedClient, applications: updatedApps };
       onUpdateClient(updatedClient);
-    }
-  };
-
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return 'N/A';
-    try {
-      const localeModule = language === 'pt-BR' ? require('date-fns/locale/pt-BR') : require('date-fns/locale/en-US');
-      return format(parseISO(dateString), 'P', {
-        locale: localeModule.default || localeModule,
-      });
-    } catch (e) {
-      return dateString;
     }
   };
 
@@ -172,40 +151,6 @@ export function ApplicationsForm({
                 <Label htmlFor="license-type-switch" className="cursor-pointer">{t('anual')}</Label>
               </div>
             </div>
-            {currentApp.licenseType === 'Anual' && (
-              <div className="space-y-2">
-                <Label>{t('licenseDueDate')}</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={'outline'}
-                      className={cn(
-                        'w-full justify-start text-left font-normal h-11',
-                        !currentApp.licenseDueDate && 'text-muted-foreground'
-                      )}
-                      disabled={!selectedClient}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {currentApp.licenseDueDate ? (
-                        formatDate(currentApp.licenseDueDate)
-                      ) : (
-                        <span>{t('pickADate')}</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <DatePicker
-                      value={
-                        currentApp.licenseDueDate
-                          ? parseISO(currentApp.licenseDueDate)
-                          : undefined
-                      }
-                      onChange={handleDateChange}
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-            )}
             <div className="space-y-2">
               <Label htmlFor="device">{t('device')}</Label>
               <Input
@@ -284,14 +229,6 @@ export function ApplicationsForm({
                       <span className="font-semibold">{t('licenseType')}:</span>{' '}
                       {t((app.licenseType || 'free').toLowerCase() as any)}
                     </p>
-                    {app.licenseType === 'Anual' && (
-                      <p>
-                        <span className="font-semibold">
-                          {t('licenseDueDate')}:
-                        </span>{' '}
-                        {formatDate(app.licenseDueDate)}
-                      </p>
-                    )}
                   </CardContent>
                 </CollapsibleContent>
               </Card>
