@@ -11,7 +11,17 @@ export type Test = {
   durationValue: number;
   durationUnit: 'hours' | 'days';
   creationDate: string;
-}
+};
+
+export type Application = {
+  name: string;
+  macAddress: string;
+  keyId: string;
+  licenseType: 'Free' | 'Anual';
+  licenseDueDate?: string;
+  device: string;
+  location: string;
+};
 
 export type Client = {
   id: string;
@@ -24,6 +34,7 @@ export type Client = {
   expirationDate?: string;
   dueDate?: number;
   tests?: Test[];
+  applications?: Application[];
   birthDate?: string;
   observations?: string;
 };
@@ -31,7 +42,7 @@ export type Client = {
 export type Plan = {
   name: string;
   value?: number;
-}
+};
 
 export type SubServer = {
   name: string;

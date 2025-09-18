@@ -3,7 +3,13 @@
 import * as React from 'react';
 import type { Client } from '@/lib/types';
 import { useLanguage } from '@/hooks/use-language';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { ClientSearch } from './components/client-search';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,13 +17,15 @@ import { Badge } from '@/components/ui/badge';
 import { User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SubscriptionPlanForm } from './components/subscription-plan-form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ApplicationsForm } from './components/applications-form';
 
 export default function SubscriptionPage() {
   const { t } = useLanguage();
-  const [selectedClient, setSelectedClient] = React.useState<Client | null>(null);
+  const [selectedClient, setSelectedClient] = React.useState<Client | null>(
+    null
+  );
   const [manualId, setManualId] = React.useState('');
-  
+
   const getStatusVariant = (status: Client['status']) => {
     switch (status) {
       case 'Active':
@@ -33,7 +41,8 @@ export default function SubscriptionPage() {
     }
   };
 
-  const displayedId = manualId || (selectedClient?.status === 'Active' ? selectedClient.id : 'N/A');
+  const displayedId =
+    manualId || (selectedClient?.status === 'Active' ? selectedClient.id : 'N/A');
   const isIdPending = manualId !== '' && manualId !== selectedClient?.id;
 
   return (
@@ -46,36 +55,52 @@ export default function SubscriptionPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="w-full md:w-1/2 space-y-4">
-           <ClientSearch onSelectClient={setSelectedClient} selectedClient={selectedClient} />
-           {selectedClient && (
+          <ClientSearch
+            onSelectClient={setSelectedClient}
+            selectedClient={selectedClient}
+          />
+          {selectedClient && (
             <Card className="bg-muted/30">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-3 text-xl">
-                        <User className="h-6 w-6" />
-                        <span>{selectedClient.name}</span>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                        <div>
-                            <p className="font-medium text-muted-foreground">{t('nickname')}</p>
-                            <p className="mt-1">{selectedClient.nickname || '---'}</p>
-                        </div>
-                        <div>
-                            <p className="font-medium text-muted-foreground">{t('status')}</p>
-                             <Badge variant={getStatusVariant(selectedClient.status)} className="text-base mt-1">
-                                {t(selectedClient.status.toLowerCase() as any)}
-                            </Badge>
-                        </div>
-                        <div>
-                            <p className="font-medium text-muted-foreground">{t('clientID')}</p>
-                            <p className={cn(
-                              "mt-1 font-semibold",
-                              isIdPending && "text-yellow-500 animate-flash"
-                            )}>{displayedId}</p>
-                        </div>
-                    </div>
-                </CardContent>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3 text-xl">
+                  <User className="h-6 w-6" />
+                  <span>{selectedClient.name}</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <p className="font-medium text-muted-foreground">
+                      {t('nickname')}
+                    </p>
+                    <p className="mt-1">{selectedClient.nickname || '---'}</p>
+                  </div>
+                  <div>
+                    <p className="font-medium text-muted-foreground">
+                      {t('status')}
+                    </p>
+                    <Badge
+                      variant={getStatusVariant(selectedClient.status)}
+                      className="text-base mt-1"
+                    >
+                      {t(selectedClient.status.toLowerCase() as any)}
+                    </Badge>
+                  </div>
+                  <div>
+                    <p className="font-medium text-muted-foreground">
+                      {t('clientID')}
+                    </p>
+                    <p
+                      className={cn(
+                        'mt-1 font-semibold',
+                        isIdPending && 'text-yellow-500 animate-flash'
+                      )}
+                    >
+                      {displayedId}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
             </Card>
           )}
         </CardContent>
@@ -96,13 +121,25 @@ export default function SubscriptionPage() {
           </div>
         </CardContent>
       </Card>
-      
+
       <Card>
         <CardHeader>
-            <CardTitle>{t('subscriptionPlans')}</CardTitle>
+          <CardTitle>{t('subscriptionPlans')}</CardTitle>
         </CardHeader>
         <CardContent>
-            <SubscriptionPlanForm />
+          <SubscriptionPlanForm />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('applications')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ApplicationsForm
+            selectedClient={selectedClient}
+            onUpdateClient={setSelectedClient}
+          />
         </CardContent>
       </Card>
     </div>

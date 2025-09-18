@@ -278,5 +278,21 @@
     "screensToHire": "Telas (Contratar)",
     "value": "Valor",
     "screensToHirePlaceholder": "1",
-    "select": "Selecionar"
+    "select": "Selecionar",
+    "applications": "Aplicativos",
+    "appName": "Nome do Aplicativo",
+    "appNamePlaceholder": "Ex: IPTV Smarters",
+    "macAddress": "Endereço MAC",
+    "keyId": "ID da Chave",
+    "licenseType": "Tipo de Licença",
+    "free": "Grátis",
+    "anual": "Anual",
+    "licenseDueDate": "Vencimento da Licença",
+    "device": "Dispositivo",
+    "devicePlaceholder": "Ex: Smart TV Samsung",
+    "location": "Localização",
+    "locationPlaceholder": "Ex: Sala de Estar",
+    "addApplication": "Adicionar Aplicativo",
+    "addedApplications": "Aplicativos Adicionados",
+    "appNameRequired": "O nome do aplicativo é obrigatório."
 }

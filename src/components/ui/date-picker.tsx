@@ -50,7 +50,7 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
     const { displayMonth } = props;
     const currentYear = new Date().getFullYear();
     const fromYear = currentYear - 100;
-    const toYear = currentYear;
+    const toYear = currentYear + 10; // Allow selecting future years
     const years = Array.from({ length: toYear - fromYear + 1 }, (_, i) => toYear - i);
     const months = Array.from({ length: 12 }, (_, i) => i);
 
@@ -132,7 +132,7 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
         locale={locale}
         captionLayout="dropdown-buttons"
         fromYear={new Date().getFullYear() - 100}
-        toYear={new Date().getFullYear()}
+        toYear={new Date().getFullYear() + 10} // Allow selecting future years
         classNames={{
           months: 'flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0',
           month: 'space-y-4 w-full p-4',

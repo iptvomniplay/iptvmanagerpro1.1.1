@@ -278,5 +278,21 @@
     "screensToHire": "Screens (To Hire)",
     "value": "Value",
     "screensToHirePlaceholder": "1",
-    "select": "Select"
+    "select": "Select",
+    "applications": "Applications",
+    "appName": "Application Name",
+    "appNamePlaceholder": "e.g., IPTV Smarters",
+    "macAddress": "MAC Address",
+    "keyId": "Key ID",
+    "licenseType": "License Type",
+    "free": "Free",
+    "anual": "Annual",
+    "licenseDueDate": "License Due Date",
+    "device": "Device",
+    "devicePlaceholder": "e.g., Smart TV Samsung",
+    "location": "Location",
+    "locationPlaceholder": "e.g., Living Room",
+    "addApplication": "Add Application",
+    "addedApplications": "Added Applications",
+    "appNameRequired": "Application name is required."
 }
