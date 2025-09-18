@@ -52,6 +52,7 @@ import { ClientDetailsModal } from './client-details-modal';
 import { useRouter } from 'next/navigation';
 import { TestModal } from './test-modal';
 import { normalizeString } from '@/lib/utils';
+import { differenceInDays, parseISO } from 'date-fns';
 
 export type ClientFormValues = Omit<Client, 'id' | 'registeredDate'>;
 
@@ -127,6 +128,15 @@ export default function ClientsPageContent() {
     }
   };
 
+  const getExpirationBadgeVariant = (expirationDate?: string) => {
+    if (!expirationDate) return 'outline';
+    const daysUntilExpiration = differenceInDays(parseISO(expirationDate), new Date());
+    if (daysUntilExpiration <= 7) {
+      return 'warning';
+    }
+    return 'outline';
+  };
+
   return (
     <>
       <div className="flex items-center justify-between gap-4">
@@ -173,6 +183,7 @@ export default function ClientsPageContent() {
               <TableHead>{t('name')}</TableHead>
               <TableHead>{t('status')}</TableHead>
               <TableHead>{t('clientID')}</TableHead>
+              <TableHead>Expiration</TableHead>
               <TableHead className="text-right">{t('actions')}</TableHead>
             </TableRow>
           </TableHeader>
@@ -192,6 +203,13 @@ export default function ClientsPageContent() {
                   </TableCell>
                   <TableCell className="font-medium">
                     {client.status === 'Active' ? client.id : ''}
+                  </TableCell>
+                  <TableCell>
+                    {client.expirationDate && (
+                      <Badge variant={getExpirationBadgeVariant(client.expirationDate)}>
+                        {client.expirationDate}
+                      </Badge>
+                    )}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
@@ -220,7 +238,7 @@ export default function ClientsPageContent() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={4} className="h-28 text-center text-lg">
+                <TableCell colSpan={5} className="h-28 text-center text-lg">
                   {t('noClientsFound')}
                 </TableCell>
               </TableRow>
