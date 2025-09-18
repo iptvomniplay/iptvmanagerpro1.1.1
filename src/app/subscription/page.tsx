@@ -3,6 +3,8 @@
 import { useLanguage } from '@/hooks/use-language';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ClientSearch } from './components/client-search';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function SubscriptionPage() {
   const { t } = useLanguage();
@@ -16,9 +18,16 @@ export default function SubscriptionPage() {
             {t('subscriptionManagementDescription')}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
           <ClientSearch />
-          {/* O formulário de assinatura será construído aqui após a seleção do cliente */}
+          <div className="w-full md:w-1/2 space-y-2">
+            <Label htmlFor="manual-client-id">ID do Cliente (Manual)</Label>
+            <Input
+              id="manual-client-id"
+              placeholder="Insira o ID do cliente gerado no painel"
+              autoComplete="off"
+            />
+          </div>
         </CardContent>
       </Card>
     </div>
