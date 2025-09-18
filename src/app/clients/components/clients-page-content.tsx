@@ -48,6 +48,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { ClientForm } from './client-form';
+import { ClientDetailsModal } from './client-details-modal';
 import { useRouter } from 'next/navigation';
 import { TestModal } from './test-modal';
 import { normalizeString } from '@/lib/utils';
@@ -60,9 +61,10 @@ export default function ClientsPageContent() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = React.useState('');
   const [isFormOpen, setIsFormOpen] = React.useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = React.useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = React.useState(false);
   const [isTestModalOpen, setIsTestModalOpen] = React.useState(false);
-  const [editingClient, setEditingClient] = React.useState<Client | null>(null);
+  const [selectedClient, setSelectedClient] = React.useState<Client | null>(null);
   const [clientToDelete, setClientToDelete] = React.useState<Client | null>(
     null
   );
@@ -79,18 +81,26 @@ export default function ClientsPageContent() {
     );
   });
 
-  const handleEditOpen = (client: Client) => {
-    setEditingClient(client);
+  const handleViewDetails = (client: Client) => {
+    setSelectedClient(client);
+    setIsDetailsModalOpen(true);
+  };
+  
+  const handleEditOpen = () => {
+    setIsDetailsModalOpen(false);
     setIsFormOpen(true);
   };
 
   const handleFormClose = () => {
-    setEditingClient(null);
+    setSelectedClient(null);
     setIsFormOpen(false);
   };
 
-  const handleDeleteConfirm = (client: Client) => {
-    setClientToDelete(client);
+  const handleDeleteRequest = () => {
+    if (selectedClient) {
+      setClientToDelete(selectedClient);
+    }
+    setIsDetailsModalOpen(false);
     setIsDeleteAlertOpen(true);
   };
 
@@ -171,7 +181,7 @@ export default function ClientsPageContent() {
               filteredClients.map((client) => (
                 <TableRow key={client.id}>
                   <TableCell>
-                    <Button variant="outline" className="h-auto font-semibold" onClick={() => handleEditOpen(client)}>
+                    <Button variant="outline" className="h-auto font-semibold" onClick={() => handleViewDetails(client)}>
                       {client.name}
                     </Button>
                   </TableCell>
@@ -192,12 +202,12 @@ export default function ClientsPageContent() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEditOpen(client)}>
+                        <DropdownMenuItem onClick={() => { setSelectedClient(client); handleEditOpen(); }}>
                           <FilePenLine className="mr-2 h-4 w-4" />
                           {t('edit')}
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => handleDeleteConfirm(client)}
+                          onClick={() => { setClientToDelete(client); setIsDeleteAlertOpen(true); }}
                           className="text-destructive focus:text-destructive"
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
@@ -219,6 +229,16 @@ export default function ClientsPageContent() {
         </Table>
       </div>
 
+      {selectedClient && (
+        <ClientDetailsModal
+          isOpen={isDetailsModalOpen}
+          onClose={() => setIsDetailsModalOpen(false)}
+          client={selectedClient}
+          onEdit={handleEditOpen}
+          onDelete={handleDeleteRequest}
+        />
+      )}
+
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
@@ -230,7 +250,7 @@ export default function ClientsPageContent() {
             </DialogDescription>
           </DialogHeader>
           <ClientForm
-            client={editingClient}
+            client={selectedClient}
             onSubmitted={handleFormClose}
             onCancel={handleFormClose}
           />

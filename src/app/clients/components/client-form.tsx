@@ -341,7 +341,13 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
 
       <AlertDialog
         open={isSuccessModalOpen}
-        onOpenChange={setIsSuccessModalOpen}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) {
+            handleSuccessModalClose();
+          } else {
+            setIsSuccessModalOpen(true);
+          }
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
