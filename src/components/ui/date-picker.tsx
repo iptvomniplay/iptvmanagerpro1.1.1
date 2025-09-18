@@ -10,11 +10,6 @@ import { useLanguage } from '@/hooks/use-language';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -26,12 +21,9 @@ import { Calendar } from '@/components/ui/calendar';
 interface DatePickerProps {
   value?: Date;
   onChange: (date?: Date) => void;
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-  children: React.ReactNode;
 }
 
-export function DatePicker({ value, onChange, isOpen, onOpenChange, children }: DatePickerProps) {
+export function DatePicker({ value, onChange }: DatePickerProps) {
   const { t, language } = useLanguage();
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(value);
   const [month, setMonth] = React.useState<Date>(value || new Date());
@@ -40,19 +32,19 @@ export function DatePicker({ value, onChange, isOpen, onOpenChange, children }: 
 
   React.useEffect(() => {
     setSelectedDate(value);
-    setMonth(value || new Date());
+    if (value) {
+      setMonth(value);
+    }
   }, [value]);
 
   const handleOkClick = () => {
     onChange(selectedDate);
-    onOpenChange(false);
   };
 
   const handleCancelClick = () => {
     // Reset to original value on cancel
     setSelectedDate(value);
-    setMonth(value || new Date());
-    onOpenChange(false);
+    onChange(undefined); // Or you can close the popover by calling a function passed via props
   };
   
   function CustomCaption(props: CaptionProps) {
@@ -131,41 +123,36 @@ export function DatePicker({ value, onChange, isOpen, onOpenChange, children }: 
   }
 
   return (
-    <Popover open={isOpen} onOpenChange={onOpenChange}>
-      <PopoverTrigger asChild>
-        {children}
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 bg-background" align="start">
-        <Calendar
-          mode="single"
-          selected={selectedDate}
-          onSelect={setSelectedDate}
-          month={month}
-          onMonthChange={setMonth}
-          locale={locale}
-          captionLayout="dropdown-buttons"
-          fromYear={new Date().getFullYear() - 100}
-          toYear={new Date().getFullYear()}
-          classNames={{
-            months: 'flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0',
-            month: 'space-y-4 w-full p-4',
-            caption_layout: 'dropdown-buttons flex justify-center items-center gap-2 mb-4',
-            caption: 'flex justify-center pt-1 relative items-center',
-            caption_label: 'hidden',
-            head_row: 'flex mb-2 justify-between',
-            head_cell: 'text-muted-foreground rounded-md w-12 font-normal text-base',
-            row: 'flex w-full mt-2 justify-between',
-            cell: 'h-12 w-12 text-center text-base p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20',
-          }}
-          components={{
-            Caption: CustomCaption,
-          }}
-        />
-        <div className="flex justify-end gap-2 p-4 border-t">
-            <Button variant="ghost" onClick={handleCancelClick}>{t('cancel')}</Button>
-            <Button onClick={handleOkClick}>OK</Button>
-        </div>
-      </PopoverContent>
-    </Popover>
+    <>
+      <Calendar
+        mode="single"
+        selected={selectedDate}
+        onSelect={setSelectedDate}
+        month={month}
+        onMonthChange={setMonth}
+        locale={locale}
+        captionLayout="dropdown-buttons"
+        fromYear={new Date().getFullYear() - 100}
+        toYear={new Date().getFullYear()}
+        classNames={{
+          months: 'flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0',
+          month: 'space-y-4 w-full p-4',
+          caption_layout: 'dropdown-buttons flex justify-center items-center gap-2 mb-4',
+          caption: 'flex justify-center pt-1 relative items-center',
+          caption_label: 'hidden',
+          head_row: 'flex mb-2 justify-between',
+          head_cell: 'text-muted-foreground rounded-md w-12 font-normal text-base',
+          row: 'flex w-full mt-2 justify-between',
+          cell: 'h-12 w-12 text-center text-base p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20',
+        }}
+        components={{
+          Caption: CustomCaption,
+        }}
+      />
+      <div className="flex justify-end gap-2 p-4 border-t">
+          <Button variant="ghost" onClick={handleCancelClick}>{t('cancel')}</Button>
+          <Button onClick={handleOkClick}>OK</Button>
+      </div>
+    </>
   );
 }

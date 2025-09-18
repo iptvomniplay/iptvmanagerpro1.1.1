@@ -40,6 +40,7 @@ import { PhoneInputModal } from '@/components/ui/phone-input-modal';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronRight, X, CalendarIcon } from 'lucide-react';
 import { format, parse } from 'date-fns';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 
 const phoneSchema = z.object({
@@ -72,7 +73,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false);
   const [clientDataToConfirm, setClientDataToConfirm] = React.useState<ClientFormValues | null>(null);
   const [isPhoneModalOpen, setIsPhoneModalOpen] = React.useState(false);
-  const [isDatePickerOpen, setIsDatePickerOpen] = React.useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
 
   const formSchema = createFormSchema(t);
 
@@ -148,15 +149,15 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   }
   
   const handleDateChange = (date: Date | undefined) => {
-    form.setValue('birthDate', date);
-    setIsDatePickerOpen(false);
+    form.setValue('birthDate', date, { shouldValidate: true });
+    setIsCalendarOpen(false);
   }
   
   const handleDateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
     const parsedDate = parse(rawValue, 'dd/MM/yyyy', new Date());
     if (!isNaN(parsedDate.getTime())) {
-      form.setValue('birthDate', parsedDate);
+      form.setValue('birthDate', parsedDate, { shouldValidate: true });
     }
   }
 
@@ -268,16 +269,19 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                                 autoComplete="off"
                             />
                         </FormControl>
-                        <DatePicker 
-                            value={field.value}
-                            onChange={handleDateChange}
-                            isOpen={isDatePickerOpen}
-                            onOpenChange={setIsDatePickerOpen}
-                        >
-                            <Button type="button" variant="outline" size="icon" onClick={() => setIsDatePickerOpen(true)}>
-                                <CalendarIcon className="h-5 w-5" />
+                        <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                          <PopoverTrigger asChild>
+                            <Button type="button" variant="outline" size="icon">
+                              <CalendarIcon className="h-5 w-5" />
                             </Button>
-                        </DatePicker>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <DatePicker
+                              value={field.value}
+                              onChange={handleDateChange}
+                            />
+                          </PopoverContent>
+                        </Popover>
                     </div>
                     <FormMessage />
                 </FormItem>
