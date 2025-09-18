@@ -265,5 +265,9 @@
     "registeredPanel": "Painel Cadastrado",
     "registeredServers": "Servidor(es) Cadastrado(s)",
     "observations": "Observações",
-    "observationsPlaceholder": "Digite aqui qualquer anotação..."
+    "observationsPlaceholder": "Digite aqui qualquer anotação...",
+    "subscription": "Assinatura",
+    "addSubscription": "Adicionar Assinatura",
+    "subscriptionManagement": "Gerenciamento de Assinaturas",
+    "subscriptionManagementDescription": "Gerencie todas as assinaturas de clientes."
 }

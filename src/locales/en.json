@@ -265,5 +265,9 @@
     "registeredPanel": "Registered Panel",
     "registeredServers": "Registered Server(s)",
     "observations": "Observations",
-    "observationsPlaceholder": "Enter any notes here..."
+    "observationsPlaceholder": "Enter any notes here...",
+    "subscription": "Subscription",
+    "addSubscription": "Add Subscription",
+    "subscriptionManagement": "Subscription Management",
+    "subscriptionManagementDescription": "Manage all client subscriptions."
 }

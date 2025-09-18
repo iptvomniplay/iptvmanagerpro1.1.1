@@ -37,6 +37,7 @@ import {
   TestTube,
   Trash2,
   ChevronDown,
+  FileSignature,
 } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { useData } from '@/hooks/use-data';
@@ -134,27 +135,44 @@ export default function ClientsPageContent() {
     <>
       <div className="space-y-4">
         <div className="flex items-center justify-end gap-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                  <Button size="lg" variant="outline">
-                      <TestTube className="mr-2 h-5 w-5" />
-                      {t('testButtonLabel')}
-                      <ChevronDown className="ml-2 h-5 w-5" />
-                  </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => setIsTestModalOpen(true)}>
-                      {t('addTest')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push('/clients/tests')}>
-                      {t('viewTests')}
-                  </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Button onClick={() => router.push('/clients/new')} size="lg">
-                <PlusCircle className="mr-2 h-5 w-5" />
-                {t('register')}
-            </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button size="lg" variant="outline">
+                    <FileSignature className="mr-2 h-5 w-5" />
+                    {t('subscription')}
+                    <ChevronDown className="ml-2 h-5 w-5" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => router.push('/subscription')}>
+                    {t('addSubscription')}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push('/subscription/tests')}>
+                    {t('viewTests')}
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button size="lg" variant="outline">
+                    <TestTube className="mr-2 h-5 w-5" />
+                    {t('testButtonLabel')}
+                    <ChevronDown className="ml-2 h-5 w-5" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setIsTestModalOpen(true)}>
+                    {t('addTest')}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push('/clients/tests')}>
+                    {t('viewTests')}
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button onClick={() => router.push('/clients/new')} size="lg">
+              <PlusCircle className="mr-2 h-5 w-5" />
+              {t('register')}
+          </Button>
         </div>
         <div className="relative w-full max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
