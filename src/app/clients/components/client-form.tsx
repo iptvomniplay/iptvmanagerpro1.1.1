@@ -74,6 +74,10 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   const [clientDataToConfirm, setClientDataToConfirm] = React.useState<ClientFormValues | null>(null);
   const [isPhoneModalOpen, setIsPhoneModalOpen] = React.useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
+  const [calendarDate, setCalendarDate] = React.useState<Date | undefined>(
+    client?.birthDate ? new Date(client.birthDate) : undefined
+  );
+
 
   const formSchema = createFormSchema(t);
 
@@ -88,6 +92,11 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       status: client?.status || undefined,
     },
   });
+  
+  React.useEffect(() => {
+    setCalendarDate(form.getValues('birthDate'));
+  }, [form.getValues('birthDate')]);
+
 
   const { control, reset, trigger } = form;
   const { fields: phoneFields, replace: replacePhones, remove: removePhone } = useFieldArray({ control, name: 'phones' });
@@ -190,7 +199,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
               )}
             />
           </div>
-          <div className="w-full md-w-1/2">
+          <div className="w-full md:w-1/2">
             <FormField
               control={form.control}
               name="email"
@@ -273,12 +282,21 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                       </div>
                       <PopoverContent className="w-auto p-0" align="start">
                         <DatePicker
-                          value={field.value}
+                          value={calendarDate}
                           onChange={(date) => {
-                            field.onChange(date);
-                            setIsCalendarOpen(false);
+                            setCalendarDate(date);
                           }}
                         />
+                         <div className="flex justify-end gap-2 p-4 border-t">
+                            <Button variant="ghost" onClick={() => {
+                              setIsCalendarOpen(false);
+                              setCalendarDate(field.value);
+                            }}>{t('cancel')}</Button>
+                            <Button onClick={() => {
+                              form.setValue('birthDate', calendarDate, { shouldValidate: true });
+                              setIsCalendarOpen(false);
+                            }}>OK</Button>
+                        </div>
                       </PopoverContent>
                     </Popover>
                     <FormMessage />
