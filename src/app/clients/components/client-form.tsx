@@ -38,7 +38,7 @@ import { Badge } from '@/components/ui/badge';
 import { PhoneInputModal } from '@/components/ui/phone-input-modal';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronRight, X, CalendarIcon } from 'lucide-react';
-import { format, parse } from 'date-fns';
+import { format, parse, isValid } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 
@@ -76,6 +76,9 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
   
   const formSchema = createFormSchema(t);
+  
+  const dateFormat = language === 'pt-BR' ? 'dd/MM/yyyy' : 'MM/dd/yyyy';
+  const datePlaceholder = language === 'pt-BR' ? 'DD/MM/AAAA' : 'MM/DD/YYYY';
 
   const form = useForm<ClientFormValues>({
     resolver: zodResolver(formSchema),
@@ -84,7 +87,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       nickname: client?.nickname || '',
       email: client?.email || '',
       phones: client?.phones || [],
-      birthDate: client?.birthDate ? new Date(client.birthDate) : undefined,
+      birthDate: client?.birthDate ? parse(client.birthDate, 'yyyy-MM-dd', new Date()) : undefined,
       status: client?.status || undefined,
     },
   });
@@ -158,18 +161,37 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       router.back();
     }
   }
-  
+
   const handleDateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value;
-    // Allow empty input to clear the date
-    if (rawValue === '') {
-      form.setValue('birthDate', undefined, { shouldValidate: true });
-      return;
+    const rawValue = e.target.value.replace(/\D/g, '');
+    let formattedValue = '';
+
+    if (language === 'pt-BR') {
+      if (rawValue.length <= 2) {
+        formattedValue = rawValue;
+      } else if (rawValue.length <= 4) {
+        formattedValue = `${rawValue.slice(0, 2)}/${rawValue.slice(2)}`;
+      } else {
+        formattedValue = `${rawValue.slice(0, 2)}/${rawValue.slice(2, 4)}/${rawValue.slice(4, 8)}`;
+      }
+    } else { // en-US
+      if (rawValue.length <= 2) {
+        formattedValue = rawValue;
+      } else if (rawValue.length <= 4) {
+        formattedValue = `${rawValue.slice(0, 2)}/${rawValue.slice(2)}`;
+      } else {
+        formattedValue = `${rawValue.slice(0, 2)}/${rawValue.slice(2, 4)}/${rawValue.slice(4, 8)}`;
+      }
     }
-    const parsedDate = parse(rawValue, 'dd/MM/yyyy', new Date());
-    if (!isNaN(parsedDate.getTime())) {
+
+    e.target.value = formattedValue;
+    
+    const parsedDate = parse(formattedValue, dateFormat, new Date());
+    if (isValid(parsedDate) && formattedValue.length === 10) {
       form.setValue('birthDate', parsedDate, { shouldValidate: true });
       setCalendarDate(parsedDate);
+    } else if (formattedValue.length < 10) {
+      form.setValue('birthDate', undefined, { shouldValidate: true });
     }
   }
 
@@ -276,8 +298,8 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                       <div className="flex items-center gap-2">
                           <FormControl>
                             <Input 
-                                placeholder="DD/MM/AAAA"
-                                value={field.value ? format(field.value, 'dd/MM/yyyy') : ''}
+                                placeholder={datePlaceholder}
+                                value={field.value ? format(field.value, dateFormat) : ''}
                                 onChange={handleDateInput}
                                 autoComplete="off"
                               />
@@ -292,21 +314,18 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                         <Calendar
                           mode="single"
                           selected={calendarDate}
-                          onSelect={setCalendarDate}
+                          onSelect={(date) => {
+                            setCalendarDate(date);
+                            if (date) {
+                              form.setValue('birthDate', date, { shouldValidate: true });
+                              setIsCalendarOpen(false);
+                            }
+                          }}
                           initialFocus
                           captionLayout="dropdown-buttons"
                           fromYear={new Date().getFullYear() - 120}
                           toYear={new Date().getFullYear()}
                         />
-                         <div className="flex justify-end gap-2 p-4 border-t">
-                            <Button variant="ghost" onClick={() => {
-                              setIsCalendarOpen(false);
-                            }}>{t('cancel')}</Button>
-                            <Button onClick={() => {
-                              form.setValue('birthDate', calendarDate, { shouldValidate: true });
-                              setIsCalendarOpen(false);
-                            }}>OK</Button>
-                        </div>
                       </PopoverContent>
                     </Popover>
                     <FormMessage />
