@@ -37,7 +37,6 @@ import {
   TestTube,
   Trash2,
   ChevronDown,
-  FileSignature,
 } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { useData } from '@/hooks/use-data';
@@ -47,7 +46,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
 } from '@/components/ui/dialog';
 import { ClientForm } from './client-form';
 import { ClientDetailsModal } from './client-details-modal';
@@ -135,10 +133,6 @@ export default function ClientsPageContent() {
     <>
       <div className="space-y-4">
         <div className="flex items-center justify-end gap-4">
-          <Button size="lg" variant="outline" onClick={() => router.push('/subscription')}>
-              <FileSignature className="mr-2 h-5 w-5" />
-              {t('subscription')}
-          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button size="lg" variant="outline">
