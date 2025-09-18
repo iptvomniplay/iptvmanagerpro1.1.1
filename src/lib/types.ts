@@ -26,11 +26,16 @@ export type Client = {
   observations?: string;
 };
 
+export type Plan = {
+  name: string;
+  value: number;
+}
+
 export type SubServer = {
   name: string;
   type: string;
   screens: number;
-  plans: string[];
+  plans: Plan[];
   status: 'Online' | 'Offline' | 'Suspended' | 'Maintenance';
 };
 

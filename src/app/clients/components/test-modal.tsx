@@ -4,7 +4,7 @@ import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import type { Client, Server, SubServer, Test } from '@/lib/types';
+import type { Client, Server, SubServer, Test, Plan } from '@/lib/types';
 import { useData } from '@/hooks/use-data';
 import { useLanguage } from '@/hooks/use-language';
 import { Button } from '@/components/ui/button';
@@ -63,7 +63,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
   const [isPanelModalOpen, setIsPanelModalOpen] = React.useState(false);
   const [selectedPanel, setSelectedPanel] = React.useState<Server | null>(null);
   const [selectedSubServer, setSelectedSubServer] = React.useState<SubServer | null>(null);
-  const [availablePackages, setAvailablePackages] = React.useState<string[]>([]);
+  const [availablePackages, setAvailablePackages] = React.useState<Plan[]>([]);
 
 
   const form = useForm<TestFormValues>({
@@ -295,7 +295,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                                     </FormControl>
                                     <SelectContent>
                                         {availablePackages.map((pkg) => (
-                                          <SelectItem key={pkg} value={pkg}>{pkg}</SelectItem>
+                                          <SelectItem key={pkg.name} value={pkg.name}>{pkg.name}</SelectItem>
                                         ))}
                                     </SelectContent>
                                     </Select>
@@ -369,7 +369,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                                                     <div className="flex flex-wrap items-center gap-1 pt-1">
                                                       <span className='font-semibold'>{t('plans')}:</span>
                                                       {sub.plans.map((plan, planIndex) => (
-                                                          <Badge key={planIndex} variant="secondary">{plan}</Badge>
+                                                          <Badge key={planIndex} variant="secondary">{plan.name}</Badge>
                                                       ))}
                                                   </div>
                                               </div>

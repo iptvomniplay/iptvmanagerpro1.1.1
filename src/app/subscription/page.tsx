@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SubscriptionPlanForm } from './components/subscription-plan-form';
 
 export default function SubscriptionPage() {
   const { t } = useLanguage();
@@ -44,8 +45,8 @@ export default function SubscriptionPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="w-full md:w-1/2 space-y-4">
-          <ClientSearch onSelectClient={setSelectedClient} selectedClient={selectedClient} />
-          {selectedClient && (
+           <ClientSearch onSelectClient={setSelectedClient} selectedClient={selectedClient} />
+           {selectedClient && (
             <Card className="bg-muted/30">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-xl">
@@ -92,6 +93,15 @@ export default function SubscriptionPage() {
               disabled={!selectedClient}
             />
           </div>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader>
+            <CardTitle>Planos da Assinatura</CardTitle>
+        </CardHeader>
+        <CardContent>
+            <SubscriptionPlanForm />
         </CardContent>
       </Card>
     </div>
