@@ -38,6 +38,7 @@ import { Badge } from '@/components/ui/badge';
 import { PhoneInputModal } from '@/components/ui/phone-input-modal';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, X } from 'lucide-react';
+import { BirthdateInput } from '@/components/ui/birthdate-input';
 
 
 const phoneSchema = z.object({
@@ -128,6 +129,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
         email: '',
         phones: [],
         status: undefined,
+        birthDate: '',
       });
       router.push('/clients');
     }
@@ -141,21 +143,6 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       router.back();
     }
   }
-  
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>, field: any) => {
-    let value = e.target.value.replace(/\D/g, '');
-    const isPtBr = language === 'pt-BR';
-    
-    if (isPtBr) { // DD/MM/AAAA
-      if (value.length > 2) value = `${value.slice(0, 2)}/${value.slice(2)}`;
-      if (value.length > 5) value = `${value.slice(0, 5)}/${value.slice(5, 9)}`;
-    } else { // MM/DD/AAAA
-      if (value.length > 2) value = `${value.slice(0, 2)}/${value.slice(2)}`;
-      if (value.length > 5) value = `${value.slice(0, 5)}/${value.slice(5, 9)}`;
-    }
-    
-    field.onChange(value);
-  };
 
   return (
     <>
@@ -213,7 +200,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
             <Button type="button" variant="default" onClick={() => setIsPhoneModalOpen(true)}>
               {t('addPhone')}
             </Button>
-            
+
             <FormField
               control={control}
               name="birthDate"
@@ -221,13 +208,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                 <FormItem>
                   <FormLabel>{t('birthDate')}</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={language === 'pt-BR' ? 'DD/MM/AAAA' : 'MM/DD/AAAA'}
-                      {...field}
-                      onChange={(e) => handleDateChange(e, field)}
-                      maxLength={10}
-                      autoComplete="off"
-                    />
+                    <BirthdateInput field={field} language={language} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
