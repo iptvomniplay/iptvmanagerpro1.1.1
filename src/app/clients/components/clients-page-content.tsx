@@ -37,6 +37,7 @@ import {
   TestTube,
   Trash2,
   ChevronDown,
+  CreditCard,
 } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { useData } from '@/hooks/use-data';
@@ -54,6 +55,13 @@ import { TestModal } from './test-modal';
 import { normalizeString } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ClientExpiration } from './client-expiration';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+
 
 export type ClientFormValues = Omit<Client, 'id' | 'registeredDate'>;
 
@@ -132,32 +140,59 @@ export default function ClientsPageContent() {
   return (
     <>
       <div className="space-y-4">
-        <div className="flex items-center justify-end gap-4">
-          <Button onClick={() => router.push('/subscription')} size="lg">
-            Assinatura
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button size="lg" variant="outline">
-                    <TestTube className="mr-2 h-5 w-5" />
-                    {t('testButtonLabel')}
-                    <ChevronDown className="ml-2 h-5 w-5" />
+        <TooltipProvider>
+          <div className="flex flex-col md:flex-row items-center justify-end gap-4">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={() => router.push('/subscription')} size="lg" className="w-full md:w-auto">
+                    <CreditCard />
+                    <span className="md:inline hidden ml-2">Assinatura</span>
                 </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setIsTestModalOpen(true)}>
-                    {t('addTest')}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push('/clients/tests')}>
-                    {t('viewTests')}
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Button onClick={() => router.push('/clients/new')} size="lg">
-              <PlusCircle className="mr-2 h-5 w-5" />
-              {t('register')}
-          </Button>
-        </div>
+              </TooltipTrigger>
+              <TooltipContent className="md:hidden">
+                <p>Assinatura</p>
+              </TooltipContent>
+            </Tooltip>
+            
+            <DropdownMenu>
+              <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DropdownMenuTrigger asChild>
+                        <Button size="lg" variant="outline" className="w-full md:w-auto">
+                            <TestTube/>
+                            <span className="md:inline hidden ml-2">{t('testButtonLabel')}</span>
+                            <ChevronDown className="ml-2 h-5 w-5" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent className="md:hidden">
+                    <p>{t('testButtonLabel')}</p>
+                  </TooltipContent>
+              </Tooltip>
+              <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => setIsTestModalOpen(true)}>
+                      {t('addTest')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push('/clients/tests')}>
+                      {t('viewTests')}
+                  </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={() => router.push('/clients/new')} size="lg" className="w-full md:w-auto">
+                    <PlusCircle/>
+                    <span className="md:inline hidden ml-2">{t('register')}</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent className="md:hidden">
+                <p>{t('register')}</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </TooltipProvider>
+
         <div className="relative w-full max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
