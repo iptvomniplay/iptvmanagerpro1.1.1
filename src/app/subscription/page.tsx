@@ -94,15 +94,16 @@ export default function SubscriptionPage() {
                       {t(selectedClient.status.toLowerCase() as any)}
                     </Badge>
                   </div>
-                  <div>
+                  <div className="overflow-hidden">
                     <p className="font-medium text-muted-foreground">
                       {t('clientID')}
                     </p>
                     <p
                       className={cn(
-                        'mt-1 font-semibold',
+                        'mt-1 font-semibold truncate',
                         isIdPending && 'text-yellow-500 animate-flash'
                       )}
+                      title={displayedId}
                     >
                       {displayedId}
                     </p>
