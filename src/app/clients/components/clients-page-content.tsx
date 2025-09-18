@@ -132,19 +132,8 @@ export default function ClientsPageContent() {
 
   return (
     <>
-      <div className="flex items-center justify-between gap-4">
-        <div className="relative w-full max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder={t('searchClientPlaceholder')}
-            className="pl-10"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            autoComplete="off"
-          />
-        </div>
-        <div className="flex items-center gap-4">
+      <div className="space-y-4">
+        <div className="flex items-center justify-end gap-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                   <Button size="lg" variant="outline">
@@ -166,6 +155,17 @@ export default function ClientsPageContent() {
                 <PlusCircle className="mr-2 h-5 w-5" />
                 {t('register')}
             </Button>
+        </div>
+        <div className="relative w-full max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder={t('searchClientPlaceholder')}
+            className="pl-10"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            autoComplete="off"
+          />
         </div>
       </div>
 
