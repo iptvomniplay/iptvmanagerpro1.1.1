@@ -65,9 +65,9 @@ export function SubscriptionPlanForm() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+      <div className="space-y-4">
         {/* Panel Selection */}
-        <div className="space-y-2 md:col-span-1">
+        <div className="space-y-2">
           <Label>{t('panel')}</Label>
           <Select value={selectedPanelId} onValueChange={setSelectedPanelId}>
             <SelectTrigger>
@@ -84,7 +84,7 @@ export function SubscriptionPlanForm() {
         </div>
 
         {/* Server Selection */}
-        <div className="space-y-2 md:col-span-1">
+        <div className="space-y-2">
           <Label>{t('servers')}</Label>
           <Select value={selectedServerName} onValueChange={setSelectedServerName} disabled={!selectedPanelId}>
             <SelectTrigger>
@@ -101,7 +101,7 @@ export function SubscriptionPlanForm() {
         </div>
 
         {/* Plan Selection */}
-        <div className="space-y-2 md:col-span-1">
+        <div className="space-y-2">
           <Label>{t('plans')}</Label>
           <Select value={selectedPlanName} onValueChange={setSelectedPlanName} disabled={!selectedServerName}>
             <SelectTrigger>
