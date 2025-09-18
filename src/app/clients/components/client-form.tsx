@@ -84,7 +84,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       email: client?.email || '',
       phones: client?.phones || [],
       birthDate: client?.birthDate || '',
-      status: client?.status || undefined,
+      status: client?.status || 'Inactive',
       observations: client?.observations || '',
     },
   });
@@ -131,7 +131,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
         nickname: '',
         email: '',
         phones: [],
-        status: undefined,
+        status: 'Inactive',
         birthDate: '',
         observations: '',
       });
