@@ -17,7 +17,6 @@ import { Badge } from '@/components/ui/badge';
 import { User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SubscriptionPlanForm } from './components/subscription-plan-form';
-import { ApplicationsForm } from './components/applications-form';
 
 export default function SubscriptionPage() {
   const { t } = useLanguage();
@@ -128,18 +127,6 @@ export default function SubscriptionPage() {
         </CardHeader>
         <CardContent>
           <SubscriptionPlanForm />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('applications')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ApplicationsForm
-            selectedClient={selectedClient}
-            onUpdateClient={setSelectedClient}
-          />
         </CardContent>
       </Card>
     </div>
