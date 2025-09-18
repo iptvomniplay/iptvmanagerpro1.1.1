@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/use-language';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -85,6 +86,15 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, clientData }: Co
               )}
             </div>
           </div>
+            {clientData.observations && (
+            <>
+              <Separator />
+              <div>
+                <h3 className="text-xl font-semibold text-primary mb-2">{t('observations')}</h3>
+                <p className="text-base text-muted-foreground whitespace-pre-wrap">{clientData.observations}</p>
+              </div>
+            </>
+          )}
         </div>
 
         <DialogFooter className="pt-6">

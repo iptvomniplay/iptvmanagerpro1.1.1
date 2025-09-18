@@ -23,6 +23,7 @@ export type Client = {
   status: 'Active' | 'Inactive' | 'Expired' | 'Test';
   registeredDate: string;
   tests?: Test[];
+  observations?: string;
 };
 
 export type SubServer = {

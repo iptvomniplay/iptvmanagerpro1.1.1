@@ -37,8 +37,9 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { PhoneInputModal } from '@/components/ui/phone-input-modal';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, X } from 'lucide-react';
+import { ChevronDown, ChevronsUpDown, X } from 'lucide-react';
 import { BirthdateInput } from '@/components/ui/birthdate-input';
+import { Textarea } from '@/components/ui/textarea';
 
 
 const phoneSchema = z.object({
@@ -53,6 +54,7 @@ const createFormSchema = (t: (key: string) => string) => z.object({
   phones: z.array(phoneSchema).min(1, { message: t('phoneRequired') }),
   birthDate: z.string().optional(),
   status: z.enum(['Active', 'Inactive', 'Expired', 'Test'], { required_error: t('statusRequired') }),
+  observations: z.string().optional(),
 });
 
 export type ClientFormValues = z.infer<ReturnType<typeof createFormSchema>>;
@@ -83,6 +85,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       phones: client?.phones || [],
       birthDate: client?.birthDate || '',
       status: client?.status || undefined,
+      observations: client?.observations || '',
     },
   });
 
@@ -130,6 +133,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
         phones: [],
         status: undefined,
         birthDate: '',
+        observations: '',
       });
       router.push('/clients');
     }
@@ -214,6 +218,37 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                 </FormItem>
               )}
             />
+
+            <Collapsible>
+              <CollapsibleTrigger asChild>
+                <Button
+                  type="button"
+                  className="w-full justify-between"
+                  variant="outline"
+                >
+                  {t('observations')}
+                  <ChevronsUpDown className="h-5 w-5" />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                 <FormField
+                    control={control}
+                    name="observations"
+                    render={({ field }) => (
+                      <FormItem className="pt-2">
+                        <FormControl>
+                          <Textarea
+                            placeholder={t('observationsPlaceholder')}
+                            {...field}
+                            autoComplete="off"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+              </CollapsibleContent>
+            </Collapsible>
             
             <FormField
               control={form.control}
