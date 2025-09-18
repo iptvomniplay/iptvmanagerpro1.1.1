@@ -170,7 +170,11 @@ export default function ClientsPageContent() {
             {filteredClients.length > 0 ? (
               filteredClients.map((client) => (
                 <TableRow key={client.id}>
-                  <TableCell>{client.name}</TableCell>
+                  <TableCell>
+                    <Button variant="outline" className="h-auto font-semibold" onClick={() => handleEditOpen(client)}>
+                      {client.name}
+                    </Button>
+                  </TableCell>
                   <TableCell>
                     <Badge variant={getStatusVariant(client.status)}>
                       {t(client.status.toLowerCase() as any)}
