@@ -238,18 +238,14 @@ export function ApplicationsForm({
                         />
                       </div>
                        <div className="space-y-2">
-                        
-                        <Button
+                          <Button
                             type="button"
-                            variant="outline"
-                            className="w-full justify-start text-left font-normal"
+                            variant="default"
                             onClick={() => setIsPhoneModalOpen(true)}
                             disabled={!selectedClient}
-                        >
-                            {currentApp.responsiblePhones && currentApp.responsiblePhones.length > 0
-                                ? `${currentApp.responsiblePhones.length} ${t('phone')}(s) ${t('registered')}`
-                                : t('addPhone')}
-                        </Button>
+                          >
+                            {t('addPhone')}
+                          </Button>
                       </div>
                     </>
                   )}
