@@ -46,6 +46,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from '@/components/ui/dialog';
 import { ClientForm } from './client-form';
 import { ClientDetailsModal } from './client-details-modal';
@@ -53,6 +54,7 @@ import { useRouter } from 'next/navigation';
 import { TestModal } from './test-modal';
 import { normalizeString } from '@/lib/utils';
 import { differenceInDays, parseISO } from 'date-fns';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export type ClientFormValues = Omit<Client, 'id' | 'registeredDate'>;
 
@@ -258,20 +260,18 @@ export default function ClientsPageContent() {
       )}
 
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="text-xl">
-              {t('editClient')}
-            </DialogTitle>
-            <DialogDescription>
-              {t('editClientDescription')}
-            </DialogDescription>
+        <DialogContent className="h-screen w-screen max-w-none flex flex-col p-0">
+          <DialogHeader className="p-6 pb-4 border-b">
+            <DialogTitle className="text-2xl">{t('editClient')}</DialogTitle>
+            <DialogDescription>{t('editClientDescription')}</DialogDescription>
           </DialogHeader>
-          <ClientForm
-            client={selectedClient}
-            onSubmitted={handleFormClose}
-            onCancel={handleFormClose}
-          />
+          <ScrollArea className="flex-1">
+            <ClientForm
+              client={selectedClient}
+              onSubmitted={handleFormClose}
+              onCancel={handleFormClose}
+            />
+          </ScrollArea>
         </DialogContent>
       </Dialog>
       
