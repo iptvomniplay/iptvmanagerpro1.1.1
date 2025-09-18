@@ -20,16 +20,17 @@ export default function SubscriptionPage() {
         </CardHeader>
         <CardContent className="space-y-6">
           <ClientSearch />
-          <div className="w-full md:w-1/2 space-y-2">
-            <Label htmlFor="manual-client-id">ID do Cliente (Manual)</Label>
-            <Input
-              id="manual-client-id"
-              placeholder="Insira o ID do cliente gerado no painel"
-              autoComplete="off"
-            />
-          </div>
         </CardContent>
       </Card>
+
+      <div className="w-full md:w-1/2 space-y-2">
+        <Label htmlFor="manual-client-id">ID do Cliente (Manual)</Label>
+        <Input
+          id="manual-client-id"
+          placeholder="Insira o ID do cliente gerado no painel"
+          autoComplete="off"
+        />
+      </div>
     </div>
   );
 }
