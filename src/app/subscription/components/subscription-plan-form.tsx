@@ -157,16 +157,10 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
             <div className="space-y-2">
                 <div className='flex items-center gap-2'>
                     <Label>{t('screensAvailable')}</Label>
-                    <Badge variant="secondary" className="text-base">
-                        {selectedServer ? selectedServer.screens : '-'}
-                    </Badge>
                 </div>
-                <Input
-                    type="text"
-                    readOnly
-                    className="h-11 w-full rounded-md border border-input bg-muted px-4 py-2 text-lg font-bold text-center"
-                    value={selectedServer ? `${selectedServer.screens} ${t('screens')}` : '-'}
-                />
+                <div className="h-11 w-full rounded-md border border-input bg-muted px-4 py-2 text-lg font-bold text-center flex items-center justify-center">
+                    {selectedServer ? selectedServer.screens : '-'}
+                </div>
             </div>
             
             <div className="space-y-2">
@@ -185,7 +179,7 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
                             {numberOfScreens || t('screensToHirePlaceholder')}
                         </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
+                    <PopoverContent className="w-auto p-0" align="start">
                         <Select
                             onValueChange={(value) => setNumberOfScreens(parseInt(value, 10))}
                         >
@@ -306,3 +300,5 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
 
 // For exporting the type to parent
 export type { SelectedPlan };
+
+    
