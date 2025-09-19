@@ -34,7 +34,7 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
       if (selectedClient && client.id === selectedClient.id) return false;
 
       const nameMatch = normalizeString(client.name).includes(normalizedTerm);
-      const nicknameMatch = client.nickname && normalizeString(client.nickname).includes(normalizedTerm);
+      const nicknameMatch = client.nickname ? normalizeString(client.nickname).includes(normalizedTerm) : false;
       const phoneMatch = client.phones.some((phone) =>
         normalizeString(phone.number)
           .replace(/\D/g, '')
