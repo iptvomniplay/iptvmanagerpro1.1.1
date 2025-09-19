@@ -36,6 +36,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { PersistenceTest } from './components/persistence-test';
 
 export default function SubscriptionPage() {
   const { t } = useLanguage();
@@ -234,6 +235,7 @@ export default function SubscriptionPage() {
                       {!manualId && selectedClient.status !== 'Active' && isValidationError && <p className="text-sm text-destructive">{t('clientIdRequired')}</p>}
                     </div>
                   </div>
+                  <PersistenceTest selectedClient={selectedClient} />
                 </CardContent>
               </Card>
             </TabsContent>
