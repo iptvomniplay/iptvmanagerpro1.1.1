@@ -99,16 +99,16 @@ export default function SubscriptionPage() {
         
         {selectedClient ? (
           <Tabs defaultValue="client" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 bg-primary text-primary-foreground">
-              <TabsTrigger value="client" className="data-[state=active]:bg-primary-foreground data-[state=active]:text-primary">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="client">
                 <User className="mr-2" />
                 {t('client')}
               </TabsTrigger>
-              <TabsTrigger value="plans" className="data-[state=active]:bg-primary-foreground data-[state=active]:text-primary">
+              <TabsTrigger value="plans">
                   <FileText className="mr-2" />
                   {t('subscriptionPlans')}
               </TabsTrigger>
-              <TabsTrigger value="apps" className="data-[state=active]:bg-primary-foreground data-[state=active]:text-primary">
+              <TabsTrigger value="apps">
                   <AppWindow className="mr-2" />
                   {t('applications')}
               </TabsTrigger>
@@ -130,6 +130,12 @@ export default function SubscriptionPage() {
                         {t('nickname')}
                       </p>
                       <p className="mt-1">{selectedClient.nickname || '---'}</p>
+                    </div>
+                    <div>
+                      <p className="font-medium text-muted-foreground">
+                        {t('emailAddress')}
+                      </p>
+                      <p className="mt-1 truncate" title={selectedClient.email}>{selectedClient.email || '---'}</p>
                     </div>
                     <div>
                       <p className="font-medium text-muted-foreground">
@@ -157,12 +163,6 @@ export default function SubscriptionPage() {
                         <span className="font-semibold">ID Atual: </span>
                         <span className={cn(isIdPending && 'text-yellow-500 font-bold')}>{displayedId}</span>
                       </p>
-                    </div>
-                    <div>
-                      <p className="font-medium text-muted-foreground">
-                        {t('emailAddress')}
-                      </p>
-                      <p className="mt-1 truncate" title={selectedClient.email}>{selectedClient.email || '---'}</p>
                     </div>
                   </div>
                 </CardContent>
