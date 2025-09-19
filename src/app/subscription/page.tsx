@@ -56,15 +56,21 @@ export default function SubscriptionPage() {
   const appsTabRef = React.useRef<HTMLButtonElement>(null);
 
   const handleSelectClient = (client: Client | null) => {
-    setSelectedClient(client);
-    setManualId(client?.id || '');
+    if (client) {
+      const fullClientData = clients.find(c => (c.id && c.id === client.id) || (c._tempId && c._tempId === client._tempId)) || client;
+      setSelectedClient(fullClientData);
+      setManualId(fullClientData.id || '');
+    } else {
+      setSelectedClient(null);
+      setManualId('');
+    }
   };
 
   const handleUpdateClient = (updatedData: Partial<Client>) => {
     if (!selectedClient) return;
     const newClientState = { ...selectedClient, ...updatedData };
     setSelectedClient(newClientState);
-    updateClient(newClientState, true);
+    updateClient(newClientState, true); // skipSave = true para não salvar no LS a cada modificação
   };
 
   const handleManualIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,8 +80,8 @@ export default function SubscriptionPage() {
   const saveManualId = () => {
     if (!selectedClient) return;
     const newClientState = { ...selectedClient, id: manualId };
-    updateClient(newClientState); // This now updates the central state and triggers localStorage save
-    setSelectedClient(newClientState); // Keep local state in sync
+    updateClient(newClientState); // AQUI ESTÁ O PONTO-CHAVE: Isso atualiza o estado central e o localStorage
+    setSelectedClient(newClientState); // Mantém o estado local sincronizado
     setIsIdSaveSuccessModalOpen(true);
   };
 
@@ -279,7 +285,7 @@ export default function SubscriptionPage() {
       <div className="mt-auto flex justify-end items-center gap-4 pt-8">
         <Button variant="outline" onClick={() => router.push('/')}>{t('back')}</Button>
         <Button variant="outline" onClick={handleCancel}>{t('cancel')}</Button>
-        {selectedClient && (
+        {selectedClient && activeTab !== 'client' && (
           <Button onClick={handleSave}>{t('save')}</Button>
         )}
       </div>
