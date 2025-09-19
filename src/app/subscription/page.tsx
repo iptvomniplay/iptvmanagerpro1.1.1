@@ -99,24 +99,24 @@ export default function SubscriptionPage() {
         
         {selectedClient ? (
           <Tabs defaultValue="client" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 bg-transparent p-0 gap-4">
+            <TabsList className="grid w-full grid-cols-3 gap-4">
               <TabsTrigger
                 value="client"
-                className="data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-md border-b-4 border-transparent data-[state=active]:border-primary rounded-lg py-4 text-lg"
+                className="flex items-center justify-center gap-2 rounded-lg border bg-card p-4 text-lg font-semibold text-muted-foreground shadow-sm transition-all hover:shadow-md hover:border-primary/50 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
               >
                 <User className="mr-2" />
                 {t('client')}
               </TabsTrigger>
               <TabsTrigger
                 value="plans"
-                className="data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-md border-b-4 border-transparent data-[state=active]:border-primary rounded-lg py-4 text-lg"
+                className="flex items-center justify-center gap-2 rounded-lg border bg-card p-4 text-lg font-semibold text-muted-foreground shadow-sm transition-all hover:shadow-md hover:border-primary/50 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
               >
                 <FileText className="mr-2" />
                 {t('subscriptionPlans')}
               </TabsTrigger>
               <TabsTrigger
                 value="apps"
-                className="data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-md border-b-4 border-transparent data-[state=active]:border-primary rounded-lg py-4 text-lg"
+                className="flex items-center justify-center gap-2 rounded-lg border bg-card p-4 text-lg font-semibold text-muted-foreground shadow-sm transition-all hover:shadow-md hover:border-primary/50 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
               >
                 <AppWindow className="mr-2" />
                 {t('applications')}
@@ -220,7 +220,7 @@ export default function SubscriptionPage() {
         <Button variant="outline" onClick={() => router.push('/')}>
             {t('back')}
         </Button>
-        <Button variant="ghost" onClick={handleCancel}>
+        <Button variant="outline" onClick={handleCancel}>
             {t('cancel')}
         </Button>
         {selectedClient && (
