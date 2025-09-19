@@ -88,19 +88,20 @@ export default function SubscriptionPage() {
   };
 
   const handleManualIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newId = e.target.value;
-    setManualId(newId);
-  }
+    setManualId(e.target.value);
+  };
 
+  // ======= FUNÇÃO CORRIGIDA =======
   const saveManualId = () => {
-    if (selectedClient) {
-      const newClientState = { ...selectedClient, id: manualId };
-      setSelectedClient(newClientState);
-      updateClient(newClientState);
-      setIsIdSaveSuccessModalOpen(true);
-    }
-  }
+    if (!selectedClient) return;
 
+    const newClientState = { ...selectedClient, id: manualId };
+    setSelectedClient(newClientState);       // Atualiza local
+    updateClient(newClientState);             // Atualiza contexto global
+    saveClientsToStorage();                    // Persiste no storage do sistema
+    setIsIdSaveSuccessModalOpen(true);        // Modal de sucesso
+  };
+  // ================================
 
   const handleCancel = () => {
     setSelectedClient(null);
@@ -153,6 +154,7 @@ export default function SubscriptionPage() {
     };
 
     updateClient(clientToUpdate);
+    saveClientsToStorage();  // Salva todas as alterações permanentes
     setIsSubscriptionSuccessModalOpen(true);
   };
   
