@@ -209,7 +209,8 @@ export default function ClientsPageContent() {
                   </TableCell>
                    <TableCell>
                     {client.dueDate && client.status === 'Active' ? (
-                        <ClientExpiration 
+                        <ClientExpiration
+                            key={client.id || client._tempId}
                             clientId={client.id}
                             registeredDate={client.registeredDate} 
                             dueDate={client.dueDate} 
