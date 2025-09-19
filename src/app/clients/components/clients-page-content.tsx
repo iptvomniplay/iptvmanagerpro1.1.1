@@ -81,14 +81,13 @@ export default function ClientsPageContent() {
 
   const filteredClients = clients.filter((client) => {
     const normalizedSearchTerm = normalizeString(searchTerm);
+    const nameMatch = normalizeString(client.name).includes(normalizedSearchTerm);
+    const nicknameMatch = client.nickname && normalizeString(client.nickname).includes(normalizedSearchTerm);
     const phoneMatch = client.phones.some(phone => normalizeString(phone.number).replace(/\D/g, '').includes(normalizedSearchTerm.replace(/\D/g, '')));
-    return (
-      normalizeString(client.name).includes(normalizedSearchTerm) ||
-      (client.nickname &&
-        normalizeString(client.nickname).includes(normalizedSearchTerm)) ||
-      phoneMatch ||
-      normalizeString(client.status).includes(normalizedSearchTerm)
-    );
+    const statusMatch = normalizeString(client.status).includes(normalizedSearchTerm);
+    const idMatch = client.id && normalizeString(client.id).includes(normalizedSearchTerm);
+
+    return nameMatch || nicknameMatch || phoneMatch || statusMatch || idMatch;
   });
 
   const handleViewDetails = (client: Client) => {

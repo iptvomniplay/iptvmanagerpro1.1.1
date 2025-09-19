@@ -30,18 +30,13 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
     }
 
     const normalizedTerm = normalizeString(searchTerm);
-    const numericTerm = searchTerm.replace(/\D/g, '');
 
     const results = clients.filter((client) => {
       const nameMatch = normalizeString(client.name).includes(normalizedTerm);
       const nicknameMatch = client.nickname ? normalizeString(client.nickname).includes(normalizedTerm) : false;
-      
-      let phoneMatch = false;
-      if (numericTerm.length > 0) {
-        phoneMatch = client.phones.some((phone) =>
-          phone.number.replace(/\D/g, '').includes(numericTerm)
-        );
-      }
+      const phoneMatch = client.phones.some((phone) =>
+          phone.number.replace(/\D/g, '').includes(searchTerm.replace(/\D/g, ''))
+      );
       
       return nameMatch || nicknameMatch || phoneMatch;
     });
