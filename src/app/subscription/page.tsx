@@ -59,12 +59,7 @@ export default function SubscriptionPage() {
     setSelectedClient(client);
     if (client) {
       setAddedPlans(client.plans || []);
-      // Always set the manualId to the client's current ID if it exists
-      if (client.id) {
-        setManualId(client.id);
-      } else {
-        setManualId('');
-      }
+      setManualId(client.id || '');
     } else {
       setAddedPlans([]);
       setManualId('');
@@ -93,9 +88,8 @@ export default function SubscriptionPage() {
   const handleManualIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newId = e.target.value;
     setManualId(newId);
-    if (selectedClient && newId) {
-        // Persist immediately
-        updateClient({ ...selectedClient, id: newId });
+    if (selectedClient) {
+      updateClient({ ...selectedClient, id: newId });
     }
   }
 
