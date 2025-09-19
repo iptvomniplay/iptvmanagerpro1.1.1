@@ -302,7 +302,7 @@ export function ApplicationsForm({
         ))}
         
         {applications.length < totalScreensFromPlans && (
-          <div className="flex justify-end pt-4">
+          <div className="flex justify-center pt-4">
               <Button onClick={handleAddApplication} variant="default" className="w-full">
                   <PlusCircle className="mr-2 h-4 w-4" />
                   {t('addApplication')}
