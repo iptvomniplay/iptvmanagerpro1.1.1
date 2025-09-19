@@ -59,7 +59,8 @@ export default function SubscriptionPage() {
     setSelectedClient(client);
     if (client) {
       setAddedPlans(client.plans || []);
-      if (client.status === 'Active' && client.id) {
+      // Always set the manualId to the client's current ID if it exists
+      if (client.id) {
         setManualId(client.id);
       } else {
         setManualId('');
@@ -88,6 +89,16 @@ export default function SubscriptionPage() {
   const handleUpdateClient = (updatedClient: Client) => {
     setSelectedClient(updatedClient);
   };
+  
+  const handleManualIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newId = e.target.value;
+    setManualId(newId);
+    if (selectedClient && newId) {
+        // Persist immediately
+        updateClient({ ...selectedClient, id: newId });
+    }
+  }
+
 
   const handleCancel = () => {
     setSelectedClient(null);
@@ -130,29 +141,18 @@ export default function SubscriptionPage() {
       return;
     }
 
-
-    let clientToUpdate = { ...selectedClient, plans: addedPlans, status: 'Active' as Client['status'] };
-    let idChanged = false;
-
-    if (
-      manualId &&
-      selectedClient.status !== 'Active' &&
-      manualId !== selectedClient.id
-    ) {
-      clientToUpdate = {
-        ...clientToUpdate,
-        id: manualId,
-      };
-      idChanged = true;
-    }
+    let clientToUpdate = { 
+        ...selectedClient, 
+        plans: addedPlans, 
+        status: 'Active' as Client['status'],
+        id: manualId || selectedClient.id,
+    };
 
     updateClient(clientToUpdate);
 
     toast({
       title: t('registrationAddedSuccess'),
-      description: idChanged
-        ? `O cliente ${clientToUpdate.name} foi ativado com o ID: ${clientToUpdate.id}`
-        : `Os dados do cliente ${clientToUpdate.name} foram salvos.`,
+      description: `O status do cliente ${clientToUpdate.name} foi atualizado para Ativo.`,
     });
 
     handleCancel();
@@ -265,7 +265,7 @@ export default function SubscriptionPage() {
                         placeholder={t('clientIdManualPlaceholder')}
                         autoComplete="off"
                         value={manualId}
-                        onChange={(e) => setManualId(e.target.value)}
+                        onChange={handleManualIdChange}
                         disabled={selectedClient.status === 'Active'}
                         className={cn(!manualId && selectedClient.status !== 'Active' && isValidationError && 'ring-2 ring-destructive ring-offset-2 ring-offset-background')}
                       />
