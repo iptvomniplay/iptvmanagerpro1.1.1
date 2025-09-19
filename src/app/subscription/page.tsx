@@ -259,9 +259,9 @@ export default function SubscriptionPage() {
                     <div className="space-y-2">
                         <div className="flex items-center gap-2">
                             <Label htmlFor="manual-client-id">{t('clientID')}:</Label>
-                            {manualId && selectedClient.status === 'Active' && (
+                            {selectedClient.id && (
                                 <Badge variant="outline" className="border-green-500/50 text-green-500">
-                                    {manualId}
+                                    {selectedClient.id}
                                 </Badge>
                             )}
                         </div>
