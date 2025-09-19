@@ -166,16 +166,14 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
         
         <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-                <div className='flex items-center gap-2'>
-                    <Label>{t('screensAvailable')}</Label>
-                </div>
+                <Label className="flex items-center gap-2">{t('screensAvailable')}</Label>
                 <div className="h-11 w-full rounded-md border border-input bg-muted px-4 py-2 text-lg font-bold text-center flex items-center justify-center">
                     {selectedServer ? selectedServer.screens : '-'}
                 </div>
             </div>
             
             <div className="space-y-2">
-                <Label htmlFor='screens-to-hire'>{t('screensToHire')}</Label>
+                <Label htmlFor='screens-to-hire' className="flex items-center gap-2">{t('screensToHire')}</Label>
                 <Select
                     onValueChange={(value) => setNumberOfScreens(parseInt(value, 10))}
                     disabled={!selectedServer}
