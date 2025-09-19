@@ -93,13 +93,13 @@ export default function SubscriptionPage() {
 
   const saveManualId = () => {
     if (!selectedClient) return;
-  
+
     const idToSave = manualId.trim();
     if (!idToSave) {
       toast({ title: 'ID não pode estar vazio.' });
       return;
     }
-  
+
     // Se já existe ID diferente do digitado, pedir confirmação
     if (selectedClient.id && selectedClient.id !== idToSave) {
       const confirmEdit = window.confirm(
@@ -107,13 +107,13 @@ export default function SubscriptionPage() {
       );
       if (!confirmEdit) return;
     }
-  
+
     // Atualiza estado local e contexto global sempre
     const newClientState = { ...selectedClient, id: idToSave };
     setSelectedClient(newClientState);
     updateClient(newClientState);
     saveClientsToStorage(); // força persistência
-  
+
     // Modal de sucesso atualizado
     setIsIdSaveSuccessModalOpen(true);
   };
