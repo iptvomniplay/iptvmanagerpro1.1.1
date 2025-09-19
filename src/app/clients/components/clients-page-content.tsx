@@ -188,7 +188,7 @@ export default function ClientsPageContent() {
           <TableHeader>
             <TableRow>
               <TableHead>{t('name')}</TableHead>
-              <TableHead>{t('status')}</TableHead>
+              <TableHead>{t('clientStatus')}</TableHead>
               <TableHead>Expira em</TableHead>
               <TableHead>{t('clientID')}</TableHead>
               <TableHead className="text-right">{t('actions')}</TableHead>

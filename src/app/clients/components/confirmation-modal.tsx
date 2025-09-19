@@ -78,7 +78,7 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, clientData }: Co
               </div>
             </div>
             <div>
-              <p className="text-sm font-medium text-muted-foreground">{t('status')}</p>
+              <p className="text-sm font-medium text-muted-foreground">{t('clientStatus')}</p>
               {clientData.status && (
                 <Badge variant={getStatusVariant(clientData.status)} className="text-base mt-1">
                     {t(clientData.status.toLowerCase() as any)}

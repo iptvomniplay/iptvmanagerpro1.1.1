@@ -102,7 +102,7 @@ export function ClientDetailsModal({
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">
-                {t('status')}
+                {t('clientStatus')}
               </p>
               <Badge
                 variant={getStatusVariant(client.status)}

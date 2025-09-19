@@ -289,7 +289,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
               name="status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('status')}</FormLabel>
+                  <FormLabel>{t('clientStatus')}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     value={field.value}
