@@ -14,14 +14,16 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { add, format, lastDayOfMonth } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 interface SubscriptionPlanFormProps {
     addedPlans: SelectedPlan[];
     setAddedPlans: React.Dispatch<React.SetStateAction<SelectedPlan[]>>;
     selectedClient: Client | null;
+    onPlanAdded: () => void;
 }
 
-export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient }: SubscriptionPlanFormProps) {
+export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient, onPlanAdded }: SubscriptionPlanFormProps) {
   const { t, language } = useLanguage();
   const { servers: panels } = useData();
 
@@ -41,6 +43,8 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
   const availablePlans = selectedServer?.plans || [];
   const selectedPlan = availablePlans.find((p) => p.name === selectedPlanName);
   
+  const isFormValid = !!(selectedPanel && selectedServer && selectedPlan && numberOfScreens && selectedClient && planPeriod && dueDate && (planValue || isCourtesy));
+
   React.useEffect(() => {
     if (selectedPlan && selectedPlan.value) {
       setPlanValue(formatCurrency(selectedPlan.value));
@@ -122,6 +126,7 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
           dueDate: dueDate,
       };
       setAddedPlans([...addedPlans, newPlan]);
+      onPlanAdded();
 
       // Reset form
       setSelectedPanelId('');
@@ -315,7 +320,11 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
       </div>
       
        <div className="flex justify-end">
-            <Button onClick={handleAddPlan} disabled={!selectedPlan || !selectedClient || !numberOfScreens || !planPeriod}>
+            <Button 
+                onClick={handleAddPlan} 
+                disabled={!isFormValid}
+                className={cn(isFormValid && "animate-flash-success")}
+            >
                 {t('addPlan')}
             </Button>
         </div>

@@ -50,6 +50,7 @@ export default function SubscriptionPage() {
   const [activeTab, setActiveTab] = React.useState('client');
   const [isValidationError, setIsValidationError] = React.useState(false);
   const [validationMessage, setValidationMessage] = React.useState('');
+  const [isPlanAdded, setIsPlanAdded] = React.useState(false);
 
   const plansTabRef = React.useRef<HTMLButtonElement>(null);
   const appsTabRef = React.useRef<HTMLButtonElement>(null);
@@ -193,7 +194,15 @@ export default function SubscriptionPage() {
                     <FileText className="mr-2 h-5 w-5" />
                     {t('subscriptionPlans')}
                 </TabsTrigger>
-                <TabsTrigger ref={appsTabRef} value="apps" disabled={addedPlans.length === 0} className="relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                <TabsTrigger 
+                    ref={appsTabRef} 
+                    value="apps" 
+                    disabled={addedPlans.length === 0} 
+                    className={cn(
+                        "relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
+                        isPlanAdded && "animate-flash-success"
+                    )}
+                >
                      {areAppsIncomplete && addedPlans.length > 0 && isValidationError && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
                     <AppWindow className="mr-2 h-5 w-5" />
                     {t('applications')}
@@ -278,6 +287,11 @@ export default function SubscriptionPage() {
                     addedPlans={addedPlans}
                     setAddedPlans={setAddedPlans}
                     selectedClient={selectedClient}
+                    onPlanAdded={() => {
+                        setIsPlanAdded(true);
+                        setTimeout(() => setActiveTab('apps'), 300);
+                        setTimeout(() => setIsPlanAdded(false), 2000); 
+                    }}
                   />
                 </CardContent>
               </Card>
