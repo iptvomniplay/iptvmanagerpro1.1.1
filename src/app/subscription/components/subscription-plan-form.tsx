@@ -13,6 +13,8 @@ import { ChevronDown, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 
 interface SubscriptionPlanFormProps {
     addedPlans: SelectedPlan[];
@@ -151,26 +153,57 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
           </Select>
         </div>
         
-        <div className="space-y-2">
-            <Label>{t('screensAvailable')}</Label>
-            <div className="flex items-center justify-center h-11 w-full rounded-md border border-input bg-muted px-4 py-2 text-lg font-bold text-center">
-              {selectedServer ? selectedServer.screens : '-'}
+        <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+                <div className='flex items-center gap-2'>
+                    <Label>{t('screensAvailable')}</Label>
+                    <Badge variant="secondary" className="text-base">
+                        {selectedServer ? selectedServer.screens : '-'}
+                    </Badge>
+                </div>
+                <Input
+                    type="text"
+                    readOnly
+                    className="h-11 w-full rounded-md border border-input bg-muted px-4 py-2 text-lg font-bold text-center"
+                    value={selectedServer ? `${selectedServer.screens} ${t('screens')}` : '-'}
+                />
+            </div>
+            
+            <div className="space-y-2">
+                <Label htmlFor='screens-to-hire'>{t('screensToHire')}</Label>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button 
+                            id="screens-to-hire"
+                            variant="outline" 
+                            className={cn(
+                                "h-11 w-full justify-start text-left font-normal",
+                                !numberOfScreens && "text-muted-foreground"
+                            )}
+                            disabled={!selectedServer}
+                        >
+                            {numberOfScreens || t('screensToHirePlaceholder')}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                        <Select
+                            onValueChange={(value) => setNumberOfScreens(parseInt(value, 10))}
+                        >
+                        <SelectContent>
+                            {selectedServer && Array.from({ length: selectedServer.screens }, (_, i) => i + 1).map(
+                                (num) => (
+                                    <SelectItem key={num} value={String(num)}>
+                                        {num}
+                                    </SelectItem>
+                                )
+                            )}
+                        </SelectContent>
+                        </Select>
+                    </PopoverContent>
+                </Popover>
             </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor='screens-to-hire'>{t('screensToHire')}</Label>
-          <Input
-            id='screens-to-hire'
-            type="number"
-            min="1"
-            value={numberOfScreens}
-            onChange={(e) => setNumberOfScreens(e.target.value ? parseInt(e.target.value, 10) : '')}
-            disabled={!selectedPlanName}
-            placeholder=""
-          />
-        </div>
-        
         <div className="space-y-2">
            <Label htmlFor="due-date">{t('dueDate')}</Label>
            <Select
@@ -217,7 +250,7 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
       </div>
       
        <div className="flex justify-end">
-            <Button onClick={handleAddPlan} disabled={!selectedPlan || !selectedClient}>
+            <Button onClick={handleAddPlan} disabled={!selectedPlan || !selectedClient || !numberOfScreens}>
                 {t('addPlan')}
             </Button>
         </div>

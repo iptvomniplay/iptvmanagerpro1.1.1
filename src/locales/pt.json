@@ -279,7 +279,7 @@
     "screensAvailable": "Telas (Disponível)",
     "screensToHire": "Telas (Contratar)",
     "value": "Valor",
-    "screensToHirePlaceholder": "",
+    "screensToHirePlaceholder": "Informe a quantidade de telas contratadas",
     "select": "Selecionar",
     "applications": "Aplicativos",
     "addApplicationDescription": "Gerencie os aplicativos associados à assinatura do cliente.",

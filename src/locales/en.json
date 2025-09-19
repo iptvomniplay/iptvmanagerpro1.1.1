@@ -279,7 +279,7 @@
     "screensAvailable": "Screens (Available)",
     "screensToHire": "Screens (To Hire)",
     "value": "Value",
-    "screensToHirePlaceholder": "",
+    "screensToHirePlaceholder": "Enter the number of hired screens",
     "select": "Select",
     "applications": "Applications",
     "addApplicationDescription": "Manage the applications associated with the client's subscription.",
