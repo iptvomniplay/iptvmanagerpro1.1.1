@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useCallback, ReactNode, use
 import type { Client, Server, Test, SelectedPlan } from '@/lib/types';
 import { format } from 'date-fns';
 import { clients as initialClients, servers as initialServers } from '@/lib/data';
+import { useToast } from './use-toast';
 
 interface DataContextType {
   clients: Client[];
@@ -23,16 +24,25 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [clients, setClients] = useState<Client[]>([]);
   const [servers, setServers] = useState<Server[]>([]);
+  const { toast } = useToast();
+  const [toastShown, setToastShown] = useState(false);
 
   useEffect(() => {
+    if (toastShown) return;
+
     try {
       const storedClients = localStorage.getItem('clients');
       if (storedClients && storedClients !== '[]') {
-        console.log("Mestre, verifiquei e SIM, existem dados de clientes salvos no localStorage do seu navegador.");
+        toast({
+            title: "Verificação do Navegador",
+            description: "Mestre, verifiquei e SIM, existem dados de clientes salvos no localStorage do seu navegador."
+        });
         setClients(JSON.parse(storedClients));
       } else {
-        console.log("Mestre, verifiquei e NÃO, não há dados de clientes salvos no localStorage do seu navegador. O sistema está limpo.");
-        // Se não houver nada no localStorage, use os dados iniciais (que agora estão vazios)
+        toast({
+            title: "Verificação do Navegador",
+            description: "Mestre, verifiquei e NÃO, não há dados de clientes salvos no localStorage do seu navegador. O sistema está limpo."
+        });
         const clientsWithTempId = initialClients.map(c => ({...c, _tempId: `temp_${Date.now()}_${Math.random()}`}));
         setClients(clientsWithTempId);
       }
@@ -41,7 +51,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const clientsWithTempId = initialClients.map(c => ({...c, _tempId: `temp_${Date.now()}_${Math.random()}`}));
       setClients(clientsWithTempId);
     }
-  }, []);
+    setToastShown(true);
+  }, [toast, toastShown]);
   
   useEffect(() => {
     // Apenas para dados de servidor, que não são persistidos.
@@ -61,8 +72,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setClients(prevClients => {
         const newClient: Client = {
             ...(clientData as Client),
-            id: '', 
             _tempId: `temp_${Date.now()}_${Math.random()}`,
+            id: '',
             registeredDate: format(new Date(), 'yyyy-MM-dd'),
             birthDate: clientData.birthDate || '',
             plans: [],
@@ -77,7 +88,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setClients(prevClients => {
        const updatedClients = prevClients.map(c => 
         (c._tempId && c._tempId === clientData._tempId)
-          ? { ...clientData } 
+          ? { ...c, ...clientData } 
           : c
       );
       if (!skipSave) {
