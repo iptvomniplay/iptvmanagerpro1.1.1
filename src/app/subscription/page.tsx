@@ -91,17 +91,16 @@ export default function SubscriptionPage() {
     setManualId(e.target.value);
   };
 
-  // ======= FUNÇÃO CORRIGIDA =======
   const saveManualId = () => {
     if (!selectedClient) return;
 
     const newClientState = { ...selectedClient, id: manualId };
-    setSelectedClient(newClientState);       // Atualiza local
-    updateClient(newClientState);             // Atualiza contexto global
-    saveClientsToStorage();                    // Persiste no storage do sistema
-    setIsIdSaveSuccessModalOpen(true);        // Modal de sucesso
+
+    setSelectedClient(newClientState);
+    updateClient(newClientState);
+    saveClientsToStorage();
+    setIsIdSaveSuccessModalOpen(true);
   };
-  // ================================
 
   const handleCancel = () => {
     setSelectedClient(null);
