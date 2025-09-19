@@ -74,14 +74,10 @@ export default function SubscriptionPage() {
     updateClient(newClientState, true); // skipSave = true para não salvar no LS a cada modificação
   };
 
-  const handleManualIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setManualId(e.target.value);
-  };
-
   const saveManualId = () => {
     if (!selectedClient) return;
     const newClientState = { ...selectedClient, id: manualId };
-    updateClient(newClientState); // A CORREÇÃO: Removido o segundo parâmetro 'true' (skipSave)
+    updateClient(newClientState);
     setSelectedClient(newClientState); 
     setIsIdSaveSuccessModalOpen(true);
   };
