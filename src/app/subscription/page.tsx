@@ -191,7 +191,10 @@ export default function SubscriptionPage() {
                       </Badge>
                     </div>
                     <div className="space-y-2">
-                       <Label htmlFor="manual-client-id">{t('clientID')}</Label>
+                      <div className="flex items-baseline">
+                          <Label htmlFor="manual-client-id" className="mr-2">{t('clientID')}:</Label>
+                           <span className="font-medium text-green-500 text-base">{manualId || 'N/A'}</span>
+                      </div>
                       <Input
                         id="manual-client-id"
                         placeholder={t('clientIdManualPlaceholder')}
