@@ -59,6 +59,7 @@ export type Client = {
   birthDate?: string;
   observations?: string;
   plans?: SelectedPlan[];
+  _tempId?: string; // Temporary ID for reliable updates before a manual ID is set
 };
 
 export type PlanType = {

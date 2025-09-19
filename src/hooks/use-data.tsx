@@ -39,10 +39,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
-    setClients(safelyParseJSON(localStorage.getItem('clients'), []));
-    setServers(safelyParseJSON(localStorage.getItem('servers'), []));
+    // Start with a clean slate by not loading from localStorage initially
+    setClients([]);
+    setServers([]);
     setIsDataLoaded(true);
   }, []);
+
 
   useEffect(() => {
     if (isDataLoaded) {
@@ -61,10 +63,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setClients(prevClients => {
         const newClient: Client = {
             ...(clientData as Client),
-            id: '',
+            id: '', // ID will be set manually by the user
             registeredDate: format(new Date(), 'yyyy-MM-dd'),
             birthDate: clientData.birthDate || '',
             plans: [],
+            // Add a temporary unique key for reliable updates before a manual ID is set
+            _tempId: `temp_${Date.now()}` 
         };
         return [newClient, ...prevClients];
     });
@@ -72,7 +76,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const updateClient = useCallback((clientData: Client) => {
     setClients(prevClients =>
-      prevClients.map(c => (c.name === clientData.name ? clientData : c))
+      prevClients.map(c => {
+        // Use _tempId for matching if it exists, otherwise fall back to name for older data.
+        const match = (c as any)._tempId ? (c as any)._tempId === (clientData as any)._tempId : c.name === clientData.name;
+        return match ? clientData : c;
+      })
     );
   }, []);
 
@@ -130,7 +138,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     addTestToClient,
   };
   
-  // Render children only after data is loaded from localStorage to prevent hydration mismatch
+  // Render children only after data is loaded to prevent hydration mismatch
   return <DataContext.Provider value={value}>{isDataLoaded ? children : null}</DataContext.Provider>;
 };
 

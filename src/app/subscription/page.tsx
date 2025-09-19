@@ -89,9 +89,12 @@ export default function SubscriptionPage() {
     const newId = e.target.value;
     setManualId(newId);
     if (selectedClient) {
+      // Create a new object to ensure state update triggers re-render
       const updatedClient = { ...selectedClient, id: newId };
-      setSelectedClient(updatedClient);
+      // Update the client in the global state immediately
       updateClient(updatedClient);
+      // Also update the local state to be in sync
+      setSelectedClient(updatedClient);
     }
   }
 
@@ -142,7 +145,7 @@ export default function SubscriptionPage() {
     const clientToUpdate: Client = { 
         ...selectedClient, 
         plans: addedPlans, 
-        status: 'Active',
+        status: 'Active', // Set status to Active
         id: manualId || selectedClient.id,
     };
 
