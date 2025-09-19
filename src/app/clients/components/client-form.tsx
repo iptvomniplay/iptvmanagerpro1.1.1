@@ -114,9 +114,9 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
     };
 
     if (client) {
-      updateClient({ ...client, ...clientData, id: clientData.id || client.id, registeredDate: client.registeredDate });
+      updateClient({ ...client, ...clientData });
     } else {
-      addClient(clientData as Omit<Client, 'registeredDate'>);
+      addClient(clientData as Omit<Client, 'registeredDate' | 'id' | '_tempId' | 'plans'>);
     }
 
     setIsConfirmationModalOpen(false);

@@ -58,7 +58,7 @@ export default function SubscriptionPage() {
 
   const handleSelectClient = (client: Client | null) => {
     if (client) {
-      const fullClientData = clients.find(c => (c.id && c.id === client.id) || (c._tempId && c._tempId === client._tempId)) || client;
+      const fullClientData = clients.find(c => c._tempId === client._tempId) || client;
       setSelectedClient(fullClientData);
       setManualId(fullClientData.id || '');
     } else {
@@ -81,7 +81,7 @@ export default function SubscriptionPage() {
   const saveManualId = () => {
     if (!selectedClient) return;
     const newClientState = { ...selectedClient, id: manualId };
-    updateClient(newClientState, false); // THIS IS THE FIX: skipSave must be false to persist
+    updateClient(newClientState, false); // Persistência ativada
     setSelectedClient(newClientState); 
     setIsIdSaveSuccessModalOpen(true);
   };

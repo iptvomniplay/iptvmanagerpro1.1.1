@@ -45,7 +45,8 @@ export type SelectedPlan = {
 
 
 export type Client = {
-  id: string;
+  id: string; // ID manual, pode ser string vazia inicialmente
+  _tempId: string; // ID interno e único para o React
   name: string;
   nickname?: string;
   email: string;
@@ -59,7 +60,6 @@ export type Client = {
   birthDate?: string;
   observations?: string;
   plans?: SelectedPlan[];
-  _tempId?: string; // Temporary ID for reliable updates before a manual ID is set
 };
 
 export type PlanType = {

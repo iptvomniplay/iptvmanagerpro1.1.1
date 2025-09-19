@@ -96,7 +96,7 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
           <CardContent className="p-2">
             {searchResults.map((client) => (
               <div
-                key={client.id}
+                key={client._tempId}
                 className="flex items-center justify-between p-3 rounded-md hover:bg-accent cursor-pointer"
                 onClick={() => handleSelectClient(client)}
               >

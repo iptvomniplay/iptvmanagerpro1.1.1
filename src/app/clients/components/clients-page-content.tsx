@@ -115,7 +115,7 @@ export default function ClientsPageContent() {
 
   const handleDelete = () => {
     if (clientToDelete) {
-      deleteClient(clientToDelete.id);
+      deleteClient(clientToDelete._tempId);
     }
     setIsDeleteAlertOpen(false);
     setClientToDelete(null);
@@ -196,7 +196,7 @@ export default function ClientsPageContent() {
           <TableBody>
             {filteredClients.length > 0 ? (
               filteredClients.map((client) => (
-                <TableRow key={client.id || client._tempId}>
+                <TableRow key={client._tempId}>
                   <TableCell>
                     <Button variant="outline" className="h-auto font-semibold" onClick={() => handleViewDetails(client)}>
                       {client.name}
@@ -210,7 +210,7 @@ export default function ClientsPageContent() {
                    <TableCell>
                     {client.dueDate && client.status === 'Active' ? (
                         <ClientExpiration
-                            key={client.id || client._tempId}
+                            key={client._tempId}
                             clientId={client.id}
                             registeredDate={client.registeredDate} 
                             dueDate={client.dueDate} 

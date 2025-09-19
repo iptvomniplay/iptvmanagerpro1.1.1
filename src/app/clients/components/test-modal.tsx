@@ -119,14 +119,14 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
   const handleSubmit = (values: TestFormValues) => {
     if (selectedClient && selectedPanel && selectedSubServer) {
       const newTest: Omit<Test, 'creationDate'> = {
-        clientId: selectedClient.id,
+        clientId: selectedClient._tempId,
         panelId: selectedPanel.id,
         subServerName: selectedSubServer.name,
         package: values.package,
         durationValue: values.durationValue,
         durationUnit: values.durationUnit,
       };
-      addTestToClient(selectedClient.id, newTest);
+      addTestToClient(selectedClient._tempId, newTest);
        if (selectedClient) {
         updateClient({ ...selectedClient, status: 'Test' });
       }
@@ -195,7 +195,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                           <div className="p-4 space-y-2">
                             {searchResults.map((client) => (
                               <div
-                                key={client.id}
+                                key={client._tempId}
                                 className="flex items-center justify-between p-3 rounded-md hover:bg-accent cursor-pointer"
                                 onClick={() => handleSelectClient(client)}
                               >

@@ -8,7 +8,7 @@ import { clients as initialClients, servers as initialServers } from '@/lib/data
 interface DataContextType {
   clients: Client[];
   servers: Server[];
-  addClient: (clientData: Omit<Client, 'registeredDate' | 'plans' | 'id'>) => void;
+  addClient: (clientData: Omit<Client, 'registeredDate' | 'plans' | 'id' | '_tempId'>) => void;
   updateClient: (clientData: Client, skipSave?: boolean) => void;
   deleteClient: (clientId: string) => void;
   addServer: (serverData: Omit<Server, 'id' | 'status'>) => void;
@@ -22,7 +22,7 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [clients, setClients] = useState<Client[]>([]);
-  const [servers, setServers] = useState<Server[]>(initialServers);
+  const [servers, setServers] = useState<Server[]>([]);
 
   useEffect(() => {
     try {
@@ -30,13 +30,23 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (storedClients) {
         setClients(JSON.parse(storedClients));
       } else {
-        setClients(initialClients);
+        // Se não houver nada no localStorage, use os dados iniciais (se houver)
+        // e adicione _tempId a eles para consistência.
+        const clientsWithTempId = initialClients.map(c => ({...c, _tempId: c.id || `temp_${Date.now()}_${Math.random()}`}));
+        setClients(clientsWithTempId);
       }
     } catch (error) {
       console.error('Failed to load clients from localStorage', error);
-      setClients(initialClients);
+      const clientsWithTempId = initialClients.map(c => ({...c, _tempId: c.id || `temp_${Date.now()}_${Math.random()}`}));
+      setClients(clientsWithTempId);
     }
   }, []);
+  
+  useEffect(() => {
+    // Apenas para dados de servidor, que não são persistidos.
+    setServers(initialServers);
+  }, []);
+
 
   const saveClientsToStorage = useCallback((updatedClients: Client[]) => {
     try {
@@ -46,12 +56,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, []);
 
-  const addClient = useCallback((clientData: Omit<Client, 'registeredDate' | 'plans' | 'id'>) => {
+  const addClient = useCallback((clientData: Omit<Client, 'registeredDate' | 'plans' | 'id' | '_tempId'>) => {
     setClients(prevClients => {
         const newClient: Client = {
             ...(clientData as Client),
-            id: clientData.id || '', // ID will be set manually by the user
-            _tempId: `temp_${Date.now()}`,
+            id: '', // O ID SERÁ INSERIDO MANUALMENTE
+            _tempId: `temp_${Date.now()}_${Math.random()}`, // ID interno apenas para React
             registeredDate: format(new Date(), 'yyyy-MM-dd'),
             birthDate: clientData.birthDate || '',
             plans: [],
@@ -65,7 +75,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const updateClient = useCallback((clientData: Client, skipSave = false) => {
     setClients(prevClients => {
        const updatedClients = prevClients.map(c => 
-        (c.id && c.id === clientData.id && c.id !== '') || (c._tempId && c._tempId === clientData._tempId)
+        (c._tempId && c._tempId === clientData._tempId)
           ? { ...c, ...clientData } 
           : c
       );
@@ -76,9 +86,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
   }, [saveClientsToStorage]);
 
-  const deleteClient = useCallback((clientId: string) => {
+  const deleteClient = useCallback((tempId: string) => {
     setClients(prevClients => {
-      const updatedClients = prevClients.filter(c => c.id !== clientId && c._tempId !== clientId);
+      const updatedClients = prevClients.filter(c => c._tempId !== tempId);
       saveClientsToStorage(updatedClients);
       return updatedClients;
     });
@@ -113,7 +123,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
     setClients(prev => {
         const updatedClients = prev.map(client => {
-            if (client.id === clientId) {
+            if (client.id === clientId || client._tempId === clientId) {
               return { ...client, tests: [...(client.tests || []), newTest] };
             }
             return client;

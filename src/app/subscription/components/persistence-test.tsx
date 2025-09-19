@@ -46,7 +46,7 @@ export function PersistenceTest({ selectedClient }: PersistenceTestProps) {
   const [storedClient, setStoredClient] = React.useState<Client | null>(null);
   const [globalClient, setGlobalClient] = React.useState<Client | null>(null);
   
-  const clientKey = selectedClient?._tempId || selectedClient?.id;
+  const clientKey = selectedClient?._tempId;
 
   const runTest = () => {
     if (!selectedClient || !clientKey) return;
@@ -54,7 +54,7 @@ export function PersistenceTest({ selectedClient }: PersistenceTestProps) {
     setManualIdUsedInTest(selectedClient.id);
 
     // 1. Check global client list
-    const clientFromGlobalList = globalClients.find(c => (c.id && c.id === clientKey) || c._tempId === clientKey) || null;
+    const clientFromGlobalList = globalClients.find(c => c._tempId === clientKey) || null;
     setGlobalClient(clientFromGlobalList);
     
     // 2. Check localStorage
@@ -62,7 +62,7 @@ export function PersistenceTest({ selectedClient }: PersistenceTestProps) {
     if (storedClientsRaw) {
       try {
         const storedClientsParsed: Client[] = JSON.parse(storedClientsRaw);
-        const clientFromStorage = storedClientsParsed.find(c => (c.id && c.id === clientKey) || c._tempId === clientKey) || null;
+        const clientFromStorage = storedClientsParsed.find(c => c._tempId === clientKey) || null;
         setStoredClient(clientFromStorage);
       } catch (e) {
         setStoredClient(null);
