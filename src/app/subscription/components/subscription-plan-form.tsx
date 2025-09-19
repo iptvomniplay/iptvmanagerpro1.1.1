@@ -165,36 +165,24 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
             
             <div className="space-y-2">
                 <Label htmlFor='screens-to-hire'>{t('screensToHire')}</Label>
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button 
-                            id="screens-to-hire"
-                            variant="outline" 
-                            className={cn(
-                                "h-11 w-full justify-start text-left font-normal",
-                                !numberOfScreens && "text-muted-foreground"
-                            )}
-                            disabled={!selectedServer}
-                        >
-                            {numberOfScreens || t('screensToHirePlaceholder')}
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                        <Select
-                            onValueChange={(value) => setNumberOfScreens(parseInt(value, 10))}
-                        >
-                        <SelectContent>
-                            {selectedServer && Array.from({ length: selectedServer.screens }, (_, i) => i + 1).map(
-                                (num) => (
-                                    <SelectItem key={num} value={String(num)}>
-                                        {num}
-                                    </SelectItem>
-                                )
-                            )}
-                        </SelectContent>
-                        </Select>
-                    </PopoverContent>
-                </Popover>
+                 <Select
+                    onValueChange={(value) => setNumberOfScreens(parseInt(value, 10))}
+                    disabled={!selectedServer}
+                    value={numberOfScreens ? String(numberOfScreens) : ''}
+                >
+                    <SelectTrigger id="screens-to-hire" className="h-11">
+                        <SelectValue placeholder={t('screensToHirePlaceholder')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {selectedServer && Array.from({ length: selectedServer.screens }, (_, i) => i + 1).map(
+                            (num) => (
+                                <SelectItem key={num} value={String(num)}>
+                                    {num}
+                                </SelectItem>
+                            )
+                        )}
+                    </SelectContent>
+                </Select>
             </div>
         </div>
 
