@@ -39,10 +39,11 @@ export default function SubscriptionPage() {
   );
   const [manualId, setManualId] = React.useState('');
   const [addedPlans, setAddedPlans] = React.useState<SelectedPlan[]>([]);
+  const [activeTab, setActiveTab] = React.useState('client');
 
   React.useEffect(() => {
     if (selectedClient) {
-        if (selectedClient.status === 'Active') {
+        if (selectedClient.status === 'Active' && selectedClient.id) {
             setManualId(selectedClient.id);
         } else {
             setManualId('');
@@ -53,10 +54,6 @@ export default function SubscriptionPage() {
         setAddedPlans([]);
     }
   }, [selectedClient]);
-
-  const totalScreens = React.useMemo(() => {
-    return addedPlans.reduce((total, plan) => total + plan.screens, 0);
-  }, [addedPlans]);
 
   const getStatusVariant = (status: Client['status']) => {
     switch (status) {
@@ -134,7 +131,7 @@ export default function SubscriptionPage() {
         </Card>
 
         {selectedClient ? (
-          <Tabs defaultValue="client" className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-3 gap-2 h-auto rounded-lg p-1 bg-transparent border-b-0">
                 <TabsTrigger value="client" className="py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
                     <User className="mr-2 h-5 w-5" />
@@ -144,7 +141,7 @@ export default function SubscriptionPage() {
                     <FileText className="mr-2 h-5 w-5" />
                     {t('subscriptionPlans')}
                 </TabsTrigger>
-                <TabsTrigger value="apps" className="py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
+                <TabsTrigger value="apps" disabled={addedPlans.length === 0} className="py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary disabled:opacity-50 disabled:cursor-not-allowed">
                     <AppWindow className="mr-2 h-5 w-5" />
                     {t('applications')}
                 </TabsTrigger>
@@ -191,14 +188,14 @@ export default function SubscriptionPage() {
                       </Badge>
                     </div>
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label htmlFor="manual-client-id">{t('clientID')}:</Label>
-                        {manualId && (
-                            <Badge variant="outline">
-                                <span className="text-green-500 font-bold">{manualId}</span>
-                            </Badge>
-                        )}
-                      </div>
+                        <div className="flex items-center gap-2">
+                            <Label htmlFor="manual-client-id">{t('clientID')}:</Label>
+                            {manualId && (
+                                <Badge variant="outline" className="border-green-500/50 text-green-500">
+                                    {manualId}
+                                </Badge>
+                            )}
+                        </div>
                       <Input
                         id="manual-client-id"
                         placeholder={t('clientIdManualPlaceholder')}
@@ -243,7 +240,7 @@ export default function SubscriptionPage() {
                   <ApplicationsForm
                     selectedClient={selectedClient}
                     onUpdateClient={handleUpdateClient}
-                    screensToRender={totalScreens}
+                    addedPlans={addedPlans}
                   />
                 </CardContent>
               </Card>
