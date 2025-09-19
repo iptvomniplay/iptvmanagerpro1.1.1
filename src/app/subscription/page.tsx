@@ -188,13 +188,13 @@ export default function SubscriptionPage() {
                     <User className="mr-2 h-5 w-5" />
                     {t('client')}
                 </TabsTrigger>
-                <TabsTrigger ref={plansTabRef} value="plans" className={cn("relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary", arePlansIncomplete && 'ring-2 ring-destructive ring-offset-2 ring-offset-background')}>
-                    {arePlansIncomplete && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
+                <TabsTrigger ref={plansTabRef} value="plans" className="relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
+                    {arePlansIncomplete && isValidationError && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
                     <FileText className="mr-2 h-5 w-5" />
                     {t('subscriptionPlans')}
                 </TabsTrigger>
-                <TabsTrigger ref={appsTabRef} value="apps" disabled={addedPlans.length === 0} className={cn("relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary disabled:opacity-50 disabled:cursor-not-allowed", areAppsIncomplete && 'ring-2 ring-destructive ring-offset-2 ring-offset-background')}>
-                     {areAppsIncomplete && addedPlans.length > 0 && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
+                <TabsTrigger ref={appsTabRef} value="apps" disabled={addedPlans.length === 0} className="relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                     {areAppsIncomplete && addedPlans.length > 0 && isValidationError && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
                     <AppWindow className="mr-2 h-5 w-5" />
                     {t('applications')}
                 </TabsTrigger>
@@ -256,9 +256,9 @@ export default function SubscriptionPage() {
                         value={manualId}
                         onChange={(e) => setManualId(e.target.value)}
                         disabled={selectedClient.status === 'Active'}
-                        className={cn(!manualId && selectedClient.status !== 'Active' && 'ring-2 ring-destructive ring-offset-2 ring-offset-background')}
+                        className={cn(!manualId && selectedClient.status !== 'Active' && isValidationError && 'ring-2 ring-destructive ring-offset-2 ring-offset-background')}
                       />
-                       {!manualId && selectedClient.status !== 'Active' && <p className="text-sm text-destructive">{t('clientIdRequired')}</p>}
+                       {!manualId && selectedClient.status !== 'Active' && isValidationError && <p className="text-sm text-destructive">{t('clientIdRequired')}</p>}
                     </div>
                   </div>
                 </CardContent>
