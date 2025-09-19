@@ -218,7 +218,7 @@ export default function ClientsPageContent() {
                     ) : null}
                   </TableCell>
                   <TableCell className="font-medium">
-                    {client.id || '-'}
+                    {client.id ? client.id : 'Sem ID'}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>

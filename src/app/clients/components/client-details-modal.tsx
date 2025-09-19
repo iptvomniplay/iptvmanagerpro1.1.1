@@ -88,7 +88,7 @@ export function ClientDetailsModal({
             <DetailItem label={t('nickname')} value={client.nickname} />
             <DetailItem label={t('emailAddress')} value={client.email} />
             <DetailItem label={t('birthDate')} value={client.birthDate} />
-            <DetailItem label={t('clientID')} value={client.id} />
+            <DetailItem label={t('clientID')} value={client.id || "Sem ID"} />
             <div>
               <p className="text-sm font-medium text-muted-foreground">
                 {t('phone')}
