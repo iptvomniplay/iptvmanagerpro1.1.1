@@ -96,7 +96,6 @@ export default function SubscriptionPage() {
     handleCancel();
   };
 
-  const isIdPending = manualId !== '' && selectedClient?.status !== 'Active' && manualId !== selectedClient?.id;
   const currentIdDisplay = selectedClient?.status === 'Active' ? selectedClient.id : manualId || 'N/A';
 
   return (
@@ -173,9 +172,8 @@ export default function SubscriptionPage() {
                       </div>
                       <div className="space-y-2">
                          <Label htmlFor="manual-client-id">{t('clientID')}</Label>
-                         <p className="text-sm text-muted-foreground">
-                          <span className="font-semibold">{t('idAtual')}: </span>
-                          <span className={cn(isIdPending && 'text-green-500 font-bold')}>{currentIdDisplay}</span>
+                        <p className="text-sm text-muted-foreground">
+                          {t('idAtual')}: <span>{currentIdDisplay}</span>
                         </p>
                         <Input
                           id="manual-client-id"
@@ -184,7 +182,7 @@ export default function SubscriptionPage() {
                           value={manualId}
                           onChange={(e) => setManualId(e.target.value)}
                           disabled={selectedClient.status === 'Active'}
-                          className={cn(isIdPending && 'ring-2 ring-yellow-500/80 animate-flash')}
+                          className={cn((manualId !== '' && selectedClient?.status !== 'Active') && 'ring-2 ring-yellow-500/80 animate-flash')}
                         />
                       </div>
                     </div>
