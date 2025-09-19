@@ -113,9 +113,6 @@ export default function SubscriptionPage() {
     handleCancel();
   };
 
-  const currentIdValue = selectedClient?.status === 'Active' ? selectedClient.id : manualId;
-  const isIdEdited = selectedClient?.status !== 'Active' && manualId !== '';
-
   return (
     <div className="flex flex-col h-full">
       <div className="space-y-8 flex-1">
@@ -138,7 +135,7 @@ export default function SubscriptionPage() {
 
         {selectedClient ? (
           <Tabs defaultValue="client" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 gap-2 h-auto rounded-lg p-1 bg-transparent">
+            <TabsList className="grid w-full grid-cols-3 gap-2 h-auto rounded-lg p-1 bg-transparent border-b-0">
                 <TabsTrigger value="client" className="py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
                     <User className="mr-2 h-5 w-5" />
                     {t('client')}
@@ -195,12 +192,6 @@ export default function SubscriptionPage() {
                     </div>
                     <div className="space-y-2">
                        <Label htmlFor="manual-client-id">{t('clientID')}</Label>
-                      <p className="text-sm text-muted-foreground">
-                        {t('idAtual')}:{' '}
-                        <span className={cn(isIdEdited && 'text-green-500 font-bold')}>
-                          {currentIdValue || 'N/A'}
-                        </span>
-                      </p>
                       <Input
                         id="manual-client-id"
                         placeholder={t('clientIdManualPlaceholder')}
