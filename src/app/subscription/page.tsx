@@ -100,7 +100,6 @@ export default function SubscriptionPage() {
       return;
     }
 
-    // Se já existe ID diferente do digitado, pedir confirmação
     if (selectedClient.id && selectedClient.id !== idToSave) {
       const confirmEdit = window.confirm(
         `O cliente já possui ID: ${selectedClient.id}. Deseja alterar para "${idToSave}"?`
@@ -108,13 +107,11 @@ export default function SubscriptionPage() {
       if (!confirmEdit) return;
     }
 
-    // Atualiza estado local e contexto global sempre
     const newClientState = { ...selectedClient, id: idToSave };
     setSelectedClient(newClientState);
     updateClient(newClientState);
-    saveClientsToStorage(); // força persistência
+    saveClientsToStorage(); 
 
-    // Modal de sucesso atualizado
     setIsIdSaveSuccessModalOpen(true);
   };
 
@@ -170,7 +167,7 @@ export default function SubscriptionPage() {
     };
 
     updateClient(clientToUpdate);
-    saveClientsToStorage();  // Salva todas as alterações permanentes
+    saveClientsToStorage();
     setIsSubscriptionSuccessModalOpen(true);
   };
   
