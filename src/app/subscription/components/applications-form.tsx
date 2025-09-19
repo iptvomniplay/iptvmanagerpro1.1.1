@@ -58,6 +58,13 @@ export function ApplicationsForm({
     }
   }, [selectedClient]);
 
+  React.useEffect(() => {
+    if (selectedClient) {
+      const updatedClient = { ...selectedClient, applications };
+      onUpdateClient(updatedClient);
+    }
+  }, [applications, selectedClient, onUpdateClient]);
+
   const handleAppChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number,
@@ -116,17 +123,6 @@ export function ApplicationsForm({
   const handleRemoveApplication = (indexToRemove: number) => {
     const newApps = applications.filter((_, index) => index !== indexToRemove);
     setApplications(newApps);
-  };
-
-  const handleSaveApplications = () => {
-    if (selectedClient) {
-      const updatedClient = { ...selectedClient, applications };
-      onUpdateClient(updatedClient);
-      toast({
-        title: t('registrationAddedSuccess'),
-        description: `As aplicações do cliente ${selectedClient.name} foram salvas.`,
-      });
-    }
   };
   
   const totalScreensFromPlans = addedPlans.reduce((sum, plan) => sum + plan.screens, 0);
@@ -305,18 +301,15 @@ export function ApplicationsForm({
           </Collapsible>
         ))}
         
-        {applications.length < totalScreensFromPlans && (
-            <Button onClick={handleAddApplication} variant="outline" className="w-full border-dashed">
-                <PlusCircle className="mr-2 h-4 w-4" />
-                {t('addApplication')}
-            </Button>
-        )}
-        
         <div className="flex justify-end pt-4">
-            <Button onClick={handleSaveApplications}>
-                {t('save')}
-            </Button>
+          {applications.length < totalScreensFromPlans && (
+              <Button onClick={handleAddApplication} variant="default" className="w-full">
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  {t('addApplication')}
+              </Button>
+          )}
         </div>
+
       </div>
 
       {phoneModalState.isOpen && phoneModalState.index !== null && (
