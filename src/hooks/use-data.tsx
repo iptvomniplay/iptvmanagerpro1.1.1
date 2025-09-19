@@ -21,12 +21,29 @@ interface DataContextType {
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [clients, setClients] = useState<Client[]>(initialClients);
+  const [clients, setClients] = useState<Client[]>([]);
   const [servers, setServers] = useState<Server[]>(initialServers);
 
-  // This function is now a no-op but kept for compatibility to avoid breaking components.
-  const saveClientsToStorage = useCallback(() => {
-    // console.log("Operação de salvar no localStorage desativada.");
+  useEffect(() => {
+    try {
+      const storedClients = localStorage.getItem('clients');
+      if (storedClients) {
+        setClients(JSON.parse(storedClients));
+      } else {
+        setClients(initialClients);
+      }
+    } catch (error) {
+      console.error('Failed to load clients from localStorage', error);
+      setClients(initialClients);
+    }
+  }, []);
+
+  const saveClientsToStorage = useCallback((updatedClients: Client[]) => {
+    try {
+      localStorage.setItem('clients', JSON.stringify(updatedClients));
+    } catch (error) {
+      console.error('Failed to save clients to localStorage', error);
+    }
   }, []);
 
   const addClient = useCallback((clientData: Omit<Client, 'registeredDate' | 'plans' | 'id'>) => {
@@ -39,9 +56,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             birthDate: clientData.birthDate || '',
             plans: [],
         };
-        return [newClient, ...prevClients];
+        const updatedClients = [newClient, ...prevClients];
+        saveClientsToStorage(updatedClients);
+        return updatedClients;
     });
-  }, []);
+  }, [saveClientsToStorage]);
 
   const updateClient = useCallback((clientData: Client, skipSave = false) => {
     setClients(prevClients => {
@@ -50,13 +69,20 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           ? { ...c, ...clientData } 
           : c
       );
+      if (!skipSave) {
+        saveClientsToStorage(updatedClients);
+      }
        return updatedClients;
     });
-  }, []);
+  }, [saveClientsToStorage]);
 
   const deleteClient = useCallback((clientId: string) => {
-    setClients(prevClients => prevClients.filter(c => c.id !== clientId && c._tempId !== clientId));
-  }, []);
+    setClients(prevClients => {
+      const updatedClients = prevClients.filter(c => c.id !== clientId && c._tempId !== clientId);
+      saveClientsToStorage(updatedClients);
+      return updatedClients;
+    });
+  }, [saveClientsToStorage]);
 
   const addServer = useCallback((serverData: Omit<Server, 'id' | 'status'>) => {
     setServers(prevServers => {
@@ -66,7 +92,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         status: 'Online',
         subServers: serverData.subServers || [],
         };
-        return [newServer, ...prevServers];
+        const updatedServers = [newServer, ...prevServers];
+        // NOTE: Servers are not persisted to localStorage in this implementation
+        return updatedServers;
     });
   }, []);
 
@@ -83,14 +111,18 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       ...testData,
       creationDate: new Date().toISOString(),
     };
-    setClients(prev => prev.map(client => {
-        if (client.id === clientId) {
-          return { ...client, tests: [...(client.tests || []), newTest] };
-        }
-        return client;
-      })
+    setClients(prev => {
+        const updatedClients = prev.map(client => {
+            if (client.id === clientId) {
+              return { ...client, tests: [...(client.tests || []), newTest] };
+            }
+            return client;
+        });
+        saveClientsToStorage(updatedClients);
+        return updatedClients;
+      }
     );
-  }, []);
+  }, [saveClientsToStorage]);
 
   const value = {
     clients,
@@ -102,7 +134,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     updateServer,
     deleteServer,
     addTestToClient,
-    saveClientsToStorage,
+    saveClientsToStorage: () => saveClientsToStorage(clients),
   };
   
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

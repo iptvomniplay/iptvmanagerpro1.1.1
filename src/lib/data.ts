@@ -1,48 +1,6 @@
 import type { Client, Server } from './types';
 
-export const clients: Client[] = [
-  {
-    id: 'CLI001',
-    _tempId: 'temp_1719541000001',
-    name: 'João da Silva',
-    nickname: 'João',
-    email: 'joao.silva@example.com',
-    phones: [{ type: 'celular', number: '(11) 98765-4321' }],
-    status: 'Active',
-    registeredDate: '2023-01-15',
-    dueDate: 15,
-    birthDate: '15/05/1985',
-    observations: 'Cliente antigo, bom pagador.',
-    plans: [],
-    applications: [],
-  },
-  {
-    id: 'CLI002',
-    _tempId: 'temp_1719541000002',
-    name: 'Maria Oliveira',
-    nickname: 'Maria',
-    email: 'maria.oliveira@example.com',
-    phones: [{ type: 'celular', number: '(21) 99999-8888' }],
-    status: 'Inactive',
-    registeredDate: '2023-03-20',
-    birthDate: '20/10/1990',
-    observations: 'Cliente solicitou cancelamento.',
-    plans: [],
-    applications: [],
-  },
-  {
-    id: 'CLI003',
-    _tempId: 'temp_1719541000003',
-    name: 'Carlos Pereira',
-    email: 'carlos.pereira@example.com',
-    phones: [{ type: 'celular', number: '(31) 91234-5678' }],
-    status: 'Test',
-    registeredDate: '2024-05-10',
-    observations: 'Em período de teste.',
-    plans: [],
-    applications: [],
-  },
-];
+export const clients: Client[] = [];
 
 export const servers: Server[] = [
   {

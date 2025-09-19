@@ -41,7 +41,7 @@ import { PersistenceTest } from './components/persistence-test';
 export default function SubscriptionPage() {
   const { t } = useLanguage();
   const router = useRouter();
-  const { clients, updateClient, saveClientsToStorage } = useData();
+  const { clients, updateClient } = useData();
   const { toast } = useToast();
 
   const [selectedClient, setSelectedClient] = React.useState<Client | null>(null);
@@ -66,18 +66,22 @@ export default function SubscriptionPage() {
       setManualId('');
     }
   };
+  
+  const handleManualIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setManualId(e.target.value);
+  }
 
   const handleUpdateClient = (updatedData: Partial<Client>) => {
     if (!selectedClient) return;
     const newClientState = { ...selectedClient, ...updatedData };
     setSelectedClient(newClientState);
-    updateClient(newClientState, true); // skipSave = true para não salvar no LS a cada modificação
+    updateClient(newClientState, true); // skipSave = true to avoid saving to LS on every change
   };
 
   const saveManualId = () => {
     if (!selectedClient) return;
     const newClientState = { ...selectedClient, id: manualId };
-    updateClient(newClientState);
+    updateClient(newClientState, false); // THIS IS THE FIX: skipSave must be false to persist
     setSelectedClient(newClientState); 
     setIsIdSaveSuccessModalOpen(true);
   };
