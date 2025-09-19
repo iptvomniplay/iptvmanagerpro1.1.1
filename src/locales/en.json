@@ -293,7 +293,7 @@
     "licenseDueDate": "License Due Date",
     "device": "Device",
     "devicePlaceholder": "e.g., Smart TV Samsung",
-    "location": "Location",
+    "location": "Device Location",
     "locationPlaceholder": "e.g., Living Room",
     "addApplication": "Add Application",
     "addedApplications": "Added Applications",
