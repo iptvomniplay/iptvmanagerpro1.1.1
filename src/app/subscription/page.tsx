@@ -119,105 +119,108 @@ export default function SubscriptionPage() {
         </Card>
         
         {selectedClient ? (
-          <>
-            <Tabs defaultValue="client" className="w-full">
-               <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="client">
-                  <User className="mr-2 h-5 w-5" />
-                  {t('client')}
-                </TabsTrigger>
-                <TabsTrigger value="plans">
-                  <FileText className="mr-2 h-5 w-5" />
-                  {t('subscriptionPlans')}
-                </TabsTrigger>
-                <TabsTrigger value="apps">
-                  <AppWindow className="mr-2 h-5 w-5" />
-                  {t('applications')}
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="client" className="mt-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-3 text-xl">
-                      <User className="h-6 w-6" />
-                      <span>{selectedClient.name}</span>
-                    </CardTitle>
-                    <CardDescription>{t('clientDetails')}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-sm">
-                      <div>
-                        <p className="font-medium text-muted-foreground">
-                          {t('nickname')}
-                        </p>
-                        <p className="mt-1">{selectedClient.nickname || '---'}</p>
-                      </div>
-                      <div>
-                        <p className="font-medium text-muted-foreground">
-                          {t('emailAddress')}
-                        </p>
-                        <p className="mt-1 truncate" title={selectedClient.email}>{selectedClient.email || '---'}</p>
-                      </div>
-                      <div>
-                        <p className="font-medium text-muted-foreground">
-                          {t('status')}
-                        </p>
-                        <Badge
-                          variant={getStatusVariant(selectedClient.status)}
-                          className="text-base mt-1"
-                        >
-                          {t(selectedClient.status.toLowerCase() as any)}
-                        </Badge>
-                      </div>
-                      <div className="space-y-2">
-                         <Label htmlFor="manual-client-id">{t('clientID')}</Label>
-                        <p className="text-sm text-muted-foreground">
-                          {t('idAtual')}: <span>{currentIdDisplay}</span>
-                        </p>
-                        <Input
-                          id="manual-client-id"
-                          placeholder={t('clientIdManualPlaceholder')}
-                          autoComplete="off"
-                          value={manualId}
-                          onChange={(e) => setManualId(e.target.value)}
-                          disabled={selectedClient.status === 'Active'}
-                          className={cn((manualId !== '' && selectedClient?.status !== 'Active') && 'ring-2 ring-yellow-500/80 animate-flash')}
-                        />
-                      </div>
+          <Tabs defaultValue="client" className="w-full">
+             <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="client">
+                <User className="mr-2 h-5 w-5" />
+                {t('client')}
+              </TabsTrigger>
+              <TabsTrigger value="plans">
+                <FileText className="mr-2 h-5 w-5" />
+                {t('subscriptionPlans')}
+              </TabsTrigger>
+              <TabsTrigger value="apps">
+                <AppWindow className="mr-2 h-5 w-5" />
+                {t('applications')}
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="client" className="mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3 text-xl">
+                    <User className="h-6 w-6" />
+                    <span>{selectedClient.name}</span>
+                  </CardTitle>
+                  <CardDescription>{t('clientDetails')}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-sm">
+                    <div>
+                      <p className="font-medium text-muted-foreground">
+                        {t('nickname')}
+                      </p>
+                      <p className="mt-1">{selectedClient.nickname || '---'}</p>
                     </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
+                    <div>
+                      <p className="font-medium text-muted-foreground">
+                        {t('emailAddress')}
+                      </p>
+                      <p className="mt-1 truncate" title={selectedClient.email}>{selectedClient.email || '---'}</p>
+                    </div>
+                    <div>
+                      <p className="font-medium text-muted-foreground">
+                        {t('status')}
+                      </p>
+                      <Badge
+                        variant={getStatusVariant(selectedClient.status)}
+                        className="text-base mt-1"
+                      >
+                        {t(selectedClient.status.toLowerCase() as any)}
+                      </Badge>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="manual-client-id">{t('clientID')}</Label>
+                      <p className={cn(
+                          "text-sm",
+                          manualId && selectedClient.status !== 'Active'
+                              ? "text-green-500 font-bold"
+                              : "text-muted-foreground"
+                      )}>
+                          {t('idAtual')}: <span>{currentIdDisplay}</span>
+                      </p>
+                      <Input
+                        id="manual-client-id"
+                        placeholder={t('clientIdManualPlaceholder')}
+                        autoComplete="off"
+                        value={manualId}
+                        onChange={(e) => setManualId(e.target.value)}
+                        disabled={selectedClient.status === 'Active'}
+                        className={cn((manualId !== '' && selectedClient?.status !== 'Active') && 'ring-2 ring-yellow-500/80 animate-flash')}
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-              <TabsContent value="plans" className="mt-6">
-                <Card>
-                    <CardHeader>
-                    <CardTitle>{t('subscriptionPlans')}</CardTitle>
-                     <CardDescription>{t('addSubscriptionPlanDescription')}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                    <SubscriptionPlanForm />
-                    </CardContent>
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="apps" className="mt-6">
-                <Card>
-                    <CardHeader>
-                    <CardTitle>{t('applications')}</CardTitle>
-                    <CardDescription>{t('addApplicationDescription')}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                    <ApplicationsForm 
-                        selectedClient={selectedClient} 
-                        onUpdateClient={handleUpdateClient} 
-                    />
-                    </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </>
+            <TabsContent value="plans" className="mt-6">
+              <Card>
+                  <CardHeader>
+                  <CardTitle>{t('subscriptionPlans')}</CardTitle>
+                   <CardDescription>{t('addSubscriptionPlanDescription')}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                  <SubscriptionPlanForm />
+                  </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="apps" className="mt-6">
+              <Card>
+                  <CardHeader>
+                  <CardTitle>{t('applications')}</CardTitle>
+                  <CardDescription>{t('addApplicationDescription')}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                  <ApplicationsForm 
+                      selectedClient={selectedClient} 
+                      onUpdateClient={handleUpdateClient} 
+                  />
+                  </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         ) : (
            <Card className="flex flex-col items-center justify-center text-center py-20 mt-6">
               <CardHeader>
