@@ -279,7 +279,9 @@ export default function SubscriptionPage() {
       <div className="mt-auto flex justify-end items-center gap-4 pt-8">
         <Button variant="outline" onClick={() => router.push('/')}>{t('back')}</Button>
         <Button variant="outline" onClick={handleCancel}>{t('cancel')}</Button>
-        {selectedClient && activeTab !== 'client' && <Button onClick={handleSave}>{t('save')}</Button>}
+        {selectedClient && (
+          <Button onClick={handleSave}>{t('save')}</Button>
+        )}
       </div>
 
       {/* Alertas */}
