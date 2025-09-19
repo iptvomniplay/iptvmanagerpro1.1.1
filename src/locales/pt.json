@@ -274,7 +274,7 @@
     "clientIdManualPlaceholder": "Insira o ID gerado no painel",
     "searchClientHere": "Ache seu cliente aqui",
     "subscriptionPlans": "Planos da Assinatura",
-    "addSubscriptionPlanDescription": "Configure e adicione planos de assinatura para o cliente selecionado.",
+    "addSubscriptionPlanDescription": "Adicione 1 plano de assinatura para o cliente selecionado.",
     "addedPlans": "Planos Adicionados",
     "screensAvailable": "Telas (Disponível)",
     "screensToHire": "Telas (Contratar)",
@@ -314,3 +314,6 @@
 
     
 
+
+
+    
