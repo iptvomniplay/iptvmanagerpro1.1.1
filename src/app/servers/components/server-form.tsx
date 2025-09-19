@@ -482,6 +482,7 @@ export function ServerForm({ server }: ServerFormProps) {
       setSubServerFormState(initialSubServerValues);
       setCurrentPlan(initialPlanValues);
       remove();
+      setIsPaymentTypeVisible(false); // Reset visibility
     }
   };
 
