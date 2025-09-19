@@ -64,7 +64,7 @@ export default function SubscriptionPage() {
     if (!selectedClient) return;
     const newClientState = { ...selectedClient, ...updatedData };
     setSelectedClient(newClientState);
-    updateClient(newClientState, true);
+    updateClient(newClientState, true); // Prevent double saving
   };
 
   const handleManualIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,7 +74,9 @@ export default function SubscriptionPage() {
   const saveManualId = () => {
     if (!selectedClient) return;
     const clientToUpdate = { ...selectedClient, id: manualId };
-    updateClient(clientToUpdate); // O segundo parâmetro (skipSave) é false por padrão, salvando no localStorage
+    updateClient(clientToUpdate);
+    saveClientsToStorage();
+    setSelectedClient(clientToUpdate); // Ensure local state is also updated
     setIsIdSaveSuccessModalOpen(true);
   };
 
