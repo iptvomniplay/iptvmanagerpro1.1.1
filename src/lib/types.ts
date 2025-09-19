@@ -26,6 +26,8 @@ export type Application = {
   responsibleName?: string;
   responsiblePhones?: Phone[];
   activationId?: string;
+  planId: string;
+  screenNumber: number;
 };
 
 export type PlanPeriod = '30d' | '3m' | '6m' | '1y';

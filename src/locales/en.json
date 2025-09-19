@@ -310,7 +310,14 @@
     "addAtLeastOnePlan": "You must add at least one subscription plan.",
     "fillAllApplications": "You must register an application for each hired screen.",
     "clientIdRequired": "The Client ID is required to activate the subscription.",
-    "clientStatus": "Client Status"
+    "clientStatus": "Client Status",
+    "O cliente": "The client",
+    "possui": "has",
+    "telas contratadas. Adicione os dados de cada tela antes de prosseguir.": "screens contracted. Add the data for each screen before proceeding.",
+    "faltam": "remaining",
+    "limitReached": "Screen Limit Reached",
+    "allScreensFilled": "All available screens have been filled.",
+    "confirmAndNext": "Confirm & Next"
 }
 
     

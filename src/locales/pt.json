@@ -310,7 +310,14 @@
     "addAtLeastOnePlan": "É necessário adicionar pelo menos um plano de assinatura.",
     "fillAllApplications": "É necessário registrar um aplicativo para cada tela contratada.",
     "clientIdRequired": "O ID do Cliente é obrigatório para ativar a assinatura.",
-    "clientStatus": "Status Cliente"
+    "clientStatus": "Status Cliente",
+    "O cliente": "O cliente",
+    "possui": "possui",
+    "telas contratadas. Adicione os dados de cada tela antes de prosseguir.": "telas contratadas. Adicione os dados de cada tela antes de prosseguir.",
+    "faltam": "faltam",
+    "limitReached": "Limite de telas atingido",
+    "allScreensFilled": "Todas as telas disponíveis foram preenchidas.",
+    "confirmAndNext": "Confirmar e Próximo"
 }
 
     
