@@ -476,15 +476,17 @@ export function ServerForm({ server }: ServerFormProps) {
   const handleSuccessModalClose = () => {
     setIsSuccessModalOpen(false);
     if (server) {
-      router.push('/servers');
+        router.push('/servers');
     } else {
-      reset(getInitialValues(null));
-      setSubServerFormState(initialSubServerValues);
-      setCurrentPlan(initialPlanValues);
-      remove();
-      setIsPaymentTypeVisible(false); // Reset visibility
+        reset(getInitialValues(null));
+        setSubServerFormState(initialSubServerValues);
+        setCurrentPlan(initialPlanValues);
+        remove();
+        setIsPaymentTypeVisible(false);
+        setIsObservationsVisible(false);
+        setExpandedItems({});
     }
-  };
+};
 
    const handleAddMoreResponse = (addMore: boolean) => {
     setIsAddMoreServerModalOpen(false);

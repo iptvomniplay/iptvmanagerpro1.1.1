@@ -57,16 +57,7 @@ export default function SubscriptionPage() {
   const appsTabRef = React.useRef<HTMLButtonElement>(null);
 
   const handleSelectClient = (client: Client | null) => {
-    if (client?._tempId) {
-      const liveClient = clients.find(c => c._tempId === client._tempId);
-      setSelectedClient(liveClient || client);
-    } else if (client?.id) {
-      const liveClient = clients.find(c => c.id === client.id);
-      setSelectedClient(liveClient || client);
-    } else {
-      setSelectedClient(client);
-    }
-
+    setSelectedClient(client);
     if (client) {
       setManualId(client.id || '');
     } else {
@@ -75,12 +66,10 @@ export default function SubscriptionPage() {
   };
 
   const handleUpdateClient = (updatedData: Partial<Client>) => {
-    setSelectedClient(prevClient => {
-      if (!prevClient) return null;
-      const newClientState = { ...prevClient, ...updatedData };
-      updateClient(newClientState, true); // Update context without immediate save
-      return newClientState;
-    });
+    if (!selectedClient) return;
+    const newClientState = { ...selectedClient, ...updatedData };
+    setSelectedClient(newClientState); // Optimistic update
+    updateClient(newClientState, true); // Update context without immediate save
   };
 
   const getStatusVariant = (status: Client['status']) => {
@@ -105,7 +94,7 @@ export default function SubscriptionPage() {
 
   const saveManualId = () => {
     if (selectedClient) {
-      updateClient({ ...selectedClient, id: manualId });
+      handleUpdateClient({ id: manualId });
       setIsIdSaveSuccessModalOpen(true);
     }
   }
@@ -376,7 +365,7 @@ export default function SubscriptionPage() {
       <AlertDialog open={isIdSaveSuccessModalOpen} onOpenChange={setIsIdSaveSuccessModalOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('saveChanges')}</AlertDialogTitle>
+            <AlertDialogTitle>{t('registrationAddedSuccess')}</AlertDialogTitle>
             <AlertDialogDescription>
               {`ID ${manualId} salvo para o cliente ${selectedClient?.name}.`}
             </AlertDialogDescription>
@@ -390,7 +379,7 @@ export default function SubscriptionPage() {
             <AlertDialogHeader>
                 <AlertDialogTitle>{t('registrationAddedSuccess')}</AlertDialogTitle>
                 <AlertDialogDescription>
-                    {`O status do cliente ${selectedClient?.name} foi atualizado para Ativo.`}
+                    {t('newClientSuccess')}
                 </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogAction onClick={() => {
