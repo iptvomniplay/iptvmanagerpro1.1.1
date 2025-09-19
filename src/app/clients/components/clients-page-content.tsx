@@ -219,7 +219,7 @@ export default function ClientsPageContent() {
                     ) : null}
                   </TableCell>
                   <TableCell className="font-medium">
-                    {client.status === 'Active' ? client.id : ''}
+                    {client.id}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
