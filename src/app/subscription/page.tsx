@@ -106,7 +106,7 @@ export default function SubscriptionPage() {
   const isIdEdited = selectedClient?.status !== 'Active' && manualId !== '';
 
   return (
-    <>
+    <div className="flex flex-col h-full">
       <div className="space-y-8 flex-1">
         <Card>
           <CardHeader>
@@ -258,6 +258,6 @@ export default function SubscriptionPage() {
         </Button>
         {selectedClient && <Button onClick={handleSave}>{t('save')}</Button>}
       </div>
-    </>
+    </div>
   );
 }
