@@ -306,7 +306,11 @@
     "back": "Voltar",
     "deviceLocation": "Localização do Dispositivo",
     "idAtual": "ID Atual",
-    "noScreensOrClient": "Nenhuma tela no plano ou nenhum cliente selecionado."
+    "noScreensOrClient": "Nenhuma tela no plano ou nenhum cliente selecionado.",
+    "addAtLeastOnePlan": "É necessário adicionar pelo menos um plano de assinatura.",
+    "fillAllApplications": "É necessário registrar um aplicativo para cada tela contratada.",
+    "clientIdRequired": "O ID do Cliente é obrigatório para ativar a assinatura."
 }
 
     
+

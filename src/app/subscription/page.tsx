@@ -20,7 +20,7 @@ import { ClientSearch } from './components/client-search';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { User, FileText, AppWindow } from 'lucide-react';
+import { User, FileText, AppWindow, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SubscriptionPlanForm, type SelectedPlan } from './components/subscription-plan-form';
 import { ApplicationsForm } from './components/applications-form';
@@ -28,6 +28,14 @@ import { useData } from '@/hooks/use-data';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export default function SubscriptionPage() {
   const { t } = useLanguage();
@@ -40,6 +48,11 @@ export default function SubscriptionPage() {
   const [manualId, setManualId] = React.useState('');
   const [addedPlans, setAddedPlans] = React.useState<SelectedPlan[]>([]);
   const [activeTab, setActiveTab] = React.useState('client');
+  const [isValidationError, setIsValidationError] = React.useState(false);
+  const [validationMessage, setValidationMessage] = React.useState('');
+
+  const plansTabRef = React.useRef<HTMLButtonElement>(null);
+  const appsTabRef = React.useRef<HTMLButtonElement>(null);
 
   React.useEffect(() => {
     if (selectedClient) {
@@ -79,10 +92,43 @@ export default function SubscriptionPage() {
     setManualId('');
   };
 
+  const validateForms = () => {
+    if (addedPlans.length === 0) {
+      setValidationMessage(t('addAtLeastOnePlan'));
+      setActiveTab('plans');
+      plansTabRef.current?.focus();
+      return false;
+    }
+
+    const totalScreensFromPlans = addedPlans.reduce((sum, plan) => sum + plan.screens, 0);
+    const totalApplications = selectedClient?.applications?.length || 0;
+
+    if (totalApplications < totalScreensFromPlans) {
+        setValidationMessage(t('fillAllApplications'));
+        setActiveTab('apps');
+        appsTabRef.current?.focus();
+        return false;
+    }
+    
+    if (!manualId && selectedClient?.status !== 'Active') {
+        setValidationMessage(t('clientIdRequired'));
+        setActiveTab('client');
+        return false;
+    }
+
+    return true;
+  };
+
   const handleSave = () => {
     if (!selectedClient) return;
 
-    let clientToUpdate = { ...selectedClient, plans: addedPlans };
+    if (!validateForms()) {
+      setIsValidationError(true);
+      return;
+    }
+
+
+    let clientToUpdate = { ...selectedClient, plans: addedPlans, status: 'Active' as Client['status'] };
     let idChanged = false;
 
     if (
@@ -93,7 +139,6 @@ export default function SubscriptionPage() {
       clientToUpdate = {
         ...clientToUpdate,
         id: manualId,
-        status: 'Active',
       };
       idChanged = true;
     }
@@ -109,6 +154,12 @@ export default function SubscriptionPage() {
 
     handleCancel();
   };
+  
+  const totalScreensFromPlans = addedPlans.reduce((sum, plan) => sum + plan.screens, 0);
+  const totalApplications = selectedClient?.applications?.length || 0;
+  const arePlansIncomplete = addedPlans.length === 0;
+  const areAppsIncomplete = totalApplications < totalScreensFromPlans;
+
 
   return (
     <div className="flex flex-col h-full">
@@ -137,11 +188,13 @@ export default function SubscriptionPage() {
                     <User className="mr-2 h-5 w-5" />
                     {t('client')}
                 </TabsTrigger>
-                <TabsTrigger value="plans" className="py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
+                <TabsTrigger ref={plansTabRef} value="plans" className={cn("relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary", arePlansIncomplete && 'ring-2 ring-destructive ring-offset-2 ring-offset-background')}>
+                    {arePlansIncomplete && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
                     <FileText className="mr-2 h-5 w-5" />
                     {t('subscriptionPlans')}
                 </TabsTrigger>
-                <TabsTrigger value="apps" disabled={addedPlans.length === 0} className="py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                <TabsTrigger ref={appsTabRef} value="apps" disabled={addedPlans.length === 0} className={cn("relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary disabled:opacity-50 disabled:cursor-not-allowed", areAppsIncomplete && 'ring-2 ring-destructive ring-offset-2 ring-offset-background')}>
+                     {areAppsIncomplete && addedPlans.length > 0 && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
                     <AppWindow className="mr-2 h-5 w-5" />
                     {t('applications')}
                 </TabsTrigger>
@@ -203,7 +256,9 @@ export default function SubscriptionPage() {
                         value={manualId}
                         onChange={(e) => setManualId(e.target.value)}
                         disabled={selectedClient.status === 'Active'}
+                        className={cn(!manualId && selectedClient.status !== 'Active' && 'ring-2 ring-destructive ring-offset-2 ring-offset-background')}
                       />
+                       {!manualId && selectedClient.status !== 'Active' && <p className="text-sm text-destructive">{t('clientIdRequired')}</p>}
                     </div>
                   </div>
                 </CardContent>
@@ -269,6 +324,21 @@ export default function SubscriptionPage() {
         </Button>
         {selectedClient && <Button onClick={handleSave}>{t('save')}</Button>}
       </div>
+
+       <AlertDialog open={isValidationError} onOpenChange={setIsValidationError}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="text-destructive" />
+              {t('validationError')}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="pt-2 text-base">
+              {validationMessage}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogAction onClick={() => setIsValidationError(false)}>{t('ok')}</AlertDialogAction>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
