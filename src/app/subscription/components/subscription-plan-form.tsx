@@ -9,12 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronDown, X } from 'lucide-react';
+import { ChevronDown, X, Calendar as CalendarIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { cn } from '@/lib/utils';
+import { add, format, lastDayOfMonth } from 'date-fns';
 
 interface SubscriptionPlanFormProps {
     addedPlans: SelectedPlan[];
@@ -34,7 +33,7 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
   const [dueDate, setDueDate] = React.useState<number | undefined>();
   const [planValue, setPlanValue] = React.useState('');
   const [isCourtesy, setIsCourtesy] = React.useState(false);
-
+  const [nextDueDate, setNextDueDate] = React.useState<Date | null>(null);
 
   const selectedPanel = panels.find((p) => p.id === selectedPanelId);
   const availableServers = selectedPanel?.subServers || [];
@@ -48,13 +47,54 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
     } else {
       setPlanValue('');
     }
-  }, [selectedPlan]);
+  }, [selectedPlan, language]);
   
   React.useEffect(() => {
     if (isCourtesy) {
       setPlanValue(formatCurrency(0));
+    } else if (selectedPlan?.value) {
+      setPlanValue(formatCurrency(selectedPlan.value));
     }
-  }, [isCourtesy, language]);
+  }, [isCourtesy, language, selectedPlan]);
+
+  React.useEffect(() => {
+    if (!planPeriod || !dueDate) {
+      setNextDueDate(null);
+      return;
+    }
+
+    const now = new Date();
+    let calculatedDate: Date;
+
+    switch (planPeriod) {
+      case '30d':
+        calculatedDate = add(now, { days: 30 });
+        break;
+      case '3m':
+        calculatedDate = add(now, { months: 3 });
+        break;
+      case '6m':
+        calculatedDate = add(now, { months: 6 });
+        break;
+      case '1y':
+        calculatedDate = add(now, { years: 1 });
+        break;
+      default:
+        setNextDueDate(null);
+        return;
+    }
+    
+    // Adjust day
+    const targetMonth = calculatedDate.getMonth();
+    const targetYear = calculatedDate.getFullYear();
+    const lastDay = lastDayOfMonth(new Date(targetYear, targetMonth)).getDate();
+    const finalDay = Math.min(dueDate, lastDay);
+    
+    calculatedDate.setDate(finalDay);
+
+    setNextDueDate(calculatedDate);
+
+  }, [planPeriod, dueDate]);
 
   const handleCurrencyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
@@ -92,6 +132,7 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
       setDueDate(undefined);
       setPlanValue('');
       setIsCourtesy(false);
+      setNextDueDate(null);
     }
   };
 
@@ -164,38 +205,37 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
           </Select>
         </div>
         
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label>{t('screensAvailable')}</Label>
-            <div className="h-11 w-full rounded-md border border-input px-4 py-2 text-lg font-bold text-center flex items-center justify-center">
-              {selectedServer ? selectedServer.screens : '-'}
+        <div className="grid grid-cols-2 gap-4 items-end">
+            <div className="space-y-2">
+                <div className='flex items-center gap-2'>
+                    <Label>{t('screensAvailable')}</Label>
+                </div>
+                <div className="h-11 w-full rounded-md border border-input bg-muted px-4 py-2 text-base font-bold text-center flex items-center justify-center">
+                    {selectedServer ? selectedServer.screens : '-'}
+                </div>
             </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="screens-to-hire">{t('screensToHire')}</Label>
-            <Select
-              onValueChange={(value) =>
-                setNumberOfScreens(parseInt(value, 10))
-              }
-              disabled={!selectedServer}
-              value={numberOfScreens ? String(numberOfScreens) : ''}
-            >
-              <SelectTrigger id="screens-to-hire">
-                <SelectValue placeholder={t('screensToHirePlaceholder')} />
-              </SelectTrigger>
-              <SelectContent>
-                {selectedServer &&
-                  Array.from(
-                    { length: selectedServer.screens },
-                    (_, i) => i + 1
-                  ).map((num) => (
-                    <SelectItem key={num} value={String(num)}>
-                      {num}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
-          </div>
+            
+            <div className="space-y-2">
+                <Label htmlFor='screens-to-hire'>{t('screensToHire')}</Label>
+                <Select
+                    onValueChange={(value) => setNumberOfScreens(parseInt(value, 10))}
+                    disabled={!selectedServer}
+                    value={numberOfScreens ? String(numberOfScreens) : ''}
+                >
+                    <SelectTrigger id="screens-to-hire">
+                        <SelectValue placeholder={t('screensToHirePlaceholder')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {selectedServer && Array.from({ length: selectedServer.screens }, (_, i) => i + 1).map(
+                            (num) => (
+                                <SelectItem key={num} value={String(num)}>
+                                    {num}
+                                </SelectItem>
+                            )
+                        )}
+                    </SelectContent>
+                </Select>
+            </div>
         </div>
 
         <div className="space-y-2">
@@ -226,7 +266,7 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
               disabled={!planPeriod}
             >
               <SelectTrigger id="due-date">
-                <SelectValue placeholder={t('selectDay')} />
+                <SelectValue placeholder={"Escolha o dia de vencimento"} />
               </SelectTrigger>
               <SelectContent>
                 {Array.from({ length: 31 }, (_, i) => i + 1).map(
@@ -240,6 +280,17 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
             </Select>
         </div>
         
+        {nextDueDate && (
+          <div className="p-3 bg-muted/50 rounded-lg border border-dashed animate-in fade-in-50 slide-in-from-bottom-2">
+            <div className="flex items-center gap-3">
+              <CalendarIcon className="h-5 w-5 text-primary" />
+              <p className="font-semibold text-base">
+                Próximo Vencimento: <span className="font-bold">{format(nextDueDate, 'dd/MM/yyyy')}</span>
+              </p>
+            </div>
+          </div>
+        )}
+
         <div className="space-y-2">
            <Label htmlFor="plan-value">{t('planValue')}</Label>
            <Input
@@ -320,5 +371,3 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
 
 // For exporting the type to parent
 export type { SelectedPlan };
-
-    
