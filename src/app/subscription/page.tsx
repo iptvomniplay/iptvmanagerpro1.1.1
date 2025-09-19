@@ -51,6 +51,7 @@ export default function SubscriptionPage() {
   const [isValidationError, setIsValidationError] = React.useState(false);
   const [validationMessage, setValidationMessage] = React.useState('');
   const [isPlanAdded, setIsPlanAdded] = React.useState(false);
+  const [isIdSaveSuccessModalOpen, setIsIdSaveSuccessModalOpen] = React.useState(false);
 
   const plansTabRef = React.useRef<HTMLButtonElement>(null);
   const appsTabRef = React.useRef<HTMLButtonElement>(null);
@@ -95,10 +96,7 @@ export default function SubscriptionPage() {
       const updatedClient = { ...selectedClient, id: manualId };
       updateClient(updatedClient);
       setSelectedClient(updatedClient);
-       toast({
-        title: t('saveChanges'),
-        description: `ID ${manualId} salvo para o cliente ${selectedClient.name}.`,
-      });
+      setIsIdSaveSuccessModalOpen(true);
     }
   }
 
@@ -370,6 +368,18 @@ export default function SubscriptionPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogAction onClick={() => setIsValidationError(false)}>{t('ok')}</AlertDialogAction>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={isIdSaveSuccessModalOpen} onOpenChange={setIsIdSaveSuccessModalOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('saveChanges')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {`ID ${manualId} salvo para o cliente ${selectedClient?.name}.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogAction onClick={() => setIsIdSaveSuccessModalOpen(false)}>{t('ok')}</AlertDialogAction>
         </AlertDialogContent>
       </AlertDialog>
     </div>
