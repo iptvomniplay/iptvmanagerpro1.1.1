@@ -74,7 +74,7 @@ export default function SubscriptionPage() {
   const saveManualId = () => {
     if (!selectedClient) return;
     const clientToUpdate = { ...selectedClient, id: manualId };
-    updateClient(clientToUpdate); // O segundo parâmetro (skipSave) é false por padrão
+    updateClient(clientToUpdate); // O segundo parâmetro (skipSave) é false por padrão, salvando no localStorage
     setIsIdSaveSuccessModalOpen(true);
   };
 
