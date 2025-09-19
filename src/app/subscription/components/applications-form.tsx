@@ -106,7 +106,7 @@ export function ApplicationsForm({
     }
   }, [selectedClient, addedPlans]);
 
-  React.useEffect(() => {
+  const updateClientApplications = React.useCallback(() => {
     if (selectedClient) {
       const completedApplications = appSlots
         .filter(slot => slot.status === 'complete')
@@ -212,19 +212,25 @@ export function ApplicationsForm({
   };
   
   const handleConfirmSlot = (slotKey: string, currentIndex: number) => {
-    setAppSlots(prevSlots =>
-      prevSlots.map(slot =>
-        `${slot.planId}-${slot.screenNumber}` === slotKey
-          ? { ...slot, status: 'complete' }
-          : slot
-      )
+    const newAppSlots = appSlots.map(slot =>
+      `${slot.planId}-${slot.screenNumber}` === slotKey
+        ? { ...slot, status: 'complete' as const }
+        : slot
     );
+    setAppSlots(newAppSlots);
     setOpenSlots(prev => ({...prev, [slotKey]: false}));
+
+    if (selectedClient) {
+      const completedApplications = newAppSlots
+        .filter(slot => slot.status === 'complete')
+        .map(slot => slot.data);
+      onUpdateClient({ ...selectedClient, applications: completedApplications });
+    }
     
     // Find and open the next pending slot
-    const nextPendingIndex = appSlots.findIndex((slot, index) => index > currentIndex && slot.status === 'pending');
+    const nextPendingIndex = newAppSlots.findIndex((slot, index) => index > currentIndex && slot.status === 'pending');
     if (nextPendingIndex !== -1) {
-        const nextSlot = appSlots[nextPendingIndex];
+        const nextSlot = newAppSlots[nextPendingIndex];
         const nextSlotKey = `${nextSlot.planId}-${nextSlot.screenNumber}`;
         setOpenSlots(prev => ({...prev, [nextSlotKey]: true}));
     }
