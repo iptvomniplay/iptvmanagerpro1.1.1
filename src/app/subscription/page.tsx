@@ -94,7 +94,13 @@ export default function SubscriptionPage() {
 
   const saveManualId = () => {
     if (selectedClient) {
-      handleUpdateClient({ id: manualId });
+      // Create the new state first for the UI update
+      const newClientState = { ...selectedClient, id: manualId };
+      setSelectedClient(newClientState);
+
+      // Call updateClient, but without skipSave (or skipSave = false) to persist
+      updateClient(newClientState, false);
+      
       setIsIdSaveSuccessModalOpen(true);
     }
   }
