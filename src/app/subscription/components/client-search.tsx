@@ -33,16 +33,15 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
     const results = clients.filter((client) => {
       if (selectedClient && client.id === selectedClient.id) return false;
 
+      const nameMatch = normalizeString(client.name).includes(normalizedTerm);
+      const nicknameMatch = client.nickname && normalizeString(client.nickname).includes(normalizedTerm);
       const phoneMatch = client.phones.some((phone) =>
         normalizeString(phone.number)
           .replace(/\D/g, '')
           .includes(normalizedTerm.replace(/\D/g, ''))
       );
-      return (
-        normalizeString(client.name).includes(normalizedTerm) ||
-        (client.nickname && normalizeString(client.nickname).includes(normalizedTerm)) ||
-        phoneMatch
-      );
+      
+      return nameMatch || nicknameMatch || phoneMatch;
     });
     setSearchResults(results);
   }, [searchTerm, clients, selectedClient]);
@@ -107,7 +106,7 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
                 <div className="flex flex-col">
                   <p className="font-semibold">{client.name}</p>
                   <p className="text-sm text-muted-foreground">
-                    ID: {client.status === 'Active' ? client.id : 'N/A'}
+                    {client.phones[0]?.number}
                   </p>
                 </div>
                 <Badge variant={getStatusVariant(client.status)}>
