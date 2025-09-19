@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useData } from '@/hooks/use-data';
 import { useLanguage } from '@/hooks/use-language';
-import type { Server, SubServer, PlanType as PlanType, Client, SelectedPlan } from '@/lib/types';
+import type { Server, SubServer, PlanType as PlanType, Client, SelectedPlan, PlanPeriod } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
@@ -30,6 +30,7 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
   const [selectedServerName, setSelectedServerName] = React.useState<string>('');
   const [selectedPlanName, setSelectedPlanName] = React.useState<string>('');
   const [numberOfScreens, setNumberOfScreens] = React.useState<number | ''>('');
+  const [planPeriod, setPlanPeriod] = React.useState<PlanPeriod | undefined>();
   const [dueDate, setDueDate] = React.useState<number | undefined>();
   const [planValue, setPlanValue] = React.useState('');
   const [isCourtesy, setIsCourtesy] = React.useState(false);
@@ -68,7 +69,7 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
 
 
   const handleAddPlan = () => {
-    if (selectedPanel && selectedServer && selectedPlan && numberOfScreens && selectedClient) {
+    if (selectedPanel && selectedServer && selectedPlan && numberOfScreens && selectedClient && planPeriod) {
       const numericValue = parseFloat(planValue.replace(/[^0-9,-]+/g, "").replace(',', '.')) || 0;
       const newPlan: SelectedPlan = {
           panel: selectedPanel,
@@ -77,6 +78,8 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
           screens: numberOfScreens,
           planValue: isCourtesy ? 0 : numericValue,
           isCourtesy: isCourtesy,
+          planPeriod: planPeriod,
+          dueDate: dueDate,
       };
       setAddedPlans([...addedPlans, newPlan]);
 
@@ -85,6 +88,7 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
       setSelectedServerName('');
       setSelectedPlanName('');
       setNumberOfScreens('');
+      setPlanPeriod(undefined);
       setDueDate(undefined);
       setPlanValue('');
       setIsCourtesy(false);
@@ -101,6 +105,13 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
     const locale = language === 'pt-BR' ? 'pt-BR' : 'en-US';
     return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(value);
   }
+
+  const periodOptions: { value: PlanPeriod; label: string }[] = [
+    { value: '30d', label: '30 dias' },
+    { value: '3m', label: '3 meses' },
+    { value: '6m', label: '6 meses' },
+    { value: '1y', label: '1 ano' },
+  ];
 
   return (
     <div className="space-y-6">
@@ -165,7 +176,7 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
             
             <div className="space-y-2">
                 <Label htmlFor='screens-to-hire'>{t('screensToHire')}</Label>
-                 <Select
+                <Select
                     onValueChange={(value) => setNumberOfScreens(parseInt(value, 10))}
                     disabled={!selectedServer}
                     value={numberOfScreens ? String(numberOfScreens) : ''}
@@ -187,11 +198,31 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
         </div>
 
         <div className="space-y-2">
+            <Label htmlFor="plan-period">Período do Plano</Label>
+            <Select
+                value={planPeriod}
+                onValueChange={(value: PlanPeriod) => setPlanPeriod(value)}
+                disabled={!selectedClient}
+            >
+                <SelectTrigger id="plan-period">
+                    <SelectValue placeholder="Selecione o período" />
+                </SelectTrigger>
+                <SelectContent>
+                    {periodOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+        </div>
+
+        <div className="space-y-2">
            <Label htmlFor="due-date">{t('dueDate')}</Label>
            <Select
               value={dueDate ? String(dueDate) : ''}
               onValueChange={(value) => setDueDate(parseInt(value, 10))}
-              disabled={!selectedClient}
+              disabled={!planPeriod}
             >
               <SelectTrigger id="due-date">
                 <SelectValue placeholder={t('selectDay')} />
@@ -232,7 +263,7 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
       </div>
       
        <div className="flex justify-end">
-            <Button onClick={handleAddPlan} disabled={!selectedPlan || !selectedClient || !numberOfScreens}>
+            <Button onClick={handleAddPlan} disabled={!selectedPlan || !selectedClient || !numberOfScreens || !planPeriod}>
                 {t('addPlan')}
             </Button>
         </div>
