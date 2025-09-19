@@ -48,7 +48,6 @@ const phoneSchema = z.object({
 });
 
 const createFormSchema = (t: (key: string) => string) => z.object({
-  id: z.string().optional(),
   name: z.string().min(2, { message: t('nameValidation') }),
   nickname: z.string().optional(),
   email: z.string().email({ message: t('emailValidation') }).optional().or(z.literal('')),
@@ -80,7 +79,6 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   const form = useForm<ClientFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      id: client?.id || '',
       name: client?.name || '',
       nickname: client?.nickname || '',
       email: client?.email || '',
@@ -129,7 +127,6 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       onSubmitted();
     } else {
        reset({
-        id: '',
         name: '',
         nickname: '',
         email: '',
@@ -164,21 +161,6 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                   <FormLabel>{t('fullName')}</FormLabel>
                   <FormControl>
                     <Input placeholder={t('namePlaceholder')} {...field} autoComplete="off" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-           <div className="w-full md:w-1/2">
-            <FormField
-              control={form.control}
-              name="id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('clientID')}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t('clientIdManualPlaceholder')} {...field} autoComplete="off" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
