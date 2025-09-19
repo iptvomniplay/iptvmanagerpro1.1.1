@@ -8,12 +8,13 @@ interface DataContextType {
   clients: Client[];
   servers: Server[];
   addClient: (clientData: Omit<Client, 'registeredDate' | 'plans' | 'id'>) => void;
-  updateClient: (clientData: Client) => void;
+  updateClient: (clientData: Client, skipSave?: boolean) => void;
   deleteClient: (clientId: string) => void;
   addServer: (serverData: Omit<Server, 'id' | 'status'>) => void;
   updateServer: (serverData: Server) => void;
   deleteServer: (serverId: string) => void;
   addTestToClient: (clientId: string, testData: Omit<Test, 'creationDate'>) => void;
+  saveClientsToStorage: () => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -38,15 +39,16 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [servers, setServers] = useState<Server[]>([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
-  useEffect(() => {
-    // Start with a clean slate by not loading from localStorage initially
-    setClients([]);
-    setServers([]);
+   useEffect(() => {
+    // Load data from localStorage on initial mount
+    const storedClients = localStorage.getItem('clients');
+    const storedServers = localStorage.getItem('servers');
+    setClients(safelyParseJSON(storedClients, []));
+    setServers(safelyParseJSON(storedServers, []));
     setIsDataLoaded(true);
   }, []);
-
-
-  useEffect(() => {
+  
+  const saveClientsToStorage = useCallback(() => {
     if (isDataLoaded) {
       localStorage.setItem('clients', JSON.stringify(clients));
     }
@@ -67,25 +69,33 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             registeredDate: format(new Date(), 'yyyy-MM-dd'),
             birthDate: clientData.birthDate || '',
             plans: [],
-            // Add a temporary unique key for reliable updates before a manual ID is set
-            _tempId: `temp_${Date.now()}` 
         };
-        return [newClient, ...prevClients];
+        const updatedClients = [newClient, ...prevClients];
+        localStorage.setItem('clients', JSON.stringify(updatedClients));
+        return updatedClients;
     });
   }, []);
 
-  const updateClient = useCallback((clientData: Client) => {
-    setClients(prevClients =>
-      prevClients.map(c => {
-        // Use _tempId for matching if it exists, otherwise fall back to name for older data.
-        const match = (c as any)._tempId ? (c as any)._tempId === (clientData as any)._tempId : c.name === clientData.name;
-        return match ? clientData : c;
-      })
-    );
+  const updateClient = useCallback((clientData: Client, skipSave = false) => {
+    setClients(prevClients => {
+       const updatedClients = prevClients.map(c => 
+        (c.id && c.id === clientData.id) || (c._tempId && c._tempId === clientData._tempId)
+          ? { ...c, ...clientData } 
+          : c
+      );
+       if (!skipSave) {
+        localStorage.setItem('clients', JSON.stringify(updatedClients));
+      }
+       return updatedClients;
+    });
   }, []);
 
   const deleteClient = useCallback((clientId: string) => {
-    setClients(prevClients => prevClients.filter(c => c.id !== clientId));
+    setClients(prevClients => {
+      const updatedClients = prevClients.filter(c => c.id !== clientId);
+      localStorage.setItem('clients', JSON.stringify(updatedClients));
+      return updatedClients;
+    });
   }, []);
 
   const addServer = useCallback((serverData: Omit<Server, 'id' | 'status'>) => {
@@ -96,18 +106,26 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         status: 'Online',
         subServers: serverData.subServers || [],
         };
-        return [newServer, ...prevServers];
+        const updatedServers = [newServer, ...prevServers];
+        localStorage.setItem('servers', JSON.stringify(updatedServers));
+        return updatedServers;
     });
   }, []);
 
   const updateServer = useCallback((serverData: Server) => {
-    setServers(prevServers =>
-      prevServers.map(s => (s.id === serverData.id ? {...s, ...serverData} : s))
-    );
+    setServers(prevServers => {
+      const updatedServers = prevServers.map(s => (s.id === serverData.id ? {...s, ...serverData} : s));
+      localStorage.setItem('servers', JSON.stringify(updatedServers));
+      return updatedServers;
+    });
   }, []);
 
   const deleteServer = useCallback((serverId: string) => {
-    setServers(prevServers => prevServers.filter(s => s.id !== serverId));
+    setServers(prevServers => {
+      const updatedServers = prevServers.filter(s => s.id !== serverId);
+      localStorage.setItem('servers', JSON.stringify(updatedServers));
+      return updatedServers;
+    });
   }, []);
 
   const addTestToClient = useCallback((clientId: string, testData: Omit<Test, 'creationDate'>) => {
@@ -115,15 +133,20 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       ...testData,
       creationDate: new Date().toISOString(),
     };
-    setClients(prev => prev.map(client => {
-      if (client.id === clientId) {
-        return {
-          ...client,
-          tests: [...(client.tests || []), newTest]
+    setClients(prev => {
+      const updatedClients = prev.map(client => {
+        if (client.id === clientId) {
+          const newClientData = {
+            ...client,
+            tests: [...(client.tests || []), newTest]
+          };
+          return newClientData;
         }
-      }
-      return client;
-    }));
+        return client;
+      });
+      localStorage.setItem('clients', JSON.stringify(updatedClients));
+      return updatedClients;
+    });
   }, []);
 
   const value = {
@@ -136,6 +159,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     updateServer,
     deleteServer,
     addTestToClient,
+    saveClientsToStorage,
   };
   
   // Render children only after data is loaded to prevent hydration mismatch

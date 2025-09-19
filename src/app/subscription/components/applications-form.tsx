@@ -31,8 +31,7 @@ import { Badge } from '@/components/ui/badge';
 
 interface ApplicationsFormProps {
   selectedClient: Client | null;
-  onUpdateClient: (client: Client) => void;
-  addedPlans: SelectedPlan[];
+  onUpdateApplications: (applications: Application[]) => void;
 }
 
 const initialAppState: Omit<Application, 'planId' | 'screenNumber'> = {
@@ -59,8 +58,7 @@ type ApplicationSlot = {
 
 export function ApplicationsForm({
   selectedClient,
-  onUpdateClient,
-  addedPlans,
+  onUpdateApplications,
 }: ApplicationsFormProps) {
   const { t, language } = useLanguage();
   const [appSlots, setAppSlots] = React.useState<ApplicationSlot[]>([]);
@@ -68,6 +66,7 @@ export function ApplicationsForm({
   const [phoneModalState, setPhoneModalState] = React.useState<{isOpen: boolean; slotKey: string | null}>({isOpen: false, slotKey: null});
   const [isLimitModalOpen, setIsLimitModalOpen] = React.useState(false);
 
+  const addedPlans = selectedClient?.plans || [];
   const totalScreensFromPlans = React.useMemo(() => addedPlans.reduce((sum, plan) => sum + plan.screens, 0), [addedPlans]);
 
   React.useEffect(() => {
@@ -106,14 +105,12 @@ export function ApplicationsForm({
     }
   }, [selectedClient, addedPlans]);
 
-  const updateClientApplications = React.useCallback(() => {
-    if (selectedClient) {
-      const completedApplications = appSlots
+  const updateClientApplications = React.useCallback((updatedSlots: ApplicationSlot[]) => {
+      const completedApplications = updatedSlots
         .filter(slot => slot.status === 'complete')
         .map(slot => slot.data);
-      onUpdateClient({ ...selectedClient, applications: completedApplications });
-    }
-  }, [appSlots, selectedClient, onUpdateClient]);
+      onUpdateApplications(completedApplications);
+  }, [onUpdateApplications]);
 
 
   const handleSlotChange = (
@@ -219,13 +216,8 @@ export function ApplicationsForm({
     );
     setAppSlots(newAppSlots);
     setOpenSlots(prev => ({...prev, [slotKey]: false}));
-
-    if (selectedClient) {
-      const completedApplications = newAppSlots
-        .filter(slot => slot.status === 'complete')
-        .map(slot => slot.data);
-      onUpdateClient({ ...selectedClient, applications: completedApplications });
-    }
+    
+    updateClientApplications(newAppSlots);
     
     // Find and open the next pending slot
     const nextPendingIndex = newAppSlots.findIndex((slot, index) => index > currentIndex && slot.status === 'pending');

@@ -40,13 +40,12 @@ import {
 export default function SubscriptionPage() {
   const { t } = useLanguage();
   const router = useRouter();
-  const { clients, updateClient } = useData();
+  const { clients, updateClient, saveClientsToStorage } = useData();
   const { toast } = useToast();
   const [selectedClient, setSelectedClient] = React.useState<Client | null>(
     null
   );
   const [manualId, setManualId] = React.useState('');
-  const [addedPlans, setAddedPlans] = React.useState<SelectedPlan[]>([]);
   const [activeTab, setActiveTab] = React.useState('client');
   const [isValidationError, setIsValidationError] = React.useState(false);
   const [validationMessage, setValidationMessage] = React.useState('');
@@ -58,14 +57,30 @@ export default function SubscriptionPage() {
   const appsTabRef = React.useRef<HTMLButtonElement>(null);
 
   const handleSelectClient = (client: Client | null) => {
-    setSelectedClient(client);
+    if (client?._tempId) {
+      const liveClient = clients.find(c => c._tempId === client._tempId);
+      setSelectedClient(liveClient || client);
+    } else if (client?.id) {
+      const liveClient = clients.find(c => c.id === client.id);
+      setSelectedClient(liveClient || client);
+    } else {
+      setSelectedClient(client);
+    }
+
     if (client) {
-      setAddedPlans(client.plans || []);
       setManualId(client.id || '');
     } else {
-      setAddedPlans([]);
       setManualId('');
     }
+  };
+
+  const handleUpdateClient = (updatedData: Partial<Client>) => {
+    setSelectedClient(prevClient => {
+      if (!prevClient) return null;
+      const newClientState = { ...prevClient, ...updatedData };
+      updateClient(newClientState, true); // Update context without immediate save
+      return newClientState;
+    });
   };
 
   const getStatusVariant = (status: Client['status']) => {
@@ -83,22 +98,14 @@ export default function SubscriptionPage() {
     }
   };
 
-  const handleUpdateClient = (updatedClient: Client) => {
-    setSelectedClient(updatedClient);
-  };
-  
   const handleManualIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newId = e.target.value;
     setManualId(newId);
-     if (selectedClient) {
-      const updatedClient = { ...selectedClient, id: newId };
-      updateClient(updatedClient);
-      setSelectedClient(updatedClient);
-    }
   }
 
   const saveManualId = () => {
-    if (selectedClient && manualId) {
+    if (selectedClient) {
+      updateClient({ ...selectedClient, id: manualId });
       setIsIdSaveSuccessModalOpen(true);
     }
   }
@@ -107,20 +114,21 @@ export default function SubscriptionPage() {
   const handleCancel = () => {
     setSelectedClient(null);
     setManualId('');
-    setAddedPlans([]);
     setActiveTab('client');
   };
 
   const validateForms = () => {
-    if (addedPlans.length === 0) {
+    if (!selectedClient) return false;
+
+    if (!selectedClient.plans || selectedClient.plans.length === 0) {
       setValidationMessage(t('addAtLeastOnePlan'));
       setActiveTab('plans');
       plansTabRef.current?.focus();
       return false;
     }
 
-    const totalScreensFromPlans = addedPlans.reduce((sum, plan) => sum + plan.screens, 0);
-    const totalApplications = selectedClient?.applications?.length || 0;
+    const totalScreensFromPlans = selectedClient.plans.reduce((sum, plan) => sum + plan.screens, 0);
+    const totalApplications = selectedClient.applications?.length || 0;
 
     if (totalApplications < totalScreensFromPlans) {
         setValidationMessage(t('fillAllApplications'));
@@ -149,8 +157,7 @@ export default function SubscriptionPage() {
 
     const clientToUpdate: Client = { 
         ...selectedClient, 
-        plans: addedPlans, 
-        status: 'Active', // Set status to Active
+        status: 'Active',
         id: manualId || selectedClient.id,
     };
 
@@ -158,9 +165,9 @@ export default function SubscriptionPage() {
     setIsSubscriptionSuccessModalOpen(true);
   };
   
-  const totalScreensFromPlans = addedPlans.reduce((sum, plan) => sum + plan.screens, 0);
+  const totalScreensFromPlans = selectedClient?.plans?.reduce((sum, plan) => sum + plan.screens, 0) || 0;
   const totalApplications = selectedClient?.applications?.length || 0;
-  const arePlansIncomplete = addedPlans.length === 0;
+  const arePlansIncomplete = !selectedClient?.plans || selectedClient.plans.length === 0;
   const areAppsIncomplete = totalApplications < totalScreensFromPlans;
 
 
@@ -199,13 +206,13 @@ export default function SubscriptionPage() {
                 <TabsTrigger 
                     ref={appsTabRef} 
                     value="apps" 
-                    disabled={!isPlanAdded && addedPlans.length === 0} 
+                    disabled={(!isPlanAdded && arePlansIncomplete)} 
                     className={cn(
                         "relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
                         isPlanAdded && "animate-[flash-success_1.5s_ease-in-out]"
                     )}
                 >
-                     {areAppsIncomplete && addedPlans.length > 0 && isValidationError && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
+                     {areAppsIncomplete && totalScreensFromPlans > 0 && isValidationError && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
                     <AppWindow className="mr-2 h-5 w-5" />
                     {t('applications')}
                 </TabsTrigger>
@@ -299,9 +306,8 @@ export default function SubscriptionPage() {
                 </CardHeader>
                 <CardContent>
                   <SubscriptionPlanForm 
-                    addedPlans={addedPlans}
-                    setAddedPlans={setAddedPlans}
                     selectedClient={selectedClient}
+                    onPlanChange={(plans) => handleUpdateClient({ plans })}
                     onPlanAdded={() => {
                         setIsPlanAdded(true);
                         setTimeout(() => setIsPlanAdded(false), 2000);
@@ -322,8 +328,7 @@ export default function SubscriptionPage() {
                 <CardContent>
                   <ApplicationsForm
                     selectedClient={selectedClient}
-                    onUpdateClient={handleUpdateClient}
-                    addedPlans={addedPlans}
+                    onUpdateApplications={(applications) => handleUpdateClient({ applications })}
                   />
                 </CardContent>
               </Card>

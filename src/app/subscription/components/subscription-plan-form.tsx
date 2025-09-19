@@ -17,13 +17,12 @@ import { add, format, lastDayOfMonth } from 'date-fns';
 import { cn } from '@/lib/utils';
 
 interface SubscriptionPlanFormProps {
-    addedPlans: SelectedPlan[];
-    setAddedPlans: React.Dispatch<React.SetStateAction<SelectedPlan[]>>;
     selectedClient: Client | null;
+    onPlanChange: (plans: SelectedPlan[]) => void;
     onPlanAdded: () => void;
 }
 
-export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient, onPlanAdded }: SubscriptionPlanFormProps) {
+export function SubscriptionPlanForm({ selectedClient, onPlanChange, onPlanAdded }: SubscriptionPlanFormProps) {
   const { t, language } = useLanguage();
   const { servers: panels } = useData();
 
@@ -125,7 +124,9 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
           planPeriod: planPeriod,
           dueDate: dueDate,
       };
-      setAddedPlans([...addedPlans, newPlan]);
+      
+      const newPlans = [...(selectedClient.plans || []), newPlan];
+      onPlanChange(newPlans);
       onPlanAdded();
 
       // Reset form
@@ -142,7 +143,10 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
   };
 
   const handleRemovePlan = (indexToRemove: number) => {
-    setAddedPlans(addedPlans.filter((_, index) => index !== indexToRemove));
+    if (selectedClient && selectedClient.plans) {
+      const newPlans = selectedClient.plans.filter((_, index) => index !== indexToRemove);
+      onPlanChange(newPlans);
+    }
   };
   
   const formatCurrency = (value?: number) => {
@@ -329,19 +333,19 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
             </Button>
         </div>
 
-      {addedPlans.length > 0 && (
+      {selectedClient?.plans && selectedClient.plans.length > 0 && (
         <Collapsible defaultOpen className="space-y-2">
             <CollapsibleTrigger asChild>
                 <div className="flex items-center justify-between p-3 rounded-md border bg-muted cursor-pointer">
                     <span className="font-semibold">{t('addedPlans')}</span>
                     <div className="flex items-center">
-                        <Badge variant="secondary">{addedPlans.length}</Badge>
+                        <Badge variant="secondary">{selectedClient.plans.length}</Badge>
                         <ChevronDown className="h-5 w-5 ml-2" />
                     </div>
                 </div>
             </CollapsibleTrigger>
             <CollapsibleContent className="space-y-2 pt-2">
-                {addedPlans.map((item, index) => (
+                {selectedClient.plans.map((item, index) => (
                   <Card key={index} className="bg-card">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
                       <CardTitle className="text-base">{item.plan.name}</CardTitle>
