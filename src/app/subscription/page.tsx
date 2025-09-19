@@ -175,7 +175,7 @@ export default function SubscriptionPage() {
                          <Label htmlFor="manual-client-id">{t('clientID')}</Label>
                          <p className="text-sm text-muted-foreground">
                           <span className="font-semibold">{t('idAtual')}: </span>
-                          <span>{currentIdDisplay}</span>
+                          <span className={cn(isIdPending && 'text-green-500 font-bold')}>{currentIdDisplay}</span>
                         </p>
                         <Input
                           id="manual-client-id"
