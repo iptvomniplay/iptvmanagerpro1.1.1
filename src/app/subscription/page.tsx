@@ -96,7 +96,7 @@ export default function SubscriptionPage() {
     if (selectedClient) {
       const newClientState = { ...selectedClient, id: manualId };
       setSelectedClient(newClientState);
-      updateClient(newClientState); // Force immediate save to localStorage
+      updateClient(newClientState);
       setIsIdSaveSuccessModalOpen(true);
     }
   }
