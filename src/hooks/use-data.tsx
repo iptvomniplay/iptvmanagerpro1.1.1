@@ -1,13 +1,13 @@
 'use client';
 
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
-import type { Client, Server, Test } from '@/lib/types';
+import type { Client, Server, Test, SelectedPlan } from '@/lib/types';
 import { format } from 'date-fns';
 
 interface DataContextType {
   clients: Client[];
   servers: Server[];
-  addClient: (clientData: Omit<Client, 'id' | 'registeredDate'>) => void;
+  addClient: (clientData: Omit<Client, 'id' | 'registeredDate' | 'plans'>) => void;
   updateClient: (clientData: Client) => void;
   deleteClient: (clientId: string) => void;
   addServer: (serverData: Omit<Server, 'id' | 'status'>) => void;
@@ -21,7 +21,10 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 const safelyParseJSON = (jsonString: string | null, fallback: any) => {
   if (!jsonString) return fallback;
   try {
-    const parsed = JSON.parse(jsonString);
+    const parsed = JSON.parse(jsonString, (key, value) => {
+        // This reviver can be used to convert date strings back to Date objects if needed
+        return value;
+    });
     return Array.isArray(parsed) ? parsed : fallback;
   } catch (e) {
     console.error("Failed to parse JSON from localStorage", e);
@@ -62,13 +65,14 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [servers, isDataLoaded]);
 
 
-  const addClient = useCallback((clientData: Omit<Client, 'id' | 'registeredDate'>) => {
+  const addClient = useCallback((clientData: Omit<Client, 'id' | 'registeredDate' | 'plans'>) => {
     setClients(prevClients => {
         const newClient: Client = {
             ...clientData,
             id: `C${(Math.random() * 1000).toFixed(0).padStart(3, '0')}`,
             registeredDate: format(new Date(), 'yyyy-MM-dd'),
             birthDate: clientData.birthDate || '',
+            plans: [],
         };
         return [newClient, ...prevClients];
     });

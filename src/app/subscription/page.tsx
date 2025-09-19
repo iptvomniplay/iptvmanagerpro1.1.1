@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import type { Client } from '@/lib/types';
+import type { Application, Client, Plan, Server, SubServer } from '@/lib/types';
 import { useLanguage } from '@/hooks/use-language';
 import {
   Card,
@@ -22,7 +22,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { User, FileText, AppWindow } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { SubscriptionPlanForm } from './components/subscription-plan-form';
+import { SubscriptionPlanForm, type SelectedPlan } from './components/subscription-plan-form';
 import { ApplicationsForm } from './components/applications-form';
 import { useData } from '@/hooks/use-data';
 import { Button } from '@/components/ui/button';
@@ -38,14 +38,25 @@ export default function SubscriptionPage() {
     null
   );
   const [manualId, setManualId] = React.useState('');
+  const [addedPlans, setAddedPlans] = React.useState<SelectedPlan[]>([]);
 
   React.useEffect(() => {
-    if (selectedClient && selectedClient.status === 'Active') {
-      setManualId(selectedClient.id);
+    if (selectedClient) {
+        if (selectedClient.status === 'Active') {
+            setManualId(selectedClient.id);
+        } else {
+            setManualId('');
+        }
+        setAddedPlans(selectedClient.plans || []);
     } else {
-      setManualId('');
+        setManualId('');
+        setAddedPlans([]);
     }
   }, [selectedClient]);
+
+  const totalScreens = React.useMemo(() => {
+    return addedPlans.reduce((total, plan) => total + plan.screens, 0);
+  }, [addedPlans]);
 
   const getStatusVariant = (status: Client['status']) => {
     switch (status) {
@@ -74,7 +85,7 @@ export default function SubscriptionPage() {
   const handleSave = () => {
     if (!selectedClient) return;
 
-    let clientToUpdate = { ...selectedClient };
+    let clientToUpdate = { ...selectedClient, plans: addedPlans };
     let idChanged = false;
 
     if (
@@ -183,10 +194,10 @@ export default function SubscriptionPage() {
                       </Badge>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="manual-client-id">{t('clientID')}</Label>
+                       <Label htmlFor="manual-client-id">{t('clientID')}</Label>
                       <p className="text-sm text-muted-foreground">
                         {t('idAtual')}:{' '}
-                         <span className={cn(isIdEdited && 'text-green-500 font-bold')}>
+                        <span className={cn(isIdEdited && 'text-green-500 font-bold')}>
                           {currentIdValue || 'N/A'}
                         </span>
                       </p>
@@ -213,7 +224,11 @@ export default function SubscriptionPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <SubscriptionPlanForm />
+                  <SubscriptionPlanForm 
+                    addedPlans={addedPlans}
+                    setAddedPlans={setAddedPlans}
+                    selectedClient={selectedClient}
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -230,6 +245,7 @@ export default function SubscriptionPage() {
                   <ApplicationsForm
                     selectedClient={selectedClient}
                     onUpdateClient={handleUpdateClient}
+                    screensToRender={totalScreens}
                   />
                 </CardContent>
               </Card>

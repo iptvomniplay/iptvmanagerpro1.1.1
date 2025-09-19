@@ -305,7 +305,8 @@
     "activationId": "Activation ID",
     "back": "Back",
     "deviceLocation": "Device Location",
-    "idAtual": "Current ID"
+    "idAtual": "Current ID",
+    "noScreensOrClient": "No screens in the plan or no client selected."
 }
 
     

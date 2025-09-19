@@ -28,6 +28,16 @@ export type Application = {
   activationId?: string;
 };
 
+export type SelectedPlan = {
+  panel: Server;
+  server: SubServer;
+  plan: PlanType;
+  screens: number;
+  planValue: number;
+  isCourtesy: boolean;
+};
+
+
 export type Client = {
   id: string;
   name: string;
@@ -42,9 +52,10 @@ export type Client = {
   applications?: Application[];
   birthDate?: string;
   observations?: string;
+  plans?: SelectedPlan[];
 };
 
-export type Plan = {
+export type PlanType = {
   name: string;
   value?: number;
 };
@@ -53,7 +64,7 @@ export type SubServer = {
   name: string;
   type: string;
   screens: number;
-  plans: Plan[];
+  plans: PlanType[];
   status: 'Online' | 'Offline' | 'Suspended' | 'Maintenance';
 };
 

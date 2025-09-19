@@ -13,7 +13,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { Switch } from '@/components/ui/switch';
-import { ChevronDown, X } from 'lucide-react';
+import { ChevronDown, PlusCircle, Trash2, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { BirthdateInput } from '@/components/ui/birthdate-input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -23,6 +23,7 @@ import { Badge } from '@/components/ui/badge';
 interface ApplicationsFormProps {
   selectedClient: Client | null;
   onUpdateClient: (client: Client) => void;
+  screensToRender: number;
 }
 
 const initialAppState: Application = {
@@ -43,361 +44,274 @@ const initialAppState: Application = {
 export function ApplicationsForm({
   selectedClient,
   onUpdateClient,
+  screensToRender
 }: ApplicationsFormProps) {
   const { t, language } = useLanguage();
   const { toast } = useToast();
   const [applications, setApplications] = React.useState<Application[]>([]);
-  const [currentApp, setCurrentApp] = React.useState(initialAppState);
-  const [isPhoneModalOpen, setIsPhoneModalOpen] = React.useState(false);
+  const [phoneModalState, setPhoneModalState] = React.useState<{isOpen: boolean, index: number | null}>({isOpen: false, index: null});
 
   React.useEffect(() => {
     if (selectedClient) {
-      setApplications(selectedClient.applications || []);
+      const existingApps = selectedClient.applications || [];
+      const newApps: Application[] = Array.from({ length: screensToRender }, (_, i) => {
+        return existingApps[i] || { ...initialAppState };
+      });
+      setApplications(newApps);
     } else {
       setApplications([]);
-      setCurrentApp(initialAppState);
     }
-  }, [selectedClient]);
-
-  const handleInputChange = (
+  }, [selectedClient, screensToRender]);
+  
+  const handleAppChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    field?: keyof Application
+    index: number,
+    field: keyof Application
   ) => {
-    const name = field || e.target.name;
-    const value = e.target.value;
-    setCurrentApp((prev) => ({ ...prev, [name]: value }));
+    const { value } = e.target;
+    const newApps = [...applications];
+    newApps[index] = { ...newApps[index], [field]: value };
+    setApplications(newApps);
   };
 
   const handleCheckboxChange = (
     checked: boolean,
+    index: number,
     field: keyof Application
   ) => {
-    setCurrentApp((prev) => ({ ...prev, [field]: checked }));
+    const newApps = [...applications];
+    newApps[index] = { ...newApps[index], [field]: checked };
+    if (field === 'hasResponsible' && !checked) {
+      newApps[index].responsibleName = '';
+      newApps[index].responsiblePhones = [];
+    }
+    setApplications(newApps);
   };
 
-  const handleDateChange = (value: string) => {
-    setCurrentApp((prev) => ({...prev, licenseDueDate: value}));
+  const handleDateChange = (value: string, index: number) => {
+     const newApps = [...applications];
+    newApps[index] = { ...newApps[index], licenseDueDate: value };
+    setApplications(newApps);
   }
 
-  const handleLicenseTypeChange = (checked: boolean) => {
+  const handleLicenseTypeChange = (checked: boolean, index: number) => {
     const newLicenseType = checked ? 'Anual' : 'Free';
-    setCurrentApp((prev) => ({
-      ...prev,
+    const newApps = [...applications];
+    newApps[index] = {
+      ...newApps[index],
       licenseType: newLicenseType,
-      licenseDueDate: newLicenseType === 'Free' ? '' : prev.licenseDueDate,
-    }));
+      licenseDueDate: newLicenseType === 'Free' ? '' : newApps[index].licenseDueDate,
+    };
+    setApplications(newApps);
   };
 
   const handlePhoneSave = (newPhones: Phone[]) => {
-    setCurrentApp(prev => ({...prev, responsiblePhones: newPhones}));
-    setIsPhoneModalOpen(false);
+    if (phoneModalState.index !== null) {
+      const newApps = [...applications];
+      newApps[phoneModalState.index] = { ...newApps[phoneModalState.index], responsiblePhones: newPhones };
+      setApplications(newApps);
+    }
+    setPhoneModalState({isOpen: false, index: null});
   }
 
-  const handleAddApplication = () => {
-    if (!currentApp.name) {
-      toast({
-        title: t('validationError'),
-        description: t('appNameRequired'),
-        variant: 'destructive',
-      });
-      return;
-    }
-    const newApp: Application = { ...currentApp };
-    const updatedApps = [...applications, newApp];
-    setApplications(updatedApps);
-
-    if (selectedClient) {
-      const updatedClient = { ...selectedClient, applications: updatedApps };
-      onUpdateClient(updatedClient);
-    }
-    setCurrentApp(initialAppState);
-  };
-
   const handleRemoveApplication = (indexToRemove: number) => {
-    const updatedApps = applications.filter(
-      (_, index) => index !== indexToRemove
-    );
-    setApplications(updatedApps);
+    const newApps = [...applications];
+    newApps[indexToRemove] = { ...initialAppState };
+    setApplications(newApps);
+  };
+
+  const handleSaveApplications = () => {
     if (selectedClient) {
-      const updatedClient = { ...selectedClient, applications: updatedApps };
+      const updatedClient = { ...selectedClient, applications: applications.filter(app => app.name) }; // Save only filled apps
       onUpdateClient(updatedClient);
+      toast({
+        title: t('registrationAddedSuccess'),
+        description: `As aplicações do cliente ${selectedClient.name} foram salvas.`,
+      });
     }
   };
 
-  const birthdateField = {
-    value: currentApp.licenseDueDate,
-    onChange: (e: React.ChangeEvent<HTMLInputElement> | string) => {
-        if (typeof e === 'string') {
-            handleDateChange(e);
-        } else {
-            handleDateChange(e.target.value);
-        }
-    },
-  };
+  if (!selectedClient || screensToRender === 0) {
+    return (
+        <div className="text-center py-10">
+            <p className="text-muted-foreground">{t('noScreensOrClient')}</p>
+        </div>
+    );
+  }
+
 
   return (
     <>
       <div className="space-y-6">
-        <Card className="bg-muted/20">
-          <CardContent className="pt-6 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="app-name">{t('appName')}</Label>
-                <Input
-                  id="app-name"
-                  name="name"
-                  value={currentApp.name}
-                  onChange={handleInputChange}
-                  placeholder={t('appNamePlaceholder')}
-                  disabled={!selectedClient}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="mac-address">{t('macAddress')}</Label>
-                <Input
-                  id="mac-address"
-                  name="macAddress"
-                  value={currentApp.macAddress}
-                  onChange={handleInputChange}
-                  placeholder="00:00:00:00:00:00"
-                  disabled={!selectedClient}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="key-id">{t('keyId')}</Label>
-                <Input
-                  id="key-id"
-                  name="keyId"
-                  value={currentApp.keyId}
-                  onChange={handleInputChange}
-                  disabled={!selectedClient}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>{t('licenseType')}</Label>
-                <div className="flex items-center space-x-4 rounded-md border p-3 h-11 bg-background">
-                  <Label
-                    htmlFor="license-type-switch"
-                    className="cursor-pointer"
-                  >
-                    {t('free')}
-                  </Label>
-                  <Switch
-                    id="license-type-switch"
-                    checked={currentApp.licenseType === 'Anual'}
-                    onCheckedChange={handleLicenseTypeChange}
-                    disabled={!selectedClient}
+        {applications.map((app, index) => (
+          <Card key={index} className="bg-muted/20">
+            <CardHeader className="flex flex-row items-center justify-between py-4">
+              <CardTitle>{t('screens')} {index + 1}</CardTitle>
+               <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                  onClick={() => handleRemoveApplication(index)}
+                >
+                  <Trash2 className="h-5 w-5" />
+                </Button>
+            </CardHeader>
+            <CardContent className="pt-0 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor={`app-name-${index}`}>{t('appName')}</Label>
+                  <Input
+                    id={`app-name-${index}`}
+                    value={app.name}
+                    onChange={(e) => handleAppChange(e, index, 'name')}
+                    placeholder={t('appNamePlaceholder')}
                   />
-                  <Label
-                    htmlFor="license-type-switch"
-                    className="cursor-pointer"
-                  >
-                    {t('anual')}
-                  </Label>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`mac-address-${index}`}>{t('macAddress')}</Label>
+                  <Input
+                    id={`mac-address-${index}`}
+                    value={app.macAddress}
+                    onChange={(e) => handleAppChange(e, index, 'macAddress')}
+                    placeholder="00:00:00:00:00:00"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`key-id-${index}`}>{t('keyId')}</Label>
+                  <Input
+                    id={`key-id-${index}`}
+                    value={app.keyId}
+                    onChange={(e) => handleAppChange(e, index, 'keyId')}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('licenseType')}</Label>
+                  <div className="flex items-center space-x-4 rounded-md border p-3 h-11 bg-background">
+                    <Label
+                      htmlFor={`license-type-switch-${index}`}
+                      className="cursor-pointer"
+                    >
+                      {t('free')}
+                    </Label>
+                    <Switch
+                      id={`license-type-switch-${index}`}
+                      checked={app.licenseType === 'Anual'}
+                      onCheckedChange={(checked) => handleLicenseTypeChange(checked, index)}
+                    />
+                    <Label
+                      htmlFor={`license-type-switch-${index}`}
+                      className="cursor-pointer"
+                    >
+                      {t('anual')}
+                    </Label>
+                  </div>
+                </div>
+                
+                {app.licenseType === 'Anual' && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor={`license-due-date-${index}`}>{t('licenseDueDate')}</Label>
+                      <BirthdateInput 
+                        field={{
+                            value: app.licenseDueDate,
+                            onChange: (e: React.ChangeEvent<HTMLInputElement> | string) => {
+                                const value = typeof e === 'string' ? e : e.target.value;
+                                handleDateChange(value, index);
+                            }
+                        }}
+                        language={language} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`activation-location-${index}`}>{t('activationLocation')}</Label>
+                      <Input
+                        id={`activation-location-${index}`}
+                        value={app.activationLocation}
+                        onChange={(e) => handleAppChange(e, index, 'activationLocation')}
+                      />
+                    </div>
+                    <div className="space-y-2 col-span-1 md:col-span-2">
+                       <div className="flex items-center space-x-2">
+                          <Checkbox 
+                            id={`has-responsible-${index}`}
+                            checked={app.hasResponsible} 
+                            onCheckedChange={(checked) => handleCheckboxChange(checked as boolean, index, 'hasResponsible')}
+                          />
+                          <Label htmlFor={`has-responsible-${index}`} className="cursor-pointer">{t('responsibleAndPhone')}</Label>
+                       </div>
+                    </div>
+
+                    {app.hasResponsible && (
+                      <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                        <div className="space-y-2">
+                          <Label htmlFor={`responsible-name-${index}`}>{t('responsibleName')}</Label>
+                          <Input
+                            id={`responsible-name-${index}`}
+                            value={app.responsibleName}
+                            onChange={(e) => handleAppChange(e, index, 'responsibleName')}
+                          />
+                        </div>
+                         <div className="space-y-2">
+                            <Button
+                              type="button"
+                              variant="default"
+                              onClick={() => setPhoneModalState({ isOpen: true, index })}
+                              className="w-full"
+                            >
+                              {app.responsiblePhones && app.responsiblePhones.length > 0 ? t('managePhones') : t('addPhone')}
+                            </Button>
+                        </div>
+                      </div>
+                    )}
+
+                     <div className="space-y-2">
+                      <Label htmlFor={`activation-id-${index}`}>{t('activationId')}</Label>
+                      <Input
+                        id={`activation-id-${index}`}
+                        value={app.activationId}
+                        onChange={(e) => handleAppChange(e, index, 'activationId')}
+                      />
+                    </div>
+                  </>
+                )}
+
+                <div className="space-y-2">
+                  <Label htmlFor={`device-${index}`}>{t('device')}</Label>
+                  <Input
+                    id={`device-${index}`}
+                    value={app.device}
+                    onChange={(e) => handleAppChange(e, index, 'device')}
+                    placeholder={t('devicePlaceholder')}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`location-${index}`}>{t('location')}</Label>
+                  <Input
+                    id={`location-${index}`}
+                    value={app.location}
+                    onChange={(e) => handleAppChange(e, index, 'location')}
+                    placeholder={t('locationPlaceholder')}
+                  />
                 </div>
               </div>
-              
-              {currentApp.licenseType === 'Anual' && (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="license-due-date">{t('licenseDueDate')}</Label>
-                    <BirthdateInput field={birthdateField} language={language} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="activation-location">{t('activationLocation')}</Label>
-                    <Input
-                      id="activation-location"
-                      name="activationLocation"
-                      value={currentApp.activationLocation}
-                      onChange={handleInputChange}
-                      disabled={!selectedClient}
-                    />
-                  </div>
-                  <div className="space-y-2 col-span-1 md:col-span-2">
-                     <div className="flex items-center space-x-2">
-                        <Checkbox 
-                          id="has-responsible" 
-                          checked={currentApp.hasResponsible} 
-                          onCheckedChange={(checked) => handleCheckboxChange(checked as boolean, 'hasResponsible')}
-                          disabled={!selectedClient}
-                        />
-                        <Label htmlFor="has-responsible" className="cursor-pointer">{t('responsibleAndPhone')}</Label>
-                     </div>
-                  </div>
-
-                  {currentApp.hasResponsible && (
-                    <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-                      <div className="space-y-2">
-                        <Label htmlFor="responsible-name">{t('responsibleName')}</Label>
-                        <Input
-                          id="responsible-name"
-                          name="responsibleName"
-                          value={currentApp.responsibleName}
-                          onChange={handleInputChange}
-                          disabled={!selectedClient}
-                        />
-                      </div>
-                       <div className="space-y-2">
-                          <Button
-                            type="button"
-                            variant="default"
-                            onClick={() => setIsPhoneModalOpen(true)}
-                            disabled={!selectedClient}
-                            className="w-full"
-                          >
-                            {t('addPhone')}
-                          </Button>
-                      </div>
-                    </div>
-                  )}
-
-                   <div className="space-y-2">
-                    <Label htmlFor="activation-id">{t('activationId')}</Label>
-                    <Input
-                      id="activation-id"
-                      name="activationId"
-                      value={currentApp.activationId}
-                      onChange={handleInputChange}
-                      disabled={!selectedClient}
-                    />
-                  </div>
-                </>
-              )}
-
-              <div className="space-y-2">
-                <Label htmlFor="device">{t('device')}</Label>
-                <Input
-                  id="device"
-                  name="device"
-                  value={currentApp.device}
-                  onChange={handleInputChange}
-                  placeholder={t('devicePlaceholder')}
-                  disabled={!selectedClient}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="location">{t('location')}</Label>
-                <Input
-                  id="location"
-                  name="location"
-                  value={currentApp.location}
-                  onChange={handleInputChange}
-                  placeholder={t('locationPlaceholder')}
-                  disabled={!selectedClient}
-                />
-              </div>
-            </div>
-            <div className="flex justify-end pt-4">
-              <Button
-                onClick={handleAddApplication}
-                disabled={!selectedClient || !currentApp.name}
-              >
-                {t('addApplication')}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {applications.length > 0 && (
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">{t('addedApplications')}</h3>
-            {applications.map((app, index) => (
-              <Collapsible key={index} asChild>
-                <Card className="bg-muted/50">
-                  <CardHeader className="flex flex-row items-center justify-between py-3">
-                    <CollapsibleTrigger asChild>
-                      <div className="flex items-center gap-4 cursor-pointer flex-1">
-                        <CardTitle className="text-base">{app.name}</CardTitle>
-                        <ChevronDown className="h-5 w-5 transition-transform data-[state=open]:rotate-180" />
-                      </div>
-                    </CollapsibleTrigger>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={() => handleRemoveApplication(index)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </CardHeader>
-                  <CollapsibleContent>
-                    <CardContent className="text-sm text-muted-foreground space-y-3 pt-0 pb-4">
-                      <p>
-                        <span className="font-semibold">{t('macAddress')}:</span>{' '}
-                        {app.macAddress}
-                      </p>
-                      <p>
-                        <span className="font-semibold">{t('keyId')}:</span>{' '}
-                        {app.keyId}
-                      </p>
-                      <p>
-                        <span className="font-semibold">{t('device')}:</span>{' '}
-                        {app.device}
-                      </p>
-                      <p>
-                        <span className="font-semibold">{t('location')}:</span>{' '}
-                        {app.location}
-                      </p>
-                      <p>
-                        <span className="font-semibold">{t('licenseType')}:</span>{' '}
-                        {t((app.licenseType || 'free').toLowerCase() as any)}
-                      </p>
-                       {app.licenseType === 'Anual' && (
-                         <>
-                           {app.licenseDueDate && (
-                             <p>
-                                <span className="font-semibold">{t('licenseDueDate')}:</span>{' '}
-                                {app.licenseDueDate}
-                             </p>
-                           )}
-                           {app.activationLocation && (
-                             <p>
-                                <span className="font-semibold">{t('activationLocation')}:</span>{' '}
-                                {app.activationLocation}
-                             </p>
-                           )}
-                            {app.hasResponsible && (
-                              <>
-                                {app.responsibleName && (
-                                  <p>
-                                      <span className="font-semibold">{t('responsibleName')}:</span>{' '}
-                                      {app.responsibleName}
-                                  </p>
-                                )}
-                                {app.responsiblePhones && app.responsiblePhones.length > 0 && (
-                                  <div>
-                                      <p className="font-semibold">{t('phone')}:</p>
-                                      <div className="flex flex-wrap gap-2 mt-1">
-                                          {app.responsiblePhones.map((phone, idx) => (
-                                              <Badge key={idx} variant="outline" className="text-sm">({t(phone.type as any)}) {phone.number}</Badge>
-                                          ))}
-                                      </div>
-                                  </div>
-                                )}
-                              </>
-                            )}
-                             {app.activationId && (
-                             <p>
-                                <span className="font-semibold">{t('activationId')}:</span>{' '}
-                                {app.activationId}
-                             </p>
-                           )}
-                         </>
-                       )}
-                    </CardContent>
-                  </CollapsibleContent>
-                </Card>
-              </Collapsible>
-            ))}
-          </div>
-        )}
+            </CardContent>
+          </Card>
+        ))}
+        
+        <div className="flex justify-end pt-4">
+            <Button onClick={handleSaveApplications}>
+                {t('save')}
+            </Button>
+        </div>
       </div>
-      <PhoneInputModal
-        isOpen={isPhoneModalOpen}
-        onClose={() => setIsPhoneModalOpen(false)}
-        onSave={handlePhoneSave}
-        initialPhones={currentApp.responsiblePhones || []}
-      />
+
+      {phoneModalState.isOpen && phoneModalState.index !== null && (
+        <PhoneInputModal
+            isOpen={phoneModalState.isOpen}
+            onClose={() => setPhoneModalState({isOpen: false, index: null})}
+            onSave={handlePhoneSave}
+            initialPhones={applications[phoneModalState.index]?.responsiblePhones || []}
+        />
+      )}
     </>
   );
 }

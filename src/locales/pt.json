@@ -305,7 +305,8 @@
     "activationId": "ID de Ativação",
     "back": "Voltar",
     "deviceLocation": "Localização do Dispositivo",
-    "idAtual": "ID Atual"
+    "idAtual": "ID Atual",
+    "noScreensOrClient": "Nenhuma tela no plano ou nenhum cliente selecionado."
 }
 
     

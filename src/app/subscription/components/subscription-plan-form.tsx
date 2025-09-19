@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useData } from '@/hooks/use-data';
 import { useLanguage } from '@/hooks/use-language';
-import type { Server, SubServer, Plan as PlanType } from '@/lib/types';
+import type { Server, SubServer, PlanType as PlanType, Client, SelectedPlan } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
@@ -13,16 +13,13 @@ import { X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 
-interface SelectedPlan {
-  panel: Server;
-  server: SubServer;
-  plan: PlanType;
-  screens: number;
-  planValue: number;
-  isCourtesy: boolean;
+interface SubscriptionPlanFormProps {
+    addedPlans: SelectedPlan[];
+    setAddedPlans: React.Dispatch<React.SetStateAction<SelectedPlan[]>>;
+    selectedClient: Client | null;
 }
 
-export function SubscriptionPlanForm() {
+export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient }: SubscriptionPlanFormProps) {
   const { t, language } = useLanguage();
   const { servers: panels } = useData();
 
@@ -30,7 +27,6 @@ export function SubscriptionPlanForm() {
   const [selectedServerName, setSelectedServerName] = React.useState<string>('');
   const [selectedPlanName, setSelectedPlanName] = React.useState<string>('');
   const [numberOfScreens, setNumberOfScreens] = React.useState<number | ''>('');
-  const [addedPlans, setAddedPlans] = React.useState<SelectedPlan[]>([]);
   const [dueDate, setDueDate] = React.useState<number | undefined>();
   const [planValue, setPlanValue] = React.useState('');
   const [isCourtesy, setIsCourtesy] = React.useState(false);
@@ -69,19 +65,18 @@ export function SubscriptionPlanForm() {
 
 
   const handleAddPlan = () => {
-    if (selectedPanel && selectedServer && selectedPlan && numberOfScreens) {
+    if (selectedPanel && selectedServer && selectedPlan && numberOfScreens && selectedClient) {
       const numericValue = parseFloat(planValue.replace(/[^0-9,-]+/g, "").replace(',', '.')) || 0;
-      setAddedPlans([
-        ...addedPlans,
-        {
+      const newPlan: SelectedPlan = {
           panel: selectedPanel,
           server: selectedServer,
           plan: selectedPlan,
           screens: numberOfScreens,
           planValue: isCourtesy ? 0 : numericValue,
           isCourtesy: isCourtesy,
-        },
-      ]);
+      };
+      setAddedPlans([...addedPlans, newPlan]);
+
       // Reset form
       setSelectedPanelId('');
       setSelectedServerName('');
@@ -109,7 +104,7 @@ export function SubscriptionPlanForm() {
       <div className="space-y-4">
         <div className="space-y-2">
           <Label>{t('panel')}</Label>
-          <Select value={selectedPanelId} onValueChange={setSelectedPanelId}>
+          <Select value={selectedPanelId} onValueChange={setSelectedPanelId} disabled={!selectedClient}>
             <SelectTrigger>
               <SelectValue placeholder={t('selectPanel')} />
             </SelectTrigger>
@@ -182,6 +177,7 @@ export function SubscriptionPlanForm() {
            <Select
               value={dueDate ? String(dueDate) : ''}
               onValueChange={(value) => setDueDate(parseInt(value, 10))}
+              disabled={!selectedClient}
             >
               <SelectTrigger id="due-date">
                 <SelectValue placeholder={t('selectDay')} />
@@ -204,13 +200,13 @@ export function SubscriptionPlanForm() {
               id='plan-value'
               value={planValue}
               onChange={handleCurrencyChange}
-              disabled={isCourtesy}
+              disabled={isCourtesy || !selectedClient}
               placeholder={formatCurrency(0)}
             />
         </div>
 
         <div className="flex items-center space-x-2">
-          <Checkbox id="courtesy" checked={isCourtesy} onCheckedChange={(checked) => setIsCourtesy(checked as boolean)} />
+          <Checkbox id="courtesy" checked={isCourtesy} onCheckedChange={(checked) => setIsCourtesy(checked as boolean)} disabled={!selectedClient} />
           <label
             htmlFor="courtesy"
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -222,7 +218,7 @@ export function SubscriptionPlanForm() {
       </div>
       
        <div className="flex justify-end">
-            <Button onClick={handleAddPlan} disabled={!selectedPlan}>
+            <Button onClick={handleAddPlan} disabled={!selectedPlan || !selectedClient}>
                 {t('addPlan')}
             </Button>
         </div>
@@ -265,3 +261,6 @@ export function SubscriptionPlanForm() {
     </div>
   );
 }
+
+// For exporting the type to parent
+export type { SelectedPlan };
