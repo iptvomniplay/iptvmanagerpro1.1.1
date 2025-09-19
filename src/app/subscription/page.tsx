@@ -93,28 +93,27 @@ export default function SubscriptionPage() {
 
   const saveManualId = () => {
     if (!selectedClient) return;
-
+  
     const idToSave = manualId.trim();
     if (!idToSave) {
       toast({ title: 'ID não pode estar vazio.' });
       return;
     }
-
+  
     if (selectedClient.id && selectedClient.id !== idToSave) {
       const confirmEdit = window.confirm(
         `O cliente já possui ID: ${selectedClient.id}. Deseja alterar para "${idToSave}"?`
       );
       if (!confirmEdit) return;
     }
-
+  
     const newClientState = { ...selectedClient, id: idToSave };
     setSelectedClient(newClientState);
     updateClient(newClientState);
     saveClientsToStorage(); 
-
+  
     setIsIdSaveSuccessModalOpen(true);
   };
-
 
   const handleCancel = () => {
     setSelectedClient(null);
