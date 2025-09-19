@@ -40,7 +40,7 @@ import {
 export default function SubscriptionPage() {
   const { t } = useLanguage();
   const router = useRouter();
-  const { updateClient } = useData();
+  const { clients, updateClient } = useData();
   const { toast } = useToast();
   const [selectedClient, setSelectedClient] = React.useState<Client | null>(
     null
@@ -59,6 +59,9 @@ export default function SubscriptionPage() {
     setSelectedClient(client);
     if (client) {
       setAddedPlans(client.plans || []);
+      // When selecting a new client, we check if they already have an ID.
+      // If so, we populate the manualId field.
+      // If the client is already active, we don't allow changing the ID.
       setManualId(client.id || '');
     } else {
       setAddedPlans([]);
@@ -89,7 +92,9 @@ export default function SubscriptionPage() {
     const newId = e.target.value;
     setManualId(newId);
     if (selectedClient) {
-      updateClient({ ...selectedClient, id: newId });
+      // Optimistically update the client in the local state,
+      // this will be fully saved with all other data on final save.
+      setSelectedClient(prev => prev ? { ...prev, id: newId } : null);
     }
   }
 
@@ -98,6 +103,7 @@ export default function SubscriptionPage() {
     setSelectedClient(null);
     setManualId('');
     setAddedPlans([]);
+    setActiveTab('client');
   };
 
   const validateForms = () => {
@@ -118,9 +124,11 @@ export default function SubscriptionPage() {
         return false;
     }
     
+    // The client ID is required if the client is not already active
     if (!manualId && selectedClient?.status !== 'Active') {
         setValidationMessage(t('clientIdRequired'));
         setActiveTab('client');
+        document.getElementById('manual-client-id')?.focus();
         return false;
     }
 
@@ -129,6 +137,10 @@ export default function SubscriptionPage() {
 
   const handleSave = () => {
     if (!selectedClient) return;
+    
+    // We need to find the original client to get its registeredDate
+    const originalClient = clients.find(c => c.name === selectedClient.name);
+    if (!originalClient) return;
 
     if (!validateForms()) {
       setIsValidationError(true);
@@ -137,6 +149,7 @@ export default function SubscriptionPage() {
 
     let clientToUpdate = { 
         ...selectedClient, 
+        registeredDate: originalClient.registeredDate, // Keep original registration date
         plans: addedPlans, 
         status: 'Active' as Client['status'],
         id: manualId || selectedClient.id,
@@ -236,7 +249,7 @@ export default function SubscriptionPage() {
                     </div>
                     <div>
                       <p className="font-medium text-muted-foreground">
-                        {t('status')}
+                        {t('clientStatus')}
                       </p>
                       <Badge
                         variant={getStatusVariant(selectedClient.status)}
@@ -248,7 +261,7 @@ export default function SubscriptionPage() {
                     <div className="space-y-2">
                         <div className="flex items-center gap-2">
                             <Label htmlFor="manual-client-id">{t('clientID')}:</Label>
-                            {manualId && (
+                            {manualId && selectedClient.status === 'Active' && (
                                 <Badge variant="outline" className="border-green-500/50 text-green-500">
                                     {manualId}
                                 </Badge>
@@ -256,7 +269,7 @@ export default function SubscriptionPage() {
                         </div>
                       <Input
                         id="manual-client-id"
-                        placeholder={t('clientIdManualPlaceholder')}
+                        placeholder={manualId ? '' : t('clientIdManualPlaceholder')}
                         autoComplete="off"
                         value={manualId}
                         onChange={handleManualIdChange}
