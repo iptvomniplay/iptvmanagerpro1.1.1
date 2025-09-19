@@ -100,19 +100,19 @@ export default function SubscriptionPage() {
         {selectedClient ? (
           <Tabs defaultValue="client" className="w-full">
             <TabsList>
-              <div className='flex items-center gap-1'>
-                  <TabsTrigger value="client">
-                    <User className="mr-2" />
-                    {t('client')}
-                  </TabsTrigger>
-                  <TabsTrigger value="plans">
-                      <FileText className="mr-2" />
-                      {t('subscriptionPlans')}
-                  </TabsTrigger>
-                  <TabsTrigger value="apps">
-                      <AppWindow className="mr-2" />
-                      {t('applications')}
-                  </TabsTrigger>
+              <div className="flex items-center gap-1 rounded-lg bg-muted p-1">
+                <TabsTrigger value="client" className="py-2.5">
+                  <User className="mr-2" />
+                  {t('client')}
+                </TabsTrigger>
+                <TabsTrigger value="plans" className="py-2.5">
+                  <FileText className="mr-2" />
+                  {t('subscriptionPlans')}
+                </TabsTrigger>
+                <TabsTrigger value="apps" className="py-2.5">
+                  <AppWindow className="mr-2" />
+                  {t('applications')}
+                </TabsTrigger>
               </div>
             </TabsList>
             
@@ -209,7 +209,7 @@ export default function SubscriptionPage() {
           </Card>
         )}
       </div>
-       <div className="mt-auto flex items-center justify-end gap-4 pt-8">
+      <div className="mt-auto flex justify-end items-center gap-4 pt-8">
         <Button variant="outline" onClick={() => router.push('/')}>
           {t('back')}
         </Button>
