@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 interface DataContextType {
   clients: Client[];
   servers: Server[];
-  addClient: (clientData: Omit<Client, 'registeredDate' | 'plans'>) => void;
+  addClient: (clientData: Omit<Client, 'registeredDate' | 'plans' | 'id'>) => void;
   updateClient: (clientData: Client) => void;
   deleteClient: (clientId: string) => void;
   addServer: (serverData: Omit<Server, 'id' | 'status'>) => void;
@@ -58,11 +58,10 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [servers, isDataLoaded]);
 
 
-  const addClient = useCallback((clientData: Omit<Client, 'registeredDate' | 'plans'>) => {
+  const addClient = useCallback((clientData: Omit<Client, 'registeredDate' | 'plans' | 'id'>) => {
     setClients(prevClients => {
         const newClient: Client = {
-            ...clientData,
-            id: clientData.id || '', // ID will be provided from form
+            ...(clientData as Client),
             registeredDate: format(new Date(), 'yyyy-MM-dd'),
             birthDate: clientData.birthDate || '',
             plans: [],
