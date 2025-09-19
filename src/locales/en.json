@@ -199,7 +199,7 @@
     "phonePtBRPlaceholder": "(XX) XXXXX-XXXX",
     "ok": "OK",
     "currencyPlaceholderUSD": "$ 0.00",
-    "currencyPlaceholderBRL": "R$ 0.00",
+    "currencyPlaceholderBRL": "R$ 0,00",
     "dashboardClientsDesc": "A representation of managing clients.",
     "dashboardServersDesc": "A representation of servers.",
     "serverNameRequired": "Server name is required",
@@ -304,5 +304,8 @@
     "responsibleAndPhone": "Responsible and Phone",
     "activationId": "Activation ID",
     "back": "Back",
-    "deviceLocation": "Device Location"
+    "deviceLocation": "Device Location",
+    "idAtual": "Current ID"
 }
+
+    
