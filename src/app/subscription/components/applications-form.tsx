@@ -13,8 +13,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { Switch } from '@/components/ui/switch';
-import { ChevronDown, PlusCircle, Trash2, X } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { ChevronDown, PlusCircle } from 'lucide-react';
 import { BirthdateInput } from '@/components/ui/birthdate-input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PhoneInputModal } from '@/components/ui/phone-input-modal';
@@ -27,6 +26,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
 
 
 interface ApplicationsFormProps {
@@ -63,7 +63,6 @@ export function ApplicationsForm({
   addedPlans,
 }: ApplicationsFormProps) {
   const { t, language } = useLanguage();
-  const { toast } = useToast();
   const [appSlots, setAppSlots] = React.useState<ApplicationSlot[]>([]);
   const [openSlots, setOpenSlots] = React.useState<Record<string, boolean>>({});
   const [phoneModalState, setPhoneModalState] = React.useState<{isOpen: boolean; slotKey: string | null}>({isOpen: false, slotKey: null});
