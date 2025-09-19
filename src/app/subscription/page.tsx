@@ -81,7 +81,7 @@ export default function SubscriptionPage() {
   const saveManualId = () => {
     if (!selectedClient) return;
     const newClientState = { ...selectedClient, id: manualId };
-    updateClient(newClientState);
+    updateClient(newClientState); // A CORREÇÃO: Removido o segundo parâmetro 'true' (skipSave)
     setSelectedClient(newClientState); 
     setIsIdSaveSuccessModalOpen(true);
   };
