@@ -99,21 +99,24 @@ export default function SubscriptionPage() {
         
         {selectedClient ? (
           <Tabs defaultValue="client" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-3 bg-transparent p-0 gap-4">
               <TabsTrigger
                 value="client"
+                className="data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-md border-b-4 border-transparent data-[state=active]:border-primary rounded-lg py-4 text-lg"
               >
                 <User className="mr-2" />
                 {t('client')}
               </TabsTrigger>
               <TabsTrigger
                 value="plans"
+                className="data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-md border-b-4 border-transparent data-[state=active]:border-primary rounded-lg py-4 text-lg"
               >
                 <FileText className="mr-2" />
                 {t('subscriptionPlans')}
               </TabsTrigger>
               <TabsTrigger
                 value="apps"
+                className="data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-md border-b-4 border-transparent data-[state=active]:border-primary rounded-lg py-4 text-lg"
               >
                 <AppWindow className="mr-2" />
                 {t('applications')}
