@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import type { Client, Server, Test, SelectedPlan } from '@/lib/types';
 import { format } from 'date-fns';
+import { clients as initialClients, servers as initialServers } from '@/lib/data';
 
 interface DataContextType {
   clients: Client[];
@@ -19,53 +20,14 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
-const safelyParseJSON = (jsonString: string | null, fallback: any) => {
-  if (!jsonString) return fallback;
-  try {
-    const parsed = JSON.parse(jsonString, (key, value) => {
-        // This reviver can be used to convert date strings back to Date objects if needed
-        return value;
-    });
-    return Array.isArray(parsed) ? parsed : fallback;
-  } catch (e) {
-    console.error("Failed to parse JSON from localStorage", e);
-    return fallback;
-  }
-};
-
-
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [clients, setClients] = useState<Client[]>([]);
-  const [servers, setServers] = useState<Server[]>([]);
-  const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [clients, setClients] = useState<Client[]>(initialClients);
+  const [servers, setServers] = useState<Server[]>(initialServers);
 
-   useEffect(() => {
-    // Load data from localStorage on initial mount
-    const storedClients = localStorage.getItem('clients');
-    const storedServers = localStorage.getItem('servers');
-    setClients(safelyParseJSON(storedClients, []));
-    setServers(safelyParseJSON(storedServers, []));
-    setIsDataLoaded(true);
-  }, []);
-  
+  // This function is now a no-op but kept for compatibility to avoid breaking components.
   const saveClientsToStorage = useCallback(() => {
-    if (isDataLoaded) {
-      localStorage.setItem('clients', JSON.stringify(clients));
-    }
-  }, [clients, isDataLoaded]);
-
-  useEffect(() => {
-    if (isDataLoaded) {
-      localStorage.setItem('clients', JSON.stringify(clients));
-    }
-  }, [clients, isDataLoaded]);
-
-  useEffect(() => {
-    if (isDataLoaded) {
-      localStorage.setItem('servers', JSON.stringify(servers));
-    }
-  }, [servers, isDataLoaded]);
-
+    // console.log("Operação de salvar no localStorage desativada.");
+  }, []);
 
   const addClient = useCallback((clientData: Omit<Client, 'registeredDate' | 'plans' | 'id'>) => {
     setClients(prevClients => {
@@ -77,8 +39,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             birthDate: clientData.birthDate || '',
             plans: [],
         };
-        const updatedClients = [newClient, ...prevClients];
-        return updatedClients;
+        return [newClient, ...prevClients];
     });
   }, []);
 
@@ -89,19 +50,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           ? { ...c, ...clientData } 
           : c
       );
-       if (!skipSave) {
-        localStorage.setItem('clients', JSON.stringify(updatedClients));
-      }
        return updatedClients;
     });
   }, []);
 
   const deleteClient = useCallback((clientId: string) => {
-    setClients(prevClients => {
-      const updatedClients = prevClients.filter(c => c.id !== clientId && c._tempId !== clientId);
-      localStorage.setItem('clients', JSON.stringify(updatedClients));
-      return updatedClients;
-    });
+    setClients(prevClients => prevClients.filter(c => c.id !== clientId && c._tempId !== clientId));
   }, []);
 
   const addServer = useCallback((serverData: Omit<Server, 'id' | 'status'>) => {
@@ -112,26 +66,16 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         status: 'Online',
         subServers: serverData.subServers || [],
         };
-        const updatedServers = [newServer, ...prevServers];
-        localStorage.setItem('servers', JSON.stringify(updatedServers));
-        return updatedServers;
+        return [newServer, ...prevServers];
     });
   }, []);
 
   const updateServer = useCallback((serverData: Server) => {
-    setServers(prevServers => {
-      const updatedServers = prevServers.map(s => (s.id === serverData.id ? {...s, ...serverData} : s));
-      localStorage.setItem('servers', JSON.stringify(updatedServers));
-      return updatedServers;
-    });
+    setServers(prevServers => prevServers.map(s => (s.id === serverData.id ? {...s, ...serverData} : s)));
   }, []);
 
   const deleteServer = useCallback((serverId: string) => {
-    setServers(prevServers => {
-      const updatedServers = prevServers.filter(s => s.id !== serverId);
-      localStorage.setItem('servers', JSON.stringify(updatedServers));
-      return updatedServers;
-    });
+    setServers(prevServers => prevServers.filter(s => s.id !== serverId));
   }, []);
 
   const addTestToClient = useCallback((clientId: string, testData: Omit<Test, 'creationDate'>) => {
@@ -139,20 +83,13 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       ...testData,
       creationDate: new Date().toISOString(),
     };
-    setClients(prev => {
-      const updatedClients = prev.map(client => {
+    setClients(prev => prev.map(client => {
         if (client.id === clientId) {
-          const newClientData = {
-            ...client,
-            tests: [...(client.tests || []), newTest]
-          };
-          return newClientData;
+          return { ...client, tests: [...(client.tests || []), newTest] };
         }
         return client;
-      });
-      localStorage.setItem('clients', JSON.stringify(updatedClients));
-      return updatedClients;
-    });
+      })
+    );
   }, []);
 
   const value = {
@@ -168,8 +105,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     saveClientsToStorage,
   };
   
-  // Render children only after data is loaded to prevent hydration mismatch
-  return <DataContext.Provider value={value}>{isDataLoaded ? children : null}</DataContext.Provider>;
+  return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
 };
 
 export const useData = (): DataContextType => {
