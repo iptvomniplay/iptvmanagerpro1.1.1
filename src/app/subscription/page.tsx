@@ -44,10 +44,12 @@ export default function SubscriptionPage() {
   const { toast } = useToast();
 
   const [selectedClient, setSelectedClient] = React.useState<Client | null>(null);
+  const [manualId, setManualId] = React.useState('');
   const [activeTab, setActiveTab] = React.useState('client');
   const [isValidationError, setIsValidationError] = React.useState(false);
   const [validationMessage, setValidationMessage] = React.useState('');
   const [isPlanAdded, setIsPlanAdded] = React.useState(false);
+  const [isIdSaveSuccessModalOpen, setIsIdSaveSuccessModalOpen] = React.useState(false);
   const [isSubscriptionSuccessModalOpen, setIsSubscriptionSuccessModalOpen] = React.useState(false);
 
   const plansTabRef = React.useRef<HTMLButtonElement>(null);
@@ -55,6 +57,7 @@ export default function SubscriptionPage() {
 
   const handleSelectClient = (client: Client | null) => {
     setSelectedClient(client);
+    setManualId(client?.id || '');
   };
 
   const handleUpdateClient = (updatedData: Partial<Client>) => {
@@ -62,6 +65,19 @@ export default function SubscriptionPage() {
     const newClientState = { ...selectedClient, ...updatedData };
     setSelectedClient(newClientState);
     updateClient(newClientState, true);
+  };
+
+  const handleManualIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setManualId(e.target.value);
+  };
+
+  const saveManualId = () => {
+    if (!selectedClient) return;
+    const newClientState = { ...selectedClient, id: manualId };
+    setSelectedClient(newClientState);
+    updateClient(newClientState);
+    saveClientsToStorage();
+    setIsIdSaveSuccessModalOpen(true);
   };
 
   const validateForms = () => {
@@ -84,15 +100,10 @@ export default function SubscriptionPage() {
       return false;
     }
 
-    if (!selectedClient.id && selectedClient.status !== 'Active') {
+    if (!manualId && selectedClient.status !== 'Active') {
       setValidationMessage(t('clientIdRequired'));
       setActiveTab('client');
-      // Ideally, point user to edit client page, but for now just a message.
-      toast({
-        variant: 'destructive',
-        title: t('validationError'),
-        description: t('clientIdRequiredInForm'),
-      });
+      document.getElementById('manual-client-id')?.focus();
       return false;
     }
 
@@ -110,6 +121,7 @@ export default function SubscriptionPage() {
     const clientToUpdate: Client = {
       ...selectedClient,
       status: 'Active',
+      id: manualId || selectedClient.id,
     };
 
     updateClient(clientToUpdate);
@@ -119,6 +131,7 @@ export default function SubscriptionPage() {
 
   const handleCancel = () => {
     setSelectedClient(null);
+    setManualId('');
     setActiveTab('client');
   };
 
@@ -197,15 +210,24 @@ export default function SubscriptionPage() {
                       <Badge variant={getStatusVariant(selectedClient.status)} className="text-base mt-1">{t(selectedClient.status.toLowerCase() as any)}</Badge>
                     </div>
                     <div className="space-y-2">
-                       <div className="flex items-center gap-2">
-                        <Label>{t('clientID')}:</Label>
-                          <Badge variant="outline" className="text-base">
-                            {selectedClient.id ? selectedClient.id : 'Sem ID'}
-                          </Badge>
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="manual-client-id">{t('clientID')}:</Label>
+                        {selectedClient.id && <Badge variant="outline" className="border-green-500/50 text-green-500">{selectedClient.id}</Badge>}
                       </div>
-                       {!selectedClient.id && (
-                        <p className="text-sm text-amber-500">{t('clientIdRequiredInForm')}</p>
-                      )}
+                      <div className="relative">
+                        <Input
+                          id="manual-client-id"
+                          placeholder={t('clientIdManualPlaceholder')}
+                          autoComplete="off"
+                          value={manualId}
+                          onChange={handleManualIdChange}
+                          className={cn('pr-12', !manualId && selectedClient.status !== 'Active' && isValidationError && 'ring-2 ring-destructive ring-offset-2 ring-offset-background')}
+                        />
+                        <Button type="button" size="icon" variant="ghost" className="absolute right-1 top-1/2 -translate-y-1/2 h-9 w-10 text-muted-foreground hover:bg-transparent" onClick={saveManualId}>
+                          <Save className="h-5 w-5" />
+                        </Button>
+                      </div>
+                      {!manualId && selectedClient.status !== 'Active' && isValidationError && <p className="text-sm text-destructive">{t('clientIdRequired')}</p>}
                     </div>
                   </div>
                 </CardContent>
@@ -259,7 +281,7 @@ export default function SubscriptionPage() {
       <div className="mt-auto flex justify-end items-center gap-4 pt-8">
         <Button variant="outline" onClick={() => router.push('/')}>{t('back')}</Button>
         <Button variant="outline" onClick={handleCancel}>{t('cancel')}</Button>
-        {selectedClient && activeTab !== 'client' && <Button onClick={handleSave}>{t('save')}</Button>}
+        {selectedClient && <Button onClick={handleSave}>{t('save')}</Button>}
       </div>
 
       {/* Alertas */}
@@ -272,6 +294,16 @@ export default function SubscriptionPage() {
             <AlertDialogDescription className="pt-2 text-base">{validationMessage}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogAction onClick={() => setIsValidationError(false)}>{t('ok')}</AlertDialogAction>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={isIdSaveSuccessModalOpen} onOpenChange={setIsIdSaveSuccessModalOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('registrationAddedSuccess')}</AlertDialogTitle>
+            <AlertDialogDescription>{`ID ${manualId} salvo para o cliente ${selectedClient?.name}.`}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogAction onClick={() => setIsIdSaveSuccessModalOpen(false)}>{t('ok')}</AlertDialogAction>
         </AlertDialogContent>
       </AlertDialog>
 

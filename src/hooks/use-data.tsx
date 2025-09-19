@@ -56,6 +56,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     if (isDataLoaded) {
+      localStorage.setItem('clients', JSON.stringify(clients));
+    }
+  }, [clients, isDataLoaded]);
+
+  useEffect(() => {
+    if (isDataLoaded) {
       localStorage.setItem('servers', JSON.stringify(servers));
     }
   }, [servers, isDataLoaded]);
@@ -65,13 +71,13 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setClients(prevClients => {
         const newClient: Client = {
             ...(clientData as Client),
-            id: '', // ID will be set manually by the user
+            id: clientData.id || '', // ID will be set manually by the user
+            _tempId: `temp_${Date.now()}`,
             registeredDate: format(new Date(), 'yyyy-MM-dd'),
             birthDate: clientData.birthDate || '',
             plans: [],
         };
         const updatedClients = [newClient, ...prevClients];
-        localStorage.setItem('clients', JSON.stringify(updatedClients));
         return updatedClients;
     });
   }, []);
@@ -92,7 +98,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const deleteClient = useCallback((clientId: string) => {
     setClients(prevClients => {
-      const updatedClients = prevClients.filter(c => c.id !== clientId);
+      const updatedClients = prevClients.filter(c => c.id !== clientId && c._tempId !== clientId);
       localStorage.setItem('clients', JSON.stringify(updatedClients));
       return updatedClients;
     });
