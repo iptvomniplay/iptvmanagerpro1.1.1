@@ -323,7 +323,7 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
             <Button 
                 onClick={handleAddPlan} 
                 disabled={!isFormValid}
-                className={cn(isFormValid && "animate-flash-success")}
+                className={cn(isFormValid && "animate-[flash-success_1.5s_ease-in-out_infinite]")}
             >
                 {t('addPlan')}
             </Button>
