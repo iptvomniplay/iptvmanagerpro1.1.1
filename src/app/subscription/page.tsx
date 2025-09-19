@@ -193,7 +193,11 @@ export default function SubscriptionPage() {
                     <div className="space-y-2">
                       <div className="flex items-baseline">
                           <Label htmlFor="manual-client-id" className="mr-2">{t('clientID')}:</Label>
-                           <span className="font-medium text-green-500 text-base">{manualId || 'N/A'}</span>
+                          {manualId ? (
+                            <Badge variant="secondary" className="text-base font-semibold">{manualId}</Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-base font-normal">N/A</Badge>
+                          )}
                       </div>
                       <Input
                         id="manual-client-id"
