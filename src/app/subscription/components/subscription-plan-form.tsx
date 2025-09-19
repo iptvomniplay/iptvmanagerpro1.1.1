@@ -210,7 +210,7 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
                 <div className='flex items-center gap-2'>
                     <Label>{t('screensAvailable')}</Label>
                 </div>
-                <div className="h-11 w-full rounded-md border border-input bg-muted px-4 py-2 text-base font-bold text-center flex items-center justify-center">
+                <div className="h-11 w-full rounded-md border border-input bg-card px-4 py-2 text-base font-bold text-center flex items-center justify-center">
                     {selectedServer ? selectedServer.screens : '-'}
                 </div>
             </div>
