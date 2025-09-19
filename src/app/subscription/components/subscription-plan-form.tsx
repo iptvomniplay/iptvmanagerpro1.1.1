@@ -153,11 +153,9 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
         
         <div className="space-y-2">
             <Label>{t('screensAvailable')}</Label>
-            <Input
-                value={selectedServer ? selectedServer.screens : ''}
-                readOnly
-                className="bg-muted"
-            />
+            <div className="flex items-center justify-center h-11 w-full rounded-md border border-input bg-muted px-4 py-2 text-lg font-bold text-center">
+              {selectedServer ? selectedServer.screens : '-'}
+            </div>
         </div>
 
         <div className="space-y-2">
