@@ -52,6 +52,7 @@ export default function SubscriptionPage() {
   const [validationMessage, setValidationMessage] = React.useState('');
   const [isPlanAdded, setIsPlanAdded] = React.useState(false);
   const [isIdSaveSuccessModalOpen, setIsIdSaveSuccessModalOpen] = React.useState(false);
+  const [isSubscriptionSuccessModalOpen, setIsSubscriptionSuccessModalOpen] = React.useState(false);
 
   const plansTabRef = React.useRef<HTMLButtonElement>(null);
   const appsTabRef = React.useRef<HTMLButtonElement>(null);
@@ -89,13 +90,15 @@ export default function SubscriptionPage() {
   const handleManualIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newId = e.target.value;
     setManualId(newId);
+     if (selectedClient) {
+      const updatedClient = { ...selectedClient, id: newId };
+      updateClient(updatedClient);
+      setSelectedClient(updatedClient);
+    }
   }
 
   const saveManualId = () => {
     if (selectedClient && manualId) {
-      const updatedClient = { ...selectedClient, id: manualId };
-      updateClient(updatedClient);
-      setSelectedClient(updatedClient);
       setIsIdSaveSuccessModalOpen(true);
     }
   }
@@ -152,13 +155,7 @@ export default function SubscriptionPage() {
     };
 
     updateClient(clientToUpdate);
-
-    toast({
-      title: t('registrationAddedSuccess'),
-      description: `O status do cliente ${clientToUpdate.name} foi atualizado para Ativo.`,
-    });
-
-    handleCancel();
+    setIsSubscriptionSuccessModalOpen(true);
   };
   
   const totalScreensFromPlans = addedPlans.reduce((sum, plan) => sum + plan.screens, 0);
@@ -380,6 +377,23 @@ export default function SubscriptionPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogAction onClick={() => setIsIdSaveSuccessModalOpen(false)}>{t('ok')}</AlertDialogAction>
+        </AlertDialogContent>
+      </AlertDialog>
+      
+      <AlertDialog open={isSubscriptionSuccessModalOpen} onOpenChange={setIsSubscriptionSuccessModalOpen}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>{t('registrationAddedSuccess')}</AlertDialogTitle>
+                <AlertDialogDescription>
+                    {`O status do cliente ${selectedClient?.name} foi atualizado para Ativo.`}
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogAction onClick={() => {
+                setIsSubscriptionSuccessModalOpen(false);
+                handleCancel();
+            }}>
+                {t('ok')}
+            </AlertDialogAction>
         </AlertDialogContent>
       </AlertDialog>
     </div>
