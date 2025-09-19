@@ -99,31 +99,31 @@ export default function SubscriptionPage() {
         
         {selectedClient ? (
           <Tabs defaultValue="client" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 gap-4 p-0 bg-transparent">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger
                 value="client"
-                className="group flex h-20 items-center justify-center gap-3 rounded-lg border-2 border-primary/20 bg-card p-4 text-lg font-semibold text-muted-foreground shadow-sm ring-offset-background transition-all hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
+                className="group flex h-20 items-center justify-center gap-3 rounded-lg border-2 bg-card p-4 text-lg font-semibold text-muted-foreground shadow-sm ring-offset-background transition-all hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
               >
                 <User className="h-6 w-6 transition-transform group-hover:scale-110" />
                 {t('client')}
               </TabsTrigger>
               <TabsTrigger
                 value="plans"
-                className="group flex h-20 items-center justify-center gap-3 rounded-lg border-2 border-primary/20 bg-card p-4 text-lg font-semibold text-muted-foreground shadow-sm ring-offset-background transition-all hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
+                className="group flex h-20 items-center justify-center gap-3 rounded-lg border-2 bg-card p-4 text-lg font-semibold text-muted-foreground shadow-sm ring-offset-background transition-all hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
               >
                 <FileText className="h-6 w-6 transition-transform group-hover:scale-110" />
                 {t('subscriptionPlans')}
               </TabsTrigger>
               <TabsTrigger
                 value="apps"
-                className="group flex h-20 items-center justify-center gap-3 rounded-lg border-2 border-primary/20 bg-card p-4 text-lg font-semibold text-muted-foreground shadow-sm ring-offset-background transition-all hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
+                className="group flex h-20 items-center justify-center gap-3 rounded-lg border-2 bg-card p-4 text-lg font-semibold text-muted-foreground shadow-sm ring-offset-background transition-all hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
               >
                 <AppWindow className="h-6 w-6 transition-transform group-hover:scale-110" />
                 {t('applications')}
               </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="client" className="mt-8">
+            <TabsContent value="client" className="mt-12">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3 text-xl">
@@ -178,7 +178,7 @@ export default function SubscriptionPage() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="plans" className="mt-8">
+            <TabsContent value="plans" className="mt-12">
               <Card>
                   <CardHeader>
                   <CardTitle>{t('subscriptionPlans')}</CardTitle>
@@ -190,7 +190,7 @@ export default function SubscriptionPage() {
               </Card>
             </TabsContent>
             
-            <TabsContent value="apps" className="mt-8">
+            <TabsContent value="apps" className="mt-12">
               <Card>
                   <CardHeader>
                   <CardTitle>{t('applications')}</CardTitle>
