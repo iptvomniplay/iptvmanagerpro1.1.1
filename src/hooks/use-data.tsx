@@ -39,16 +39,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
-    try {
-      const storedClients = localStorage.getItem('clients');
-      const storedServers = localStorage.getItem('servers');
-      setClients(safelyParseJSON(storedClients, []));
-      setServers(safelyParseJSON(storedServers, []));
-    } catch (error) {
-        console.error("Failed to load data from localStorage", error);
-        setClients([]);
-        setServers([]);
-    }
+    // We start with a clean slate, ignoring localStorage to prevent old data from persisting.
+    setClients([]);
+    setServers([]);
     setIsDataLoaded(true);
   }, []);
 
@@ -80,7 +73,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const updateClient = useCallback((clientData: Client) => {
     setClients(prevClients =>
-      prevClients.map(c => (c.id === clientData.id ? clientData : c))
+      prevClients.map(c => (c.name === clientData.name ? clientData : c))
     );
   }, []);
 
