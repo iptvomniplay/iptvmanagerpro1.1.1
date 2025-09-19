@@ -1134,7 +1134,13 @@ export function ServerForm({ server }: ServerFormProps) {
 
       <AlertDialog
         open={isSuccessModalOpen}
-        onOpenChange={setIsSuccessModalOpen}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) {
+            handleSuccessModalClose();
+          } else {
+            setIsSuccessModalOpen(true);
+          }
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
