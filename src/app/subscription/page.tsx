@@ -93,14 +93,29 @@ export default function SubscriptionPage() {
 
   const saveManualId = () => {
     if (!selectedClient) return;
-
+  
+    // Se já existe ID, pedir confirmação para editar
+    if (selectedClient.id) {
+      const confirmEdit = window.confirm(
+        `O cliente já possui ID: ${selectedClient.id}. Deseja editar para "${manualId}"?`
+      );
+      if (!confirmEdit) return; // Se não quiser editar, sai da função
+    }
+  
+    // Atualiza estado local
     const newClientState = { ...selectedClient, id: manualId };
-
     setSelectedClient(newClientState);
+  
+    // Atualiza contexto global
     updateClient(newClientState);
+  
+    // Persiste no storage do sistema
     saveClientsToStorage();
+  
+    // Modal de sucesso
     setIsIdSaveSuccessModalOpen(true);
   };
+
 
   const handleCancel = () => {
     setSelectedClient(null);
