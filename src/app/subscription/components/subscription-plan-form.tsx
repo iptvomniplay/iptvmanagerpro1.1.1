@@ -9,9 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { X } from 'lucide-react';
+import { ChevronDown, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 
 interface SubscriptionPlanFormProps {
     addedPlans: SelectedPlan[];
@@ -224,39 +225,49 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
         </div>
 
       {addedPlans.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">{t('addedPlans')}</h3>
-          {addedPlans.map((item, index) => (
-            <Card key={index} className="bg-muted/50">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-base">{item.plan.name}</CardTitle>
-                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleRemovePlan(index)}>
-                  <X className="h-4 w-4" />
-                </Button>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground space-y-2">
-                <p>
-                  <span className="font-semibold">{t('panel')}:</span> {item.panel.name}
-                </p>
-                <p>
-                  <span className="font-semibold">{t('servers')}:</span> {item.server.name}
-                </p>
-                 <div className="flex justify-between items-center">
-                    <div>
-                        <span className="font-semibold">{t('screens')}: </span>
-                        <Badge variant="secondary">{item.screens}</Badge>
+        <Collapsible defaultOpen className="space-y-2">
+            <CollapsibleTrigger asChild>
+                <div className="flex items-center justify-between p-3 rounded-md border bg-muted cursor-pointer">
+                    <span className="font-semibold">{t('addedPlans')}</span>
+                    <div className="flex items-center">
+                        <Badge variant="secondary">{addedPlans.length}</Badge>
+                        <ChevronDown className="h-5 w-5 ml-2" />
                     </div>
-                    <div>
-                        <span className="font-semibold">{t('value')}: </span>
-                        <Badge variant={item.isCourtesy ? 'default' : 'outline'} className="text-base">
-                            {item.isCourtesy ? t('courtesy') : formatCurrency(item.planValue)}
-                        </Badge>
-                    </div>
-                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-2 pt-2">
+                {addedPlans.map((item, index) => (
+                  <Card key={index} className="bg-card">
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                      <CardTitle className="text-base">{item.plan.name}</CardTitle>
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleRemovePlan(index)}>
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </CardHeader>
+                    <CardContent className="text-sm text-muted-foreground space-y-2">
+                      <p>
+                        <span className="font-semibold">{t('panel')}:</span> {item.panel.name}
+                      </p>
+                      <p>
+                        <span className="font-semibold">{t('servers')}:</span> {item.server.name}
+                      </p>
+                       <div className="flex justify-between items-center">
+                          <div>
+                              <span className="font-semibold">{t('screens')}: </span>
+                              <Badge variant="secondary">{item.screens}</Badge>
+                          </div>
+                          <div>
+                              <span className="font-semibold">{t('value')}: </span>
+                              <Badge variant={item.isCourtesy ? 'default' : 'outline'} className="text-base">
+                                  {item.isCourtesy ? t('courtesy') : formatCurrency(item.planValue)}
+                              </Badge>
+                          </div>
+                       </div>
+                    </CardContent>
+                  </Card>
+                ))}
+            </CollapsibleContent>
+        </Collapsible>
       )}
     </div>
   );
