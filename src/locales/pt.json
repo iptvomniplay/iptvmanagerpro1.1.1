@@ -293,7 +293,7 @@
     "licenseDueDate": "Vencimento da Licença",
     "device": "Dispositivo",
     "devicePlaceholder": "Ex: Smart TV Samsung",
-    "location": "Localização do Dispositivo",
+    "location": "Localização",
     "locationPlaceholder": "Ex: Sala de Estar",
     "addApplication": "Adicionar Aplicativo",
     "addedApplications": "Aplicativos Adicionados",
@@ -302,5 +302,7 @@
     "courtesy": "Cortesia",
     "activationLocation": "Local de Ativação",
     "responsibleAndPhone": "Responsável e Telefone",
-    "activationId": "ID de Ativação"
+    "activationId": "ID de Ativação",
+    "back": "Voltar",
+    "deviceLocation": "Localização do Dispositivo"
 }

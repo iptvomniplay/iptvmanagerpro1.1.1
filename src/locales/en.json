@@ -293,7 +293,7 @@
     "licenseDueDate": "License Due Date",
     "device": "Device",
     "devicePlaceholder": "e.g., Smart TV Samsung",
-    "location": "Device Location",
+    "location": "Location",
     "locationPlaceholder": "e.g., Living Room",
     "addApplication": "Add Application",
     "addedApplications": "Added Applications",
@@ -302,5 +302,7 @@
     "courtesy": "Courtesy",
     "activationLocation": "Activation Location",
     "responsibleAndPhone": "Responsible and Phone",
-    "activationId": "Activation ID"
+    "activationId": "Activation ID",
+    "back": "Back",
+    "deviceLocation": "Device Location"
 }
