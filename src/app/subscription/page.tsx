@@ -38,6 +38,14 @@ export default function SubscriptionPage() {
     null
   );
   const [manualId, setManualId] = React.useState('');
+  
+  React.useEffect(() => {
+    if (selectedClient && selectedClient.status === 'Active') {
+      setManualId(selectedClient.id);
+    } else if (!selectedClient) {
+      setManualId('');
+    }
+  }, [selectedClient]);
 
   const getStatusVariant = (status: Client['status']) => {
     switch (status) {
@@ -89,7 +97,7 @@ export default function SubscriptionPage() {
   };
 
   const isIdPending = manualId !== '' && selectedClient?.status !== 'Active' && manualId !== selectedClient?.id;
-
+  const currentIdDisplay = selectedClient?.status === 'Active' ? selectedClient.id : manualId || 'N/A';
 
   return (
     <div className="flex flex-col h-full">
@@ -167,7 +175,7 @@ export default function SubscriptionPage() {
                          <Label htmlFor="manual-client-id">{t('clientID')}</Label>
                          <p className="text-sm text-muted-foreground">
                           <span className="font-semibold">{t('idAtual')}: </span>
-                          <span>{selectedClient?.status === 'Active' ? selectedClient.id : 'N/A'}</span>
+                          <span>{currentIdDisplay}</span>
                         </p>
                         <Input
                           id="manual-client-id"
