@@ -109,7 +109,7 @@ export default {
         },
         'flash-success': {
             '0%, 100%': { 'box-shadow': '0 0 0 0 hsl(var(--chart-1) / 0.7)' },
-            '50%': { 'box-shadow': '0 0 0 5px hsl(var(--chart-1) / 0)' },
+            '50%': { 'box-shadow': '0 0 0 10px hsl(var(--chart-1) / 0)' },
         },
       },
       animation: {
