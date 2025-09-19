@@ -48,6 +48,7 @@ const phoneSchema = z.object({
 });
 
 const createFormSchema = (t: (key: string) => string) => z.object({
+  id: z.string().optional(),
   name: z.string().min(2, { message: t('nameValidation') }),
   nickname: z.string().optional(),
   email: z.string().email({ message: t('emailValidation') }).optional().or(z.literal('')),
@@ -79,6 +80,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   const form = useForm<ClientFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      id: client?.id || '',
       name: client?.name || '',
       nickname: client?.nickname || '',
       email: client?.email || '',
@@ -114,7 +116,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
     if (client) {
       updateClient({ ...client, ...clientData, id: client.id, registeredDate: client.registeredDate });
     } else {
-      addClient(clientData as Omit<Client, 'id' | 'registeredDate'>);
+      addClient(clientData as Omit<Client, 'registeredDate'>);
     }
 
     setIsConfirmationModalOpen(false);
