@@ -74,9 +74,8 @@ export default function SubscriptionPage() {
   const saveManualId = () => {
     if (!selectedClient) return;
     const newClientState = { ...selectedClient, id: manualId };
-    setSelectedClient(newClientState);
-    updateClient(newClientState);
-    saveClientsToStorage();
+    updateClient(newClientState); // This now updates the central state and triggers localStorage save
+    setSelectedClient(newClientState); // Keep local state in sync
     setIsIdSaveSuccessModalOpen(true);
   };
 
@@ -125,7 +124,6 @@ export default function SubscriptionPage() {
     };
 
     updateClient(clientToUpdate);
-    saveClientsToStorage();
     setIsSubscriptionSuccessModalOpen(true);
   };
 
@@ -281,7 +279,7 @@ export default function SubscriptionPage() {
       <div className="mt-auto flex justify-end items-center gap-4 pt-8">
         <Button variant="outline" onClick={() => router.push('/')}>{t('back')}</Button>
         <Button variant="outline" onClick={handleCancel}>{t('cancel')}</Button>
-        {selectedClient && <Button onClick={handleSave}>{t('save')}</Button>}
+        {selectedClient && activeTab !== 'client' && <Button onClick={handleSave}>{t('save')}</Button>}
       </div>
 
       {/* Alertas */}
