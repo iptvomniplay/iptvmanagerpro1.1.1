@@ -123,7 +123,7 @@ export default function SubscriptionPage() {
               </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="client" className="mt-12">
+            <TabsContent value="client" className="mt-24">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3 text-xl">
@@ -178,7 +178,7 @@ export default function SubscriptionPage() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="plans" className="mt-12">
+            <TabsContent value="plans" className="mt-24">
               <Card>
                   <CardHeader>
                   <CardTitle>{t('subscriptionPlans')}</CardTitle>
@@ -190,7 +190,7 @@ export default function SubscriptionPage() {
               </Card>
             </TabsContent>
             
-            <TabsContent value="apps" className="mt-12">
+            <TabsContent value="apps" className="mt-24">
               <Card>
                   <CardHeader>
                   <CardTitle>{t('applications')}</CardTitle>
