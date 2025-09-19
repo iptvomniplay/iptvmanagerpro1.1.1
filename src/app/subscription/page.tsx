@@ -73,17 +73,10 @@ export default function SubscriptionPage() {
 
   const saveManualId = () => {
     if (!selectedClient) return;
-    
-    // Create the new state with the updated ID
     const newClientState = { ...selectedClient, id: manualId };
-    
-    // Update the local state for the page
     setSelectedClient(newClientState);
-    
-    // Update the client in the global context and save to localStorage
     updateClient(newClientState);
-    
-    // Show confirmation
+    saveClientsToStorage();
     setIsIdSaveSuccessModalOpen(true);
   };
 
