@@ -197,10 +197,10 @@ export default function SubscriptionPage() {
                 <TabsTrigger 
                     ref={appsTabRef} 
                     value="apps" 
-                    disabled={addedPlans.length === 0} 
+                    disabled={!isPlanAdded} 
                     className={cn(
                         "relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
-                        isPlanAdded && "animate-flash-success"
+                        isPlanAdded && "animate-[flash-success_1.5s_ease-in-out_infinite]"
                     )}
                 >
                      {areAppsIncomplete && addedPlans.length > 0 && isValidationError && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
@@ -289,7 +289,6 @@ export default function SubscriptionPage() {
                     selectedClient={selectedClient}
                     onPlanAdded={() => {
                         setIsPlanAdded(true);
-                        setTimeout(() => setIsPlanAdded(false), 2000); 
                     }}
                   />
                 </CardContent>
