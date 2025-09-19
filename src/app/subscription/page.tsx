@@ -55,27 +55,20 @@ export default function SubscriptionPage() {
   const plansTabRef = React.useRef<HTMLButtonElement>(null);
   const appsTabRef = React.useRef<HTMLButtonElement>(null);
 
-  React.useEffect(() => {
-    if (selectedClient) {
-        if (selectedClient.status === 'Active' && selectedClient.id) {
-            setManualId(selectedClient.id);
-        } else {
-            setManualId('');
-        }
-        setAddedPlans(selectedClient.plans || []);
-    } else {
+  const handleSelectClient = (client: Client | null) => {
+    setSelectedClient(client);
+    if (client) {
+      setAddedPlans(client.plans || []);
+      if (client.status === 'Active' && client.id) {
+        setManualId(client.id);
+      } else {
         setManualId('');
-        setAddedPlans([]);
+      }
+    } else {
+      setAddedPlans([]);
+      setManualId('');
     }
-  }, [selectedClient]);
-
-  React.useEffect(() => {
-    // When plans are added or removed, update the client object
-    if (selectedClient) {
-      handleUpdateClient({ ...selectedClient, plans: addedPlans });
-    }
-  }, [addedPlans]);
-
+  };
 
   const getStatusVariant = (status: Client['status']) => {
     switch (status) {
@@ -99,6 +92,7 @@ export default function SubscriptionPage() {
   const handleCancel = () => {
     setSelectedClient(null);
     setManualId('');
+    setAddedPlans([]);
   };
 
   const validateForms = () => {
@@ -183,7 +177,7 @@ export default function SubscriptionPage() {
           <CardContent className="space-y-4">
             <div className="w-full md:w-1/2">
               <ClientSearch
-                onSelectClient={setSelectedClient}
+                onSelectClient={handleSelectClient}
                 selectedClient={selectedClient}
               />
             </div>
