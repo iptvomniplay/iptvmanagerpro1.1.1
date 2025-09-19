@@ -106,7 +106,7 @@ export default function SubscriptionPage() {
   const isIdEdited = selectedClient?.status !== 'Active' && manualId !== '';
 
   return (
-    <div className="flex flex-col h-full">
+    <>
       <div className="space-y-8 flex-1">
         <Card>
           <CardHeader>
@@ -128,15 +128,15 @@ export default function SubscriptionPage() {
         {selectedClient ? (
           <Tabs defaultValue="client" className="w-full">
             <TabsList className="grid w-full grid-cols-3 gap-2 h-auto rounded-lg p-1 bg-transparent">
-                <TabsTrigger value="client" className="py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-input text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
+                <TabsTrigger value="client" className="py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
                     <User className="mr-2 h-5 w-5" />
                     {t('client')}
                 </TabsTrigger>
-                <TabsTrigger value="plans" className="py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-input text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
+                <TabsTrigger value="plans" className="py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
                     <FileText className="mr-2 h-5 w-5" />
                     {t('subscriptionPlans')}
                 </TabsTrigger>
-                <TabsTrigger value="apps" className="py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-input text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
+                <TabsTrigger value="apps" className="py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
                     <AppWindow className="mr-2 h-5 w-5" />
                     {t('applications')}
                 </TabsTrigger>
@@ -197,11 +197,6 @@ export default function SubscriptionPage() {
                         value={manualId}
                         onChange={(e) => setManualId(e.target.value)}
                         disabled={selectedClient.status === 'Active'}
-                        className={cn(
-                          manualId !== '' &&
-                            selectedClient?.status !== 'Active' &&
-                            'ring-2 ring-yellow-500/80 animate-flash'
-                        )}
                       />
                     </div>
                   </div>
@@ -263,6 +258,6 @@ export default function SubscriptionPage() {
         </Button>
         {selectedClient && <Button onClick={handleSave}>{t('save')}</Button>}
       </div>
-    </div>
+    </>
   );
 }
