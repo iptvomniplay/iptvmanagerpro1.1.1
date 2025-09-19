@@ -39,9 +39,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
-    // We start with a clean slate, ignoring localStorage to prevent old data from persisting.
-    setClients([]);
-    setServers([]);
+    setClients(safelyParseJSON(localStorage.getItem('clients'), []));
+    setServers(safelyParseJSON(localStorage.getItem('servers'), []));
     setIsDataLoaded(true);
   }, []);
 
@@ -62,6 +61,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setClients(prevClients => {
         const newClient: Client = {
             ...(clientData as Client),
+            id: '',
             registeredDate: format(new Date(), 'yyyy-MM-dd'),
             birthDate: clientData.birthDate || '',
             plans: [],

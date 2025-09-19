@@ -133,20 +133,16 @@ export default function SubscriptionPage() {
 
   const handleSave = () => {
     if (!selectedClient) return;
-    
-    const originalClient = clients.find(c => c.name === selectedClient.name);
-    if (!originalClient) return;
 
     if (!validateForms()) {
       setIsValidationError(true);
       return;
     }
 
-    let clientToUpdate = { 
+    const clientToUpdate: Client = { 
         ...selectedClient, 
-        registeredDate: originalClient.registeredDate, 
         plans: addedPlans, 
-        status: 'Active' as Client['status'],
+        status: 'Active',
         id: manualId || selectedClient.id,
     };
 
@@ -264,7 +260,7 @@ export default function SubscriptionPage() {
                         </div>
                       <Input
                         id="manual-client-id"
-                        placeholder={manualId ? '' : t('clientIdManualPlaceholder')}
+                        placeholder={t('clientIdManualPlaceholder')}
                         autoComplete="off"
                         value={manualId}
                         onChange={handleManualIdChange}
