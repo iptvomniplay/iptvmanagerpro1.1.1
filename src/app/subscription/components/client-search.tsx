@@ -30,16 +30,20 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
     }
 
     const normalizedTerm = normalizeString(searchTerm);
+    const numericTerm = searchTerm.replace(/\D/g, '');
+
     const results = clients.filter((client) => {
-      if (selectedClient && client.id === selectedClient.id) return false;
+      if (selectedClient && String(client.id) === String(selectedClient.id)) return false;
 
       const nameMatch = normalizeString(client.name).includes(normalizedTerm);
       const nicknameMatch = client.nickname ? normalizeString(client.nickname).includes(normalizedTerm) : false;
-      const phoneMatch = client.phones.some((phone) =>
-        normalizeString(phone.number)
-          .replace(/\D/g, '')
-          .includes(normalizedTerm.replace(/\D/g, ''))
-      );
+      
+      let phoneMatch = false;
+      if (numericTerm.length > 0) {
+        phoneMatch = client.phones.some((phone) =>
+          phone.number.replace(/\D/g, '').includes(numericTerm)
+        );
+      }
       
       return nameMatch || nicknameMatch || phoneMatch;
     });

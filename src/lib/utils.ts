@@ -6,9 +6,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function normalizeString(str: string): string {
-  if (typeof str !== 'string') return "";
+  if (typeof str !== 'string' || !str) return "";
   return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
+    .trim();
 }
