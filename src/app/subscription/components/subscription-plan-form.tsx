@@ -193,29 +193,13 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
             </SelectContent>
           </Select>
         </div>
-
-        <div className="space-y-2">
-          <Label>{t('plans')}</Label>
-          <Select value={selectedPlanName} onValueChange={setSelectedPlanName} disabled={!selectedServerName}>
-            <SelectTrigger>
-              <SelectValue placeholder={t('select')} />
-            </SelectTrigger>
-            <SelectContent>
-              {availablePlans.map((plan) => (
-                <SelectItem key={plan.name} value={plan.name}>
-                  {plan.name} {plan.value ? `(${formatCurrency(plan.value)})` : ''}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
         
         <div className="grid grid-cols-2 gap-4 items-end">
             <div className="space-y-2">
                 <div className='flex items-center gap-2'>
                     <Label>{t('screensAvailable')}</Label>
                 </div>
-                <div className="h-11 w-full rounded-md border border-input bg-card px-4 py-2 text-base font-bold text-center flex items-center justify-center">
+                <div className="h-11 w-full rounded-md border border-input bg-transparent px-4 py-2 text-base font-bold text-center flex items-center justify-center">
                     {selectedServer ? selectedServer.screens : '-'}
                 </div>
             </div>
@@ -241,6 +225,22 @@ export function SubscriptionPlanForm({ addedPlans, setAddedPlans, selectedClient
                     </SelectContent>
                 </Select>
             </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>{t('plans')}</Label>
+          <Select value={selectedPlanName} onValueChange={setSelectedPlanName} disabled={!selectedServerName}>
+            <SelectTrigger>
+              <SelectValue placeholder={t('select')} />
+            </SelectTrigger>
+            <SelectContent>
+              {availablePlans.map((plan) => (
+                <SelectItem key={plan.name} value={plan.name}>
+                  {plan.name} {plan.value ? `(${formatCurrency(plan.value)})` : ''}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">
