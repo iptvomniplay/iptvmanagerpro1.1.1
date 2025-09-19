@@ -102,21 +102,21 @@ export default function SubscriptionPage() {
             <TabsList className="grid w-full grid-cols-3 gap-4">
               <TabsTrigger
                 value="client"
-                className="flex items-center justify-center gap-2 rounded-lg border bg-card p-4 text-lg font-semibold text-muted-foreground shadow-sm transition-all hover:shadow-md hover:border-primary/50 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
+                className="flex items-center justify-center gap-2 rounded-lg border-2 border-primary/20 bg-card p-6 text-lg font-semibold text-muted-foreground shadow-sm transition-all hover:shadow-md hover:border-primary data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
               >
                 <User className="mr-2" />
                 {t('client')}
               </TabsTrigger>
               <TabsTrigger
                 value="plans"
-                className="flex items-center justify-center gap-2 rounded-lg border bg-card p-4 text-lg font-semibold text-muted-foreground shadow-sm transition-all hover:shadow-md hover:border-primary/50 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
+                className="flex items-center justify-center gap-2 rounded-lg border-2 border-primary/20 bg-card p-6 text-lg font-semibold text-muted-foreground shadow-sm transition-all hover:shadow-md hover:border-primary data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
               >
                 <FileText className="mr-2" />
                 {t('subscriptionPlans')}
               </TabsTrigger>
               <TabsTrigger
                 value="apps"
-                className="flex items-center justify-center gap-2 rounded-lg border bg-card p-4 text-lg font-semibold text-muted-foreground shadow-sm transition-all hover:shadow-md hover:border-primary/50 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
+                className="flex items-center justify-center gap-2 rounded-lg border-2 border-primary/20 bg-card p-6 text-lg font-semibold text-muted-foreground shadow-sm transition-all hover:shadow-md hover:border-primary data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
               >
                 <AppWindow className="mr-2" />
                 {t('applications')}
