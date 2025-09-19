@@ -100,18 +100,20 @@ export default function SubscriptionPage() {
         {selectedClient ? (
           <Tabs defaultValue="client" className="w-full">
             <TabsList>
-              <TabsTrigger value="client">
-                <User className="mr-2" />
-                {t('client')}
-              </TabsTrigger>
-              <TabsTrigger value="plans">
-                  <FileText className="mr-2" />
-                  {t('subscriptionPlans')}
-              </TabsTrigger>
-              <TabsTrigger value="apps">
-                  <AppWindow className="mr-2" />
-                  {t('applications')}
-              </TabsTrigger>
+              <div className='flex items-center gap-1'>
+                  <TabsTrigger value="client">
+                    <User className="mr-2" />
+                    {t('client')}
+                  </TabsTrigger>
+                  <TabsTrigger value="plans">
+                      <FileText className="mr-2" />
+                      {t('subscriptionPlans')}
+                  </TabsTrigger>
+                  <TabsTrigger value="apps">
+                      <AppWindow className="mr-2" />
+                      {t('applications')}
+                  </TabsTrigger>
+              </div>
             </TabsList>
             
             <TabsContent value="client">
