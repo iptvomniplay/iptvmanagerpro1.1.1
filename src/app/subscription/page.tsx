@@ -289,7 +289,6 @@ export default function SubscriptionPage() {
                     selectedClient={selectedClient}
                     onPlanAdded={() => {
                         setIsPlanAdded(true);
-                        setTimeout(() => setActiveTab('apps'), 300);
                         setTimeout(() => setIsPlanAdded(false), 2000); 
                     }}
                   />
