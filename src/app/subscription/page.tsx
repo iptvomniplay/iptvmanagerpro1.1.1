@@ -74,9 +74,8 @@ export default function SubscriptionPage() {
   const saveManualId = () => {
     if (!selectedClient) return;
     const newClientState = { ...selectedClient, id: manualId };
+    updateClient(newClientState); // This now saves to localStorage via the hook's useEffect
     setSelectedClient(newClientState);
-    updateClient(newClientState);
-    saveClientsToStorage();
     setIsIdSaveSuccessModalOpen(true);
   };
 
