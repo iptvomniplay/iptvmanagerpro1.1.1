@@ -99,24 +99,24 @@ export default function SubscriptionPage() {
         
         {selectedClient ? (
           <Tabs defaultValue="client" className="w-full">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
               <TabsTrigger
                 value="client"
-                className="flex-1 py-3 border-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-md"
+                className="flex-1 py-4 border-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-md"
               >
                 <User className="mr-2" />
                 {t('client')}
               </TabsTrigger>
               <TabsTrigger
                 value="plans"
-                className="flex-1 py-3 border-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-md"
+                className="flex-1 py-4 border-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-md"
               >
                 <FileText className="mr-2" />
                 {t('subscriptionPlans')}
               </TabsTrigger>
               <TabsTrigger
                 value="apps"
-                className="flex-1 py-3 border-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-md"
+                className="flex-1 py-4 border-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-md"
               >
                 <AppWindow className="mr-2" />
                 {t('applications')}
