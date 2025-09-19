@@ -97,9 +97,9 @@ export default function SubscriptionPage() {
           </CardContent>
         </Card>
         
-        {selectedClient && (
+        {selectedClient ? (
           <Tabs defaultValue="client" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 bg-primary">
+            <TabsList className="grid w-full grid-cols-3 bg-primary text-primary-foreground">
               <TabsTrigger value="client" className="data-[state=active]:bg-primary-foreground data-[state=active]:text-primary">
                 <User className="mr-2" />
                 {t('client')}
@@ -197,9 +197,7 @@ export default function SubscriptionPage() {
             </TabsContent>
 
           </Tabs>
-        )}
-
-        {!selectedClient && (
+        ) : (
            <Card className="flex flex-col items-center justify-center text-center py-20">
               <CardHeader>
                   <User className="mx-auto h-16 w-16 text-muted-foreground/50" />
@@ -209,20 +207,18 @@ export default function SubscriptionPage() {
           </Card>
         )}
       </div>
-       <div className="mt-auto flex items-center justify-between pt-8">
+       <div className="mt-auto flex items-center justify-end gap-4 pt-8">
         <Button variant="outline" onClick={() => router.push('/')}>
           {t('back')}
         </Button>
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={handleCancel}>
-            {t('cancel')}
+        <Button variant="ghost" onClick={handleCancel}>
+          {t('cancel')}
+        </Button>
+        {selectedClient && (
+          <Button onClick={handleSave}>
+            {t('save')}
           </Button>
-          {selectedClient && (
-            <Button onClick={handleSave}>
-              {t('save')}
-            </Button>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );
