@@ -94,25 +94,27 @@ export default function SubscriptionPage() {
   const saveManualId = () => {
     if (!selectedClient) return;
   
-    // Se já existe ID, pedir confirmação para editar
-    if (selectedClient.id) {
-      const confirmEdit = window.confirm(
-        `O cliente já possui ID: ${selectedClient.id}. Deseja editar para "${manualId}"?`
-      );
-      if (!confirmEdit) return; // Se não quiser editar, sai da função
+    const idToSave = manualId.trim();
+    if (!idToSave) {
+      toast({ title: 'ID não pode estar vazio.' });
+      return;
     }
   
-    // Atualiza estado local
-    const newClientState = { ...selectedClient, id: manualId };
+    // Se já existe ID diferente do digitado, pedir confirmação
+    if (selectedClient.id && selectedClient.id !== idToSave) {
+      const confirmEdit = window.confirm(
+        `O cliente já possui ID: ${selectedClient.id}. Deseja alterar para "${idToSave}"?`
+      );
+      if (!confirmEdit) return;
+    }
+  
+    // Atualiza estado local e contexto global sempre
+    const newClientState = { ...selectedClient, id: idToSave };
     setSelectedClient(newClientState);
-  
-    // Atualiza contexto global
     updateClient(newClientState);
+    saveClientsToStorage(); // força persistência
   
-    // Persiste no storage do sistema
-    saveClientsToStorage();
-  
-    // Modal de sucesso
+    // Modal de sucesso atualizado
     setIsIdSaveSuccessModalOpen(true);
   };
 
@@ -331,7 +333,7 @@ export default function SubscriptionPage() {
                   <CardDescription>
                     {t('addApplicationDescription')}
                   </CardDescription>
-                </CardHeader>
+                </Header>
                 <CardContent>
                   <ApplicationsForm
                     selectedClient={selectedClient}
