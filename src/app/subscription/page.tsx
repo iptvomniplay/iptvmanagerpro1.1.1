@@ -20,7 +20,7 @@ import { ClientSearch } from './components/client-search';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { User, FileText, AppWindow, AlertTriangle } from 'lucide-react';
+import { User, FileText, AppWindow, AlertTriangle, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SubscriptionPlanForm, type SelectedPlan } from './components/subscription-plan-form';
 import { ApplicationsForm } from './components/applications-form';
@@ -88,13 +88,17 @@ export default function SubscriptionPage() {
   const handleManualIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newId = e.target.value;
     setManualId(newId);
-    if (selectedClient) {
-      // Create a new object to ensure state update triggers re-render
-      const updatedClient = { ...selectedClient, id: newId };
-      // Update the client in the global state immediately
+  }
+
+  const saveManualId = () => {
+    if (selectedClient && manualId) {
+      const updatedClient = { ...selectedClient, id: manualId };
       updateClient(updatedClient);
-      // Also update the local state to be in sync
       setSelectedClient(updatedClient);
+       toast({
+        title: t('saveChanges'),
+        description: `ID ${manualId} salvo para o cliente ${selectedClient.name}.`,
+      });
     }
   }
 
@@ -261,15 +265,28 @@ export default function SubscriptionPage() {
                                 </Badge>
                             )}
                         </div>
-                      <Input
-                        id="manual-client-id"
-                        placeholder={t('clientIdManualPlaceholder')}
-                        autoComplete="off"
-                        value={manualId}
-                        onChange={handleManualIdChange}
-                        disabled={selectedClient.status === 'Active'}
-                        className={cn(!manualId && selectedClient.status !== 'Active' && isValidationError && 'ring-2 ring-destructive ring-offset-2 ring-offset-background')}
-                      />
+                      <div className="relative">
+                        <Input
+                          id="manual-client-id"
+                          placeholder={t('clientIdManualPlaceholder')}
+                          autoComplete="off"
+                          value={manualId}
+                          onChange={handleManualIdChange}
+                          disabled={selectedClient.status === 'Active'}
+                          className={cn('pr-12', !manualId && selectedClient.status !== 'Active' && isValidationError && 'ring-2 ring-destructive ring-offset-2 ring-offset-background')}
+                        />
+                        {selectedClient.status !== 'Active' && (
+                          <Button 
+                            type="button" 
+                            size="icon" 
+                            variant="ghost" 
+                            className="absolute right-1 top-1/2 -translate-y-1/2 h-9 w-10 text-muted-foreground hover:bg-transparent"
+                            onClick={saveManualId}
+                          >
+                            <Save className="h-5 w-5" />
+                          </Button>
+                        )}
+                      </div>
                        {!manualId && selectedClient.status !== 'Active' && isValidationError && <p className="text-sm text-destructive">{t('clientIdRequired')}</p>}
                     </div>
                   </div>
