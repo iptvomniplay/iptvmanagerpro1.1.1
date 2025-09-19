@@ -99,24 +99,24 @@ export default function SubscriptionPage() {
         
         {selectedClient ? (
           <Tabs defaultValue="client" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 h-auto p-0 border-0 bg-transparent gap-4">
+            <TabsList className="grid w-full grid-cols-3 h-auto p-2 border-2 bg-card gap-2 rounded-lg">
               <TabsTrigger
                 value="client"
-                className="group flex h-16 items-center justify-center gap-3 rounded-lg border-2 border-input bg-card p-4 text-base font-semibold text-muted-foreground shadow-sm ring-offset-background transition-all hover:border-primary/50 hover:text-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
+                className="group flex h-14 items-center justify-center gap-3 rounded-md border-transparent border-2 bg-card p-4 text-base font-semibold text-muted-foreground shadow-sm ring-offset-background transition-all hover:border-primary/50 hover:text-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
               >
                 <User className="h-6 w-6 transition-transform group-hover:scale-110" />
                 {t('client')}
               </TabsTrigger>
               <TabsTrigger
                 value="plans"
-                className="group flex h-16 items-center justify-center gap-3 rounded-lg border-2 border-input bg-card p-4 text-base font-semibold text-muted-foreground shadow-sm ring-offset-background transition-all hover:border-primary/50 hover:text-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
+                className="group flex h-14 items-center justify-center gap-3 rounded-md border-transparent border-2 bg-card p-4 text-base font-semibold text-muted-foreground shadow-sm ring-offset-background transition-all hover:border-primary/50 hover:text-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
               >
                 <FileText className="h-6 w-6 transition-transform group-hover:scale-110" />
                 {t('subscriptionPlans')}
               </TabsTrigger>
               <TabsTrigger
                 value="apps"
-                className="group flex h-16 items-center justify-center gap-3 rounded-lg border-2 border-input bg-card p-4 text-base font-semibold text-muted-foreground shadow-sm ring-offset-background transition-all hover:border-primary/50 hover:text-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
+                className="group flex h-14 items-center justify-center gap-3 rounded-md border-transparent border-2 bg-card p-4 text-base font-semibold text-muted-foreground shadow-sm ring-offset-background transition-all hover:border-primary/50 hover:text-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
               >
                 <AppWindow className="h-6 w-6 transition-transform group-hover:scale-110" />
                 {t('applications')}
@@ -159,6 +159,10 @@ export default function SubscriptionPage() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="manual-client-id">{t('clientID')}</Label>
+                       <p className="text-sm text-muted-foreground">
+                        <span className="font-semibold">ID Atual: </span>
+                        <span className={cn(isIdPending && 'text-yellow-500 font-bold')}>{displayedId}</span>
+                      </p>
                       <Input
                         id="manual-client-id"
                         placeholder={t('clientIdManualPlaceholder')}
@@ -168,10 +172,6 @@ export default function SubscriptionPage() {
                         disabled={!selectedClient}
                         className={cn(isIdPending && 'ring-2 ring-yellow-500/80 animate-flash')}
                       />
-                       <p className="text-sm text-muted-foreground">
-                        <span className="font-semibold">ID Atual: </span>
-                        <span className={cn(isIdPending && 'text-yellow-500 font-bold')}>{displayedId}</span>
-                      </p>
                     </div>
                   </div>
                 </CardContent>
