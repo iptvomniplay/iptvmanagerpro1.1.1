@@ -27,17 +27,18 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     try {
       const storedClients = localStorage.getItem('clients');
-      if (storedClients) {
+      if (storedClients && storedClients !== '[]') {
+        console.log("Mestre, verifiquei e SIM, existem dados de clientes salvos no localStorage do seu navegador.");
         setClients(JSON.parse(storedClients));
       } else {
-        // Se não houver nada no localStorage, use os dados iniciais (se houver)
-        // e adicione _tempId a eles para consistência.
-        const clientsWithTempId = initialClients.map(c => ({...c, _tempId: c.id || `temp_${Date.now()}_${Math.random()}`}));
+        console.log("Mestre, verifiquei e NÃO, não há dados de clientes salvos no localStorage do seu navegador. O sistema está limpo.");
+        // Se não houver nada no localStorage, use os dados iniciais (que agora estão vazios)
+        const clientsWithTempId = initialClients.map(c => ({...c, _tempId: `temp_${Date.now()}_${Math.random()}`}));
         setClients(clientsWithTempId);
       }
     } catch (error) {
       console.error('Failed to load clients from localStorage', error);
-      const clientsWithTempId = initialClients.map(c => ({...c, _tempId: c.id || `temp_${Date.now()}_${Math.random()}`}));
+      const clientsWithTempId = initialClients.map(c => ({...c, _tempId: `temp_${Date.now()}_${Math.random()}`}));
       setClients(clientsWithTempId);
     }
   }, []);
@@ -60,8 +61,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setClients(prevClients => {
         const newClient: Client = {
             ...(clientData as Client),
-            id: '', // O ID SERÁ INSERIDO MANUALMENTE
-            _tempId: `temp_${Date.now()}_${Math.random()}`, // ID interno apenas para React
+            id: '', 
+            _tempId: `temp_${Date.now()}_${Math.random()}`,
             registeredDate: format(new Date(), 'yyyy-MM-dd'),
             birthDate: clientData.birthDate || '',
             plans: [],
@@ -76,7 +77,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setClients(prevClients => {
        const updatedClients = prevClients.map(c => 
         (c._tempId && c._tempId === clientData._tempId)
-          ? { ...c, ...clientData } 
+          ? { ...clientData } 
           : c
       );
       if (!skipSave) {
