@@ -33,8 +33,6 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
     const numericTerm = searchTerm.replace(/\D/g, '');
 
     const results = clients.filter((client) => {
-      if (selectedClient && String(client.id) === String(selectedClient.id)) return false;
-
       const nameMatch = normalizeString(client.name).includes(normalizedTerm);
       const nicknameMatch = client.nickname ? normalizeString(client.nickname).includes(normalizedTerm) : false;
       
@@ -48,7 +46,7 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
       return nameMatch || nicknameMatch || phoneMatch;
     });
     setSearchResults(results);
-  }, [searchTerm, clients, selectedClient]);
+  }, [searchTerm, clients]);
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
