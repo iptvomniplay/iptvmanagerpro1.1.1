@@ -99,44 +99,32 @@ export default function SubscriptionPage() {
         
         {selectedClient ? (
           <Tabs defaultValue="client" className="w-full">
-            <TabsList className="flex items-center justify-start gap-4 p-0 bg-transparent">
-              <div
-                className="flex items-center justify-center gap-2 rounded-lg border-2 border-primary/20 bg-card p-6 text-lg font-semibold text-muted-foreground shadow-sm transition-all hover:shadow-md hover:border-primary data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
+            <TabsList className="grid w-full grid-cols-3 gap-4 p-0 bg-transparent">
+              <TabsTrigger
+                value="client"
+                className="group flex h-20 items-center justify-center gap-3 rounded-lg border-2 border-primary/20 bg-card p-4 text-lg font-semibold text-muted-foreground shadow-sm ring-offset-background transition-all hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
               >
-                <TabsTrigger
-                  value="client"
-                  className="flex items-center justify-center gap-2 rounded-lg p-0 text-lg font-semibold text-muted-foreground shadow-sm transition-all data-[state=active]:bg-transparent data-[state=active]:text-primary-foreground data-[state=active]:shadow-none"
-                >
-                  <User className="mr-2" />
-                  {t('client')}
-                </TabsTrigger>
-              </div>
-              <div
-                className="flex items-center justify-center gap-2 rounded-lg border-2 border-primary bg-card p-6 text-lg font-semibold text-muted-foreground shadow-sm transition-all hover:shadow-md hover:border-primary data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
+                <User className="h-6 w-6 transition-transform group-hover:scale-110" />
+                {t('client')}
+              </TabsTrigger>
+              <TabsTrigger
+                value="plans"
+                className="group flex h-20 items-center justify-center gap-3 rounded-lg border-2 border-primary/20 bg-card p-4 text-lg font-semibold text-muted-foreground shadow-sm ring-offset-background transition-all hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
               >
-                <TabsTrigger
-                  value="plans"
-                  className="flex items-center justify-center gap-2 rounded-lg p-0 text-lg font-semibold text-muted-foreground shadow-sm transition-all data-[state=active]:bg-transparent data-[state=active]:text-primary-foreground data-[state=active]:shadow-none"
-                >
-                  <FileText className="mr-2" />
-                  {t('subscriptionPlans')}
-                </TabsTrigger>
-              </div>
-              <div
-                className="flex items-center justify-center gap-2 rounded-lg border-2 border-primary bg-card p-6 text-lg font-semibold text-muted-foreground shadow-sm transition-all hover:shadow-md hover:border-primary data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
+                <FileText className="h-6 w-6 transition-transform group-hover:scale-110" />
+                {t('subscriptionPlans')}
+              </TabsTrigger>
+              <TabsTrigger
+                value="apps"
+                className="group flex h-20 items-center justify-center gap-3 rounded-lg border-2 border-primary/20 bg-card p-4 text-lg font-semibold text-muted-foreground shadow-sm ring-offset-background transition-all hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg"
               >
-                <TabsTrigger
-                  value="apps"
-                  className="flex items-center justify-center gap-2 rounded-lg p-0 text-lg font-semibold text-muted-foreground shadow-sm transition-all data-[state=active]:bg-transparent data-[state=active]:text-primary-foreground data-[state=active]:shadow-none"
-                >
-                  <AppWindow className="mr-2" />
-                  {t('applications')}
-                </TabsTrigger>
-              </div>
+                <AppWindow className="h-6 w-6 transition-transform group-hover:scale-110" />
+                {t('applications')}
+              </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="client">
-              <Card className="mt-8">
+            <TabsContent value="client" className="mt-8">
+              <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3 text-xl">
                     <User className="h-6 w-6" />
@@ -190,8 +178,8 @@ export default function SubscriptionPage() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="plans">
-              <Card className="mt-4">
+            <TabsContent value="plans" className="mt-8">
+              <Card>
                   <CardHeader>
                   <CardTitle>{t('subscriptionPlans')}</CardTitle>
                    <CardDescription>{t('addSubscriptionPlanDescription')}</CardDescription>
@@ -202,8 +190,8 @@ export default function SubscriptionPage() {
               </Card>
             </TabsContent>
             
-            <TabsContent value="apps">
-              <Card className="mt-4">
+            <TabsContent value="apps" className="mt-8">
+              <Card>
                   <CardHeader>
                   <CardTitle>{t('applications')}</CardTitle>
                   <CardDescription>{t('addApplicationDescription')}</CardDescription>
