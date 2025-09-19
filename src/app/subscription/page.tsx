@@ -80,7 +80,7 @@ export default function SubscriptionPage() {
       
       {selectedClient && (
         <Tabs defaultValue="client" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-3 bg-primary/20">
             <TabsTrigger value="client" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <User className="mr-2" />
               {t('client')}
@@ -123,14 +123,7 @@ export default function SubscriptionPage() {
                       {t(selectedClient.status.toLowerCase() as any)}
                     </Badge>
                   </div>
-                  <div>
-                    <p className="font-medium text-muted-foreground">
-                      {t('emailAddress')}
-                    </p>
-                    <p className="mt-1 truncate" title={selectedClient.email}>{selectedClient.email || '---'}</p>
-                  </div>
-                </div>
-                 <div className="w-full md:w-1/2 space-y-2">
+                  <div className="space-y-2">
                     <Label htmlFor="manual-client-id">{t('clientID')}</Label>
                     <Input
                       id="manual-client-id"
@@ -146,6 +139,13 @@ export default function SubscriptionPage() {
                       <span className={cn(isIdPending && 'text-yellow-500 font-bold')}>{displayedId}</span>
                     </p>
                   </div>
+                  <div>
+                    <p className="font-medium text-muted-foreground">
+                      {t('emailAddress')}
+                    </p>
+                    <p className="mt-1 truncate" title={selectedClient.email}>{selectedClient.email || '---'}</p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
