@@ -301,15 +301,14 @@ export function ApplicationsForm({
           </Collapsible>
         ))}
         
-        <div className="flex justify-end pt-4">
-          {applications.length < totalScreensFromPlans && (
+        {applications.length < totalScreensFromPlans && (
+          <div className="flex justify-end pt-4">
               <Button onClick={handleAddApplication} variant="default" className="w-full">
                   <PlusCircle className="mr-2 h-4 w-4" />
                   {t('addApplication')}
               </Button>
-          )}
-        </div>
-
+          </div>
+        )}
       </div>
 
       {phoneModalState.isOpen && phoneModalState.index !== null && (
