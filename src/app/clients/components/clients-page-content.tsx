@@ -197,7 +197,7 @@ export default function ClientsPageContent() {
           <TableBody>
             {filteredClients.length > 0 ? (
               filteredClients.map((client) => (
-                <TableRow key={client.id}>
+                <TableRow key={client.id || client._tempId}>
                   <TableCell>
                     <Button variant="outline" className="h-auto font-semibold" onClick={() => handleViewDetails(client)}>
                       {client.name}
