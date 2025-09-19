@@ -99,22 +99,29 @@ export default function SubscriptionPage() {
         
         {selectedClient ? (
           <Tabs defaultValue="client" className="w-full">
-            <TabsList>
-              <div className="flex items-center gap-1 rounded-lg bg-muted p-1">
-                <TabsTrigger value="client" className="py-2.5">
-                  <User className="mr-2" />
-                  {t('client')}
-                </TabsTrigger>
-                <TabsTrigger value="plans" className="py-2.5">
-                  <FileText className="mr-2" />
-                  {t('subscriptionPlans')}
-                </TabsTrigger>
-                <TabsTrigger value="apps" className="py-2.5">
-                  <AppWindow className="mr-2" />
-                  {t('applications')}
-                </TabsTrigger>
-              </div>
-            </TabsList>
+            <div className="flex items-center gap-2">
+              <TabsTrigger
+                value="client"
+                className="flex-1 py-3 border-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-md"
+              >
+                <User className="mr-2" />
+                {t('client')}
+              </TabsTrigger>
+              <TabsTrigger
+                value="plans"
+                className="flex-1 py-3 border-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-md"
+              >
+                <FileText className="mr-2" />
+                {t('subscriptionPlans')}
+              </TabsTrigger>
+              <TabsTrigger
+                value="apps"
+                className="flex-1 py-3 border-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-md"
+              >
+                <AppWindow className="mr-2" />
+                {t('applications')}
+              </TabsTrigger>
+            </div>
             
             <TabsContent value="client">
               <Card className="mt-4">
@@ -211,17 +218,17 @@ export default function SubscriptionPage() {
       </div>
       <div className="mt-auto flex justify-end items-center gap-4 pt-8">
         <Button variant="outline" onClick={() => router.push('/')}>
-          {t('back')}
+            {t('back')}
         </Button>
         <Button variant="ghost" onClick={handleCancel}>
-          {t('cancel')}
+            {t('cancel')}
         </Button>
         {selectedClient && (
-          <Button onClick={handleSave}>
-            {t('save')}
-          </Button>
+            <Button onClick={handleSave}>
+                {t('save')}
+            </Button>
         )}
-      </div>
+    </div>
     </div>
   );
 }
