@@ -310,6 +310,7 @@
     "addAtLeastOnePlan": "You must add at least one subscription plan.",
     "fillAllApplications": "You must register an application for each hired screen.",
     "clientIdRequired": "The Client ID is required to activate the subscription.",
+    "clientIdRequiredInForm": "The client ID is required and must be filled in the client's edit form.",
     "clientStatus": "Client Status",
     "O cliente": "The client",
     "possui": "has",

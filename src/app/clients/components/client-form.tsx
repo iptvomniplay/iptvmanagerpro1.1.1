@@ -114,7 +114,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
     };
 
     if (client) {
-      updateClient({ ...client, ...clientData, id: client.id, registeredDate: client.registeredDate });
+      updateClient({ ...client, ...clientData, id: clientData.id || client.id, registeredDate: client.registeredDate });
     } else {
       addClient(clientData as Omit<Client, 'registeredDate'>);
     }
@@ -129,6 +129,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       onSubmitted();
     } else {
        reset({
+        id: '',
         name: '',
         nickname: '',
         email: '',
@@ -163,6 +164,21 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                   <FormLabel>{t('fullName')}</FormLabel>
                   <FormControl>
                     <Input placeholder={t('namePlaceholder')} {...field} autoComplete="off" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+           <div className="w-full md:w-1/2">
+            <FormField
+              control={form.control}
+              name="id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('clientID')}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t('clientIdManualPlaceholder')} {...field} autoComplete="off" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -310,6 +310,7 @@
     "addAtLeastOnePlan": "É necessário adicionar pelo menos um plano de assinatura.",
     "fillAllApplications": "É necessário registrar um aplicativo para cada tela contratada.",
     "clientIdRequired": "O ID do Cliente é obrigatório para ativar a assinatura.",
+    "clientIdRequiredInForm": "O ID do cliente é obrigatório e deve ser preenchido no formulário de edição do cliente.",
     "clientStatus": "Status Cliente",
     "O cliente": "O cliente",
     "possui": "possui",
