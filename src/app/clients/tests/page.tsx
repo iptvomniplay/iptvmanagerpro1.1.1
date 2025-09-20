@@ -26,9 +26,6 @@ export default function ViewTestsPage() {
             <Button onClick={() => setIsTestModalOpen(true)} size="lg">
               {t('addTest')}
             </Button>
-            <Button onClick={() => alert(t('underDevelopment'))} size="lg" variant="outline">
-              {t('viewAllTests')}
-            </Button>
           </CardContent>
         </Card>
         <Card>
