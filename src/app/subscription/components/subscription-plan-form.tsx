@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
-import { X, Calendar as CalendarIcon, FilePenLine, PlusCircle, Eye, AlertTriangle } from 'lucide-react';
+import { X, Calendar as CalendarIcon, FilePenLine, PlusCircle, Eye, AlertTriangle, EyeOff } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { add, format, lastDayOfMonth } from 'date-fns';
@@ -31,6 +31,42 @@ const DetailItem = ({ label, value }: { label: string; value?: string | number |
     </div>
   );
 };
+
+const ValueDisplay = ({ value, isCourtesy }: { value?: number, isCourtesy?: boolean }) => {
+    const { t } = useLanguage();
+    const [isVisible, setIsVisible] = React.useState(false);
+
+    const formatCurrency = (val: number) => {
+        const currency = t('currency') === 'BRL' ? 'BRL' : 'USD';
+        const locale = t('currency') === 'BRL' ? 'pt-BR' : 'en-US';
+        return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(val);
+    }
+    
+    if (value === undefined) return null;
+
+    if (isCourtesy) {
+        return (
+             <div>
+                <p className="text-sm font-medium text-muted-foreground">{t('value')}</p>
+                <Badge variant="default" className="text-base mt-1">
+                    {t('courtesy')}
+                </Badge>
+            </div>
+        )
+    }
+
+    return (
+        <div>
+            <p className="text-sm font-medium text-muted-foreground">{t('value')}</p>
+            <div className="flex items-center gap-2">
+                <p className="text-lg">{isVisible ? formatCurrency(value) : '•••••'}</p>
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsVisible(!isVisible)}>
+                    {isVisible ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </Button>
+            </div>
+        </div>
+    )
+}
 
 export function SubscriptionPlanForm({ selectedClient, onPlanChange }: SubscriptionPlanFormProps) {
   const { t, language } = useLanguage();
@@ -393,12 +429,10 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
                     <div className="grid grid-cols-2 gap-4">
                       <DetailItem label={t('plans')} value={planToShowDetails.plan.name} />
                       <DetailItem label={t('screens')} value={planToShowDetails.screens} />
-                       <div>
-                          <p className="text-sm font-medium text-muted-foreground">{t('value')}</p>
-                          <Badge variant={planToShowDetails.isCourtesy ? 'default' : 'outline'} className="text-base mt-1">
-                              {planToShowDetails.isCourtesy ? t('courtesy') : formatCurrency(planToShowDetails.planValue)}
-                          </Badge>
-                       </div>
+                       <ValueDisplay
+                          value={planToShowDetails.planValue}
+                          isCourtesy={planToShowDetails.isCourtesy}
+                        />
                         <div>
                           <p className="text-sm font-medium text-muted-foreground">{t('status')}</p>
                            <Badge variant={getStatusVariant(planToShowDetails.status)} className="text-base mt-1">
