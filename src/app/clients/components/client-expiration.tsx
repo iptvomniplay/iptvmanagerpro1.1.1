@@ -142,15 +142,11 @@ export function ClientExpiration({
     badgeVariant = 'warning';
   }
 
-  const badgeText = hasExpired ? t('expired') : remainingTimeText;
-  
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Badge variant={badgeVariant} className="cursor-pointer">
-            {badgeText}
-          </Badge>
+          <Badge variant={badgeVariant} className="cursor-pointer h-4 w-4 p-0" />
         </TooltipTrigger>
         <TooltipContent>
           {hasExpired ? (
