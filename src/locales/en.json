@@ -213,7 +213,7 @@
     "testButtonLabel": "Test",
     "testes": "Tests",
     "addTest": "Add Test",
-    "viewAllTests": "Test Status",
+    "statusDosTestes": "Test Status",
     "testManagementDescription": "Manage your client tests.",
     "addTestToClient": "Add Test to Client",
     "addTestToClientDescription": "Search for a client and fill in the test details.",

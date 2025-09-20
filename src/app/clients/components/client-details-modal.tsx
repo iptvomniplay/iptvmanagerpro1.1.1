@@ -31,6 +31,7 @@ interface ClientDetailsModalProps {
   client: Client | null;
   onEdit: () => void;
   onDelete: () => void;
+  isReadOnly?: boolean;
 }
 
 const DetailItem = ({
@@ -269,6 +270,7 @@ export function ClientDetailsModal({
   client,
   onEdit,
   onDelete,
+  isReadOnly = false,
 }: ClientDetailsModalProps) {
   const { t } = useLanguage();
   const { servers } = useData();
@@ -442,19 +444,27 @@ export function ClientDetailsModal({
         </div>
 
         <DialogFooter className="pt-6 justify-between">
-          <Button variant="destructive" onClick={onDelete}>
-            <Trash2 className="mr-2 h-4 w-4" />
-            {t('delete')}
-          </Button>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={onClose}>
-              {t('cancel')}
+          {isReadOnly ? (
+             <Button variant="outline" onClick={onClose} className="w-full">
+              {t('ok')}
             </Button>
-            <Button onClick={onEdit}>
-              <FilePenLine className="mr-2 h-4 w-4" />
-              {t('edit')}
-            </Button>
-          </div>
+          ) : (
+            <>
+              <Button variant="destructive" onClick={onDelete}>
+                <Trash2 className="mr-2 h-4 w-4" />
+                {t('delete')}
+              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={onClose}>
+                  {t('cancel')}
+                </Button>
+                <Button onClick={onEdit}>
+                  <FilePenLine className="mr-2 h-4 w-4" />
+                  {t('edit')}
+                </Button>
+              </div>
+            </>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
