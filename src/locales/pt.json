@@ -143,7 +143,7 @@
     "creditBalance": "Saldo de Créditos",
     "creditBalanceDescription": "Visualize e gerencie o saldo de créditos de cada painel.",
     "buyCredits": "Comprar Créditos",
-    "registrationAddedSuccess": "Assinatura adicionada com sucesso",
+    "subscriptionAddedSuccess": "Assinatura adicionada com sucesso",
     "newServerSuccess": "Novo servidor foi cadastrado e o formulário está pronto para o próximo.",
     "editServerSuccess": "Os detalhes do servidor foram atualizados.",
     "newClientSuccess": "A nova assinatura do cliente foi salva.",
@@ -320,13 +320,6 @@
     "limitReached": "Limite de telas atingido",
     "allScreensFilled": "Todas as telas disponíveis foram preenchidas.",
     "pending": "Pendente",
-    "blocked": "Bloqueado"
+    "blocked": "Bloqueado",
+    "pre-existing-app": "Este é um aplicativo pré-existente"
 }
-
-    
-
-
-
-    
-
-
