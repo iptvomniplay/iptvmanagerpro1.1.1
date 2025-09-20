@@ -29,18 +29,27 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
       return;
     }
 
-    const normalizedTerm = normalizeString(searchTerm);
-    const numericTerm = searchTerm.replace(/\D/g, '');
+    const numericOnlyTerm = searchTerm.replace(/\D/g, '');
+    const isNumericSearch = numericOnlyTerm.length > 0 && /^[0-9()-\s+]+$/.test(searchTerm);
 
-    const results = clients.filter((client) => {
-      const nameMatch = normalizeString(client.name).includes(normalizedTerm);
-      const nicknameMatch = client.nickname ? normalizeString(client.nickname).includes(normalizedTerm) : false;
-      const phoneMatch = numericTerm.length > 0 && client.phones.some((phone) =>
-        phone.number.replace(/\D/g, '').includes(numericTerm)
+    let results: Client[] = [];
+
+    if (isNumericSearch) {
+      // Search only by phone number if the input is numeric
+      results = clients.filter((client) =>
+        client.phones.some((phone) =>
+          phone.number.replace(/\D/g, '').includes(numericOnlyTerm)
+        )
       );
-      
-      return nameMatch || nicknameMatch || phoneMatch;
-    });
+    } else {
+      // Otherwise, search by name or nickname
+      const normalizedTerm = normalizeString(searchTerm);
+      results = clients.filter((client) => {
+        const nameMatch = normalizeString(client.name).includes(normalizedTerm);
+        const nicknameMatch = client.nickname ? normalizeString(client.nickname).includes(normalizedTerm) : false;
+        return nameMatch || nicknameMatch;
+      });
+    }
     setSearchResults(results);
   }, [searchTerm, clients]);
 
