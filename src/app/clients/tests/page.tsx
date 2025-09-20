@@ -75,18 +75,20 @@ const TestList = ({ tests, onUpdateClient, onViewDetails, isExpiredList }: { tes
                                <Badge variant="outline">{test.package}</Badge>
                             </TableCell>
                             <TableCell>
-                                {client.status === 'Test' ? (
-                                    <ClientExpiration
-                                        key={`${client._tempId}-test-list`}
-                                        clientId={client._tempId}
-                                        testCreationDate={test.creationDate}
-                                        testDurationValue={test.durationValue}
-                                        testDurationUnit={test.durationUnit}
-                                        onExpire={() => onUpdateClient({...client, status: 'Expired'})}
-                                    />
-                                ) : (
-                                    <span className="text-muted-foreground">{t('expired')}</span>
-                                )}
+                                <div onClick={(e) => e.stopPropagation()}>
+                                    {client.status === 'Test' ? (
+                                        <ClientExpiration
+                                            key={`${client._tempId}-test-list`}
+                                            clientId={client._tempId}
+                                            testCreationDate={test.creationDate}
+                                            testDurationValue={test.durationValue}
+                                            testDurationUnit={test.durationUnit}
+                                            onExpire={() => onUpdateClient({...client, status: 'Expired'})}
+                                        />
+                                    ) : (
+                                        <Badge variant="destructive">{t('expired')}</Badge>
+                                    )}
+                                </div>
                             </TableCell>
                             {!isExpiredList && (
                                 <TableCell className="text-right">

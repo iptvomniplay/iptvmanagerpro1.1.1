@@ -5,6 +5,13 @@ import { Progress } from '@/components/ui/progress';
 import { parseISO, differenceInSeconds, add, endOfDay } from 'date-fns';
 import { useLanguage } from '@/hooks/use-language';
 import type { PlanPeriod, Test } from '@/lib/types';
+import { Badge } from '@/components/ui/badge';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface ClientExpirationProps {
   clientId: string;
@@ -124,21 +131,36 @@ export function ClientExpiration({
 
   const progressPercentage = (remainingSeconds / totalDuration) * 100;
   
-  let progressColorClass;
-  if (progressPercentage < 15) {
-    progressColorClass = 'bg-destructive'; // red
+  let badgeVariant: 'success' | 'warning' | 'destructive' = 'success';
+  if (hasExpired) {
+    badgeVariant = 'destructive';
+  } else if (progressPercentage < 15) {
+    badgeVariant = 'destructive';
   } else if (progressPercentage < 50) {
-    progressColorClass = 'bg-yellow-500'; // yellow/orange
-  } else {
-    progressColorClass = 'bg-green-500'; // green
+    badgeVariant = 'warning';
   }
+
+  const badgeText = hasExpired ? t('expired') : remainingTimeText;
   
   return (
-    <div className="space-y-2 w-48">
-      <span className="text-sm font-medium">{remainingTimeText}</span>
-      {remainingTimeText !== t('expired') && (
-        <Progress value={progressPercentage} className="h-2" indicatorClassName={progressColorClass} />
-      )}
-    </div>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Badge variant={badgeVariant} className="cursor-pointer">
+            {badgeText}
+          </Badge>
+        </TooltipTrigger>
+        <TooltipContent>
+          {hasExpired ? (
+            <p>{t('expired')}</p>
+          ) : (
+            <div className="space-y-2 w-48">
+              <span className="text-sm font-medium">{remainingTimeText}</span>
+              <Progress value={progressPercentage} className="h-2" />
+            </div>
+          )}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

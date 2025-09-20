@@ -255,24 +255,26 @@ export default function ClientsPageContent() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {client.status === 'Active' && client.plans && client.plans.length > 0 ? (
-                          <ClientExpiration
-                              key={`${client._tempId}-plan`}
-                              clientId={client._tempId}
-                              planStartDate={client.registeredDate} 
-                              planPeriod={client.plans[0].planPeriod}
-                              onExpire={() => updateClient({...client, status: 'Expired'})}
-                          />
-                      ) : client.status === 'Test' && latestTest ? (
-                          <ClientExpiration
-                              key={`${client._tempId}-test`}
-                              clientId={client._tempId}
-                              testCreationDate={latestTest.creationDate}
-                              testDurationValue={latestTest.durationValue}
-                              testDurationUnit={latestTest.durationUnit}
-                              onExpire={() => updateClient({...client, status: 'Expired'})}
-                          />
-                      ) : null}
+                      <div onClick={(e) => e.stopPropagation()}>
+                        {client.status === 'Active' && client.plans && client.plans.length > 0 ? (
+                            <ClientExpiration
+                                key={`${client._tempId}-plan`}
+                                clientId={client._tempId}
+                                planStartDate={client.registeredDate} 
+                                planPeriod={client.plans[0].planPeriod}
+                                onExpire={() => updateClient({...client, status: 'Expired'})}
+                            />
+                        ) : client.status === 'Test' && latestTest ? (
+                            <ClientExpiration
+                                key={`${client._tempId}-test`}
+                                clientId={client._tempId}
+                                testCreationDate={latestTest.creationDate}
+                                testDurationValue={latestTest.durationValue}
+                                testDurationUnit={latestTest.durationUnit}
+                                onExpire={() => updateClient({...client, status: 'Expired'})}
+                            />
+                        ) : null}
+                      </div>
                     </TableCell>
                     <TableCell className="font-medium">
                       {client.id || t('noId')}
