@@ -250,27 +250,26 @@ export function ApplicationsForm({
         {appSlots.map((slot, index) => {
           const slotKey = `${slot.planId}-${slot.screenNumber}`;
           const planInfo = addedPlans.find(p => `${p.panel.id}-${p.server.name}-${p.plan.name}` === slot.planId);
-          const isLastSlot = findNextPendingSlotIndex() === -1 && index === appSlots.length - 1;
-
+          
           return (
           <Collapsible key={slotKey} asChild open={openSlots[slotKey]} onOpenChange={(isOpen) => setOpenSlots(p => ({...p, [slotKey]: isOpen}))}>
             <Card className={cn("bg-muted/20", slot.status === 'complete' && 'border-green-500/50')}>
-              <CardHeader className="flex flex-row items-center justify-between py-4">
-                 <div className="flex items-center gap-4">
-                    <CardTitle className="text-base">{`Tela ${index + 1}`}{planInfo ? ` (${planInfo.plan.name})` : ''}</CardTitle>
-                    <Badge variant={slot.status === 'complete' ? 'success' : 'secondary'}>
-                        {slot.status === 'complete' ? 'Completo' : 'Pendente'}
-                    </Badge>
-                 </div>
-                 <CollapsibleTrigger asChild>
+              <CollapsibleTrigger asChild>
+                <div className="flex items-center justify-between py-4 px-6 cursor-pointer">
+                    <div className="flex items-center gap-4">
+                        <CardTitle className="text-base">{`Tela ${index + 1}`}{planInfo ? ` (${planInfo.plan.name})` : ''}</CardTitle>
+                        <Badge variant={slot.status === 'complete' ? 'success' : 'secondary'}>
+                            {slot.status === 'complete' ? 'Completo' : 'Pendente'}
+                        </Badge>
+                    </div>
                     <Button variant="ghost" size="icon" className="h-8 w-8">
                         <ChevronDown className="h-5 w-5 transition-transform data-[state=open]:rotate-0 data-[state=closed]:-rotate-90" />
                         <span className="sr-only">{t('expand')}</span>
                     </Button>
-                </CollapsibleTrigger>
-              </CardHeader>
+                </div>
+              </CollapsibleTrigger>
               <CollapsibleContent>
-                <CardContent className="pt-0 space-y-4">
+                <CardContent className="pt-0 px-6 pb-6 space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor={`app-name-${slotKey}`}>{t('appName')}</Label>
@@ -409,7 +408,7 @@ export function ApplicationsForm({
                   </div>
                    <div className="flex justify-end pt-4">
                         <Button onClick={() => handleConfirmSlot(slotKey, index)}>
-                            {isLastSlot ? t('save') : t('confirmAndNext')}
+                            Confirmar
                         </Button>
                     </div>
                 </CardContent>
