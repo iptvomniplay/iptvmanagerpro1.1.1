@@ -1121,15 +1121,7 @@ export function ServerForm({ server }: ServerFormProps) {
               <AlertDialogHeader>
                   <AlertDialogTitle>{t('validationError')}</AlertDialogTitle>
                   <AlertDialogDescription>
-                      {t('fillAllFieldsWarning')}: {
-                        Object.entries(subServerErrors)
-                            .filter(([, message]) => message)
-                            .map(([field]) => t(
-                                field === 'name' ? 'subServerName' : 
-                                field === 'type' ? 'subServerType' : 
-                                'subServerScreens'
-                            )).join(', ')
-                      }
+                      {t('fillAllSubServerFields')}
                   </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogAction onClick={handleValidationModalClose}>
