@@ -280,6 +280,20 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                                 </FormItem>
                                 )}
                             />
+                             <div className="space-y-2">
+                              <Label>{t('panel')}</Label>
+                              <div className="relative">
+                                <Input
+                                  placeholder={t('selectPanelPlaceholder')}
+                                  value={selectedPanel ? selectedPanel.name : ''}
+                                  readOnly
+                                  onClick={() => setIsPanelModalOpen(true)}
+                                  className="cursor-pointer"
+                                  autoComplete="off"
+                                />
+                                  <ServerIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                              </div>
+                            </div>
                             <FormField
                                 control={form.control}
                                 name="package"
@@ -305,21 +319,6 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                         </div>
 
                         <div className="space-y-4">
-                            <div className="space-y-2">
-                              <Label>{t('panel')}</Label>
-                              <div className="relative">
-                                <Input
-                                  placeholder={t('selectPanelPlaceholder')}
-                                  value={selectedPanel ? selectedPanel.name : ''}
-                                  readOnly
-                                  onClick={() => setIsPanelModalOpen(true)}
-                                  className="cursor-pointer"
-                                  autoComplete="off"
-                                />
-                                  <ServerIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                              </div>
-                            </div>
-
                           {selectedPanel && selectedPanel.subServers && selectedPanel.subServers.length > 0 && (
                               <Collapsible className="space-y-2">
                               <CollapsibleTrigger asChild>
