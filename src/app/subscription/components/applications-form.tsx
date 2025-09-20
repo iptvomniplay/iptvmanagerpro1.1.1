@@ -92,13 +92,7 @@ export function ApplicationsForm({
     if (selectedClient) {
       const slots = generateSlots();
       setAppSlots(slots);
-      
-      const initialOpenState: Record<string, boolean> = {};
-      const firstPending = slots.find(s => s.status === 'pending');
-      if (firstPending) {
-        initialOpenState[`${firstPending.planId}-${firstPending.screenNumber}`] = true;
-      }
-      setOpenSlots(initialOpenState);
+      setOpenSlots({});
     } else {
       setAppSlots([]);
       setOpenSlots({});
@@ -255,7 +249,7 @@ export function ApplicationsForm({
           <Collapsible key={slotKey} asChild open={openSlots[slotKey]} onOpenChange={(isOpen) => setOpenSlots(p => ({...p, [slotKey]: isOpen}))}>
             <Card className={cn("bg-muted/20", slot.status === 'complete' && 'border-green-500/50')}>
               <CollapsibleTrigger asChild>
-                <div className="flex items-center justify-between py-4 px-6 cursor-pointer">
+                 <div className="flex items-center justify-between py-4 px-6 cursor-pointer">
                     <div className="flex items-center gap-4">
                         <CardTitle className="text-base">{`Tela ${index + 1}`}{planInfo ? ` (${planInfo.plan.name})` : ''}</CardTitle>
                         <Badge variant={slot.status === 'complete' ? 'success' : 'secondary'}>
