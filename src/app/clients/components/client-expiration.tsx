@@ -7,11 +7,10 @@ import { useLanguage } from '@/hooks/use-language';
 import type { PlanPeriod, Test } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 interface ClientExpirationProps {
   clientId: string;
@@ -143,22 +142,22 @@ export function ClientExpiration({
   }
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Badge variant={badgeVariant} className="cursor-pointer h-4 w-4 p-0" />
-        </TooltipTrigger>
-        <TooltipContent>
-          {hasExpired ? (
-            <p>{t('expired')}</p>
-          ) : (
-            <div className="space-y-2 w-48">
-              <span className="text-sm font-medium">{remainingTimeText}</span>
-              <Progress value={progressPercentage} className="h-2" />
-            </div>
-          )}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Popover>
+      <PopoverTrigger asChild>
+        <button>
+          <Badge variant={badgeVariant} className="h-6 w-6 p-0" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-56">
+        {hasExpired ? (
+          <p className="text-center font-semibold">{t('expired')}</p>
+        ) : (
+          <div className="space-y-2">
+            <span className="text-sm font-medium">{remainingTimeText}</span>
+            <Progress value={progressPercentage} className="h-2" />
+          </div>
+        )}
+      </PopoverContent>
+    </Popover>
   );
 }
