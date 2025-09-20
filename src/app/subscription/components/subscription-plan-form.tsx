@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronDown, X, Calendar as CalendarIcon } from 'lucide-react';
+import { ChevronDown, X, Calendar as CalendarIcon, FilePenLine } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
@@ -35,6 +35,7 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange, onPlanAdded
   const [planValue, setPlanValue] = React.useState('');
   const [isCourtesy, setIsCourtesy] = React.useState(false);
   const [nextDueDate, setNextDueDate] = React.useState<Date | null>(null);
+  const [editingPlanIndex, setEditingPlanIndex] = React.useState<number | null>(null);
 
   const selectedPanel = panels.find((p) => p.id === selectedPanelId);
   const availableServers = selectedPanel?.subServers || [];
@@ -43,22 +44,35 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange, onPlanAdded
   const selectedPlan = availablePlans.find((p) => p.name === selectedPlanName);
   
   const isFormValid = !!(selectedPanel && selectedServer && selectedPlan && numberOfScreens && selectedClient && planPeriod && dueDate && (planValue || isCourtesy));
+  
+  const resetForm = () => {
+    setSelectedPanelId('');
+    setSelectedServerName('');
+    setSelectedPlanName('');
+    setNumberOfScreens('');
+    setPlanPeriod(undefined);
+    setDueDate(undefined);
+    setPlanValue('');
+    setIsCourtesy(false);
+    setNextDueDate(null);
+    setEditingPlanIndex(null);
+  }
 
   React.useEffect(() => {
-    if (selectedPlan && selectedPlan.value) {
+    if (selectedPlan && selectedPlan.value && editingPlanIndex === null) {
       setPlanValue(formatCurrency(selectedPlan.value));
-    } else {
+    } else if (editingPlanIndex === null) {
       setPlanValue('');
     }
-  }, [selectedPlan, language]);
+  }, [selectedPlan, language, editingPlanIndex]);
   
   React.useEffect(() => {
     if (isCourtesy) {
       setPlanValue(formatCurrency(0));
-    } else if (selectedPlan?.value) {
+    } else if (selectedPlan?.value && editingPlanIndex === null) {
       setPlanValue(formatCurrency(selectedPlan.value));
     }
-  }, [isCourtesy, language, selectedPlan]);
+  }, [isCourtesy, language, selectedPlan, editingPlanIndex]);
 
   React.useEffect(() => {
     if (!planPeriod || !dueDate) {
@@ -111,7 +125,7 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange, onPlanAdded
   };
 
 
-  const handleAddPlan = () => {
+  const handleAddOrUpdatePlan = () => {
     if (selectedPanel && selectedServer && selectedPlan && numberOfScreens && selectedClient && planPeriod) {
       const numericValue = parseFloat(planValue.replace(/[^0-9,-]+/g, "").replace(',', '.')) || 0;
       const newPlan: SelectedPlan = {
@@ -125,20 +139,20 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange, onPlanAdded
           dueDate: dueDate,
       };
       
-      const newPlans = [...(selectedClient.plans || []), newPlan];
-      onPlanChange(newPlans);
-      onPlanAdded();
+      let newPlans: SelectedPlan[];
+      if (editingPlanIndex !== null) {
+        newPlans = [...(selectedClient.plans || [])];
+        newPlans[editingPlanIndex] = newPlan;
+      } else {
+        newPlans = [...(selectedClient.plans || []), newPlan];
+      }
 
-      // Reset form
-      setSelectedPanelId('');
-      setSelectedServerName('');
-      setSelectedPlanName('');
-      setNumberOfScreens('');
-      setPlanPeriod(undefined);
-      setDueDate(undefined);
-      setPlanValue('');
-      setIsCourtesy(false);
-      setNextDueDate(null);
+      onPlanChange(newPlans);
+      if (editingPlanIndex === null) {
+        onPlanAdded();
+      }
+
+      resetForm();
     }
   };
 
@@ -146,6 +160,29 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange, onPlanAdded
     if (selectedClient && selectedClient.plans) {
       const newPlans = selectedClient.plans.filter((_, index) => index !== indexToRemove);
       onPlanChange(newPlans);
+    }
+  };
+
+  const handleEditPlan = (indexToEdit: number) => {
+    if (selectedClient && selectedClient.plans) {
+        const planToEdit = selectedClient.plans[indexToEdit];
+        setEditingPlanIndex(indexToEdit);
+        
+        setSelectedPanelId(planToEdit.panel.id);
+        
+        // Use timeouts to ensure state updates propagate
+        setTimeout(() => {
+            setSelectedServerName(planToEdit.server.name);
+            setTimeout(() => {
+                setSelectedPlanName(planToEdit.plan.name);
+            }, 0);
+        }, 0);
+        
+        setNumberOfScreens(planToEdit.screens);
+        setPlanPeriod(planToEdit.planPeriod);
+        setDueDate(planToEdit.dueDate);
+        setPlanValue(formatCurrency(planToEdit.planValue));
+        setIsCourtesy(planToEdit.isCourtesy);
     }
   };
   
@@ -323,13 +360,18 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange, onPlanAdded
 
       </div>
       
-       <div className="flex justify-end">
+       <div className="flex justify-end gap-4">
+            {editingPlanIndex !== null && (
+                <Button type="button" variant="outline" onClick={resetForm}>
+                    {t('cancel')}
+                </Button>
+            )}
             <Button 
-                onClick={handleAddPlan} 
+                onClick={handleAddOrUpdatePlan} 
                 disabled={!isFormValid}
-                className={cn(isFormValid && "animate-[flash-success_1.5s_ease-in-out]")}
+                className={cn(isFormValid && editingPlanIndex === null && "animate-[flash-success_1.5s_ease-in-out]")}
             >
-                {t('addPlan')}
+                {editingPlanIndex !== null ? 'Atualizar Plano' : t('addPlan')}
             </Button>
         </div>
 
@@ -349,9 +391,14 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange, onPlanAdded
                   <Card key={index} className="bg-card">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
                       <CardTitle className="text-base">{item.plan.name}</CardTitle>
-                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleRemovePlan(index)}>
-                        <X className="h-4 w-4" />
-                      </Button>
+                      <div className="flex items-center gap-1">
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditPlan(index)}>
+                            <FilePenLine className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleRemovePlan(index)}>
+                            <X className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </CardHeader>
                     <CardContent className="text-sm text-muted-foreground space-y-2">
                       <p>
