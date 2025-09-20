@@ -23,7 +23,7 @@ interface ConfirmationModalProps {
 }
 
 const DetailItem = ({ label, value }: { label: string; value?: string | number | null; }) => {
-  if (!value) return null;
+  if (!value && value !== 0) return null;
   
   let displayValue = String(value);
 
@@ -69,7 +69,7 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, clientData }: Co
             <DetailItem label={t('nickname')} value={clientData.nickname} />
             <DetailItem label={t('emailAddress')} value={clientData.email} />
             <DetailItem label={t('birthDate')} value={clientData.birthDate} />
-            <DetailItem label={t('clientID')} value={clientData.id} />
+            <DetailItem label={t('clientID')} value={clientData.id || t('noId')} />
              <div>
               <p className="text-sm font-medium text-muted-foreground">{t('phone')}</p>
               <div className="flex flex-wrap gap-2 mt-1">
