@@ -380,5 +380,6 @@
     "pendingAppsWarning": "Cliente possui telas pendentes para configurar.",
     "underDevelopment": "Esta área está em desenvolvimento.",
     "complete": "Completo",
-    "currency": "BRL"
+    "currency": "BRL",
+    "screensStatus": "Status Telas"
 }

@@ -380,5 +380,6 @@
     "pendingAppsWarning": "Client has pending screens to configure.",
     "underDevelopment": "This area is under development.",
     "complete": "Complete",
-    "currency": "USD"
+    "currency": "USD",
+    "screensStatus": "Screens Status"
 }

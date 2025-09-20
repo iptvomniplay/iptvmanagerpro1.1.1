@@ -139,7 +139,7 @@ const PlanDetails = ({ plan, client }: { plan: SelectedPlan, client: Client }) =
                 <DetailItem label={t('planPeriod')} value={periodOptions.find(p => p.value === plan.planPeriod)?.label} />
                 <DetailItem label={t('dueDate')} value={plan.dueDate} />
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">{t('status')}</p>
+                  <p className="text-sm font-medium text-muted-foreground">{t('screensStatus')}</p>
                    <Badge variant={getStatusVariant(status)} className="text-base mt-1">
                         {t(status.toLowerCase() as any)}
                    </Badge>
