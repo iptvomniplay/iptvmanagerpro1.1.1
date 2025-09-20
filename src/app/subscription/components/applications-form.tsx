@@ -449,33 +449,32 @@ export function ApplicationsForm({
                             )}
                           </>
                         )}
+                        
+                        <div className="space-y-2 col-span-1 md:col-span-2">
+                          <Collapsible>
+                            <CollapsibleTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                className="w-full justify-between"
+                              >
+                                {t('observations')}
+                                <ChevronsUpDown className="h-5 w-5" />
+                              </Button>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent className="pt-2">
+                              <Textarea
+                                id={`activation-notes-${slotKey}`}
+                                value={slot.data.activationNotes}
+                                onChange={(e) =>
+                                  handleSlotChange(e, slotKey, 'activationNotes')
+                                }
+                                autoComplete="off"
+                              />
+                            </CollapsibleContent>
+                          </Collapsible>
+                        </div>
 
-                        {slot.data.isPreExisting && (
-                          <div className="space-y-2 col-span-1 md:col-span-2">
-                            <Collapsible>
-                              <CollapsibleTrigger asChild>
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  className="w-full justify-between"
-                                >
-                                  {t('observations')}
-                                  <ChevronsUpDown className="h-5 w-5" />
-                                </Button>
-                              </CollapsibleTrigger>
-                              <CollapsibleContent className="pt-2">
-                                <Textarea
-                                  id={`activation-notes-${slotKey}`}
-                                  value={slot.data.activationNotes}
-                                  onChange={(e) =>
-                                    handleSlotChange(e, slotKey, 'activationNotes')
-                                  }
-                                  autoComplete="off"
-                                />
-                              </CollapsibleContent>
-                            </Collapsible>
-                          </div>
-                        )}
                       </div>
                       <div className="flex justify-end pt-4">
                             <Button onClick={() => handleConfirmSlot(slotKey)}>
