@@ -294,7 +294,10 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
               name="status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('clientStatus')}</FormLabel>
+                  <FormLabel>
+                    {t('clientStatus')}{' '}
+                    <span className="text-muted-foreground">(Inativo como padrão)</span>
+                  </FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     value={field.value}
