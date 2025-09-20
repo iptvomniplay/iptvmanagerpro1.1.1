@@ -187,7 +187,7 @@
     "reviewRegistration": "Revisar Cadastro",
     "reviewRegistrationDescription": "Por favor, revise os detalhes abaixo antes de confirmar.",
     "reviewClientRegistration": "Revisar Cadastro do Cliente",
-    "confirmAndSave": "Confirmar e Salvar",
+    "confirmAndSave": "Confirmar",
     "backToEdit": "Voltar para Editar",
     "panelDetails": "Detalhes do Painel",
     "subServerDetails": "Detalhes dos Servidores",
@@ -318,7 +318,9 @@
     "faltam": "faltam",
     "limitReached": "Limite de telas atingido",
     "allScreensFilled": "Todas as telas disponíveis foram preenchidas.",
-    "confirmAndNext": "Confirmar e Próximo"
+    "confirmAndSave": "Confirmar",
+    "pending": "Pendente",
+    "blocked": "Bloqueado"
 }
 
     

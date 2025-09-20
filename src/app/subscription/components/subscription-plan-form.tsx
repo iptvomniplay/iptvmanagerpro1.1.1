@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useData } from '@/hooks/use-data';
 import { useLanguage } from '@/hooks/use-language';
-import type { Server, SubServer, PlanType as PlanType, Client, SelectedPlan, PlanPeriod } from '@/lib/types';
+import type { Server, SubServer, PlanType as PlanType, Client, SelectedPlan, PlanPeriod, PlanStatus } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
@@ -150,6 +150,21 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
     setPlanValue(formatCurrency(numericValue));
   };
 
+  const getPlanStatus = (plan: SelectedPlan, client: Client): PlanStatus => {
+    const planId = `${plan.panel.id}-${plan.server.name}-${plan.plan.name}`;
+    const configuredAppsForPlan = client.applications?.filter(
+      app => app.planId === planId
+    ).length || 0;
+    
+    if (configuredAppsForPlan < plan.screens) {
+        return 'Pending';
+    }
+    
+    if (client.status === 'Expired') return 'Expired';
+    if (client.status === 'Inactive') return 'Blocked';
+    
+    return 'Active';
+  }
 
   const handleAddOrUpdatePlan = () => {
     if (selectedPanel && selectedServer && selectedPlan && numberOfScreens && selectedClient && planPeriod) {
@@ -199,6 +214,16 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
     ).length || 0;
     return plan.screens - configuredAppsForPlan;
   };
+  
+  const getStatusVariant = (status?: PlanStatus) => {
+    switch (status) {
+      case 'Active': return 'success';
+      case 'Pending': return 'warning';
+      case 'Expired':
+      case 'Blocked': return 'destructive';
+      default: return 'outline';
+    }
+  };
 
 
   return (
@@ -214,40 +239,46 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
           <CardContent>
             {selectedClient?.plans && selectedClient.plans.length > 0 ? (
                 <div className="space-y-3">
-                    {selectedClient.plans.map((item, index) => (
-                      <Card key={index} className="bg-muted/50 cursor-pointer" onClick={() => handleShowDetails(item)}>
-                        <CardHeader className="flex flex-row items-start justify-between p-4">
-                          <div className="space-y-1">
-                            <CardTitle className="text-lg">{item.plan.name}</CardTitle>
-                            <CardDescription>{item.panel.name} / {item.server.name}</CardDescription>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Button variant="outline" size="icon" className="h-9 w-9" onClick={(e) => { e.stopPropagation(); handleOpenForm(index); }}>
-                                <FilePenLine className="h-5 w-5" />
-                                <span className="sr-only">{t('edit')}</span>
-                            </Button>
-                            <Button variant="destructive" size="icon" className="h-9 w-9" onClick={(e) => { e.stopPropagation(); handleRemovePlan(index);}}>
-                                <X className="h-5 w-5" />
-                                <span className="sr-only">{t('delete')}</span>
-                            </Button>
-                          </div>
-                        </CardHeader>
-                        <CardContent className="p-4 pt-0 text-base text-muted-foreground">
-                           <div className="flex justify-between items-center">
-                              <div>
-                                  <span className="font-semibold text-card-foreground">{t('screens')}: </span>
-                                  <Badge variant="secondary" className="text-base">{item.screens}</Badge>
+                    {selectedClient.plans.map((item, index) => {
+                       const status = getPlanStatus(item, selectedClient);
+                       return (
+                          <Card key={index} className="bg-muted/50 cursor-pointer" onClick={() => handleShowDetails({...item, status})}>
+                            <CardHeader className="flex flex-row items-start justify-between p-4">
+                              <div className="space-y-1">
+                                <CardTitle className="text-lg">{item.plan.name}</CardTitle>
+                                <CardDescription>{item.panel.name} / {item.server.name}</CardDescription>
                               </div>
-                              <div>
-                                  <span className="font-semibold text-card-foreground">{t('value')}: </span>
-                                  <Badge variant={item.isCourtesy ? 'default' : 'outline'} className="text-base">
-                                      {item.isCourtesy ? t('courtesy') : formatCurrency(item.planValue)}
+                              <div className="flex items-center gap-1">
+                                <Button variant="outline" size="icon" className="h-9 w-9" onClick={(e) => { e.stopPropagation(); handleOpenForm(index); }}>
+                                    <FilePenLine className="h-5 w-5" />
+                                    <span className="sr-only">{t('edit')}</span>
+                                </Button>
+                                <Button variant="destructive" size="icon" className="h-9 w-9" onClick={(e) => { e.stopPropagation(); handleRemovePlan(index);}}>
+                                    <X className="h-5 w-5" />
+                                    <span className="sr-only">{t('delete')}</span>
+                                </Button>
+                              </div>
+                            </CardHeader>
+                            <CardContent className="p-4 pt-0 text-base text-muted-foreground">
+                               <div className="flex justify-between items-center">
+                                  <div>
+                                      <span className="font-semibold text-card-foreground">{t('screens')}: </span>
+                                      <Badge variant="secondary" className="text-base">{item.screens}</Badge>
+                                  </div>
+                                  <Badge variant={getStatusVariant(status)} className="text-base">
+                                      {t(status.toLowerCase() as any)}
                                   </Badge>
-                              </div>
-                           </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                                  <div>
+                                      <span className="font-semibold text-card-foreground">{t('value')}: </span>
+                                      <Badge variant={item.isCourtesy ? 'default' : 'outline'} className="text-base">
+                                          {item.isCourtesy ? t('courtesy') : formatCurrency(item.planValue)}
+                                      </Badge>
+                                  </div>
+                               </div>
+                            </CardContent>
+                          </Card>
+                       )
+                    })}
                 </div>
             ) : (
                 <div className="text-center py-10 text-muted-foreground">
@@ -367,6 +398,12 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
                           <Badge variant={planToShowDetails.isCourtesy ? 'default' : 'outline'} className="text-base mt-1">
                               {planToShowDetails.isCourtesy ? t('courtesy') : formatCurrency(planToShowDetails.planValue)}
                           </Badge>
+                       </div>
+                        <div>
+                          <p className="text-sm font-medium text-muted-foreground">{t('status')}</p>
+                           <Badge variant={getStatusVariant(planToShowDetails.status)} className="text-base mt-1">
+                                {t((planToShowDetails.status || 'pending').toLowerCase() as any)}
+                           </Badge>
                        </div>
                     </div>
                     <Separator />

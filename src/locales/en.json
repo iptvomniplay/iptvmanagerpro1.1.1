@@ -318,7 +318,9 @@
     "faltam": "remaining",
     "limitReached": "Screen Limit Reached",
     "allScreensFilled": "All available screens have been filled.",
-    "confirmAndNext": "Confirm & Next"
+    "confirmAndSave": "Confirm",
+    "pending": "Pending",
+    "blocked": "Blocked"
 }
 
     

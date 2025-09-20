@@ -32,6 +32,8 @@ export type Application = {
 
 export type PlanPeriod = '30d' | '3m' | '6m' | '1y';
 
+export type PlanStatus = 'Active' | 'Pending' | 'Expired' | 'Blocked';
+
 export type SelectedPlan = {
   panel: Server;
   server: SubServer;
@@ -41,6 +43,7 @@ export type SelectedPlan = {
   isCourtesy: boolean;
   planPeriod: PlanPeriod;
   dueDate?: number;
+  status?: PlanStatus;
 };
 
 
