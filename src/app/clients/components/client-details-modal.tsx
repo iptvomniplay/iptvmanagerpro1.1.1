@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import type { Client, SelectedPlan, Application, Phone, PlanStatus } from '@/lib/types';
+import type { Client, SelectedPlan, Application, Phone, PlanStatus, Server, SubServer } from '@/lib/types';
 import {
   Dialog,
   DialogContent,
@@ -64,6 +64,21 @@ const getAppStatus = (app: Application): 'Active' | 'Expired' => {
   return 'Active'; // Free licenses are always active
 };
 
+const getGenericStatusVariant = (status: Server['status'] | SubServer['status']) => {
+    switch (status) {
+      case 'Online':
+        return 'success';
+      case 'Offline':
+        return 'inactive';
+      case 'Suspended':
+        return 'destructive';
+      case 'Maintenance':
+        return 'warning';
+      default:
+        return 'outline';
+    }
+  };
+
 
 const PlanDetails = ({ plan, client }: { plan: SelectedPlan, client: Client }) => {
     const { t } = useLanguage();
@@ -104,8 +119,20 @@ const PlanDetails = ({ plan, client }: { plan: SelectedPlan, client: Client }) =
     return (
         <div className="space-y-4">
              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <DetailItem label={t('panel')} value={plan.panel.name} />
-                <DetailItem label={t('servers')} value={plan.server.name} />
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">{t('panel')}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <p className="text-lg">{plan.panel.name}</p>
+                    <Badge variant={getGenericStatusVariant(plan.panel.status)}>{t(plan.panel.status.toLowerCase() as any)}</Badge>
+                  </div>
+                </div>
+                 <div>
+                  <p className="text-sm font-medium text-muted-foreground">{t('servers')}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <p className="text-lg">{plan.server.name}</p>
+                    <Badge variant={getGenericStatusVariant(plan.server.status)}>{t(plan.server.status.toLowerCase() as any)}</Badge>
+                  </div>
+                </div>
                 <DetailItem label={t('plans')} value={plan.plan.name} />
                 <DetailItem label={t('screens')} value={plan.screens} />
                 <DetailItem label={t('planValue')} value={plan.isCourtesy ? t('courtesy') : plan.planValue} />
