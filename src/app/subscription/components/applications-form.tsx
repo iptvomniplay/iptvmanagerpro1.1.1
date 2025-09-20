@@ -13,7 +13,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { Switch } from '@/components/ui/switch';
-import { ChevronDown, PlusCircle, BookText } from 'lucide-react';
+import { ChevronDown, PlusCircle, BookText, ChevronsUpDown } from 'lucide-react';
 import { BirthdateInput } from '@/components/ui/birthdate-input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PhoneInputModal } from '@/components/ui/phone-input-modal';
@@ -452,17 +452,28 @@ export function ApplicationsForm({
 
                         {slot.data.isPreExisting && (
                           <div className="space-y-2 col-span-1 md:col-span-2">
-                            <Label htmlFor={`activation-notes-${slotKey}`} className="flex items-center gap-2">
-                              <BookText className="h-5 w-5" />
-                              Observações da Ativação
-                            </Label>
-                            <Textarea
-                              id={`activation-notes-${slotKey}`}
-                              value={slot.data.activationNotes}
-                              onChange={(e) => handleSlotChange(e, slotKey, 'activationNotes')}
-                              placeholder="Cliente informou que vence em Dezembro. Ativado por outro fornecedor..."
-                              autoComplete="off"
-                            />
+                            <Collapsible>
+                              <CollapsibleTrigger asChild>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  className="w-full justify-between"
+                                >
+                                  {t('observations')}
+                                  <ChevronsUpDown className="h-5 w-5" />
+                                </Button>
+                              </CollapsibleTrigger>
+                              <CollapsibleContent className="pt-2">
+                                <Textarea
+                                  id={`activation-notes-${slotKey}`}
+                                  value={slot.data.activationNotes}
+                                  onChange={(e) =>
+                                    handleSlotChange(e, slotKey, 'activationNotes')
+                                  }
+                                  autoComplete="off"
+                                />
+                              </CollapsibleContent>
+                            </Collapsible>
                           </div>
                         )}
                       </div>
