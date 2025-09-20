@@ -365,6 +365,7 @@
     "planNameRequired": "O nome do plano é obrigatório.",
     "paymentMethodFirst": "Por favor, selecione uma forma de pagamento primeiro!",
     "statusDefault": "Padrão 'Inativo'",
+    "expiresIn": "Expira em",
     "year": "ano",
     "years": "anos",
     "month": "mês",

@@ -200,7 +200,7 @@
     "phonePtBRPlaceholder": "(XX) XXXXX-XXXX",
     "ok": "OK",
     "currencyPlaceholderUSD": "$ 0.00",
-    "currencyPlaceholderBRL": "R$ 0,00",
+    "currencyPlaceholderBRL": "R$ 0.00",
     "dashboardClientsDesc": "A representation of managing clients.",
     "dashboardServersDesc": "A representation of servers.",
     "serverNameRequired": "Server name is required",
