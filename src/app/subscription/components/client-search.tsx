@@ -26,7 +26,7 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
   const { t } = useLanguage();
   const { clients } = useData();
   const [searchTerm, setSearchTerm] = React.useState('');
-  const [searchResults, setSearchResults] = React.useState<SearchResult[]>([]);
+  const [searchResults, setSearchResults] = React.useState<Client[]>([]);
   const [isFocused, setIsFocused] = React.useState(false);
   const searchRef = React.useRef<HTMLDivElement>(null);
 
@@ -37,29 +37,14 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
     }
 
     const normalizedTerm = normalizeString(searchTerm);
+    const numericTerm = searchTerm.replace(/\D/g, '');
 
-    const results: SearchResult[] = [];
-
-    clients.forEach((client) => {
-        // Match by name
-        if (normalizeString(client.name).includes(normalizedTerm)) {
-            results.push({ client, matchType: 'name', matchValue: client.name });
-            return; // Move to next client once a match is found
-        }
-
-        // Match by nickname
-        if (client.nickname && normalizeString(client.nickname).includes(normalizedTerm)) {
-            results.push({ client, matchType: 'nickname', matchValue: client.nickname });
-            return;
-        }
-
-        // Match by phone
-        const matchingPhone = client.phones.find((phone) =>
-            phone.number.replace(/\D/g, '').includes(searchTerm.replace(/\D/g, ''))
-        );
-        if (matchingPhone) {
-            results.push({ client, matchType: 'phone', matchValue: matchingPhone.number });
-        }
+    const results = clients.filter(client => {
+      const nameMatch = normalizeString(client.name).includes(normalizedTerm);
+      const nicknameMatch = client.nickname ? normalizeString(client.nickname).includes(normalizedTerm) : false;
+      const phoneMatch = client.phones.some(phone => phone.number.replace(/\D/g, '').includes(numericTerm));
+      
+      return nameMatch || nicknameMatch || phoneMatch;
     });
 
     setSearchResults(results);
@@ -116,21 +101,28 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
       {showResults && (
         <Card className="absolute top-full mt-2 w-full z-10 max-h-80 overflow-y-auto">
           <CardContent className="p-2">
-            {searchResults.map(({ client, matchType, matchValue }) => (
+            {searchResults.map((client) => (
               <div
                 key={client._tempId}
                 className="flex items-center justify-between p-3 rounded-md hover:bg-accent cursor-pointer"
                 onClick={() => handleSelectClient(client)}
               >
-                <div className="flex flex-col">
+                <div className="flex flex-col gap-1">
                   <p className="font-semibold">{client.name}</p>
-                   {matchType !== 'name' && (
-                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1">
-                        {matchType === 'nickname' && <UserRound className="h-3 w-3" />}
-                        {matchType === 'phone' && <Phone className="h-3 w-3" />}
-                        <span>{matchValue}</span>
-                     </div>
-                   )}
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    {client.nickname && (
+                        <div className="flex items-center gap-1.5">
+                            <UserRound className="h-3 w-3" />
+                            <span>{client.nickname}</span>
+                        </div>
+                    )}
+                    {client.phones.length > 0 && (
+                       <div className="flex items-center gap-1.5">
+                           <Phone className="h-3 w-3" />
+                           <span>{client.phones[0].number}</span>
+                       </div>
+                    )}
+                  </div>
                 </div>
                 <Badge variant={getStatusVariant(client.status)}>
                   {t(client.status.toLowerCase() as any)}
