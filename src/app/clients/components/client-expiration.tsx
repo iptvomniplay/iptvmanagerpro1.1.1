@@ -4,20 +4,28 @@ import * as React from 'react';
 import { Progress } from '@/components/ui/progress';
 import { parseISO, differenceInSeconds, add, endOfDay } from 'date-fns';
 import { useLanguage } from '@/hooks/use-language';
-import type { PlanPeriod } from '@/lib/types';
+import type { PlanPeriod, Test } from '@/lib/types';
 
 interface ClientExpirationProps {
   clientId: string;
-  registeredDate: string;
-  planPeriod: PlanPeriod;
   onExpire: () => void;
+  // Plan props
+  planStartDate?: string;
+  planPeriod?: PlanPeriod;
+  // Test props
+  testCreationDate?: string;
+  testDurationValue?: number;
+  testDurationUnit?: Test['durationUnit'];
 }
 
 export function ClientExpiration({
   clientId,
-  registeredDate,
-  planPeriod,
   onExpire,
+  planStartDate,
+  planPeriod,
+  testCreationDate,
+  testDurationValue,
+  testDurationUnit,
 }: ClientExpirationProps) {
   const { t } = useLanguage();
   const [remainingSeconds, setRemainingSeconds] = React.useState(0);
@@ -54,24 +62,32 @@ export function ClientExpiration({
 
 
   React.useEffect(() => {
-    if (!isClient || !planPeriod) return;
+    if (!isClient) return;
 
-    const registrationDate = parseISO(registeredDate);
+    let startDate: Date;
+    let expiration: Date;
 
-    const getDuration = (period: PlanPeriod) => {
-        switch (period) {
-            case '30d': return { days: 30 };
-            case '3m': return { months: 3 };
-            case '6m': return { months: 6 };
-            case '1y': return { years: 1 };
-            default: return {};
-        }
+    if (planPeriod && planStartDate) {
+      startDate = parseISO(planStartDate);
+      const getDuration = (period: PlanPeriod) => {
+          switch (period) {
+              case '30d': return { days: 30 };
+              case '3m': return { months: 3 };
+              case '6m': return { months: 6 };
+              case '1y': return { years: 1 };
+              default: return {};
+          }
+      }
+      expiration = endOfDay(add(startDate, getDuration(planPeriod)));
+    } else if (testCreationDate && testDurationValue && testDurationUnit) {
+      startDate = parseISO(testCreationDate);
+      const duration = { [testDurationUnit]: testDurationValue };
+      expiration = add(startDate, duration);
+    } else {
+      return; // Not enough data to calculate
     }
     
-    const expiration = endOfDay(add(registrationDate, getDuration(planPeriod)));
-    const now = new Date();
-    
-    setTotalDuration(differenceInSeconds(expiration, registrationDate));
+    setTotalDuration(differenceInSeconds(expiration, startDate));
 
     const intervalId = setInterval(() => {
       const now = new Date();
@@ -92,10 +108,10 @@ export function ClientExpiration({
     }, 1000);
 
     return () => clearInterval(intervalId);
-  }, [planPeriod, registeredDate, onExpire, hasExpired, isClient, formatRemainingTime]);
+  }, [planPeriod, planStartDate, testCreationDate, testDurationValue, testDurationUnit, onExpire, hasExpired, isClient, formatRemainingTime]);
 
-  if (!isClient || !planPeriod) {
-    return null; // Don't render on the server or if no due date
+  if (!isClient || (!planPeriod && !testDurationUnit)) {
+    return null; // Don't render on the server or if no due date info
   }
 
   const progressPercentage = (remainingSeconds / totalDuration) * 100;

@@ -209,71 +209,86 @@ export default function ClientsPageContent() {
           </TableHeader>
           <TableBody>
             {filteredClients.length > 0 ? (
-              filteredClients.map((client) => (
-                <TableRow key={client._tempId}>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Button variant="outline" className="h-auto font-semibold" onClick={() => handleViewDetails(client)}>
-                        {client.name}
-                      </Button>
-                      {hasPendingApps(client) && (
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <AlertTriangle className="h-5 w-5 text-yellow-500" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{t('pendingAppsWarning')}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={getStatusVariant(client.status)}>
-                      {t(client.status.toLowerCase() as any)}
-                    </Badge>
-                  </TableCell>
-                   <TableCell>
-                    {client.plans && client.plans.length > 0 && client.status === 'Active' ? (
-                        <ClientExpiration
-                            key={client._tempId}
-                            clientId={client.id}
-                            registeredDate={client.registeredDate} 
-                            planPeriod={client.plans[0].planPeriod}
-                            onExpire={() => updateClient({...client, status: 'Expired'})}
-                        />
-                    ) : null}
-                  </TableCell>
-                  <TableCell className="font-medium">
-                    {client.id || t('noId')}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-9 w-9 p-0">
-                          <span className="sr-only">{t('openMenu')}</span>
-                          <MoreHorizontal className="h-5 w-5" />
+              filteredClients.map((client) => {
+                const latestTest = client.status === 'Test' && client.tests && client.tests.length > 0 
+                  ? [...client.tests].sort((a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime())[0] 
+                  : null;
+
+                return (
+                  <TableRow key={client._tempId}>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" className="h-auto font-semibold" onClick={() => handleViewDetails(client)}>
+                          {client.name}
                         </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => { setSelectedClient(client); handleEditOpen(); }}>
-                          <FilePenLine className="mr-2 h-4 w-4" />
-                          {t('edit')}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => { setClientToDelete(client); setIsDeleteAlertOpen(true); }}
-                          className="text-destructive focus:text-destructive"
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          {t('delete')}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))
+                        {hasPendingApps(client) && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{t('pendingAppsWarning')}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={getStatusVariant(client.status)}>
+                        {t(client.status.toLowerCase() as any)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {client.status === 'Active' && client.plans && client.plans.length > 0 ? (
+                          <ClientExpiration
+                              key={`${client._tempId}-plan`}
+                              clientId={client._tempId}
+                              planStartDate={client.registeredDate} 
+                              planPeriod={client.plans[0].planPeriod}
+                              onExpire={() => updateClient({...client, status: 'Expired'})}
+                          />
+                      ) : client.status === 'Test' && latestTest ? (
+                          <ClientExpiration
+                              key={`${client._tempId}-test`}
+                              clientId={client._tempId}
+                              testCreationDate={latestTest.creationDate}
+                              testDurationValue={latestTest.durationValue}
+                              testDurationUnit={latestTest.durationUnit}
+                              onExpire={() => updateClient({...client, status: 'Expired'})}
+                          />
+                      ) : null}
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {client.id || t('noId')}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-9 w-9 p-0">
+                            <span className="sr-only">{t('openMenu')}</span>
+                            <MoreHorizontal className="h-5 w-5" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => { setSelectedClient(client); handleEditOpen(); }}>
+                            <FilePenLine className="mr-2 h-4 w-4" />
+                            {t('edit')}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => { setClientToDelete(client); setIsDeleteAlertOpen(true); }}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            {t('delete')}
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                )
+              })
             ) : (
               <TableRow>
                 <TableCell colSpan={5} className="h-28 text-center text-lg">
