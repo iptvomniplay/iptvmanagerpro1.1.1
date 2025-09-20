@@ -20,7 +20,7 @@ const badgeVariants = cva(
         warning:
             "border-transparent bg-chart-2 text-primary-foreground hover:bg-chart-2/80",
         inactive:
-            "border-transparent bg-black text-white dark:bg-black dark:text-white hover:bg-black/80",
+            "border-transparent bg-muted text-muted-foreground",
       },
     },
     defaultVariants: {
