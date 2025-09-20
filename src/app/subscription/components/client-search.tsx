@@ -24,17 +24,21 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
   const searchRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    const normalizedTerm = normalizeString(searchTerm);
     if (searchTerm.trim() === '') {
       setSearchResults([]);
       return;
     }
 
+    const normalizedTerm = normalizeString(searchTerm);
+    const numericTerm = searchTerm.replace(/\D/g, '');
+
     const results = clients.filter((client) => {
       const nameMatch = normalizeString(client.name).includes(normalizedTerm);
       const nicknameMatch = client.nickname ? normalizeString(client.nickname).includes(normalizedTerm) : false;
-      const phoneMatch = client.phones.some((phone) =>
-        phone.number.replace(/\D/g, '').includes(searchTerm.replace(/\D/g, ''))
+      
+      // Only search phone if the search term contains numbers
+      const phoneMatch = numericTerm.length > 0 && client.phones.some((phone) =>
+        phone.number.replace(/\D/g, '').includes(numericTerm)
       );
       
       return nameMatch || nicknameMatch || phoneMatch;
