@@ -24,12 +24,11 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
   const searchRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
+    const normalizedTerm = normalizeString(searchTerm);
     if (searchTerm.trim() === '') {
       setSearchResults([]);
       return;
     }
-
-    const normalizedTerm = normalizeString(searchTerm);
 
     const results = clients.filter((client) => {
       const nameMatch = normalizeString(client.name).includes(normalizedTerm);
