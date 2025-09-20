@@ -381,5 +381,6 @@
     "underDevelopment": "Esta área está em desenvolvimento.",
     "complete": "Completo",
     "currency": "BRL",
-    "screensStatus": "Status Telas"
+    "screensStatus": "Status Telas",
+    "noId": "Sem ID"
 }
