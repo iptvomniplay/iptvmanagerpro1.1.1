@@ -32,41 +32,47 @@ const DetailItem = ({ label, value }: { label: string; value?: string | number |
   );
 };
 
-const ValueDisplay = ({ value, isCourtesy }: { value?: number, isCourtesy?: boolean }) => {
-    const { t } = useLanguage();
-    const [isVisible, setIsVisible] = React.useState(false);
+const ValueDisplay = ({ value, isCourtesy }: { value?: number; isCourtesy?: boolean }) => {
+  const { t } = useLanguage();
+  const [isVisible, setIsVisible] = React.useState(false);
 
-    const formatCurrency = (val: number) => {
-        const currency = t('currency') === 'BRL' ? 'BRL' : 'USD';
-        const locale = t('currency') === 'BRL' ? 'pt-BR' : 'en-US';
-        return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(val);
-    }
-    
-    if (value === undefined) return null;
+  const formatCurrency = (val: number) => {
+    const currency = t('currency') === 'BRL' ? 'BRL' : 'USD';
+    const locale = t('currency') === 'BRL' ? 'pt-BR' : 'en-US';
+    return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(val);
+  };
 
+  if (value === undefined && !isCourtesy) return null;
+
+  const displayContent = () => {
+    if (!isVisible) return '•••••';
     if (isCourtesy) {
-        return (
-             <div>
-                <p className="text-sm font-medium text-muted-foreground">{t('value')}</p>
-                <Badge variant="default" className="text-base mt-1">
-                    {t('courtesy')}
-                </Badge>
-            </div>
-        )
+      return (
+        <Badge variant="default" className="text-base">
+          {t('courtesy')}
+        </Badge>
+      );
     }
+    return formatCurrency(value!);
+  };
 
-    return (
-        <div>
-            <p className="text-sm font-medium text-muted-foreground">{t('value')}</p>
-            <div className="flex items-center gap-2">
-                <p className="text-lg">{isVisible ? formatCurrency(value) : '•••••'}</p>
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsVisible(!isVisible)}>
-                    {isVisible ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                </Button>
-            </div>
-        </div>
-    )
-}
+  return (
+    <div>
+      <p className="text-sm font-medium text-muted-foreground">{t('value')}</p>
+      <div className="flex items-center gap-2">
+        <div className="text-lg">{displayContent()}</div>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => setIsVisible(!isVisible)}
+        >
+          {isVisible ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+        </Button>
+      </div>
+    </div>
+  );
+};
 
 export function SubscriptionPlanForm({ selectedClient, onPlanChange }: SubscriptionPlanFormProps) {
   const { t, language } = useLanguage();
