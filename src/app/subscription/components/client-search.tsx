@@ -30,10 +30,6 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
     }
 
     const normalizedTerm = normalizeString(searchTerm);
-    if (normalizedTerm.length < 3) {
-      setSearchResults([]);
-      return;
-    }
 
     const results = clients.filter((client) => {
       const nameMatch = normalizeString(client.name).includes(normalizedTerm);
