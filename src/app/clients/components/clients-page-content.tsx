@@ -38,6 +38,7 @@ import {
   Trash2,
   ChevronDown,
   CreditCard,
+  AlertTriangle,
 } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { useData } from '@/hooks/use-data';
@@ -139,6 +140,15 @@ export default function ClientsPageContent() {
         return 'outline';
     }
   };
+  
+  const hasPendingApps = (client: Client): boolean => {
+    if (client.status !== 'Active' || !client.plans || client.plans.length === 0) {
+      return false;
+    }
+    const totalScreens = client.plans.reduce((sum, plan) => sum + plan.screens, 0);
+    const configuredApps = client.applications?.length || 0;
+    return configuredApps < totalScreens;
+  };
 
   return (
     <>
@@ -202,9 +212,23 @@ export default function ClientsPageContent() {
               filteredClients.map((client) => (
                 <TableRow key={client._tempId}>
                   <TableCell>
-                    <Button variant="outline" className="h-auto font-semibold" onClick={() => handleViewDetails(client)}>
-                      {client.name}
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button variant="outline" className="h-auto font-semibold" onClick={() => handleViewDetails(client)}>
+                        {client.name}
+                      </Button>
+                      {hasPendingApps(client) && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Este cliente tem configurações de aplicativo pendentes.</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <Badge variant={getStatusVariant(client.status)}>

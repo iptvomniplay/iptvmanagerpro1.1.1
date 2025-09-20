@@ -101,16 +101,6 @@ export default function SubscriptionPage() {
       return false;
     }
 
-    const totalScreensFromPlans = selectedClient.plans.reduce((sum, plan) => sum + plan.screens, 0);
-    const totalApplications = selectedClient.applications?.length || 0;
-
-    if (totalApplications < totalScreensFromPlans) {
-      setValidationMessage(t('fillAllApplications'));
-      setActiveTab('plans');
-      plansTabRef.current?.focus();
-      return false;
-    }
-
     if (!manualId && selectedClient.status !== 'Active') {
       setValidationMessage(t('clientIdRequired'));
       setActiveTab('client');
