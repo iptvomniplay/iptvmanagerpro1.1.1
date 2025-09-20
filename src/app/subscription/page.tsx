@@ -54,7 +54,6 @@ export default function SubscriptionPage() {
   const [isSubscriptionSuccessModalOpen, setIsSubscriptionSuccessModalOpen] = React.useState(false);
 
   const plansTabRef = React.useRef<HTMLButtonElement>(null);
-  const appsTabRef = React.useRef<HTMLButtonElement>(null);
 
   const handleSelectClient = (client: Client | null) => {
     if (client) {
@@ -107,8 +106,8 @@ export default function SubscriptionPage() {
 
     if (totalApplications < totalScreensFromPlans) {
       setValidationMessage(t('fillAllApplications'));
-      setActiveTab('apps');
-      appsTabRef.current?.focus();
+      setActiveTab('plans');
+      plansTabRef.current?.focus();
       return false;
     }
 
@@ -183,17 +182,13 @@ export default function SubscriptionPage() {
 
         {selectedClient ? (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 gap-2 h-auto rounded-lg p-1 bg-transparent border-b-0">
+            <TabsList className="grid w-full grid-cols-2 gap-2 h-auto rounded-lg p-1 bg-transparent border-b-0">
               <TabsTrigger value="client" className="py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
                 <User className="mr-2 h-5 w-5" /> {t('client')}
               </TabsTrigger>
               <TabsTrigger ref={plansTabRef} value="plans" className="relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
-                {arePlansIncomplete && isValidationError && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
+                {(arePlansIncomplete || areAppsIncomplete) && isValidationError && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
                 <FileText className="mr-2 h-5 w-5" /> {t('subscriptionPlans')}
-              </TabsTrigger>
-              <TabsTrigger ref={appsTabRef} value="apps" disabled={(!isPlanAdded && arePlansIncomplete)} className={cn("relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary disabled:opacity-50 disabled:cursor-not-allowed", isPlanAdded && "animate-[flash-success_1.5s_ease-in-out]")}>
-                {areAppsIncomplete && totalScreensFromPlans > 0 && isValidationError && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
-                <AppWindow className="mr-2 h-5 w-5" /> {t('applications')}
               </TabsTrigger>
             </TabsList>
 
@@ -260,10 +255,7 @@ export default function SubscriptionPage() {
                   />
                 </CardContent>
               </Card>
-            </TabsContent>
-
-            <TabsContent value="apps" className="mt-6">
-              <Card>
+              <Card className="mt-6">
                 <CardHeader>
                   <CardTitle>{t('applications')}</CardTitle>
                   <CardDescription>{t('addApplicationDescription')}</CardDescription>
