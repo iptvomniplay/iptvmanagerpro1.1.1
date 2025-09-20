@@ -39,7 +39,7 @@ const DetailItem = ({
   label: string;
   value?: string | number | null;
 }) => {
-  if (!value && value !== 0) return null;
+  if (value === null || value === undefined || value === '') return null;
 
   return (
     <div>

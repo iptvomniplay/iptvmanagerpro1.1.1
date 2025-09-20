@@ -23,7 +23,7 @@ interface ConfirmationModalProps {
 }
 
 const DetailItem = ({ label, value }: { label: string; value?: string | number | null; }) => {
-  if (!value && value !== 0) return null;
+  if (value === null || value === undefined || value === '') return null;
   
   let displayValue = String(value);
 

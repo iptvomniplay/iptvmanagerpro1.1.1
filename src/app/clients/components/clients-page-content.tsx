@@ -247,7 +247,7 @@ export default function ClientsPageContent() {
                     ) : null}
                   </TableCell>
                   <TableCell className="font-medium">
-                    {client.id ? client.id : t('noId')}
+                    {client.id || t('noId')}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
