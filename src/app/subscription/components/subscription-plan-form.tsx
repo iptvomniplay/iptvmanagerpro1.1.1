@@ -10,16 +10,27 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
-import { X, Calendar as CalendarIcon, FilePenLine, PlusCircle } from 'lucide-react';
+import { X, Calendar as CalendarIcon, FilePenLine, PlusCircle, Eye } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { add, format, lastDayOfMonth } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { Separator } from '@/components/ui/separator';
 
 interface SubscriptionPlanFormProps {
     selectedClient: Client | null;
     onPlanChange: (plans: SelectedPlan[]) => void;
 }
+
+const DetailItem = ({ label, value }: { label: string; value?: string | number | null }) => {
+  if (value === null || value === undefined || value === '') return null;
+  return (
+    <div>
+      <p className="text-sm font-medium text-muted-foreground">{label}</p>
+      <p className="text-lg">{String(value)}</p>
+    </div>
+  );
+};
 
 export function SubscriptionPlanForm({ selectedClient, onPlanChange }: SubscriptionPlanFormProps) {
   const { t, language } = useLanguage();
@@ -27,6 +38,8 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
 
   const [isFormOpen, setIsFormOpen] = React.useState(false);
   const [editingPlanIndex, setEditingPlanIndex] = React.useState<number | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = React.useState(false);
+  const [planToShowDetails, setPlanToShowDetails] = React.useState<SelectedPlan | null>(null);
 
   const [selectedPanelId, setSelectedPanelId] = React.useState<string>('');
   const [selectedServerName, setSelectedServerName] = React.useState<string>('');
@@ -67,7 +80,6 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
         
         setSelectedPanelId(planToEdit.panel.id);
         
-        // Use timeouts to ensure state updates propagate for chained selects
         setTimeout(() => {
             setSelectedServerName(planToEdit.server.name);
             setTimeout(() => {
@@ -82,6 +94,11 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
         setIsCourtesy(planToEdit.isCourtesy);
     }
     setIsFormOpen(true);
+  };
+
+  const handleShowDetails = (plan: SelectedPlan) => {
+    setPlanToShowDetails(plan);
+    setIsDetailsModalOpen(true);
   };
 
   React.useEffect(() => {
@@ -189,18 +206,18 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
             {selectedClient?.plans && selectedClient.plans.length > 0 ? (
                 <div className="space-y-3">
                     {selectedClient.plans.map((item, index) => (
-                      <Card key={index} className="bg-muted/50">
+                      <Card key={index} className="bg-muted/50 cursor-pointer" onClick={() => handleShowDetails(item)}>
                         <CardHeader className="flex flex-row items-start justify-between p-4">
                           <div className="space-y-1">
                             <CardTitle className="text-lg">{item.plan.name}</CardTitle>
                             <CardDescription>{item.panel.name} / {item.server.name}</CardDescription>
                           </div>
                           <div className="flex items-center gap-1">
-                            <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => handleOpenForm(index)}>
+                            <Button variant="outline" size="icon" className="h-9 w-9" onClick={(e) => { e.stopPropagation(); handleOpenForm(index); }}>
                                 <FilePenLine className="h-5 w-5" />
                                 <span className="sr-only">{t('edit')}</span>
                             </Button>
-                            <Button variant="destructive" size="icon" className="h-9 w-9" onClick={() => handleRemovePlan(index)}>
+                            <Button variant="destructive" size="icon" className="h-9 w-9" onClick={(e) => { e.stopPropagation(); handleRemovePlan(index);}}>
                                 <X className="h-5 w-5" />
                                 <span className="sr-only">{t('delete')}</span>
                             </Button>
@@ -315,6 +332,49 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
               </DialogFooter>
           </DialogContent>
       </Dialog>
+
+      {planToShowDetails && (
+        <Dialog open={isDetailsModalOpen} onOpenChange={setIsDetailsModalOpen}>
+            <DialogContent className="sm:max-w-lg">
+                <DialogHeader>
+                    <DialogTitle>{t('details')} do Plano: {planToShowDetails.plan.name}</DialogTitle>
+                    <DialogDescription>
+                        Revise as informações do plano contratado pelo cliente.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
+                    <h3 className="text-lg font-semibold text-primary">{t('panelDetails')}</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <DetailItem label={t('panel')} value={planToShowDetails.panel.name} />
+                      <DetailItem label={t('servers')} value={planToShowDetails.server.name} />
+                    </div>
+                    <Separator />
+                    <h3 className="text-lg font-semibold text-primary">{t('subscriptionPlans')}</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <DetailItem label={t('plans')} value={planToShowDetails.plan.name} />
+                      <DetailItem label={t('screens')} value={planToShowDetails.screens} />
+                       <div>
+                          <p className="text-sm font-medium text-muted-foreground">{t('value')}</p>
+                          <Badge variant={planToShowDetails.isCourtesy ? 'default' : 'outline'} className="text-base mt-1">
+                              {planToShowDetails.isCourtesy ? t('courtesy') : formatCurrency(planToShowDetails.planValue)}
+                          </Badge>
+                       </div>
+                    </div>
+                    <Separator />
+                    <h3 className="text-lg font-semibold text-primary">Detalhes de Pagamento</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                        <DetailItem label="Período do Plano" value={periodOptions.find(p => p.value === planToShowDetails.planPeriod)?.label} />
+                        <DetailItem label={t('dueDate')} value={planToShowDetails.dueDate} />
+                    </div>
+
+                </div>
+                <DialogFooter>
+                    <Button onClick={() => setIsDetailsModalOpen(false)}>{t('ok')}</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+      )}
+
     </div>
   );
 }
