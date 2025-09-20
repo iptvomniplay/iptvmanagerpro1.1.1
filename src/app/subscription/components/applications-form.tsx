@@ -288,9 +288,9 @@ export function ApplicationsForm({
                   <CollapsibleTrigger asChild>
                     <div className="flex items-center justify-between py-4 px-6 cursor-pointer">
                         <div className="flex items-center gap-4">
-                            <CardTitle className="text-base">{`Tela ${index + 1}`}{planInfo ? ` (${planInfo.plan.name})` : ''}</CardTitle>
+                            <CardTitle className="text-base">{`${t('screens')} ${index + 1}`}{planInfo ? ` (${planInfo.plan.name})` : ''}</CardTitle>
                             <Badge variant={slot.status === 'complete' ? 'success' : 'secondary'}>
-                                {slot.status === 'complete' ? 'Completo' : 'Pendente'}
+                                {slot.status === 'complete' ? t('complete') : t('pending')}
                             </Badge>
                             {appStatus && (
                                 <Badge variant={appStatus === 'Active' ? 'success' : 'destructive'}>
@@ -307,7 +307,7 @@ export function ApplicationsForm({
                   <CollapsibleContent>
                     <CardContent className="pt-0 px-6 pb-6 space-y-6">
                       <div className="space-y-3 p-4 rounded-lg border bg-background">
-                        <Label className="text-base font-semibold">Este aplicativo já está ativado?</Label>
+                        <Label className="text-base font-semibold">{t('appAlreadyActivated')}</Label>
                         <RadioGroup
                           value={slot.data.isPreExisting ? 'yes' : 'no'}
                           onValueChange={(value: 'yes' | 'no') => handlePreExistingChange(value, slotKey)}
@@ -315,11 +315,11 @@ export function ApplicationsForm({
                         >
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="no" id={`pre-existing-no-${slotKey}`} />
-                            <Label htmlFor={`pre-existing-no-${slotKey}`} className="font-normal cursor-pointer">Não, é uma nova ativação</Label>
+                            <Label htmlFor={`pre-existing-no-${slotKey}`} className="font-normal cursor-pointer">{t('noNewActivation')}</Label>
                           </div>
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="yes" id={`pre-existing-yes-${slotKey}`} />
-                            <Label htmlFor={`pre-existing-yes-${slotKey}`} className="font-normal cursor-pointer">Sim, já está ativo</Label>
+                            <Label htmlFor={`pre-existing-yes-${slotKey}`} className="font-normal cursor-pointer">{t('yesAlreadyActive')}</Label>
                           </div>
                         </RadioGroup>
                       </div>
