@@ -214,7 +214,7 @@
     "testes": "Testes",
     "addTest": "Adicionar Teste",
     "viewTests": "Ver Todos os Testes",
-    "viewAllTests": "Ver Todos os Testes",
+    "viewAllTests": "Status dos Testes",
     "testManagementDescription": "Gerencie os testes dos seus clientes.",
     "addTestToClient": "Adicionar Teste ao Cliente",
     "addTestToClientDescription": "Pesquise por um cliente e preencha os detalhes do teste.",
