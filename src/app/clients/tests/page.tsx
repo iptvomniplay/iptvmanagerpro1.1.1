@@ -121,7 +121,7 @@ export default function ViewTestsPage() {
 
   const expiredTests: ClientWithTest[] = React.useMemo(() => {
     const tests = clients
-      .filter(client => client.status === 'Expired' && client.tests && client.tests.length > 0)
+      .filter(client => (client.status === 'Expired' || client.status === 'Inactive') && client.tests && client.tests.length > 0)
       .map(client => {
         const latestTest = [...client.tests!].sort((a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime())[0];
         const panelForTest = servers.find(s => s.id === latestTest.panelId);
