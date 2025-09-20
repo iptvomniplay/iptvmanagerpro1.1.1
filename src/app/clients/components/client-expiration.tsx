@@ -51,13 +51,21 @@ export function ClientExpiration({
     totalSeconds %= 3600;
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
+    
+    const parts = [];
+    if (years > 0) parts.push(`${years} ${t(years > 1 ? 'years' : 'year')}`);
+    if (months > 0) parts.push(`${months} ${t(months > 1 ? 'months' : 'month')}`);
+    if (days > 0) parts.push(`${days} ${t(days > 1 ? 'days' : 'day')}`);
+    if (hours > 0) parts.push(`${hours} ${t(hours > 1 ? 'hours' : 'hour')}`);
+    if (minutes > 0) parts.push(`${minutes}min`);
+    if (seconds > 0 && parts.length === 0) parts.push(`${seconds} ${t(seconds !== 1 ? 'seconds' : 'second')}`);
 
-    if (years > 0) return `${t('expiresIn')} ${years} ${t(years > 1 ? 'years' : 'year')}${months > 0 ? ` ${t('and')} ${months} ${t(months > 1 ? 'months' : 'month')}` : ''}`;
-    if (months > 0) return `${t('expiresIn')} ${months} ${t(months > 1 ? 'months' : 'month')}${days > 0 ? ` ${t('and')} ${days} ${t(days > 1 ? 'days' : 'day')}` : ''}`;
-    if (days > 0) return `${t('expiresIn')} ${days} ${t(days > 1 ? 'days' : 'day')}${hours > 0 ? ` ${t('and')} ${hours} ${t(hours > 1 ? 'hours' : 'hour')}` : ''}`;
-    if (hours > 0) return `${t('expiresIn')} ${hours} ${t(hours > 1 ? 'hours' : 'hour')}${minutes > 0 ? ` ${t('and')} ${minutes} min` : ''}`;
-    if (minutes > 0) return `${t('expiresIn')} ${minutes} ${t(minutes > 1 ? 'minutes' : 'minute')} ${t('and')} ${seconds} ${t('seconds')}`;
-    return `${t('expiresIn')} ${seconds} ${t(seconds !== 1 ? 'seconds' : 'second')}`;
+    if (parts.length === 0) return t('expired');
+    if (parts.length === 1) return parts[0];
+    
+    const firstPart = parts.slice(0, parts.length -1).join(', ');
+    const lastPart = parts[parts.length -1];
+    return `${firstPart} ${t('and')} ${lastPart}`;
   }, [t]);
 
 
