@@ -61,11 +61,9 @@ const TestList = ({ tests, onUpdateClient, onViewDetails, isExpiredList }: { tes
                 </TableHeader>
                 <TableBody>
                     {tests.map(({ client, test, panel }) => (
-                        <TableRow key={client._tempId}>
-                            <TableCell>
-                                <Button variant="link" onClick={() => onViewDetails(client)} className="p-0 h-auto font-semibold">
-                                  {client.name}
-                                </Button>
+                        <TableRow key={client._tempId} onClick={() => onViewDetails(client)} className="cursor-pointer">
+                            <TableCell className="font-semibold text-primary">
+                                {client.name}
                             </TableCell>
                             <TableCell>
                               <div className="flex flex-col gap-1">
@@ -92,7 +90,7 @@ const TestList = ({ tests, onUpdateClient, onViewDetails, isExpiredList }: { tes
                             </TableCell>
                             {!isExpiredList && (
                                 <TableCell className="text-right">
-                                    <Button variant="destructive" size="sm" onClick={() => handleInterruptTest(client)}>
+                                    <Button variant="destructive" size="sm" onClick={(e) => { e.stopPropagation(); handleInterruptTest(client);}}>
                                         {t('interruptTest')}
                                     </Button>
                                 </TableCell>
@@ -193,7 +191,7 @@ export default function ViewTestsPage() {
         </Card>
         <Card>
             <CardHeader>
-                <CardTitle>{t('viewAllTests')}</CardTitle>
+                <CardTitle>{t('statusDosTestes')}</CardTitle>
                 <CardDescription>
                   {activeTab === 'inProgress' ? t('testsInProgress') : t('testsConducted')}
                 </CardDescription>
