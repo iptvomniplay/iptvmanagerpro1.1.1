@@ -322,7 +322,10 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
     <div className="space-y-4">
       <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-4">
-            <CardTitle>{t('addedPlans')}</CardTitle>
+            <div>
+                <CardTitle>{t('subscriptionPlans')}</CardTitle>
+                <CardDescription>Planos contratados pelo cliente.</CardDescription>
+            </div>
             <Button onClick={() => handleOpenForm(null)} disabled={!selectedClient}>
                 <PlusCircle className="mr-2 h-4 w-4" />
                 {t('addPlan')}
