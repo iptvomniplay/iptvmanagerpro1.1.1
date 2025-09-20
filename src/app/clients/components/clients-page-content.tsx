@@ -79,14 +79,20 @@ export default function ClientsPageContent() {
     null
   );
 
-  const filteredClients = clients.filter((client) => {
+  const filteredClients = React.useMemo(() => {
     const normalizedSearchTerm = normalizeString(searchTerm);
-    const nameMatch = normalizeString(client.name).includes(normalizedSearchTerm);
-    const nicknameMatch = client.nickname && normalizeString(client.nickname).includes(normalizedSearchTerm);
-    const phoneMatch = client.phones.some(phone => normalizeString(phone.number).replace(/\D/g, '').includes(normalizedSearchTerm.replace(/\D/g, '')));
+    if (!normalizedSearchTerm) {
+      return clients;
+    }
+    return clients.filter((client) => {
+      const nameMatch = normalizeString(client.name).includes(normalizedSearchTerm);
+      const nicknameMatch = client.nickname && normalizeString(client.nickname).includes(normalizedSearchTerm);
+      const phoneMatch = client.phones.some(phone => normalizeString(phone.number).replace(/\D/g, '').includes(normalizedSearchTerm.replace(/\D/g, '')));
+      const idMatch = client.id && normalizeString(client.id).includes(normalizedSearchTerm);
 
-    return nameMatch || nicknameMatch || phoneMatch;
-  });
+      return nameMatch || nicknameMatch || phoneMatch || idMatch;
+    });
+  }, [clients, searchTerm]);
 
   const handleViewDetails = (client: Client) => {
     setSelectedClient(client);
