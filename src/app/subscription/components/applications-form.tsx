@@ -256,15 +256,18 @@ export function ApplicationsForm({
           <Collapsible key={slotKey} asChild open={openSlots[slotKey]} onOpenChange={(isOpen) => setOpenSlots(p => ({...p, [slotKey]: isOpen}))}>
             <Card className={cn("bg-muted/20", slot.status === 'complete' && 'border-green-500/50')}>
               <CardHeader className="flex flex-row items-center justify-between py-4">
-                 <CollapsibleTrigger asChild>
-                    <div className="flex items-center gap-4 cursor-pointer flex-1">
-                      <CardTitle className="text-base">{`Tela ${index + 1}`}{planInfo ? ` (${planInfo.plan.name})` : ''}</CardTitle>
-                      <Badge variant={slot.status === 'complete' ? 'success' : 'secondary'}>
+                 <div className="flex items-center gap-4">
+                    <CardTitle className="text-base">{`Tela ${index + 1}`}{planInfo ? ` (${planInfo.plan.name})` : ''}</CardTitle>
+                    <Badge variant={slot.status === 'complete' ? 'success' : 'secondary'}>
                         {slot.status === 'complete' ? 'Completo' : 'Pendente'}
-                      </Badge>
-                      <ChevronDown className="h-5 w-5 transition-transform data-[state=open]:rotate-0 data-[state=closed]:-rotate-90" />
-                    </div>
-                  </CollapsibleTrigger>
+                    </Badge>
+                 </div>
+                 <CollapsibleTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <ChevronDown className="h-5 w-5 transition-transform data-[state=open]:rotate-0 data-[state=closed]:-rotate-90" />
+                        <span className="sr-only">{t('expand')}</span>
+                    </Button>
+                </CollapsibleTrigger>
               </CardHeader>
               <CollapsibleContent>
                 <CardContent className="pt-0 space-y-4">
