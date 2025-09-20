@@ -29,27 +29,26 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
       return;
     }
 
-    const numericOnlyTerm = searchTerm.replace(/\D/g, '');
-    const isNumericSearch = numericOnlyTerm.length > 0 && /^[0-9()-\s+]+$/.test(searchTerm);
+    const hasLetters = /[a-zA-Z]/.test(searchTerm);
 
-    let results: Client[] = [];
-
-    if (isNumericSearch) {
-      // Search only by phone number if the input is numeric
-      results = clients.filter((client) =>
-        client.phones.some((phone) =>
-          phone.number.replace(/\D/g, '').includes(numericOnlyTerm)
-        )
-      );
-    } else {
-      // Otherwise, search by name or nickname
-      const normalizedTerm = normalizeString(searchTerm);
-      results = clients.filter((client) => {
+    const results = clients.filter((client) => {
+      if (hasLetters) {
+        // Text search: only on name and nickname
+        const normalizedTerm = normalizeString(searchTerm);
         const nameMatch = normalizeString(client.name).includes(normalizedTerm);
-        const nicknameMatch = client.nickname ? normalizeString(client.nickname).includes(normalizedTerm) : false;
+        const nicknameMatch = client.nickname
+          ? normalizeString(client.nickname).includes(normalizedTerm)
+          : false;
         return nameMatch || nicknameMatch;
-      });
-    }
+      } else {
+        // Numeric search: only on phone numbers
+        const numericOnlyTerm = searchTerm.replace(/\D/g, '');
+        return client.phones.some((phone) =>
+          phone.number.replace(/\D/g, '').includes(numericOnlyTerm)
+        );
+      }
+    });
+
     setSearchResults(results);
   }, [searchTerm, clients]);
 
