@@ -551,7 +551,7 @@ export function ServerForm({ server }: ServerFormProps) {
         toast({
             variant: "destructive",
             title: t('validationError'),
-            description: "Selecione uma forma de pagamento primeiro!",
+            description: t('paymentMethodFirst'),
         });
     }
   };
