@@ -386,6 +386,8 @@
     "currency": "BRL",
     "screensStatus": "Status Telas",
     "noId": "Sem ID",
-    "testsInProgress": "Listando testes atualmente em andamento",
-    "noTestsInProgress": "Não há testes em andamento no momento."
+    "testsInProgress": "Testes em Andamento",
+    "noTestsInProgress": "Não há testes em andamento no momento.",
+    "noTestsFound": "Nenhum teste encontrado.",
+    "expiredTests": "Testes Expirados"
 }

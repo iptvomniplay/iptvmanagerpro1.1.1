@@ -4,7 +4,6 @@ import * as React from 'react';
 import { useLanguage } from '@/hooks/use-language';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
 import { TestModal } from '../components/test-modal';
 import { useData } from '@/hooks/use-data';
 import type { Client, Test, Server as ServerType } from '@/lib/types';
@@ -14,6 +13,8 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { normalizeString } from '@/lib/utils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { format } from 'date-fns';
 
 type ClientWithTest = {
   client: Client;
@@ -21,11 +22,70 @@ type ClientWithTest = {
   panel?: ServerType;
 }
 
+const TestList = ({ tests, onUpdateClient }: { tests: ClientWithTest[], onUpdateClient: (client: Client) => void }) => {
+    const { t } = useLanguage();
+
+    if (tests.length === 0) {
+        return (
+            <div className="text-center py-10 text-muted-foreground">
+                <p>{t('noTestsFound')}</p>
+            </div>
+        );
+    }
+    
+    return (
+        <div className="rounded-xl border shadow-sm">
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>{t('client')}</TableHead>
+                        <TableHead>{t('panel')}/{t('servers')}</TableHead>
+                        <TableHead>{t('testPackage')}</TableHead>
+                        <TableHead>{t('expiresIn')}</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {tests.map(({ client, test, panel }) => (
+                        <TableRow key={client._tempId}>
+                            <TableCell className="font-medium">{client.name}</TableCell>
+                            <TableCell>
+                              <div className="flex flex-col gap-1">
+                                <Badge variant="secondary" className="text-base">{panel?.name || test.panelId}</Badge>
+                                <Badge variant="outline" className="text-base">{test.subServerName}</Badge>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                               <Badge variant="outline">{test.package}</Badge>
+                            </TableCell>
+                            <TableCell>
+                                {client.status === 'Test' ? (
+                                    <ClientExpiration
+                                        key={`${client._tempId}-test-list`}
+                                        clientId={client._tempId}
+                                        testCreationDate={test.creationDate}
+                                        testDurationValue={test.durationValue}
+                                        testDurationUnit={test.durationUnit}
+                                        onExpire={() => onUpdateClient({...client, status: 'Expired'})}
+                                    />
+                                ) : (
+                                    <span className="text-muted-foreground">{t('expired')}</span>
+                                )}
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </div>
+    );
+};
+
+
 export default function ViewTestsPage() {
   const { t } = useLanguage();
   const { clients, servers, updateClient } = useData();
   const [isTestModalOpen, setIsTestModalOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [activeTab, setActiveTab] = React.useState('inProgress');
 
   const testsInProgress: ClientWithTest[] = React.useMemo(() => {
     const tests = clients
@@ -47,6 +107,26 @@ export default function ViewTestsPage() {
 
   }, [clients, servers, searchTerm]);
 
+  const expiredTests: ClientWithTest[] = React.useMemo(() => {
+    const tests = clients
+      .filter(client => client.status === 'Expired' && client.tests && client.tests.length > 0)
+      .map(client => {
+        const latestTest = [...client.tests!].sort((a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime())[0];
+        const panelForTest = servers.find(s => s.id === latestTest.panelId);
+        return { client, test: latestTest, panel: panelForTest };
+      });
+      
+    if (!searchTerm) {
+      return tests;
+    }
+
+    const normalizedSearchTerm = normalizeString(searchTerm);
+    return tests.filter(({ client }) => 
+      normalizeString(client.name).includes(normalizedSearchTerm)
+    );
+  }, [clients, servers, searchTerm]);
+  
+
   return (
     <>
       <div className="space-y-8">
@@ -64,67 +144,35 @@ export default function ViewTestsPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader>
-            <CardTitle>{t('viewAllTests')}</CardTitle>
-            <CardDescription>{t('testsInProgress')}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="relative w-full max-w-sm">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input
-                    type="search"
-                    placeholder={t('searchClientPlaceholder')}
-                    className="pl-10"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    autoComplete="off"
-                />
-            </div>
-            {testsInProgress.length > 0 ? (
-                <div className="rounded-xl border shadow-sm">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>{t('client')}</TableHead>
-                                <TableHead>{t('panel')}/{t('servers')}</TableHead>
-                                <TableHead>{t('testPackage')}</TableHead>
-                                <TableHead>{t('expiresIn')}</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {testsInProgress.map(({ client, test, panel }) => (
-                                <TableRow key={client._tempId}>
-                                    <TableCell className="font-medium">{client.name}</TableCell>
-                                    <TableCell>
-                                      <div className="flex flex-col gap-1">
-                                        <Badge variant="secondary" className="text-base">{panel?.name || test.panelId}</Badge>
-                                        <Badge variant="outline" className="text-base">{test.subServerName}</Badge>
-                                      </div>
-                                    </TableCell>
-                                    <TableCell>
-                                       <Badge variant="outline">{test.package}</Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        <ClientExpiration
-                                            key={`${client._tempId}-test-list`}
-                                            clientId={client._tempId}
-                                            testCreationDate={test.creationDate}
-                                            testDurationValue={test.durationValue}
-                                            testDurationUnit={test.durationUnit}
-                                            onExpire={() => updateClient({...client, status: 'Expired'})}
-                                        />
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-            ) : (
-              <div className="text-center py-10 text-muted-foreground">
-                  <p>{t('noTestsInProgress')}</p>
-              </div>
-            )}
-          </CardContent>
+            <CardHeader>
+                <CardTitle>{t('viewAllTests')}</CardTitle>
+                <CardDescription>{t('testsInProgress')}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="inProgress">{t('testsInProgress')}</TabsTrigger>
+                        <TabsTrigger value="expired">{t('expiredTests')}</TabsTrigger>
+                    </TabsList>
+                    <div className="relative w-full max-w-sm mt-4">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        <Input
+                            type="search"
+                            placeholder={t('searchClientPlaceholder')}
+                            className="pl-10"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            autoComplete="off"
+                        />
+                    </div>
+                    <TabsContent value="inProgress" className="mt-4">
+                        <TestList tests={testsInProgress} onUpdateClient={updateClient} />
+                    </TabsContent>
+                    <TabsContent value="expired" className="mt-4">
+                        <TestList tests={expiredTests} onUpdateClient={updateClient} />
+                    </TabsContent>
+                </Tabs>
+            </CardContent>
         </Card>
       </div>
       <TestModal isOpen={isTestModalOpen} onClose={() => setIsTestModalOpen(false)} />

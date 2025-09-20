@@ -386,6 +386,8 @@
     "currency": "USD",
     "screensStatus": "Screens Status",
     "noId": "No ID",
-    "testsInProgress": "Listing tests currently in progress",
-    "noTestsInProgress": "There are no tests in progress at the moment."
+    "testsInProgress": "Tests in Progress",
+    "noTestsInProgress": "There are no tests in progress at the moment.",
+    "noTestsFound": "No tests found.",
+    "expiredTests": "Expired Tests"
 }
