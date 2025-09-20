@@ -159,23 +159,10 @@ export default function ClientsPageContent() {
               <span className="ml-2">{t('subscription')}</span>
           </Button>
           
-          <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                  <Button size="lg" variant="outline" className="flex-1">
-                      <TestTube/>
-                      <span className="ml-2">{t('testButtonLabel')}</span>
-                      <ChevronDown className="ml-2 h-5 w-5" />
-                  </Button>
-              </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setIsTestModalOpen(true)}>
-                    {t('addTest')}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push('/clients/tests')}>
-                    {t('viewTests')}
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Button onClick={() => router.push('/clients/tests')} size="lg" className="flex-1">
+              <TestTube/>
+              <span className="ml-2">{t('testes')}</span>
+          </Button>
 
           <Button onClick={() => router.push('/clients/new')} size="lg" className="flex-1">
               <PlusCircle/>
