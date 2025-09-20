@@ -392,5 +392,8 @@
     "testsConducted": "Testes Realizados",
     "interruptTest": "Interromper",
     "testHistory": "Histórico de Testes",
-    "testOnDate": "Teste em {date}"
+    "testOnDate": "Teste em {date}",
+    "startTime": "Início",
+    "endTime": "Término",
+    "interrupted": "Interrompido"
 }

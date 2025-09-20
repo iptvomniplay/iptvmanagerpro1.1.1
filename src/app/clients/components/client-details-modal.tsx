@@ -22,7 +22,7 @@ import {
   CollapsibleContent,
 } from '@/components/ui/collapsible';
 import { BookText, ChevronsUpDown, AppWindow, FileText as FileTextIcon } from 'lucide-react';
-import { isPast, parseISO, format } from 'date-fns';
+import { isPast, parseISO, format, add } from 'date-fns';
 import { useData } from '@/hooks/use-data';
 
 interface ClientDetailsModalProps {
@@ -222,18 +222,42 @@ const AppDetails = ({ app }: { app: Application }) => {
     )
 }
 
-const TestDetails = ({ test, panel }: { test: Test; panel?: Server }) => {
+const TestDetails = ({ test, panel, clientStatus }: { test: Test; panel?: Server; clientStatus: Client['status'] }) => {
   const { t } = useLanguage();
+
+  const startDate = parseISO(test.creationDate);
+  const expirationDate = add(startDate, { [test.durationUnit]: test.durationValue });
+  const isInterrupted = clientStatus === 'Inactive' && new Date() < expirationDate;
+  const endDate = isInterrupted ? new Date() : expirationDate;
+
+  const testStatus = isInterrupted
+    ? 'interrupted'
+    : (new Date() >= expirationDate ? 'expired' : 'active');
+
+  const getStatusVariant = () => {
+    switch (testStatus) {
+      case 'active': return 'success';
+      case 'interrupted': return 'warning';
+      case 'expired': return 'destructive';
+      default: return 'outline';
+    }
+  };
+
   return (
     <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
-        <h4 className="font-semibold">
-        {t('testOnDate', { date: format(parseISO(test.creationDate), 'dd/MM/yyyy HH:mm') })}
-      </h4>
+      <div className="flex justify-between items-start">
+        <h4 className="font-semibold text-base">
+          {t('testOnDate', { date: format(startDate, 'dd/MM/yyyy') })}
+        </h4>
+        <Badge variant={getStatusVariant()}>{t(testStatus)}</Badge>
+      </div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
         <DetailItem label={t('panel')} value={panel?.name || test.panelId} />
         <DetailItem label={t('servers')} value={test.subServerName} />
         <DetailItem label={t('testPackage')} value={test.package} />
         <DetailItem label={t('testDuration')} value={`${test.durationValue} ${t(test.durationUnit)}`} />
+        <DetailItem label={t('startTime')} value={format(startDate, 'dd/MM/yyyy HH:mm')} />
+        <DetailItem label={t('endTime')} value={format(endDate, 'dd/MM/yyyy HH:mm')} />
       </div>
     </div>
   );
@@ -388,7 +412,7 @@ export function ClientDetailsModal({
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-4 pt-4">
                   {clientTests.map((test, index) => (
-                    <TestDetails key={index} test={test} panel={servers.find(s => s.id === test.panelId)} />
+                    <TestDetails key={index} test={test} panel={servers.find(s => s.id === test.panelId)} clientStatus={client.status} />
                   ))}
                 </CollapsibleContent>
               </Collapsible>
