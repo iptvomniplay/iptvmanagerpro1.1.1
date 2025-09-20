@@ -389,5 +389,6 @@
     "noTestsInProgress": "Não há testes em andamento no momento.",
     "noTestsFound": "Nenhum teste encontrado.",
     "expiredTests": "Testes Expirados",
-    "testsConducted": "Testes Realizados"
+    "testsConducted": "Testes Realizados",
+    "interruptTest": "Interromper"
 }

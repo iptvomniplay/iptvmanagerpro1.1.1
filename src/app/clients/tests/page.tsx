@@ -22,8 +22,12 @@ type ClientWithTest = {
   panel?: ServerType;
 }
 
-const TestList = ({ tests, onUpdateClient }: { tests: ClientWithTest[], onUpdateClient: (client: Client) => void }) => {
+const TestList = ({ tests, onUpdateClient, isExpiredList }: { tests: ClientWithTest[], onUpdateClient: (client: Client) => void, isExpiredList?: boolean }) => {
     const { t } = useLanguage();
+
+    const handleInterruptTest = (client: Client) => {
+        onUpdateClient({ ...client, status: 'Inactive' });
+    }
 
     if (tests.length === 0) {
         return (
@@ -42,6 +46,7 @@ const TestList = ({ tests, onUpdateClient }: { tests: ClientWithTest[], onUpdate
                         <TableHead>{t('panel')}/{t('servers')}</TableHead>
                         <TableHead>{t('testPackage')}</TableHead>
                         <TableHead>{t('expiresIn')}</TableHead>
+                        {!isExpiredList && <TableHead className="text-right">{t('actions')}</TableHead>}
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -71,6 +76,13 @@ const TestList = ({ tests, onUpdateClient }: { tests: ClientWithTest[], onUpdate
                                     <span className="text-muted-foreground">{t('expired')}</span>
                                 )}
                             </TableCell>
+                            {!isExpiredList && (
+                                <TableCell className="text-right">
+                                    <Button variant="destructive" size="sm" onClick={() => handleInterruptTest(client)}>
+                                        {t('interruptTest')}
+                                    </Button>
+                                </TableCell>
+                            )}
                         </TableRow>
                     ))}
                 </TableBody>
@@ -171,7 +183,7 @@ export default function ViewTestsPage() {
                         <TestList tests={testsInProgress} onUpdateClient={updateClient} />
                     </TabsContent>
                     <TabsContent value="expired" className="mt-4">
-                        <TestList tests={expiredTests} onUpdateClient={updateClient} />
+                        <TestList tests={expiredTests} onUpdateClient={updateClient} isExpiredList={true} />
                     </TabsContent>
                 </Tabs>
             </CardContent>
