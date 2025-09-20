@@ -62,6 +62,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { add, isFuture, parseISO } from 'date-fns';
 
 
 export type ClientFormValues = Omit<Client, 'id' | 'registeredDate'>;
@@ -149,6 +150,16 @@ export default function ClientsPageContent() {
     const configuredApps = client.applications?.length || 0;
     return configuredApps < totalScreens;
   };
+  
+  const hasActiveTest = (client: Client): boolean => {
+    if (!client.tests || client.tests.length === 0) {
+      return false;
+    }
+    return client.tests.some(test => {
+      const expirationDate = add(parseISO(test.creationDate), { [test.durationUnit]: test.durationValue });
+      return isFuture(expirationDate);
+    });
+  };
 
   return (
     <>
@@ -200,6 +211,8 @@ export default function ClientsPageContent() {
                 const latestTest = client.status === 'Test' && client.tests && client.tests.length > 0 
                   ? [...client.tests].sort((a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime())[0] 
                   : null;
+                
+                const clientHasActiveTest = client.status === 'Active' && hasActiveTest(client);
 
                 return (
                   <TableRow key={client._tempId}>
@@ -208,6 +221,20 @@ export default function ClientsPageContent() {
                         <Button variant="outline" className="h-auto font-semibold" onClick={() => handleViewDetails(client)}>
                           {client.name}
                         </Button>
+                        
+                        {clientHasActiveTest && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <TestTube className="h-5 w-5 text-blue-500" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{t('clientWithActiveTest')}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+
                         {hasPendingApps(client) && (
                           <TooltipProvider>
                             <Tooltip>

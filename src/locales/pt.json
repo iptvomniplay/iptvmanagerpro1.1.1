@@ -395,5 +395,6 @@
     "testOnDate": "Teste em {date}",
     "startTime": "Início",
     "endTime": "Término",
-    "interrupted": "Interrompido"
+    "interrupted": "Interrompido",
+    "clientWithActiveTest": "Cliente com teste ativo"
 }
