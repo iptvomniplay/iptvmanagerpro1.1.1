@@ -16,7 +16,6 @@ interface DataContextType {
   updateServer: (serverData: Server) => void;
   deleteServer: (serverId: string) => void;
   addTestToClient: (clientId: string, testData: Omit<Test, 'creationDate'>) => void;
-  saveClientsToStorage: () => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -25,49 +24,46 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [clients, setClients] = useState<Client[]>([]);
   const [servers, setServers] = useState<Server[]>([]);
   const { toast } = useToast();
-  const [toastShown, setToastShown] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    if (toastShown) return;
+    if (typeof window === 'undefined') return;
 
+    // Load clients
     try {
       const storedClients = localStorage.getItem('clients');
-      if (storedClients && storedClients !== '[]') {
-        toast({
-            title: "Verificação do Navegador",
-            description: "Mestre, verifiquei e SIM, existem dados de clientes salvos no localStorage do seu navegador."
-        });
-        setClients(JSON.parse(storedClients));
-      } else {
-        toast({
-            title: "Verificação do Navegador",
-            description: "Mestre, verifiquei e NÃO, não há dados de clientes salvos no localStorage do seu navegador. O sistema está limpo."
-        });
-        const clientsWithTempId = initialClients.map(c => ({...c, _tempId: `temp_${Date.now()}_${Math.random()}`}));
-        setClients(clientsWithTempId);
-        if(clientsWithTempId.length > 0) {
-          localStorage.setItem('clients', JSON.stringify(clientsWithTempId));
-        }
-      }
+      const clientsWithTempId = initialClients.map(c => ({...c, _tempId: c._tempId || `temp_${Date.now()}_${Math.random()}`}));
+      setClients(storedClients ? JSON.parse(storedClients) : clientsWithTempId);
     } catch (error) {
       console.error('Failed to load clients from localStorage', error);
-      const clientsWithTempId = initialClients.map(c => ({...c, _tempId: `temp_${Date.now()}_${Math.random()}`}));
+      const clientsWithTempId = initialClients.map(c => ({...c, _tempId: c._tempId || `temp_${Date.now()}_${Math.random()}`}));
       setClients(clientsWithTempId);
     }
-    setToastShown(true);
-  }, [toast, toastShown]);
-  
-  useEffect(() => {
-    // Apenas para dados de servidor, que não são persistidos.
-    setServers(initialServers);
+
+    // Load servers
+    try {
+      const storedServers = localStorage.getItem('servers');
+      setServers(storedServers ? JSON.parse(storedServers) : initialServers);
+    } catch (error) {
+      console.error('Failed to load servers from localStorage', error);
+      setServers(initialServers);
+    }
+    
+    setIsLoaded(true);
   }, []);
 
+  useEffect(() => {
+    if (isLoaded) {
+      toast({
+        title: "Verificação do Navegador Concluída",
+        description: "Mestre, o sistema agora está configurado para salvar e carregar todos os dados de clientes e servidores diretamente no seu navegador. Seus cadastros estão seguros entre as sessões."
+      });
+    }
+  }, [isLoaded, toast]);
 
-  const saveClientsToStorage = useCallback((updatedClients: Client[]) => {
-    try {
-      localStorage.setItem('clients', JSON.stringify(updatedClients));
-    } catch (error) {
-      console.error('Failed to save clients to localStorage', error);
+  const saveDataToStorage = useCallback(<T,>(key: string, data: T[]) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(key, JSON.stringify(data));
     }
   }, []);
 
@@ -82,10 +78,10 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             plans: [],
         };
         const updatedClients = [newClient, ...prevClients];
-        saveClientsToStorage(updatedClients);
+        saveDataToStorage('clients', updatedClients);
         return updatedClients;
     });
-  }, [saveClientsToStorage]);
+  }, [saveDataToStorage]);
 
   const updateClient = useCallback((clientData: Client, skipSave = false) => {
     setClients(prevClients => {
@@ -95,19 +91,19 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           : c
       );
       if (!skipSave) {
-        saveClientsToStorage(updatedClients);
+        saveDataToStorage('clients', updatedClients);
       }
        return updatedClients;
     });
-  }, [saveClientsToStorage]);
+  }, [saveDataToStorage]);
 
   const deleteClient = useCallback((tempId: string) => {
     setClients(prevClients => {
       const updatedClients = prevClients.filter(c => c._tempId !== tempId);
-      saveClientsToStorage(updatedClients);
+      saveDataToStorage('clients', updatedClients);
       return updatedClients;
     });
-  }, [saveClientsToStorage]);
+  }, [saveDataToStorage]);
 
   const addServer = useCallback((serverData: Omit<Server, 'id' | 'status'>) => {
     setServers(prevServers => {
@@ -118,18 +114,26 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         subServers: serverData.subServers || [],
         };
         const updatedServers = [newServer, ...prevServers];
-        // NOTE: Servers are not persisted to localStorage in this implementation
+        saveDataToStorage('servers', updatedServers);
         return updatedServers;
     });
-  }, []);
+  }, [saveDataToStorage]);
 
   const updateServer = useCallback((serverData: Server) => {
-    setServers(prevServers => prevServers.map(s => (s.id === serverData.id ? {...s, ...serverData} : s)));
-  }, []);
+    setServers(prevServers => {
+      const updatedServers = prevServers.map(s => (s.id === serverData.id ? {...s, ...serverData} : s));
+      saveDataToStorage('servers', updatedServers);
+      return updatedServers;
+    });
+  }, [saveDataToStorage]);
 
   const deleteServer = useCallback((serverId: string) => {
-    setServers(prevServers => prevServers.filter(s => s.id !== serverId));
-  }, []);
+    setServers(prevServers => {
+      const updatedServers = prevServers.filter(s => s.id !== serverId);
+      saveDataToStorage('servers', updatedServers);
+      return updatedServers;
+    });
+  }, [saveDataToStorage]);
 
   const addTestToClient = useCallback((clientId: string, testData: Omit<Test, 'creationDate'>) => {
     const newTest: Test = {
@@ -143,11 +147,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             }
             return client;
         });
-        saveClientsToStorage(updatedClients);
+        saveDataToStorage('clients', updatedClients);
         return updatedClients;
       }
     );
-  }, [saveClientsToStorage]);
+  }, [saveDataToStorage]);
 
   const value = {
     clients,
@@ -159,7 +163,6 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     updateServer,
     deleteServer,
     addTestToClient,
-    saveClientsToStorage: () => saveClientsToStorage(clients),
   };
   
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
