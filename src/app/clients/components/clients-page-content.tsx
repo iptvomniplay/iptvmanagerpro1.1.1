@@ -226,7 +226,10 @@ export default function ClientsPageContent() {
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger>
-                                <TestTube className="h-5 w-5 text-blue-500" />
+                                 <Badge variant="warning" className="text-base">
+                                    <TestTube className="h-4 w-4 mr-1" />
+                                    {t('test')}
+                                </Badge>
                               </TooltipTrigger>
                               <TooltipContent>
                                 <p>{t('clientWithActiveTest')}</p>

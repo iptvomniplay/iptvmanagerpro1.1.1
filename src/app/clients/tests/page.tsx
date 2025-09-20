@@ -233,7 +233,7 @@ export default function ViewTestsPage() {
           onClose={() => setIsDetailsModalOpen(false)}
           client={selectedClient}
           onEdit={() => {}}
-          onDelete={() => {}}
+          onDelete={handleDeleteRequest}
           isReadOnly={true}
         />
       )}
