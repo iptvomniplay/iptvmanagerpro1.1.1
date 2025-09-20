@@ -42,8 +42,9 @@
     "editClientDescription": "Update the details for this client.",
     "registerNewClientDescription": "Fill in the form to add a new client to the system.",
     "areYouSure": "Are you absolutely sure?",
-    "deleteClientWarning": "This action cannot be undone. This will permanently delete the client record for",
-    "deleteServerWarning": "This action cannot be undone. This will permanently delete the server record for",
+    "deleteClientWarning": "Do you really want to delete the client",
+    "deleteServerWarning": "Do you really want to delete the server",
+    "deletePlanWarning": "Do you really want to delete the plan",
     "cancel": "Cancel",
     "continue": "Continue",
     "fullName": "Full Name",
@@ -328,3 +329,4 @@
 
 
     
+

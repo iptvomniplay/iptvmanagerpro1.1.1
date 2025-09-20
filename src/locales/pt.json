@@ -42,8 +42,9 @@
     "editClientDescription": "Atualize os detalhes para este cliente.",
     "registerNewClientDescription": "Preencha o formulário para adicionar um novo cliente ao sistema.",
     "areYouSure": "Você tem certeza absoluta?",
-    "deleteClientWarning": "Esta ação não pode ser desfeita. Isso excluirá permanentemente o registro do cliente para",
-    "deleteServerWarning": "Esta ação não pode ser desfeita. Isso excluirá permanentemente o registro do servidor para",
+    "deleteClientWarning": "Deseja realmente deletar o cliente",
+    "deleteServerWarning": "Deseja realmente deletar o servidor",
+    "deletePlanWarning": "Deseja realmente deletar o plano",
     "cancel": "Cancelar",
     "continue": "Continuar",
     "fullName": "Nome Completo",
@@ -328,3 +329,4 @@
 
 
     
+

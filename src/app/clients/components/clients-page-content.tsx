@@ -316,13 +316,12 @@ export default function ClientsPageContent() {
           <AlertDialogHeader>
             <AlertDialogTitle className="text-xl">{t('areYouSure')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('deleteClientWarning')}{' '}
-              <span className="font-semibold">{clientToDelete?.name}</span>.
+              {t('deleteClientWarning')} <span className="font-semibold">{clientToDelete?.name}</span>?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>{t('continue')}</AlertDialogAction>
+            <AlertDialogAction onClick={handleDelete}>{t('delete')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

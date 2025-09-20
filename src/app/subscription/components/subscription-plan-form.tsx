@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { X, Calendar as CalendarIcon, FilePenLine, PlusCircle, Eye, AlertTriangle, EyeOff, ChevronsUpDown, BookText } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -97,6 +98,10 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
   const [nextDueDate, setNextDueDate] = React.useState<Date | null>(null);
   const [observations, setObservations] = React.useState('');
 
+  const [isDeletePlanAlertOpen, setIsDeletePlanAlertOpen] = React.useState(false);
+  const [planIndexToDelete, setPlanIndexToDelete] = React.useState<number | null>(null);
+
+
   const selectedPanel = panels.find((p) => p.id === selectedPanelId);
   const availableServers = selectedPanel?.subServers || [];
   const selectedServer = availableServers.find((s) => s.name === selectedServerName);
@@ -127,11 +132,18 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
         
         setSelectedPanelId(planToEdit.panel.id);
         
+        // Use timeout to ensure state updates sequentially
         setTimeout(() => {
-            setSelectedServerName(planToEdit.server.name);
-            setTimeout(() => {
-                setSelectedPlanName(planToEdit.plan.name);
-            }, 0);
+            const currentPanel = panels.find(p => p.id === planToEdit.panel.id);
+            if (currentPanel && currentPanel.subServers) {
+                setSelectedServerName(planToEdit.server.name);
+                setTimeout(() => {
+                    const currentServer = currentPanel.subServers.find(s => s.name === planToEdit.server.name);
+                    if (currentServer) {
+                      setSelectedPlanName(planToEdit.plan.name);
+                    }
+                }, 0);
+            }
         }, 0);
         
         setNumberOfScreens(planToEdit.screens);
@@ -261,11 +273,18 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
     }
   };
 
-  const handleRemovePlan = (indexToRemove: number) => {
-    if (selectedClient && selectedClient.plans) {
-      const newPlans = selectedClient.plans.filter((_, index) => index !== indexToRemove);
+  const handleDeleteRequest = (index: number) => {
+    setPlanIndexToDelete(index);
+    setIsDeletePlanAlertOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedClient && selectedClient.plans && planIndexToDelete !== null) {
+      const newPlans = selectedClient.plans.filter((_, index) => index !== planIndexToDelete);
       onPlanChange(newPlans);
     }
+    setPlanIndexToDelete(null);
+    setIsDeletePlanAlertOpen(false);
   };
   
   const formatCurrency = (value?: number) => {
@@ -326,7 +345,7 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
                                     <FilePenLine className="h-5 w-5" />
                                     <span className="sr-only">{t('edit')}</span>
                                 </Button>
-                                <Button variant="destructive" size="icon" className="h-9 w-9" onClick={(e) => { e.stopPropagation(); handleRemovePlan(index);}}>
+                                <Button variant="destructive" size="icon" className="h-9 w-9" onClick={(e) => { e.stopPropagation(); handleDeleteRequest(index);}}>
                                     <X className="h-5 w-5" />
                                     <span className="sr-only">{t('delete')}</span>
                                 </Button>
@@ -530,6 +549,21 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
             </DialogContent>
         </Dialog>
       )}
+
+      <AlertDialog open={isDeletePlanAlertOpen} onOpenChange={setIsDeletePlanAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('areYouSure')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('deletePlanWarning')} <span className="font-bold">{selectedClient?.plans && planIndexToDelete !== null ? selectedClient.plans[planIndexToDelete].plan.name : ''}</span>?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setIsDeletePlanAlertOpen(false)}>{t('cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete}>{t('delete')}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
     </div>
   );

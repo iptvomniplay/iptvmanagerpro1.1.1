@@ -30,7 +30,7 @@ export function DeleteServerAlert({ isOpen, onClose, onConfirm, serverName }: De
           <AlertDialogTitle className="text-xl">{t('areYouSure')}</AlertDialogTitle>
           <AlertDialogDescription>
             {t('deleteServerWarning')}{' '}
-            <span className="font-semibold">{serverName}</span>.
+            <span className="font-semibold">{serverName}</span>?
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
