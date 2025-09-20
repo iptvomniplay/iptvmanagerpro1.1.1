@@ -29,6 +29,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
+import { isPast, parseISO } from 'date-fns';
 
 
 interface ApplicationsFormProps {
@@ -59,6 +60,20 @@ type ApplicationSlot = {
   data: Application;
   status: 'pending' | 'complete';
 };
+
+const getAppStatus = (app: Application): 'Active' | 'Expired' => {
+  if (app.isPreExisting) return 'Active';
+  if (app.licenseType === 'Anual' && app.licenseDueDate) {
+    try {
+      const dueDate = parseISO(app.licenseDueDate);
+      return isPast(dueDate) ? 'Expired' : 'Active';
+    } catch (e) {
+      return 'Active';
+    }
+  }
+  return 'Active';
+};
+
 
 export function ApplicationsForm({
   selectedClient,
@@ -265,6 +280,7 @@ export function ApplicationsForm({
             {appSlots.map((slot, index) => {
               const slotKey = `${slot.planId}-${slot.screenNumber}`;
               const planInfo = addedPlans.find(p => `${p.panel.id}-${p.server.name}-${p.plan.name}` === slot.planId);
+              const appStatus = slot.status === 'complete' ? getAppStatus(slot.data) : null;
               
               return (
               <Collapsible key={slotKey} asChild open={openSlots[slotKey] ?? false} onOpenChange={(isOpen) => setOpenSlots(p => ({...p, [slotKey]: isOpen}))}>
@@ -276,6 +292,11 @@ export function ApplicationsForm({
                             <Badge variant={slot.status === 'complete' ? 'success' : 'secondary'}>
                                 {slot.status === 'complete' ? 'Completo' : 'Pendente'}
                             </Badge>
+                            {appStatus && (
+                                <Badge variant={appStatus === 'Active' ? 'success' : 'destructive'}>
+                                {t(appStatus.toLowerCase() as any)}
+                                </Badge>
+                            )}
                         </div>
                         <Button variant="ghost" size="icon" className="h-8 w-8">
                             <ChevronDown className="h-5 w-5 transition-transform data-[state=open]:rotate-0 data-[state=closed]:-rotate-90" />
