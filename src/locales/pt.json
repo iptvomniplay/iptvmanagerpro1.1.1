@@ -143,10 +143,10 @@
     "creditBalance": "Saldo de Créditos",
     "creditBalanceDescription": "Visualize e gerencie o saldo de créditos de cada painel.",
     "buyCredits": "Comprar Créditos",
-    "registrationAddedSuccess": "Cadastro adicionado com sucesso",
+    "registrationAddedSuccess": "Assinatura adicionada com sucesso",
     "newServerSuccess": "Novo servidor foi cadastrado e o formulário está pronto para o próximo.",
     "editServerSuccess": "Os detalhes do servidor foram atualizados.",
-    "newClientSuccess": "Novo cliente foi cadastrado.",
+    "newClientSuccess": "A nova assinatura do cliente foi salva.",
     "editClientSuccess": "Os detalhes do cliente foram atualizados.",
     "invalidUrl": "Por favor, insira uma URL válida.",
     "nameMustBeAtLeast2": "O nome deve ter pelo menos 2 caracteres.",
@@ -319,7 +319,6 @@
     "faltam": "faltam",
     "limitReached": "Limite de telas atingido",
     "allScreensFilled": "Todas as telas disponíveis foram preenchidas.",
-    "confirmAndSave": "Confirmar",
     "pending": "Pendente",
     "blocked": "Bloqueado"
 }
@@ -329,4 +328,5 @@
 
 
     
+
 
