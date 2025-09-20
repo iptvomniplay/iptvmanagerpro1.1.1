@@ -32,8 +32,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Load clients
     try {
       const storedClients = localStorage.getItem('clients');
-      const clientsWithTempId = initialClients.map(c => ({...c, _tempId: c._tempId || `temp_${Date.now()}_${Math.random()}`}));
-      setClients(storedClients ? JSON.parse(storedClients) : clientsWithTempId);
+      if (storedClients) {
+          setClients(JSON.parse(storedClients));
+      } else {
+        const clientsWithTempId = initialClients.map(c => ({...c, _tempId: c._tempId || `temp_${Date.now()}_${Math.random()}`}));
+        setClients(clientsWithTempId);
+      }
     } catch (error) {
       console.error('Failed to load clients from localStorage', error);
       const clientsWithTempId = initialClients.map(c => ({...c, _tempId: c._tempId || `temp_${Date.now()}_${Math.random()}`}));
@@ -43,7 +47,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Load servers
     try {
       const storedServers = localStorage.getItem('servers');
-      setServers(storedServers ? JSON.parse(storedServers) : initialServers);
+      if (storedServers) {
+        setServers(JSON.parse(storedServers));
+      } else {
+        setServers(initialServers);
+      }
     } catch (error) {
       console.error('Failed to load servers from localStorage', error);
       setServers(initialServers);
@@ -51,15 +59,6 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     
     setIsLoaded(true);
   }, []);
-
-  useEffect(() => {
-    if (isLoaded) {
-      toast({
-        title: "Verificação do Navegador Concluída",
-        description: "Mestre, o sistema agora está configurado para salvar e carregar todos os dados de clientes e servidores diretamente no seu navegador. Seus cadastros estão seguros entre as sessões."
-      });
-    }
-  }, [isLoaded, toast]);
 
   const saveDataToStorage = useCallback(<T,>(key: string, data: T[]) => {
     if (typeof window !== 'undefined') {
