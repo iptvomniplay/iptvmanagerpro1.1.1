@@ -85,9 +85,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const updateClient = useCallback((clientData: Client, skipSave = false) => {
     setClients(prevClients => {
        const updatedClients = prevClients.map(c => 
-        (c._tempId && c._tempId === clientData._tempId) || (c.id && c.id === clientData.id)
-          ? { ...c, ...clientData } 
-          : c
+        (c._tempId === clientData._tempId) ? { ...c, ...clientData } : c
       );
       if (!skipSave) {
         saveDataToStorage('clients', updatedClients);

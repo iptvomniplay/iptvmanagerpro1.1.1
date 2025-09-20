@@ -10,13 +10,6 @@ import { Badge } from '@/components/ui/badge';
 import { Search, UserRound, Phone } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 
-type SearchResult = {
-  client: Client;
-  matchType: 'name' | 'nickname' | 'phone';
-  matchValue: string;
-};
-
-
 interface ClientSearchProps {
   onSelectClient: (client: Client) => void;
   selectedClient: Client | null;
@@ -42,7 +35,7 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
     const results = clients.filter(client => {
       const nameMatch = normalizeString(client.name).includes(normalizedTerm);
       const nicknameMatch = client.nickname ? normalizeString(client.nickname).includes(normalizedTerm) : false;
-      const phoneMatch = client.phones.some(phone => phone.number.replace(/\D/g, '').includes(numericTerm));
+      const phoneMatch = numericTerm.length > 0 && client.phones.some(phone => phone.number.replace(/\D/g, '').includes(numericTerm));
       
       return nameMatch || nicknameMatch || phoneMatch;
     });
