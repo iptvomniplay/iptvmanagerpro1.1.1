@@ -545,6 +545,17 @@ export function ServerForm({ server }: ServerFormProps) {
     setMainFormErrorFields([]);
   };
 
+  const handleHasInitialStockClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!paymentType) {
+        e.preventDefault();
+        toast({
+            variant: "destructive",
+            title: t('validationError'),
+            description: "Selecione uma forma de pagamento primeiro!",
+        });
+    }
+  };
+
   return (
     <>
       <Form {...form}>
@@ -839,11 +850,19 @@ export function ServerForm({ server }: ServerFormProps) {
                   control={control}
                   name="hasInitialStock"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow-sm md:w-1/2">
+                    <FormItem 
+                      className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow-sm md:w-1/2"
+                      onClick={(e: React.MouseEvent<HTMLDivElement>) => handleHasInitialStockClick(e as unknown as React.MouseEvent<HTMLButtonElement>)}
+                    >
                       <FormControl>
                         <Checkbox
                           checked={field.value}
-                          onCheckedChange={field.onChange}
+                          onCheckedChange={(checked) => {
+                            if (paymentType) {
+                              field.onChange(checked);
+                            }
+                          }}
+                          disabled={!paymentType}
                         />
                       </FormControl>
                       <div className="space-y-1 leading-none">
