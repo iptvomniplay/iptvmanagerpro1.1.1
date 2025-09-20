@@ -15,7 +15,7 @@ const translations: Record<Language, Translations> = {
 interface LanguageContextType {
   language: Language;
   setLanguage: (language: Language) => void;
-  t: (key: keyof Translations) => string;
+  t: (key: keyof Translations | string) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -35,8 +35,9 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setLanguageState(lang);
   };
 
-  const t = useCallback((key: keyof Translations): string => {
-    return translations[language][key] || (key as string);
+  const t = useCallback((key: keyof Translations | string): string => {
+    const translation = translations[language][key as keyof Translations];
+    return translation || (key as string);
   }, [language]);
 
   return (
