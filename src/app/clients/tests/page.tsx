@@ -146,7 +146,9 @@ export default function ViewTestsPage() {
         <Card>
             <CardHeader>
                 <CardTitle>{t('viewAllTests')}</CardTitle>
-                <CardDescription>{t('testsInProgress')}</CardDescription>
+                <CardDescription>
+                  {activeTab === 'inProgress' ? t('testsInProgress') : t('testsConducted')}
+                </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

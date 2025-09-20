@@ -213,8 +213,7 @@
     "testButtonLabel": "Test",
     "testes": "Tests",
     "addTest": "Add Test",
-    "viewTests": "View All Tests",
-    "viewAllTests": "View All Tests",
+    "viewAllTests": "Test Status",
     "testManagementDescription": "Manage your client tests.",
     "addTestToClient": "Add Test to Client",
     "addTestToClientDescription": "Search for a client and fill in the test details.",
@@ -389,5 +388,6 @@
     "testsInProgress": "Tests in Progress",
     "noTestsInProgress": "There are no tests in progress at the moment.",
     "noTestsFound": "No tests found.",
-    "expiredTests": "Expired Tests"
+    "expiredTests": "Expired Tests",
+    "testsConducted": "Conducted Tests"
 }

@@ -213,7 +213,6 @@
     "testButtonLabel": "Teste",
     "testes": "Testes",
     "addTest": "Adicionar Teste",
-    "viewTests": "Ver Todos os Testes",
     "viewAllTests": "Status dos Testes",
     "testManagementDescription": "Gerencie os testes dos seus clientes.",
     "addTestToClient": "Adicionar Teste ao Cliente",
@@ -389,5 +388,6 @@
     "testsInProgress": "Testes em Andamento",
     "noTestsInProgress": "Não há testes em andamento no momento.",
     "noTestsFound": "Nenhum teste encontrado.",
-    "expiredTests": "Testes Expirados"
+    "expiredTests": "Testes Expirados",
+    "testsConducted": "Testes Realizados"
 }
