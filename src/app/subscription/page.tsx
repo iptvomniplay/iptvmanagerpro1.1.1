@@ -50,11 +50,8 @@ export default function SubscriptionPage() {
   const [activeTab, setActiveTab] = React.useState('client');
   const [isValidationError, setIsValidationError] = React.useState(false);
   const [validationMessage, setValidationMessage] = React.useState('');
-  const [isPlanAdded, setIsPlanAdded] = React.useState(false);
   const [isIdSaveSuccessModalOpen, setIsIdSaveSuccessModalOpen] = React.useState(false);
   const [isSubscriptionSuccessModalOpen, setIsSubscriptionSuccessModalOpen] = React.useState(false);
-
-  const plansTabRef = React.useRef<HTMLButtonElement>(null);
 
   const handleSelectClient = (client: Client | null) => {
     if (client) {
@@ -101,6 +98,12 @@ export default function SubscriptionPage() {
       document.getElementById('manual-client-id')?.focus();
       return false;
     }
+    
+     if (!selectedClient.plans || selectedClient.plans.length === 0) {
+      setValidationMessage(t('addAtLeastOnePlan'));
+      setActiveTab('plans');
+      return false;
+    }
 
     return true;
   };
@@ -136,16 +139,11 @@ export default function SubscriptionPage() {
 
   const getStatusVariant = (status: Client['status']) => {
     switch (status) {
-      case 'Active':
-        return 'success';
-      case 'Inactive':
-        return 'inactive';
-      case 'Expired':
-        return 'destructive';
-      case 'Test':
-        return 'warning';
-      default:
-        return 'outline';
+      case 'Active': return 'success';
+      case 'Inactive': return 'inactive';
+      case 'Expired': return 'destructive';
+      case 'Test': return 'warning';
+      default: return 'outline';
     }
   };
 
@@ -170,7 +168,7 @@ export default function SubscriptionPage() {
               <TabsTrigger value="client" className="py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
                 <User className="mr-2 h-5 w-5" /> {t('client')}
               </TabsTrigger>
-              <TabsTrigger ref={plansTabRef} value="plans" className="relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
+              <TabsTrigger value="plans" className="relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
                 {(arePlansIncomplete || areAppsIncomplete) && isValidationError && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
                 <FileText className="mr-2 h-5 w-5" /> {t('subscriptionPlans')}
               </TabsTrigger>
@@ -241,32 +239,15 @@ export default function SubscriptionPage() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="plans" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('subscriptionPlans')}</CardTitle>
-                  <CardDescription>{t('addSubscriptionPlanDescription')}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <SubscriptionPlanForm
-                    selectedClient={selectedClient}
-                    onPlanChange={(plans) => handleUpdateClient({ plans })}
-                    onPlanAdded={() => { setIsPlanAdded(true); setTimeout(() => setIsPlanAdded(false), 2000); }}
-                  />
-                </CardContent>
-              </Card>
-              <Card className="mt-6">
-                <CardHeader>
-                  <CardTitle>{t('applications')}</CardTitle>
-                  <CardDescription>{t('addApplicationDescription')}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ApplicationsForm
-                    selectedClient={selectedClient}
-                    onUpdateApplications={(applications) => handleUpdateClient({ applications })}
-                  />
-                </CardContent>
-              </Card>
+            <TabsContent value="plans" className="mt-6 space-y-6">
+              <SubscriptionPlanForm
+                selectedClient={selectedClient}
+                onPlanChange={(plans) => handleUpdateClient({ plans })}
+              />
+              <ApplicationsForm
+                selectedClient={selectedClient}
+                onUpdateApplications={(applications) => handleUpdateClient({ applications })}
+              />
             </TabsContent>
 
           </Tabs>
@@ -279,7 +260,6 @@ export default function SubscriptionPage() {
             </CardHeader>
           </Card>
         )}
-
       </div>
 
       <div className="mt-auto flex justify-end items-center gap-4 pt-8">
@@ -290,7 +270,6 @@ export default function SubscriptionPage() {
         )}
       </div>
 
-      {/* Alertas */}
       <AlertDialog open={isValidationError} onOpenChange={setIsValidationError}>
         <AlertDialogContent>
           <AlertDialogHeader>
