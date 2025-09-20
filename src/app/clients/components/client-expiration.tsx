@@ -57,7 +57,6 @@ export function ClientExpiration({
     const hours = Math.floor(totalSeconds / 3600);
     totalSeconds %= 3600;
     const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
     
     const parts = [];
     if (years > 0) parts.push(`${years} ${t(years > 1 ? 'years' : 'year')}`);
@@ -65,9 +64,12 @@ export function ClientExpiration({
     if (days > 0) parts.push(`${days} ${t(days > 1 ? 'days' : 'day')}`);
     if (hours > 0) parts.push(`${hours} ${t(hours > 1 ? 'hours' : 'hour')}`);
     if (minutes > 0) parts.push(`${minutes}min`);
-    if (seconds > 0 && parts.length === 0) parts.push(`${seconds} ${t(seconds !== 1 ? 'seconds' : 'second')}`);
 
-    if (parts.length === 0) return t('expired');
+    if (parts.length === 0) {
+      const seconds = totalSeconds % 60;
+      if (seconds > 0) return `${seconds} ${t(seconds !== 1 ? 'seconds' : 'second')}`;
+      return t('expired');
+    }
     if (parts.length === 1) return parts[0];
     
     const firstPart = parts.slice(0, parts.length -1).join(', ');
