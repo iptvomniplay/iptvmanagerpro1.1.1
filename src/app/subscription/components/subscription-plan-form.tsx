@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Textarea } from '@/components/ui/textarea';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface SubscriptionPlanFormProps {
     selectedClient: Client | null;
@@ -216,12 +217,36 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
   const handleAddOrUpdatePlan = () => {
     if (selectedPanel && selectedServer && selectedPlan && numberOfScreens && selectedClient && planPeriod) {
       const numericValue = parseFloat(planValue.replace(/[^0-9,-]+/g, "").replace(',', '.')) || 0;
-      const newPlan: SelectedPlan = {
-          panel: selectedPanel, server: selectedServer, plan: selectedPlan,
-          screens: numberOfScreens, planValue: isCourtesy ? 0 : numericValue,
-          isCourtesy: isCourtesy, planPeriod: planPeriod, dueDate: dueDate,
-          observations: observations
-      };
+
+      let newPlan: SelectedPlan;
+
+      if (editingPlanIndex !== null) {
+          const originalPlan = selectedClient.plans[editingPlanIndex];
+          newPlan = {
+              ...originalPlan,
+              panel: selectedPanel,
+              server: selectedServer,
+              plan: selectedPlan,
+              screens: numberOfScreens,
+              planValue: isCourtesy ? 0 : numericValue,
+              isCourtesy: isCourtesy,
+              planPeriod: planPeriod,
+              dueDate: dueDate,
+              observations: observations,
+          };
+      } else {
+          newPlan = {
+              panel: selectedPanel,
+              server: selectedServer,
+              plan: selectedPlan,
+              screens: numberOfScreens,
+              planValue: isCourtesy ? 0 : numericValue,
+              isCourtesy: isCourtesy,
+              planPeriod: planPeriod,
+              dueDate: dueDate,
+              observations: observations,
+          };
+      }
       
       let newPlans: SelectedPlan[];
       if (editingPlanIndex !== null) {
