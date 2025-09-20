@@ -195,28 +195,9 @@ export function ClientDetailsModal({
           </div>
           <Separator />
           
-          <Collapsible>
-            <CollapsibleTrigger className="flex items-center justify-between w-full font-semibold text-xl text-primary">
-              <div className="flex items-center gap-2">
-                <BookText className="h-5 w-5" />
-                <h3>{t('observations')}</h3>
-              </div>
-              <ChevronsUpDown className="h-5 w-5" />
-            </CollapsibleTrigger>
-            <CollapsibleContent className="pt-4">
-              <Textarea
-                value={client.observations || ''}
-                readOnly
-                placeholder={t('observationsPlaceholder')}
-                className="min-h-[120px] text-base"
-                autoComplete="off"
-              />
-            </CollapsibleContent>
-          </Collapsible>
 
            {client.plans && client.plans.length > 0 && (
             <>
-                <Separator />
                 <Collapsible defaultOpen>
                     <CollapsibleTrigger className="flex items-center justify-between w-full font-semibold text-xl text-primary">
                       <div className="flex items-center gap-2">
@@ -240,12 +221,12 @@ export function ClientDetailsModal({
                         ))}
                     </CollapsibleContent>
                 </Collapsible>
+                <Separator />
             </>
           )}
 
           {client.applications && client.applications.length > 0 && (
             <>
-                <Separator />
                 <Collapsible defaultOpen>
                     <CollapsibleTrigger className="flex items-center justify-between w-full font-semibold text-xl text-primary">
                       <div className="flex items-center gap-2">
@@ -269,8 +250,28 @@ export function ClientDetailsModal({
                         ))}
                     </CollapsibleContent>
                 </Collapsible>
+                <Separator />
             </>
           )}
+
+          <Collapsible>
+            <CollapsibleTrigger className="flex items-center justify-between w-full font-semibold text-xl text-primary">
+              <div className="flex items-center gap-2">
+                <BookText className="h-5 w-5" />
+                <h3>{t('observations')}</h3>
+              </div>
+              <ChevronsUpDown className="h-5 w-5" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pt-4">
+              <Textarea
+                value={client.observations || ''}
+                readOnly
+                placeholder={t('observationsPlaceholder')}
+                className="min-h-[120px] text-base"
+                autoComplete="off"
+              />
+            </CollapsibleContent>
+          </Collapsible>
 
         </div>
 
