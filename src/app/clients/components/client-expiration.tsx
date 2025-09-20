@@ -129,7 +129,7 @@ export function ClientExpiration({
     <div className="space-y-2 w-48">
       <span className="text-sm font-medium">{remainingTimeText}</span>
       {remainingTimeText !== t('expired') && (
-        <Progress value={progressPercentage} className="h-2 [&>div]:bg-green-500" indicatorClassName={progressColorClass} />
+        <Progress value={progressPercentage} className="h-2" indicatorClassName={progressColorClass} />
       )}
     </div>
   );
