@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { TestModal } from '../components/test-modal';
 import { useData } from '@/hooks/use-data';
-import type { Client, Test } from '@/lib/types';
+import type { Client, Test, Server as ServerType } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ClientExpiration } from '../components/client-expiration';
 import { Badge } from '@/components/ui/badge';
@@ -15,11 +15,12 @@ import { Badge } from '@/components/ui/badge';
 type ClientWithTest = {
   client: Client;
   test: Test;
+  panel?: ServerType;
 }
 
 export default function ViewTestsPage() {
   const { t } = useLanguage();
-  const { clients, updateClient } = useData();
+  const { clients, servers, updateClient } = useData();
   const [isTestModalOpen, setIsTestModalOpen] = React.useState(false);
 
   const testsInProgress: ClientWithTest[] = React.useMemo(() => {
@@ -27,9 +28,10 @@ export default function ViewTestsPage() {
       .filter(client => client.status === 'Test' && client.tests && client.tests.length > 0)
       .map(client => {
         const latestTest = [...client.tests!].sort((a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime())[0];
-        return { client, test: latestTest };
+        const panelForTest = servers.find(s => s.id === latestTest.panelId);
+        return { client, test: latestTest, panel: panelForTest };
       });
-  }, [clients]);
+  }, [clients, servers]);
 
   return (
     <>
@@ -59,17 +61,20 @@ export default function ViewTestsPage() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>{t('client')}</TableHead>
-                                <TableHead>{t('panel')}</TableHead>
+                                <TableHead>{t('panel')}/{t('servers')}</TableHead>
                                 <TableHead>{t('testPackage')}</TableHead>
                                 <TableHead>{t('expiresIn')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {testsInProgress.map(({ client, test }) => (
+                            {testsInProgress.map(({ client, test, panel }) => (
                                 <TableRow key={client._tempId}>
                                     <TableCell className="font-medium">{client.name}</TableCell>
                                     <TableCell>
-                                      <Badge variant="secondary">{test.panelId}</Badge>
+                                      <div className="flex flex-col gap-1">
+                                        <Badge variant="secondary" className="text-base">{panel?.name || test.panelId}</Badge>
+                                        <Badge variant="outline" className="text-base">{test.subServerName}</Badge>
+                                      </div>
                                     </TableCell>
                                     <TableCell>
                                        <Badge variant="outline">{test.package}</Badge>
