@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
-import { X, Calendar as CalendarIcon, FilePenLine, PlusCircle, Eye } from 'lucide-react';
+import { X, Calendar as CalendarIcon, FilePenLine, PlusCircle, Eye, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { add, format, lastDayOfMonth } from 'date-fns';
@@ -192,6 +192,15 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
     { value: '6m', label: '6 meses' }, { value: '1y', label: '1 ano' },
   ];
 
+  const getPendingScreensCount = (plan: SelectedPlan) => {
+    const planId = `${plan.panel.id}-${plan.server.name}-${plan.plan.name}`;
+    const configuredAppsForPlan = selectedClient?.applications?.filter(
+      app => app.planId === planId
+    ).length || 0;
+    return plan.screens - configuredAppsForPlan;
+  };
+
+
   return (
     <div className="space-y-4">
       <Card>
@@ -366,7 +375,18 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
                         <DetailItem label="Período do Plano" value={periodOptions.find(p => p.value === planToShowDetails.planPeriod)?.label} />
                         <DetailItem label={t('dueDate')} value={planToShowDetails.dueDate} />
                     </div>
-
+                    <Separator />
+                    <h3 className="text-lg font-semibold text-primary">Pendências</h3>
+                    <div className="p-3 bg-muted/50 rounded-lg border">
+                      {getPendingScreensCount(planToShowDetails) > 0 ? (
+                        <div className="flex items-center gap-3 text-yellow-600 dark:text-yellow-400">
+                           <AlertTriangle className="h-5 w-5" />
+                           <p className="font-semibold">Existem {getPendingScreensCount(planToShowDetails)} telas com configuração pendente.</p>
+                        </div>
+                      ) : (
+                        <p className="text-muted-foreground">Nenhuma pendência encontrada para este plano.</p>
+                      )}
+                    </div>
                 </div>
                 <DialogFooter>
                     <Button onClick={() => setIsDetailsModalOpen(false)}>{t('ok')}</Button>
