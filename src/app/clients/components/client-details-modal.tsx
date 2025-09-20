@@ -68,7 +68,7 @@ const PlanDetails = ({ plan }: { plan: SelectedPlan }) => {
                 <DetailItem label={t('dueDate')} value={plan.dueDate} />
             </div>
             {plan.observations && (
-                 <div className="space-y-1">
+                 <div className="mt-4 pt-4 border-t space-y-1">
                     <p className="text-sm font-medium text-muted-foreground">{t('observations')}</p>
                     <p className="text-base whitespace-pre-wrap text-card-foreground">{plan.observations}</p>
                 </div>
@@ -118,10 +118,10 @@ const AppDetails = ({ app }: { app: Application }) => {
                      </div>
                  </div>
             )}
-            {app.activationNotes && (
+            {app.observations && (
                  <div className="mt-4 pt-4 border-t space-y-1">
                     <p className="text-sm font-medium text-muted-foreground">{t('observations')}</p>
-                    <p className="text-base whitespace-pre-wrap text-card-foreground">{app.activationNotes}</p>
+                    <p className="text-base whitespace-pre-wrap text-card-foreground">{app.observations}</p>
                 </div>
             )}
         </div>
@@ -293,5 +293,3 @@ export function ClientDetailsModal({
     </Dialog>
   );
 }
-
-    
