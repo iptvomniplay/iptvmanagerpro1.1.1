@@ -202,7 +202,7 @@ export function ApplicationsForm({
     }
   };
   
-  const handleConfirmSlot = (slotKey: string, currentIndex: number) => {
+  const handleConfirmSlot = (slotKey: string) => {
     const newAppSlots = appSlots.map(slot =>
       `${slot.planId}-${slot.screenNumber}` === slotKey
         ? { ...slot, status: 'complete' as const }
@@ -212,14 +212,6 @@ export function ApplicationsForm({
     setOpenSlots(prev => ({...prev, [slotKey]: false}));
     
     updateClientApplications(newAppSlots);
-    
-    // Find and open the next pending slot
-    const nextPendingIndex = newAppSlots.findIndex((slot, index) => index > currentIndex && slot.status === 'pending');
-    if (nextPendingIndex !== -1) {
-        const nextSlot = newAppSlots[nextPendingIndex];
-        const nextSlotKey = `${nextSlot.planId}-${nextSlot.screenNumber}`;
-        setOpenSlots(prev => ({...prev, [nextSlotKey]: true}));
-    }
   };
   
   const pendingSlotsCount = appSlots.filter(s => s.status === 'pending').length;
@@ -240,13 +232,22 @@ export function ApplicationsForm({
           </p>
       </div>
 
+       {pendingSlotsCount > 0 && (
+          <div className="flex justify-center mb-6">
+              <Button onClick={handleAddApplication} variant="default" className={cn("w-full", pendingSlotsCount > 0 && "animate-flash")}>
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  {t('addApplication')} ({t('faltam')} {pendingSlotsCount})
+              </Button>
+          </div>
+        )}
+
       <div className="space-y-6">
         {appSlots.map((slot, index) => {
           const slotKey = `${slot.planId}-${slot.screenNumber}`;
           const planInfo = addedPlans.find(p => `${p.panel.id}-${p.server.name}-${p.plan.name}` === slot.planId);
           
           return (
-          <Collapsible key={slotKey} asChild open={openSlots[slotKey]} onOpenChange={(isOpen) => setOpenSlots(p => ({...p, [slotKey]: isOpen}))}>
+          <Collapsible key={slotKey} asChild open={openSlots[slotKey] ?? false} onOpenChange={(isOpen) => setOpenSlots(p => ({...p, [slotKey]: isOpen}))}>
             <Card className={cn("bg-muted/20", slot.status === 'complete' && 'border-green-500/50')}>
               <CollapsibleTrigger asChild>
                  <div className="flex items-center justify-between py-4 px-6 cursor-pointer">
@@ -401,8 +402,8 @@ export function ApplicationsForm({
                     </div>
                   </div>
                    <div className="flex justify-end pt-4">
-                        <Button onClick={() => handleConfirmSlot(slotKey, index)}>
-                            Confirmar
+                        <Button onClick={() => handleConfirmSlot(slotKey)}>
+                            {t('confirmAndSave')}
                         </Button>
                     </div>
                 </CardContent>
@@ -410,15 +411,6 @@ export function ApplicationsForm({
             </Card>
           </Collapsible>
         )})}
-        
-        {pendingSlotsCount > 0 && (
-          <div className="flex justify-center pt-4">
-              <Button onClick={handleAddApplication} variant="default" className={cn("w-full", pendingSlotsCount > 0 && "animate-flash")}>
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  {t('addApplication')} ({t('faltam')} {pendingSlotsCount})
-              </Button>
-          </div>
-        )}
       </div>
 
       {phoneModalState.isOpen && phoneModalState.slotKey !== null && (
