@@ -30,7 +30,6 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
     }
 
     const normalizedTerm = normalizeString(searchTerm);
-    const numericOnlyTerm = searchTerm.replace(/\D/g, '');
 
     const results = clients.filter((client) => {
       const nameMatch = normalizeString(client.name).includes(normalizedTerm);
@@ -38,7 +37,7 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
         ? normalizeString(client.nickname).includes(normalizedTerm)
         : false;
       const phoneMatch = client.phones.some((phone) =>
-        phone.number.replace(/\D/g, '').includes(numericOnlyTerm)
+        phone.number.replace(/\D/g, '').includes(searchTerm.replace(/\D/g, ''))
       );
 
       return nameMatch || nicknameMatch || phoneMatch;
