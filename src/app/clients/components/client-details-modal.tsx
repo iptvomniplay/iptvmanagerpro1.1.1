@@ -49,6 +49,21 @@ const DetailItem = ({
   );
 };
 
+const getAppStatus = (app: Application): 'Active' | 'Expired' => {
+  if (app.isPreExisting) return 'Active';
+  if (app.licenseType === 'Anual' && app.licenseDueDate) {
+    // Assuming date is in a format parseISO can handle, like YYYY-MM-DD
+    try {
+      const dueDate = parseISO(app.licenseDueDate);
+      return isPast(dueDate) ? 'Expired' : 'Active';
+    } catch (e) {
+      // If date is invalid, consider it active to avoid penalizing the user
+      return 'Active';
+    }
+  }
+  return 'Active'; // Free licenses are always active
+};
+
 
 const PlanDetails = ({ plan, client }: { plan: SelectedPlan, client: Client }) => {
     const { t } = useLanguage();
@@ -115,21 +130,6 @@ const PlanDetails = ({ plan, client }: { plan: SelectedPlan, client: Client }) =
 
 const AppDetails = ({ app }: { app: Application }) => {
     const { t } = useLanguage();
-
-    const getAppStatus = (app: Application): 'Active' | 'Expired' => {
-      if (app.isPreExisting) return 'Active';
-      if (app.licenseType === 'Anual' && app.licenseDueDate) {
-        // Assuming date is in a format parseISO can handle, like YYYY-MM-DD
-        try {
-          const dueDate = parseISO(app.licenseDueDate);
-          return isPast(dueDate) ? 'Expired' : 'Active';
-        } catch (e) {
-          // If date is invalid, consider it active to avoid penalizing the user
-          return 'Active';
-        }
-      }
-      return 'Active'; // Free licenses are always active
-    };
 
     const status = getAppStatus(app);
 
@@ -297,17 +297,25 @@ export function ClientDetailsModal({
                       <ChevronsUpDown className="h-5 w-5" />
                     </CollapsibleTrigger>
                      <CollapsibleContent className="space-y-4 pt-4">
-                        {client.applications.map((app, index) => (
+                        {client.applications.map((app, index) => {
+                          const status = getAppStatus(app);
+                          return (
                             <Collapsible key={index} className="border rounded-lg bg-muted/50 p-4">
                                 <CollapsibleTrigger className="flex items-center justify-between w-full font-semibold">
-                                    <span>{app.name}</span>
+                                    <div className="flex items-center gap-2">
+                                        <span>{app.name}</span>
+                                        <Badge variant={status === 'Active' ? 'success' : 'destructive'} className="text-sm">
+                                            {t(status.toLowerCase() as any)}
+                                        </Badge>
+                                    </div>
                                     <ChevronsUpDown className="h-5 w-5" />
                                 </CollapsibleTrigger>
                                 <CollapsibleContent className="pt-4 mt-4 border-t">
                                     <AppDetails app={app} />
                                 </CollapsibleContent>
                             </Collapsible>
-                        ))}
+                          )
+                        })}
                     </CollapsibleContent>
                 </Collapsible>
                 <Separator />
