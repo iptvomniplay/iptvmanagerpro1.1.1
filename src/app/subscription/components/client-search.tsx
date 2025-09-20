@@ -17,6 +17,11 @@ type SearchResult = {
 };
 
 
+interface ClientSearchProps {
+  onSelectClient: (client: Client) => void;
+  selectedClient: Client | null;
+}
+
 export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchProps) {
   const { t } = useLanguage();
   const { clients } = useData();
@@ -31,32 +36,29 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
       return;
     }
 
-    const normalizedSearchTerm = normalizeString(searchTerm);
-    const numericSearchTerm = searchTerm.replace(/\D/g, '');
+    const normalizedTerm = normalizeString(searchTerm);
 
     const results: SearchResult[] = [];
 
     clients.forEach((client) => {
         // Match by name
-        if (normalizeString(client.name).includes(normalizedSearchTerm)) {
+        if (normalizeString(client.name).includes(normalizedTerm)) {
             results.push({ client, matchType: 'name', matchValue: client.name });
             return; // Move to next client once a match is found
         }
 
         // Match by nickname
-        if (client.nickname && normalizeString(client.nickname).includes(normalizedSearchTerm)) {
+        if (client.nickname && normalizeString(client.nickname).includes(normalizedTerm)) {
             results.push({ client, matchType: 'nickname', matchValue: client.nickname });
             return;
         }
 
         // Match by phone
-        if (numericSearchTerm.length > 0) {
-            const matchingPhone = client.phones.find((phone) =>
-                phone.number.replace(/\D/g, '').includes(numericSearchTerm)
-            );
-            if (matchingPhone) {
-                results.push({ client, matchType: 'phone', matchValue: matchingPhone.number });
-            }
+        const matchingPhone = client.phones.find((phone) =>
+            phone.number.replace(/\D/g, '').includes(searchTerm.replace(/\D/g, ''))
+        );
+        if (matchingPhone) {
+            results.push({ client, matchType: 'phone', matchValue: matchingPhone.number });
         }
     });
 
