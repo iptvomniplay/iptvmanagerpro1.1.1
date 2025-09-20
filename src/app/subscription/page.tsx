@@ -37,6 +37,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { PersistenceTest } from './components/persistence-test';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function SubscriptionPage() {
   const { t } = useLanguage();
@@ -93,13 +94,6 @@ export default function SubscriptionPage() {
 
   const validateForms = () => {
     if (!selectedClient) return false;
-
-    if (!selectedClient.plans || selectedClient.plans.length === 0) {
-      setValidationMessage(t('addAtLeastOnePlan'));
-      setActiveTab('plans');
-      plansTabRef.current?.focus();
-      return false;
-    }
 
     if (!manualId && selectedClient.status !== 'Active') {
       setValidationMessage(t('clientIdRequired'));
@@ -192,6 +186,22 @@ export default function SubscriptionPage() {
                   <CardDescription>{t('clientDetails')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                  {selectedClient.plans && selectedClient.plans.length > 0 && (
+                     <Alert variant="destructive">
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertTitle>Atenção: Cliente já possui assinatura</AlertTitle>
+                      <AlertDescription className="space-y-3">
+                        {areAppsIncomplete ? (
+                           <p>Existem {totalScreensFromPlans - totalApplications} tela(s) com configurações pendentes.</p>
+                        ) : (
+                          <p>Todos os aplicativos desta assinatura já foram configurados.</p>
+                        )}
+                        <Button variant="secondary" onClick={() => setActiveTab('plans')}>
+                           Gerenciar Telas Pendentes
+                        </Button>
+                      </AlertDescription>
+                    </Alert>
+                  )}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-sm">
                     <div>
                       <p className="font-medium text-muted-foreground">{t('nickname')}</p>
