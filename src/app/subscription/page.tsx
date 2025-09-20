@@ -80,6 +80,12 @@ export default function SubscriptionPage() {
 
   const saveManualId = () => {
     if (!selectedClient) return;
+    if (selectedClient.id && selectedClient.id === manualId) {
+      toast({
+        title: "ID do Cliente já foi salvo!",
+      });
+      return;
+    }
     const newClientState = { ...selectedClient, id: manualId };
     updateClient(newClientState, false); // Persistência ativada
     setSelectedClient(newClientState); 
@@ -308,7 +314,7 @@ export default function SubscriptionPage() {
       <AlertDialog open={isIdSaveSuccessModalOpen} onOpenChange={setIsIdSaveSuccessModalOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('registrationAddedSuccess')}</AlertDialogTitle>
+            <AlertDialogTitle>ID do Cliente salvo com sucesso</AlertDialogTitle>
             <AlertDialogDescription>{`ID ${manualId} salvo para o cliente ${selectedClient?.name}.`}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogAction onClick={() => setIsIdSaveSuccessModalOpen(false)}>{t('ok')}</AlertDialogAction>
