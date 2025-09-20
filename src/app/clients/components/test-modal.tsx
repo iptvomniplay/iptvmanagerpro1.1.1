@@ -82,18 +82,17 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
     }
 
     const normalizedTerm = normalizeString(searchTerm);
+    const numericTerm = searchTerm.replace(/\D/g, '');
 
-    const results = clients.filter((client) => {
-        const normalizedName = normalizeString(client.name);
-        const normalizedNickname = client.nickname ? normalizeString(client.nickname) : '';
-        const clientPhoneMatch = client.phones.some(phone => normalizeString(phone.number).replace(/\D/g, '').includes(normalizedTerm.replace(/\D/g, '')));
-        
-        return (
-            normalizedName.includes(normalizedTerm) ||
-            (normalizedNickname && normalizedNickname.includes(normalizedTerm)) ||
-            clientPhoneMatch
-        );
+    const results = clients.filter(client => {
+      const nameMatch = normalizeString(client.name).includes(normalizedTerm);
+      const nicknameMatch = client.nickname ? normalizeString(client.nickname).includes(normalizedTerm) : false;
+      const phoneMatch = numericTerm.length > 0 && client.phones.some(phone => phone.number.replace(/\D/g, '').includes(numericTerm));
+      const idMatch = client.id && normalizeString(client.id).includes(normalizedTerm);
+      
+      return nameMatch || nicknameMatch || phoneMatch || idMatch;
     });
+
     setSearchResults(results);
   }, [searchTerm, clients]);
   
