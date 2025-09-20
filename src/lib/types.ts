@@ -1,3 +1,5 @@
+'use client';
+
 export type Phone = {
   type: 'celular' | 'fixo' | 'ddi';
   number: string;

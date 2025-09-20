@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import type { Client, SelectedPlan, Application, Phone } from '@/lib/types';
+import type { Client, SelectedPlan, Application, Phone, PlanStatus } from '@/lib/types';
 import {
   Dialog,
   DialogContent,
@@ -49,12 +49,41 @@ const DetailItem = ({
 };
 
 
-const PlanDetails = ({ plan }: { plan: SelectedPlan }) => {
+const PlanDetails = ({ plan, client }: { plan: SelectedPlan, client: Client }) => {
     const { t } = useLanguage();
     const periodOptions: { value: SelectedPlan['planPeriod']; label: string }[] = [
         { value: '30d', label: '30 dias' }, { value: '3m', label: '3 meses' },
         { value: '6m', label: '6 meses' }, { value: '1y', label: '1 ano' },
     ];
+    
+    const getPlanStatus = (plan: SelectedPlan, client: Client): PlanStatus => {
+        const planId = `${plan.panel.id}-${plan.server.name}-${plan.plan.name}`;
+        const configuredAppsForPlan = client.applications?.filter(
+          app => app.planId === planId
+        ).length || 0;
+        
+        if (configuredAppsForPlan < plan.screens) {
+            return 'Pending';
+        }
+        
+        if (client.status === 'Expired') return 'Expired';
+        if (client.status === 'Inactive') return 'Blocked';
+        
+        return 'Active';
+    }
+
+    const getStatusVariant = (status?: PlanStatus) => {
+        switch (status) {
+          case 'Active': return 'success';
+          case 'Pending': return 'warning';
+          case 'Expired':
+          case 'Blocked': return 'destructive';
+          default: return 'outline';
+        }
+    };
+    
+    const status = getPlanStatus(plan, client);
+
 
     return (
         <div className="space-y-4">
@@ -66,6 +95,12 @@ const PlanDetails = ({ plan }: { plan: SelectedPlan }) => {
                 <DetailItem label={t('planValue')} value={plan.isCourtesy ? t('courtesy') : plan.planValue} />
                 <DetailItem label="Período" value={periodOptions.find(p => p.value === plan.planPeriod)?.label} />
                 <DetailItem label={t('dueDate')} value={plan.dueDate} />
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">{t('status')}</p>
+                   <Badge variant={getStatusVariant(status)} className="text-base mt-1">
+                        {t(status.toLowerCase() as any)}
+                   </Badge>
+               </div>
             </div>
             {plan.observations && (
                  <div className="mt-4 pt-4 border-t space-y-1">
@@ -215,7 +250,7 @@ export function ClientDetailsModal({
                                     <ChevronsUpDown className="h-5 w-5" />
                                 </CollapsibleTrigger>
                                 <CollapsibleContent className="pt-4 mt-4 border-t">
-                                    <PlanDetails plan={plan} />
+                                    <PlanDetails plan={plan} client={client} />
                                 </CollapsibleContent>
                             </Collapsible>
                         ))}
