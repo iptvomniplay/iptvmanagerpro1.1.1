@@ -6,7 +6,7 @@ import type { Application, Client, Phone, SelectedPlan } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
   Collapsible,
   CollapsibleContent,
@@ -172,7 +172,7 @@ export function ApplicationsForm({
     if (phoneModalState.slotKey !== null) {
       setAppSlots(prevSlots =>
         prevSlots.map(slot =>
-          `${slot.planId}-${slot.screenNumber}` === phoneModalState.slotKey
+          `${s.planId}-${s.screenNumber}` === phoneModalState.slotKey
             ? { ...slot, data: { ...slot.data, responsiblePhones: newPhones } }
             : slot
         )
@@ -232,186 +232,194 @@ export function ApplicationsForm({
           </p>
       </div>
 
-       {pendingSlotsCount > 0 && (
-          <div className="flex justify-center mb-6">
-              <Button onClick={handleAddApplication} variant="default" className={cn("w-full", pendingSlotsCount > 0 && "animate-flash")}>
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  {t('addApplication')} ({t('faltam')} {pendingSlotsCount})
-              </Button>
-          </div>
-        )}
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('applications')}</CardTitle>
+          <CardDescription>{t('addApplicationDescription')}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {pendingSlotsCount > 0 && (
+            <div className="flex justify-center">
+                <Button onClick={handleAddApplication} variant="default" className={cn("w-full", pendingSlotsCount > 0 && "animate-flash")}>
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    {t('addApplication')} ({t('faltam')} {pendingSlotsCount})
+                </Button>
+            </div>
+          )}
 
-      <div className="space-y-6">
-        {appSlots.map((slot, index) => {
-          const slotKey = `${slot.planId}-${slot.screenNumber}`;
-          const planInfo = addedPlans.find(p => `${p.panel.id}-${p.server.name}-${p.plan.name}` === slot.planId);
-          
-          return (
-          <Collapsible key={slotKey} asChild open={openSlots[slotKey] ?? false} onOpenChange={(isOpen) => setOpenSlots(p => ({...p, [slotKey]: isOpen}))}>
-            <Card className={cn("bg-muted/20", slot.status === 'complete' && 'border-green-500/50')}>
-              <CollapsibleTrigger asChild>
-                 <div className="flex items-center justify-between py-4 px-6 cursor-pointer">
-                    <div className="flex items-center gap-4">
-                        <CardTitle className="text-base">{`Tela ${index + 1}`}{planInfo ? ` (${planInfo.plan.name})` : ''}</CardTitle>
-                        <Badge variant={slot.status === 'complete' ? 'success' : 'secondary'}>
-                            {slot.status === 'complete' ? 'Completo' : 'Pendente'}
-                        </Badge>
-                    </div>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <ChevronDown className="h-5 w-5 transition-transform data-[state=open]:rotate-0 data-[state=closed]:-rotate-90" />
-                        <span className="sr-only">{t('expand')}</span>
-                    </Button>
-                </div>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <CardContent className="pt-0 px-6 pb-6 space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor={`app-name-${slotKey}`}>{t('appName')}</Label>
-                      <Input
-                        id={`app-name-${slotKey}`}
-                        value={slot.data.name}
-                        onChange={(e) => handleSlotChange(e, slotKey, 'name')}
-                        placeholder={t('appNamePlaceholder')}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor={`mac-address-${slotKey}`}>{t('macAddress')}</Label>
-                      <Input
-                        id={`mac-address-${slotKey}`}
-                        value={slot.data.macAddress}
-                        onChange={(e) => handleSlotChange(e, slotKey, 'macAddress')}
-                        placeholder="00:00:00:00:00:00"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor={`key-id-${slotKey}`}>{t('keyId')}</Label>
-                      <Input
-                        id={`key-id-${slotKey}`}
-                        value={slot.data.keyId}
-                        onChange={(e) => handleSlotChange(e, slotKey, 'keyId')}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>{t('licenseType')}</Label>
-                      <div className="flex items-center space-x-4 rounded-md border p-3 h-11 bg-background">
-                        <Label
-                          htmlFor={`license-type-switch-${slotKey}`}
-                          className="cursor-pointer"
-                        >
-                          {t('free')}
-                        </Label>
-                        <Switch
-                          id={`license-type-switch-${slotKey}`}
-                          checked={slot.data.licenseType === 'Anual'}
-                          onCheckedChange={(checked) => handleLicenseTypeChange(checked, slotKey)}
-                        />
-                        <Label
-                          htmlFor={`license-type-switch-${slotKey}`}
-                          className="cursor-pointer"
-                        >
-                          {t('anual')}
-                        </Label>
-                      </div>
-                    </div>
-                    
-                    {slot.data.licenseType === 'Anual' && (
-                      <>
-                        <div className="space-y-2">
-                          <Label htmlFor={`license-due-date-${slotKey}`}>{t('licenseDueDate')}</Label>
-                          <BirthdateInput 
-                            field={{
-                                value: slot.data.licenseDueDate,
-                                onChange: (e: React.ChangeEvent<HTMLInputElement> | string) => {
-                                    const value = typeof e === 'string' ? e : e.target.value;
-                                    handleDateChange(value, slotKey);
-                                }
-                            }}
-                            language={language} />
+          <div className="space-y-6">
+            {appSlots.map((slot, index) => {
+              const slotKey = `${slot.planId}-${slot.screenNumber}`;
+              const planInfo = addedPlans.find(p => `${p.panel.id}-${p.server.name}-${p.plan.name}` === slot.planId);
+              
+              return (
+              <Collapsible key={slotKey} asChild open={openSlots[slotKey] ?? false} onOpenChange={(isOpen) => setOpenSlots(p => ({...p, [slotKey]: isOpen}))}>
+                <Card className={cn("bg-muted/20", slot.status === 'complete' && 'border-green-500/50')}>
+                  <CollapsibleTrigger asChild>
+                    <div className="flex items-center justify-between py-4 px-6 cursor-pointer">
+                        <div className="flex items-center gap-4">
+                            <CardTitle className="text-base">{`Tela ${index + 1}`}{planInfo ? ` (${planInfo.plan.name})` : ''}</CardTitle>
+                            <Badge variant={slot.status === 'complete' ? 'success' : 'secondary'}>
+                                {slot.status === 'complete' ? 'Completo' : 'Pendente'}
+                            </Badge>
                         </div>
-                        <div className="space-y-2">
-                          <Label htmlFor={`activation-location-${slotKey}`}>{t('activationLocation')}</Label>
-                          <Input
-                            id={`activation-location-${slotKey}`}
-                            value={slot.data.activationLocation || ''}
-                            onChange={(e) => handleSlotChange(e, slotKey, 'activationLocation')}
-                          />
-                        </div>
-                        <div className="space-y-2 col-span-1 md:col-span-2">
-                           <div className="flex items-center space-x-2">
-                              <Checkbox 
-                                id={`has-responsible-${slotKey}`}
-                                checked={!!slot.data.hasResponsible}
-                                onCheckedChange={(checked) => handleCheckboxChange(checked as boolean, slotKey, 'hasResponsible')}
-                              />
-                              <Label htmlFor={`has-responsible-${slotKey}`} className="cursor-pointer">{t('responsibleAndPhone')}</Label>
-                           </div>
-                        </div>
-
-                        {slot.data.hasResponsible && (
-                          <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-                            <div className="space-y-2">
-                              <Label htmlFor={`responsible-name-${slotKey}`}>{t('responsibleName')}</Label>
-                              <Input
-                                id={`responsible-name-${slotKey}`}
-                                value={slot.data.responsibleName || ''}
-                                onChange={(e) => handleSlotChange(e, slotKey, 'responsibleName')}
-                              />
-                            </div>
-                             <div className="space-y-2">
-                                <Button
-                                  type="button"
-                                  variant="default"
-                                  onClick={() => setPhoneModalState({ isOpen: true, slotKey })}
-                                  className="w-full"
-                                >
-                                  {slot.data.responsiblePhones && slot.data.responsiblePhones.length > 0 ? t('managePhones') : t('addPhone')}
-                                </Button>
-                            </div>
-                          </div>
-                        )}
-
-                         <div className="space-y-2">
-                          <Label htmlFor={`activation-id-${slotKey}`}>{t('activationId')}</Label>
-                          <Input
-                            id={`activation-id-${slotKey}`}
-                            value={slot.data.activationId || ''}
-                            onChange={(e) => handleSlotChange(e, slotKey, 'activationId')}
-                          />
-                        </div>
-                      </>
-                    )}
-
-                    <div className="space-y-2">
-                      <Label htmlFor={`device-${slotKey}`}>{t('device')}</Label>
-                      <Input
-                        id={`device-${slotKey}`}
-                        value={slot.data.device}
-                        onChange={(e) => handleSlotChange(e, slotKey, 'device')}
-                        placeholder={t('devicePlaceholder')}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor={`location-${slotKey}`}>{t('location')}</Label>
-                      <Input
-                        id={`location-${slotKey}`}
-                        value={slot.data.location}
-                        onChange={(e) => handleSlotChange(e, slotKey, 'location')}
-                        placeholder={t('locationPlaceholder')}
-                      />
-                    </div>
-                  </div>
-                   <div className="flex justify-end pt-4">
-                        <Button onClick={() => handleConfirmSlot(slotKey)}>
-                            {t('confirmAndSave')}
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <ChevronDown className="h-5 w-5 transition-transform data-[state=open]:rotate-0 data-[state=closed]:-rotate-90" />
+                            <span className="sr-only">{t('expand')}</span>
                         </Button>
                     </div>
-                </CardContent>
-              </CollapsibleContent>
-            </Card>
-          </Collapsible>
-        )})}
-      </div>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <CardContent className="pt-0 px-6 pb-6 space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor={`app-name-${slotKey}`}>{t('appName')}</Label>
+                          <Input
+                            id={`app-name-${slotKey}`}
+                            value={slot.data.name}
+                            onChange={(e) => handleSlotChange(e, slotKey, 'name')}
+                            placeholder={t('appNamePlaceholder')}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor={`mac-address-${slotKey}`}>{t('macAddress')}</Label>
+                          <Input
+                            id={`mac-address-${slotKey}`}
+                            value={slot.data.macAddress}
+                            onChange={(e) => handleSlotChange(e, slotKey, 'macAddress')}
+                            placeholder="00:00:00:00:00:00"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor={`key-id-${slotKey}`}>{t('keyId')}</Label>
+                          <Input
+                            id={`key-id-${slotKey}`}
+                            value={slot.data.keyId}
+                            onChange={(e) => handleSlotChange(e, slotKey, 'keyId')}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>{t('licenseType')}</Label>
+                          <div className="flex items-center space-x-4 rounded-md border p-3 h-11 bg-background">
+                            <Label
+                              htmlFor={`license-type-switch-${slotKey}`}
+                              className="cursor-pointer"
+                            >
+                              {t('free')}
+                            </Label>
+                            <Switch
+                              id={`license-type-switch-${slotKey}`}
+                              checked={slot.data.licenseType === 'Anual'}
+                              onCheckedChange={(checked) => handleLicenseTypeChange(checked, slotKey)}
+                            />
+                            <Label
+                              htmlFor={`license-type-switch-${slotKey}`}
+                              className="cursor-pointer"
+                            >
+                              {t('anual')}
+                            </Label>
+                          </div>
+                        </div>
+                        
+                        {slot.data.licenseType === 'Anual' && (
+                          <>
+                            <div className="space-y-2">
+                              <Label htmlFor={`license-due-date-${slotKey}`}>{t('licenseDueDate')}</Label>
+                              <BirthdateInput 
+                                field={{
+                                    value: slot.data.licenseDueDate,
+                                    onChange: (e: React.ChangeEvent<HTMLInputElement> | string) => {
+                                        const value = typeof e === 'string' ? e : e.target.value;
+                                        handleDateChange(value, slotKey);
+                                    }
+                                }}
+                                language={language} />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor={`activation-location-${slotKey}`}>{t('activationLocation')}</Label>
+                              <Input
+                                id={`activation-location-${slotKey}`}
+                                value={slot.data.activationLocation || ''}
+                                onChange={(e) => handleSlotChange(e, slotKey, 'activationLocation')}
+                              />
+                            </div>
+                            <div className="space-y-2 col-span-1 md:col-span-2">
+                              <div className="flex items-center space-x-2">
+                                  <Checkbox 
+                                    id={`has-responsible-${slotKey}`}
+                                    checked={!!slot.data.hasResponsible}
+                                    onCheckedChange={(checked) => handleCheckboxChange(checked as boolean, slotKey, 'hasResponsible')}
+                                  />
+                                  <Label htmlFor={`has-responsible-${slotKey}`} className="cursor-pointer">{t('responsibleAndPhone')}</Label>
+                              </div>
+                            </div>
+
+                            {slot.data.hasResponsible && (
+                              <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                                <div className="space-y-2">
+                                  <Label htmlFor={`responsible-name-${slotKey}`}>{t('responsibleName')}</Label>
+                                  <Input
+                                    id={`responsible-name-${slotKey}`}
+                                    value={slot.data.responsibleName || ''}
+                                    onChange={(e) => handleSlotChange(e, slotKey, 'responsibleName')}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                    <Button
+                                      type="button"
+                                      variant="default"
+                                      onClick={() => setPhoneModalState({ isOpen: true, slotKey })}
+                                      className="w-full"
+                                    >
+                                      {slot.data.responsiblePhones && slot.data.responsiblePhones.length > 0 ? t('managePhones') : t('addPhone')}
+                                    </Button>
+                                </div>
+                              </div>
+                            )}
+
+                            <div className="space-y-2">
+                              <Label htmlFor={`activation-id-${slotKey}`}>{t('activationId')}</Label>
+                              <Input
+                                id={`activation-id-${slotKey}`}
+                                value={slot.data.activationId || ''}
+                                onChange={(e) => handleSlotChange(e, slotKey, 'activationId')}
+                              />
+                            </div>
+                          </>
+                        )}
+
+                        <div className="space-y-2">
+                          <Label htmlFor={`device-${slotKey}`}>{t('device')}</Label>
+                          <Input
+                            id={`device-${slotKey}`}
+                            value={slot.data.device}
+                            onChange={(e) => handleSlotChange(e, slotKey, 'device')}
+                            placeholder={t('devicePlaceholder')}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor={`location-${slotKey}`}>{t('location')}</Label>
+                          <Input
+                            id={`location-${slotKey}`}
+                            value={slot.data.location}
+                            onChange={(e) => handleSlotChange(e, slotKey, 'location')}
+                            placeholder={t('locationPlaceholder')}
+                          />
+                        </div>
+                      </div>
+                      <div className="flex justify-end pt-4">
+                            <Button onClick={() => handleConfirmSlot(slotKey)}>
+                                {t('confirmAndSave')}
+                            </Button>
+                        </div>
+                    </CardContent>
+                  </CollapsibleContent>
+                </Card>
+              </Collapsible>
+            )})}
+          </div>
+        </CardContent>
+      </Card>
 
       {phoneModalState.isOpen && phoneModalState.slotKey !== null && (
         <PhoneInputModal
