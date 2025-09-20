@@ -22,6 +22,7 @@ import {
   CollapsibleContent,
 } from '@/components/ui/collapsible';
 import { BookText, ChevronsUpDown, AppWindow, FileText as FileTextIcon } from 'lucide-react';
+import { isPast, parseISO } from 'date-fns';
 
 interface ClientDetailsModalProps {
   isOpen: boolean;
@@ -114,6 +115,24 @@ const PlanDetails = ({ plan, client }: { plan: SelectedPlan, client: Client }) =
 
 const AppDetails = ({ app }: { app: Application }) => {
     const { t } = useLanguage();
+
+    const getAppStatus = (app: Application): 'Active' | 'Expired' => {
+      if (app.isPreExisting) return 'Active';
+      if (app.licenseType === 'Anual' && app.licenseDueDate) {
+        // Assuming date is in a format parseISO can handle, like YYYY-MM-DD
+        try {
+          const dueDate = parseISO(app.licenseDueDate);
+          return isPast(dueDate) ? 'Expired' : 'Active';
+        } catch (e) {
+          // If date is invalid, consider it active to avoid penalizing the user
+          return 'Active';
+        }
+      }
+      return 'Active'; // Free licenses are always active
+    };
+
+    const status = getAppStatus(app);
+
     return (
         <div className="space-y-4">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -132,6 +151,12 @@ const AppDetails = ({ app }: { app: Application }) => {
                         {app.licenseType === 'Anual' && <DetailItem label={t('licenseDueDate')} value={app.licenseDueDate} />}
                         <DetailItem label={t('activationId')} value={app.activationId} />
                         <DetailItem label={t('activationLocation')} value={app.activationLocation} />
+                        <div>
+                          <p className="text-sm font-medium text-muted-foreground">{t('status')}</p>
+                          <Badge variant={status === 'Active' ? 'success' : 'destructive'} className="text-base mt-1">
+                            {t(status.toLowerCase() as any)}
+                          </Badge>
+                        </div>
                     </>
                 )}
             </div>

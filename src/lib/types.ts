@@ -32,6 +32,7 @@ export type Application = {
   activationNotes?: string;
   planId: string;
   screenNumber: number;
+  status?: 'Active' | 'Expired';
 };
 
 export type PlanPeriod = '30d' | '3m' | '6m' | '1y';
