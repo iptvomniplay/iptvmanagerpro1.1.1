@@ -134,16 +134,22 @@ const PlanDetails = ({ plan, client }: { plan: SelectedPlan, client: Client }) =
                   </div>
                 </div>
                 <DetailItem label={t('plans')} value={plan.plan.name} />
-                <DetailItem label={t('screens')} value={plan.screens} />
                 <DetailItem label={t('planValue')} value={plan.isCourtesy ? t('courtesy') : plan.planValue} />
-                <DetailItem label={t('planPeriod')} value={periodOptions.find(p => p.value === plan.planPeriod)?.label} />
-                <DetailItem label={t('dueDate')} value={plan.dueDate} />
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">{t('screensStatus')}</p>
+                    <p className="text-sm font-medium text-muted-foreground">{t('screens')}</p>
+                    <p className="text-lg">{plan.screens}</p>
+                </div>
+                <div>
+                   <p className="text-sm font-medium text-muted-foreground">{t('screensStatus')}</p>
                    <Badge variant={getStatusVariant(status)} className="text-base mt-1">
                         {t(status.toLowerCase() as any)}
                    </Badge>
-               </div>
+                </div>
+                <div>
+                    <p className="text-sm font-medium text-muted-foreground">{t('planPeriod')}</p>
+                    <p className="text-lg">{periodOptions.find(p => p.value === plan.planPeriod)?.label}</p>
+                </div>
+                <DetailItem label={t('dueDate')} value={plan.dueDate} />
             </div>
             {plan.observations && (
                  <div className="mt-4 pt-4 border-t space-y-1">
