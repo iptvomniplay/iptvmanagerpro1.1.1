@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -194,6 +195,9 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                   <FormControl>
                     <Input placeholder={t('emailPlaceholder')} {...field} autoComplete="off" />
                   </FormControl>
+                  <FormDescription>
+                    {t('optional')}
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -246,6 +250,9 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                   <FormControl>
                     <BirthdateInput field={field} language={language} />
                   </FormControl>
+                   <FormDescription>
+                    {t('optional')}
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
