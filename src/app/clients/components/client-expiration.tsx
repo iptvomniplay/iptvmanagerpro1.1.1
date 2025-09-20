@@ -2,20 +2,21 @@
 
 import * as React from 'react';
 import { Progress } from '@/components/ui/progress';
-import { parseISO, differenceInSeconds, addMonths, setDate, startOfDay, endOfDay } from 'date-fns';
+import { parseISO, differenceInSeconds, add, endOfDay } from 'date-fns';
 import { useLanguage } from '@/hooks/use-language';
+import type { PlanPeriod } from '@/lib/types';
 
 interface ClientExpirationProps {
   clientId: string;
   registeredDate: string;
-  dueDate: number;
+  planPeriod: PlanPeriod;
   onExpire: () => void;
 }
 
 export function ClientExpiration({
   clientId,
   registeredDate,
-  dueDate,
+  planPeriod,
   onExpire,
 }: ClientExpirationProps) {
   const { t } = useLanguage();
@@ -53,22 +54,24 @@ export function ClientExpiration({
 
 
   React.useEffect(() => {
-    if (!isClient || !dueDate) return;
+    if (!isClient || !planPeriod) return;
 
-    const calculateExpiration = () => {
-      const now = new Date();
-      let expirationDate = setDate(now, dueDate);
+    const registrationDate = parseISO(registeredDate);
 
-      if (now.getDate() > dueDate) {
-        expirationDate = addMonths(expirationDate, 1);
-      }
-      return endOfDay(expirationDate);
-    };
-
-    const expiration = calculateExpiration();
-    const registration = startOfDay(parseISO(registeredDate));
+    const getDuration = (period: PlanPeriod) => {
+        switch (period) {
+            case '30d': return { days: 30 };
+            case '3m': return { months: 3 };
+            case '6m': return { months: 6 };
+            case '1y': return { years: 1 };
+            default: return {};
+        }
+    }
     
-    setTotalDuration(differenceInSeconds(expiration, registration));
+    const expiration = endOfDay(add(registrationDate, getDuration(planPeriod)));
+    const now = new Date();
+    
+    setTotalDuration(differenceInSeconds(expiration, registrationDate));
 
     const intervalId = setInterval(() => {
       const now = new Date();
@@ -89,9 +92,9 @@ export function ClientExpiration({
     }, 1000);
 
     return () => clearInterval(intervalId);
-  }, [dueDate, registeredDate, onExpire, hasExpired, isClient, formatRemainingTime]);
+  }, [planPeriod, registeredDate, onExpire, hasExpired, isClient, formatRemainingTime]);
 
-  if (!isClient || !dueDate) {
+  if (!isClient || !planPeriod) {
     return null; // Don't render on the server or if no due date
   }
 

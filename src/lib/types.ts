@@ -63,7 +63,6 @@ export type Client = {
   status: 'Active' | 'Inactive' | 'Expired' | 'Test';
   registeredDate: string;
   expirationDate?: string;
-  dueDate?: number;
   tests?: Test[];
   applications?: Application[];
   birthDate?: string;

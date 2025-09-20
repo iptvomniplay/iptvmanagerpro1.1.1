@@ -236,12 +236,12 @@ export default function ClientsPageContent() {
                     </Badge>
                   </TableCell>
                    <TableCell>
-                    {client.dueDate && client.status === 'Active' ? (
+                    {client.plans && client.plans.length > 0 && client.status === 'Active' ? (
                         <ClientExpiration
                             key={client._tempId}
                             clientId={client.id}
                             registeredDate={client.registeredDate} 
-                            dueDate={client.dueDate} 
+                            planPeriod={client.plans[0].planPeriod}
                             onExpire={() => updateClient({...client, status: 'Expired'})}
                         />
                     ) : null}
