@@ -190,14 +190,12 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    {t('emailAddress')}
+                    {t('emailAddress')}{' '}
+                    <span className="text-muted-foreground">({t('optional')})</span>
                   </FormLabel>
                   <FormControl>
                     <Input placeholder={t('emailPlaceholder')} {...field} autoComplete="off" />
                   </FormControl>
-                  <FormDescription>
-                    {t('optional')}
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -246,13 +244,13 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
               name="birthDate"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('birthDate')}</FormLabel>
+                  <FormLabel>
+                    {t('birthDate')}{' '}
+                    <span className="text-muted-foreground">({t('optional')})</span>
+                  </FormLabel>
                   <FormControl>
                     <BirthdateInput field={field} language={language} />
                   </FormControl>
-                   <FormDescription>
-                    {t('optional')}
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
