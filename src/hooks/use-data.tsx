@@ -45,6 +45,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         });
         const clientsWithTempId = initialClients.map(c => ({...c, _tempId: `temp_${Date.now()}_${Math.random()}`}));
         setClients(clientsWithTempId);
+        if(clientsWithTempId.length > 0) {
+          localStorage.setItem('clients', JSON.stringify(clientsWithTempId));
+        }
       }
     } catch (error) {
       console.error('Failed to load clients from localStorage', error);
@@ -87,7 +90,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const updateClient = useCallback((clientData: Client, skipSave = false) => {
     setClients(prevClients => {
        const updatedClients = prevClients.map(c => 
-        (c._tempId && c._tempId === clientData._tempId)
+        (c._tempId && c._tempId === clientData._tempId) || (c.id && c.id === clientData.id)
           ? { ...c, ...clientData } 
           : c
       );
