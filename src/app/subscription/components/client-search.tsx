@@ -29,24 +29,19 @@ export function ClientSearch({ onSelectClient, selectedClient }: ClientSearchPro
       return;
     }
 
-    const hasLetters = /[a-zA-Z]/.test(searchTerm);
+    const normalizedTerm = normalizeString(searchTerm);
+    const numericOnlyTerm = searchTerm.replace(/\D/g, '');
 
     const results = clients.filter((client) => {
-      if (hasLetters) {
-        // Text search: only on name and nickname
-        const normalizedTerm = normalizeString(searchTerm);
-        const nameMatch = normalizeString(client.name).includes(normalizedTerm);
-        const nicknameMatch = client.nickname
-          ? normalizeString(client.nickname).includes(normalizedTerm)
-          : false;
-        return nameMatch || nicknameMatch;
-      } else {
-        // Numeric search: only on phone numbers
-        const numericOnlyTerm = searchTerm.replace(/\D/g, '');
-        return client.phones.some((phone) =>
-          phone.number.replace(/\D/g, '').includes(numericOnlyTerm)
-        );
-      }
+      const nameMatch = normalizeString(client.name).includes(normalizedTerm);
+      const nicknameMatch = client.nickname
+        ? normalizeString(client.nickname).includes(normalizedTerm)
+        : false;
+      const phoneMatch = client.phones.some((phone) =>
+        phone.number.replace(/\D/g, '').includes(numericOnlyTerm)
+      );
+
+      return nameMatch || nicknameMatch || phoneMatch;
     });
 
     setSearchResults(results);
