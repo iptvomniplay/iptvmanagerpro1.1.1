@@ -84,10 +84,8 @@ export default function ClientsPageContent() {
     const nameMatch = normalizeString(client.name).includes(normalizedSearchTerm);
     const nicknameMatch = client.nickname && normalizeString(client.nickname).includes(normalizedSearchTerm);
     const phoneMatch = client.phones.some(phone => normalizeString(phone.number).replace(/\D/g, '').includes(normalizedSearchTerm.replace(/\D/g, '')));
-    const statusMatch = normalizeString(client.status).includes(normalizedSearchTerm);
-    const idMatch = client.id && normalizeString(client.id).includes(normalizedSearchTerm);
 
-    return nameMatch || nicknameMatch || phoneMatch || statusMatch || idMatch;
+    return nameMatch || nicknameMatch || phoneMatch;
   });
 
   const handleViewDetails = (client: Client) => {
