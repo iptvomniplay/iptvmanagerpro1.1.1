@@ -9,7 +9,7 @@ import { useToast } from './use-toast';
 interface DataContextType {
   clients: Client[];
   servers: Server[];
-  addClient: (clientData: Omit<Client, 'registeredDate' | 'plans' | 'id' | '_tempId'>) => void;
+  addClient: (clientData: Omit<Client, 'registeredDate' | 'plans' | '_tempId'>) => void;
   updateClient: (clientData: Client, skipSave?: boolean) => void;
   deleteClient: (clientId: string) => void;
   addServer: (serverData: Omit<Server, 'id' | 'status'>) => void;
@@ -66,12 +66,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, []);
 
-  const addClient = useCallback((clientData: Omit<Client, 'registeredDate' | 'plans' | 'id' | '_tempId'>) => {
+  const addClient = useCallback((clientData: Omit<Client, 'registeredDate' | 'plans' | '_tempId'>) => {
     setClients(prevClients => {
         const newClient: Client = {
             ...(clientData as Client),
             _tempId: `temp_${Date.now()}_${Math.random()}`,
-            id: '',
+            id: clientData.id || '',
             registeredDate: format(new Date(), 'yyyy-MM-dd'),
             birthDate: clientData.birthDate || '',
             plans: [],

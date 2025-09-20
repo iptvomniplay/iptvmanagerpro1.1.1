@@ -49,6 +49,7 @@ const phoneSchema = z.object({
 });
 
 const createFormSchema = (t: (key: string) => string) => z.object({
+  id: z.string().optional(),
   name: z.string().min(2, { message: t('nameValidation') }),
   nickname: z.string().optional(),
   email: z.string().email({ message: t('emailValidation') }).optional().or(z.literal('')),
@@ -80,6 +81,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
   const form = useForm<ClientFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      id: client?.id || '',
       name: client?.name || '',
       nickname: client?.nickname || '',
       email: client?.email || '',
@@ -115,7 +117,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
     if (client) {
       updateClient({ ...client, ...clientData });
     } else {
-      addClient(clientData as Omit<Client, 'registeredDate' | 'id' | '_tempId' | 'plans'>);
+      addClient(clientData as Omit<Client, 'registeredDate' | '_tempId' | 'plans'>);
     }
 
     setIsConfirmationModalOpen(false);
@@ -128,6 +130,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       onSubmitted();
     } else {
        reset({
+        id: '',
         name: '',
         nickname: '',
         email: '',
@@ -195,6 +198,24 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                   </FormLabel>
                   <FormControl>
                     <Input placeholder={t('emailPlaceholder')} {...field} autoComplete="off" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="w-full md:w-1/2">
+            <FormField
+              control={form.control}
+              name="id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t('clientID')}{' '}
+                    <span className="text-muted-foreground">({t('optional')})</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder={t('clientIdManualPlaceholder')} {...field} autoComplete="off" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
