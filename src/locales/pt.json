@@ -390,5 +390,7 @@
     "noTestsFound": "Nenhum teste encontrado.",
     "expiredTests": "Testes Expirados",
     "testsConducted": "Testes Realizados",
-    "interruptTest": "Interromper"
+    "interruptTest": "Interromper",
+    "testHistory": "Histórico de Testes",
+    "testOnDate": "Teste em {date}"
 }

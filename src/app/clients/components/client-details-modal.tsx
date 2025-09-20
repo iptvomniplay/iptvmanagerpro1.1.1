@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import type { Client, SelectedPlan, Application, Phone, PlanStatus, Server, SubServer } from '@/lib/types';
+import type { Client, SelectedPlan, Application, Phone, PlanStatus, Server, SubServer, Test } from '@/lib/types';
 import {
   Dialog,
   DialogContent,
@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/use-language';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, FilePenLine } from 'lucide-react';
+import { Trash2, FilePenLine, TestTube } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Collapsible,
@@ -22,7 +22,8 @@ import {
   CollapsibleContent,
 } from '@/components/ui/collapsible';
 import { BookText, ChevronsUpDown, AppWindow, FileText as FileTextIcon } from 'lucide-react';
-import { isPast, parseISO } from 'date-fns';
+import { isPast, parseISO, format } from 'date-fns';
+import { useData } from '@/hooks/use-data';
 
 interface ClientDetailsModalProps {
   isOpen: boolean;
@@ -221,6 +222,23 @@ const AppDetails = ({ app }: { app: Application }) => {
     )
 }
 
+const TestDetails = ({ test, panel }: { test: Test; panel?: Server }) => {
+  const { t } = useLanguage();
+  return (
+    <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+        <h4 className="font-semibold">
+        {t('testOnDate', { date: format(parseISO(test.creationDate), 'dd/MM/yyyy HH:mm') })}
+      </h4>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+        <DetailItem label={t('panel')} value={panel?.name || test.panelId} />
+        <DetailItem label={t('servers')} value={test.subServerName} />
+        <DetailItem label={t('testPackage')} value={test.package} />
+        <DetailItem label={t('testDuration')} value={`${test.durationValue} ${t(test.durationUnit)}`} />
+      </div>
+    </div>
+  );
+};
+
 export function ClientDetailsModal({
   isOpen,
   onClose,
@@ -229,6 +247,7 @@ export function ClientDetailsModal({
   onDelete,
 }: ClientDetailsModalProps) {
   const { t } = useLanguage();
+  const { servers } = useData();
 
   if (!client) return null;
 
@@ -246,6 +265,8 @@ export function ClientDetailsModal({
         return 'outline';
     }
   };
+  
+  const clientTests = [...(client.tests || [])].sort((a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime());
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -287,7 +308,6 @@ export function ClientDetailsModal({
             </div>
           </div>
           <Separator />
-          
 
            {client.plans && client.plans.length > 0 && (
             <>
@@ -352,6 +372,27 @@ export function ClientDetailsModal({
                     </CollapsibleContent>
                 </Collapsible>
                 <Separator />
+            </>
+          )}
+          
+          {clientTests.length > 0 && (
+            <>
+              <Collapsible defaultOpen>
+                <CollapsibleTrigger className="flex items-center justify-between w-full font-semibold text-xl text-primary">
+                  <div className="flex items-center gap-2">
+                    <TestTube className="h-5 w-5" />
+                    <h3>{t('testHistory')}</h3>
+                    <Badge variant="secondary">{clientTests.length}</Badge>
+                  </div>
+                  <ChevronsUpDown className="h-5 w-5" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-4 pt-4">
+                  {clientTests.map((test, index) => (
+                    <TestDetails key={index} test={test} panel={servers.find(s => s.id === test.panelId)} />
+                  ))}
+                </CollapsibleContent>
+              </Collapsible>
+              <Separator />
             </>
           )}
 

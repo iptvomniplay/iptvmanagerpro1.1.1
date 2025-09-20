@@ -14,7 +14,17 @@ import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { normalizeString } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { format } from 'date-fns';
+import { ClientDetailsModal } from '../components/client-details-modal';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 type ClientWithTest = {
   client: Client;
@@ -22,7 +32,7 @@ type ClientWithTest = {
   panel?: ServerType;
 }
 
-const TestList = ({ tests, onUpdateClient, isExpiredList }: { tests: ClientWithTest[], onUpdateClient: (client: Client) => void, isExpiredList?: boolean }) => {
+const TestList = ({ tests, onUpdateClient, onViewDetails, isExpiredList }: { tests: ClientWithTest[], onUpdateClient: (client: Client) => void, onViewDetails: (client: Client) => void, isExpiredList?: boolean }) => {
     const { t } = useLanguage();
 
     const handleInterruptTest = (client: Client) => {
@@ -52,7 +62,11 @@ const TestList = ({ tests, onUpdateClient, isExpiredList }: { tests: ClientWithT
                 <TableBody>
                     {tests.map(({ client, test, panel }) => (
                         <TableRow key={client._tempId}>
-                            <TableCell className="font-medium">{client.name}</TableCell>
+                            <TableCell>
+                                <Button variant="link" onClick={() => onViewDetails(client)} className="p-0 h-auto font-semibold">
+                                  {client.name}
+                                </Button>
+                            </TableCell>
                             <TableCell>
                               <div className="flex flex-col gap-1">
                                 <Badge variant="secondary" className="text-base">{panel?.name || test.panelId}</Badge>
@@ -94,10 +108,13 @@ const TestList = ({ tests, onUpdateClient, isExpiredList }: { tests: ClientWithT
 
 export default function ViewTestsPage() {
   const { t } = useLanguage();
-  const { clients, servers, updateClient } = useData();
+  const { clients, servers, updateClient, deleteClient } = useData();
   const [isTestModalOpen, setIsTestModalOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [activeTab, setActiveTab] = React.useState('inProgress');
+  const [selectedClient, setSelectedClient] = React.useState<Client | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = React.useState(false);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = React.useState(false);
 
   const testsInProgress: ClientWithTest[] = React.useMemo(() => {
     const tests = clients
@@ -138,6 +155,25 @@ export default function ViewTestsPage() {
     );
   }, [clients, servers, searchTerm]);
   
+  const handleViewDetails = (client: Client) => {
+    setSelectedClient(client);
+    setIsDetailsModalOpen(true);
+  };
+  
+  const handleDeleteRequest = () => {
+    if (selectedClient) {
+      setIsDetailsModalOpen(false);
+      setIsDeleteAlertOpen(true);
+    }
+  };
+
+  const confirmDelete = () => {
+    if (selectedClient) {
+      deleteClient(selectedClient._tempId);
+    }
+    setIsDeleteAlertOpen(false);
+    setSelectedClient(null);
+  };
 
   return (
     <>
@@ -180,16 +216,43 @@ export default function ViewTestsPage() {
                         />
                     </div>
                     <TabsContent value="inProgress" className="mt-4">
-                        <TestList tests={testsInProgress} onUpdateClient={updateClient} />
+                        <TestList tests={testsInProgress} onUpdateClient={updateClient} onViewDetails={handleViewDetails} />
                     </TabsContent>
                     <TabsContent value="expired" className="mt-4">
-                        <TestList tests={expiredTests} onUpdateClient={updateClient} isExpiredList={true} />
+                        <TestList tests={expiredTests} onUpdateClient={updateClient} onViewDetails={handleViewDetails} isExpiredList={true} />
                     </TabsContent>
                 </Tabs>
             </CardContent>
         </Card>
       </div>
       <TestModal isOpen={isTestModalOpen} onClose={() => setIsTestModalOpen(false)} />
+      
+       {selectedClient && (
+        <ClientDetailsModal
+          isOpen={isDetailsModalOpen}
+          onClose={() => setIsDetailsModalOpen(false)}
+          client={selectedClient}
+          onEdit={() => { /* Navegação para edição não implementada aqui */ }}
+          onDelete={handleDeleteRequest}
+        />
+      )}
+      
+      {selectedClient && (
+        <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
+            <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle className="text-xl">{t('areYouSure')}</AlertDialogTitle>
+                <AlertDialogDescription>
+                {t('deleteClientWarning')} <span className="font-semibold">{selectedClient?.name}</span>?
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                <AlertDialogAction onClick={confirmDelete}>{t('delete')}</AlertDialogAction>
+            </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+      )}
     </>
   );
 }

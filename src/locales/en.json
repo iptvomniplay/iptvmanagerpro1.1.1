@@ -390,5 +390,7 @@
     "noTestsFound": "No tests found.",
     "expiredTests": "Expired Tests",
     "testsConducted": "Conducted Tests",
-    "interruptTest": "Interrupt"
+    "interruptTest": "Interrupt",
+    "testHistory": "Test History",
+    "testOnDate": "Test on {date}"
 }
