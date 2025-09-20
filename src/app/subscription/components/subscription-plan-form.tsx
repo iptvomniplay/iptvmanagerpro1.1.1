@@ -310,11 +310,9 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
                                   <Badge variant={getStatusVariant(status)} className="text-base">
                                       {t(status.toLowerCase() as any)}
                                   </Badge>
-                                  <div>
+                                  <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                                       <span className="font-semibold text-card-foreground">{t('value')}: </span>
-                                      <Badge variant={item.isCourtesy ? 'default' : 'outline'} className="text-base">
-                                          {item.isCourtesy ? t('courtesy') : formatCurrency(item.planValue)}
-                                      </Badge>
+                                      <ValueDisplay value={item.planValue} isCourtesy={item.isCourtesy} />
                                   </div>
                                </div>
                             </CardContent>
