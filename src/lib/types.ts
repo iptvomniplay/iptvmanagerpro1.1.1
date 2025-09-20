@@ -15,6 +15,7 @@ export type Test = {
 
 export type Application = {
   name: string;
+  isPreExisting: boolean;
   macAddress: string;
   keyId: string;
   licenseType: 'Free' | 'Anual';
@@ -26,6 +27,7 @@ export type Application = {
   responsibleName?: string;
   responsiblePhones?: Phone[];
   activationId?: string;
+  activationNotes?: string;
   planId: string;
   screenNumber: number;
 };
