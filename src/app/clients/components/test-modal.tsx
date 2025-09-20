@@ -280,7 +280,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                                 </FormItem>
                                 )}
                             />
-                             <div className="space-y-2">
+                            <div className="space-y-2">
                               <Label>{t('panel')}</Label>
                               <div className="relative">
                                 <Input
@@ -389,9 +389,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
             <Button variant="outline" onClick={handleClose}>
               {t('cancel')}
             </Button>
-            {selectedClient && selectedPanel && selectedSubServer && (
-              <Button type="submit" form="test-form">{t('addTest')}</Button>
-            )}
+            <Button type="submit" form="test-form">{t('addTest')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
