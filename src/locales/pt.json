@@ -385,5 +385,7 @@
     "complete": "Completo",
     "currency": "BRL",
     "screensStatus": "Status Telas",
-    "noId": "Sem ID"
+    "noId": "Sem ID",
+    "testsInProgress": "Listando testes atualmente em andamento",
+    "noTestsInProgress": "Não há testes em andamento no momento."
 }

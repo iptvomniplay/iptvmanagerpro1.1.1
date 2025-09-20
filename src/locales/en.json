@@ -384,5 +384,8 @@
     "underDevelopment": "This area is under development.",
     "complete": "Complete",
     "currency": "USD",
-    "screensStatus": "Screens Status"
+    "screensStatus": "Screens Status",
+    "noId": "No ID",
+    "testsInProgress": "Listing tests currently in progress",
+    "noTestsInProgress": "There are no tests in progress at the moment."
 }
