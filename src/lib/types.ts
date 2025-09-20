@@ -44,6 +44,7 @@ export type SelectedPlan = {
   planPeriod: PlanPeriod;
   dueDate?: number;
   status?: PlanStatus;
+  observations?: string;
 };
 
 

@@ -10,12 +10,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
-import { X, Calendar as CalendarIcon, FilePenLine, PlusCircle, Eye, AlertTriangle, EyeOff } from 'lucide-react';
+import { X, Calendar as CalendarIcon, FilePenLine, PlusCircle, Eye, AlertTriangle, EyeOff, ChevronsUpDown, BookText } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { add, format, lastDayOfMonth } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Textarea } from '@/components/ui/textarea';
 
 interface SubscriptionPlanFormProps {
     selectedClient: Client | null;
@@ -92,6 +94,7 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
   const [planValue, setPlanValue] = React.useState('');
   const [isCourtesy, setIsCourtesy] = React.useState(false);
   const [nextDueDate, setNextDueDate] = React.useState<Date | null>(null);
+  const [observations, setObservations] = React.useState('');
 
   const selectedPanel = panels.find((p) => p.id === selectedPanelId);
   const availableServers = selectedPanel?.subServers || [];
@@ -112,6 +115,7 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
     setIsCourtesy(false);
     setNextDueDate(null);
     setEditingPlanIndex(null);
+    setObservations('');
   };
   
   const handleOpenForm = (index: number | null = null) => {
@@ -134,6 +138,7 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
         setDueDate(planToEdit.dueDate);
         setPlanValue(formatCurrency(planToEdit.planValue));
         setIsCourtesy(planToEdit.isCourtesy);
+        setObservations(planToEdit.observations || '');
     }
     setIsFormOpen(true);
   };
@@ -215,6 +220,7 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
           panel: selectedPanel, server: selectedServer, plan: selectedPlan,
           screens: numberOfScreens, planValue: isCourtesy ? 0 : numericValue,
           isCourtesy: isCourtesy, planPeriod: planPeriod, dueDate: dueDate,
+          observations: observations
       };
       
       let newPlans: SelectedPlan[];
@@ -336,75 +342,93 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
                       {editingPlanIndex !== null ? 'Altere os detalhes do plano abaixo.' : 'Preencha os detalhes do novo plano.'}
                   </DialogDescription>
               </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label>{t('panel')}</Label>
-                  <Select value={selectedPanelId} onValueChange={setSelectedPanelId} disabled={!selectedClient}>
-                    <SelectTrigger><SelectValue placeholder={t('selectPanel')} /></SelectTrigger>
-                    <SelectContent>{panels.map((panel) => (<SelectItem key={panel.id} value={panel.id}>{panel.name}</SelectItem>))}</SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('servers')}</Label>
-                  <Select value={selectedServerName} onValueChange={setSelectedServerName} disabled={!selectedPanelId}>
-                    <SelectTrigger><SelectValue placeholder={t('select')} /></SelectTrigger>
-                    <SelectContent>{availableServers.map((server) => (<SelectItem key={server.name} value={server.name}>{server.name}</SelectItem>))}</SelectContent>
-                  </Select>
-                </div>
-                <div className="grid grid-cols-2 gap-4 items-end">
-                    <div className="space-y-2">
-                        <Label>{t('screensAvailable')}</Label>
-                        <div className="h-11 w-full rounded-md border border-input bg-muted px-4 py-2 text-base font-bold text-center flex items-center justify-center">
-                            {selectedServer ? selectedServer.screens : '-'}
-                        </div>
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor='screens-to-hire'>{t('screensToHire')}</Label>
-                        <Select onValueChange={(value) => setNumberOfScreens(parseInt(value, 10))} disabled={!selectedServer} value={numberOfScreens ? String(numberOfScreens) : ''}>
-                            <SelectTrigger id="screens-to-hire"><SelectValue placeholder={t('screensToHirePlaceholder')} /></SelectTrigger>
-                            <SelectContent>{selectedServer && Array.from({ length: selectedServer.screens }, (_, i) => i + 1).map((num) => (<SelectItem key={num} value={String(num)}>{num}</SelectItem>))}</SelectContent>
-                        </Select>
-                    </div>
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('plans')}</Label>
-                  <Select value={selectedPlanName} onValueChange={setSelectedPlanName} disabled={!selectedServerName}>
-                    <SelectTrigger><SelectValue placeholder={t('select')} /></SelectTrigger>
-                    <SelectContent>{availablePlans.map((plan) => (<SelectItem key={plan.name} value={plan.name}>{plan.name} {plan.value ? `(${formatCurrency(plan.value)})` : ''}</SelectItem>))}</SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="plan-period">Período do Plano</Label>
-                    <Select value={planPeriod} onValueChange={(value: PlanPeriod) => setPlanPeriod(value)} disabled={!selectedClient}>
-                        <SelectTrigger id="plan-period"><SelectValue placeholder="Selecione o período" /></SelectTrigger>
-                        <SelectContent>{periodOptions.map((option) => (<SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>))}</SelectContent>
+              <ScrollArea className="max-h-[70vh]">
+                <div className="space-y-4 py-4 px-6">
+                  <div className="space-y-2">
+                    <Label>{t('panel')}</Label>
+                    <Select value={selectedPanelId} onValueChange={setSelectedPanelId} disabled={!selectedClient}>
+                      <SelectTrigger><SelectValue placeholder={t('selectPanel')} /></SelectTrigger>
+                      <SelectContent>{panels.map((panel) => (<SelectItem key={panel.id} value={panel.id}>{panel.name}</SelectItem>))}</SelectContent>
                     </Select>
-                </div>
-                <div className="space-y-2">
-                   <Label htmlFor="due-date">{t('dueDate')}</Label>
-                   <Select value={dueDate ? String(dueDate) : ''} onValueChange={(value) => setDueDate(parseInt(value, 10))} disabled={!planPeriod}>
-                      <SelectTrigger id="due-date"><SelectValue placeholder={"Escolha o dia de vencimento"} /></SelectTrigger>
-                      <SelectContent>{Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (<SelectItem key={day} value={String(day)}>{day}</SelectItem>))}</SelectContent>
-                    </Select>
-                </div>
-                {nextDueDate && (
-                  <div className="p-3 bg-muted/50 rounded-lg border border-dashed animate-in fade-in-50 slide-in-from-bottom-2">
-                    <div className="flex items-center gap-3">
-                      <CalendarIcon className="h-5 w-5 text-primary" />
-                      <p className="font-semibold text-base">Próximo Vencimento: <span className="font-bold">{format(nextDueDate, 'dd/MM/yyyy')}</span></p>
-                    </div>
                   </div>
-                )}
-                <div className="space-y-2">
-                   <Label htmlFor="plan-value">{t('planValue')}</Label>
-                   <Input id='plan-value' value={planValue} onChange={handleCurrencyChange} disabled={isCourtesy || !selectedClient} placeholder={formatCurrency(0)} />
+                  <div className="space-y-2">
+                    <Label>{t('servers')}</Label>
+                    <Select value={selectedServerName} onValueChange={setSelectedServerName} disabled={!selectedPanelId}>
+                      <SelectTrigger><SelectValue placeholder={t('select')} /></SelectTrigger>
+                      <SelectContent>{availableServers.map((server) => (<SelectItem key={server.name} value={server.name}>{server.name}</SelectItem>))}</SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 items-end">
+                      <div className="space-y-2">
+                          <Label>{t('screensAvailable')}</Label>
+                          <div className="h-11 w-full rounded-md border border-input bg-muted px-4 py-2 text-base font-bold text-center flex items-center justify-center">
+                              {selectedServer ? selectedServer.screens : '-'}
+                          </div>
+                      </div>
+                      <div className="space-y-2">
+                          <Label htmlFor='screens-to-hire'>{t('screensToHire')}</Label>
+                          <Select onValueChange={(value) => setNumberOfScreens(parseInt(value, 10))} disabled={!selectedServer} value={numberOfScreens ? String(numberOfScreens) : ''}>
+                              <SelectTrigger id="screens-to-hire"><SelectValue placeholder={t('screensToHirePlaceholder')} /></SelectTrigger>
+                              <SelectContent>{selectedServer && Array.from({ length: selectedServer.screens }, (_, i) => i + 1).map((num) => (<SelectItem key={num} value={String(num)}>{num}</SelectItem>))}</SelectContent>
+                          </Select>
+                      </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{t('plans')}</Label>
+                    <Select value={selectedPlanName} onValueChange={setSelectedPlanName} disabled={!selectedServerName}>
+                      <SelectTrigger><SelectValue placeholder={t('select')} /></SelectTrigger>
+                      <SelectContent>{availablePlans.map((plan) => (<SelectItem key={plan.name} value={plan.name}>{plan.name} {plan.value ? `(${formatCurrency(plan.value)})` : ''}</SelectItem>))}</SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                      <Label htmlFor="plan-period">Período do Plano</Label>
+                      <Select value={planPeriod} onValueChange={(value: PlanPeriod) => setPlanPeriod(value)} disabled={!selectedClient}>
+                          <SelectTrigger id="plan-period"><SelectValue placeholder="Selecione o período" /></SelectTrigger>
+                          <SelectContent>{periodOptions.map((option) => (<SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>))}</SelectContent>
+                      </Select>
+                  </div>
+                  <div className="space-y-2">
+                     <Label htmlFor="due-date">{t('dueDate')}</Label>
+                     <Select value={dueDate ? String(dueDate) : ''} onValueChange={(value) => setDueDate(parseInt(value, 10))} disabled={!planPeriod}>
+                        <SelectTrigger id="due-date"><SelectValue placeholder={"Escolha o dia de vencimento"} /></SelectTrigger>
+                        <SelectContent>{Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (<SelectItem key={day} value={String(day)}>{day}</SelectItem>))}</SelectContent>
+                      </Select>
+                  </div>
+                  {nextDueDate && (
+                    <div className="p-3 bg-muted/50 rounded-lg border border-dashed animate-in fade-in-50 slide-in-from-bottom-2">
+                      <div className="flex items-center gap-3">
+                        <CalendarIcon className="h-5 w-5 text-primary" />
+                        <p className="font-semibold text-base">Próximo Vencimento: <span className="font-bold">{format(nextDueDate, 'dd/MM/yyyy')}</span></p>
+                      </div>
+                    </div>
+                  )}
+                  <div className="space-y-2">
+                     <Label htmlFor="plan-value">{t('planValue')}</Label>
+                     <Input id='plan-value' value={planValue} onChange={handleCurrencyChange} disabled={isCourtesy || !selectedClient} placeholder={formatCurrency(0)} />
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id="courtesy" checked={isCourtesy} onCheckedChange={(checked) => setIsCourtesy(checked as boolean)} disabled={!selectedClient} />
+                    <label htmlFor="courtesy" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">{t('courtesy')}</label>
+                  </div>
+                  <Collapsible>
+                    <CollapsibleTrigger asChild>
+                      <Button type="button" variant="outline" className="w-full justify-between">
+                        {t('observations')}
+                        <ChevronsUpDown className="h-5 w-5" />
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="pt-2">
+                      <Textarea
+                        placeholder={t('observationsPlaceholder')}
+                        value={observations}
+                        onChange={(e) => setObservations(e.target.value)}
+                        autoComplete="off"
+                      />
+                    </CollapsibleContent>
+                  </Collapsible>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="courtesy" checked={isCourtesy} onCheckedChange={(checked) => setIsCourtesy(checked as boolean)} disabled={!selectedClient} />
-                  <label htmlFor="courtesy" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">{t('courtesy')}</label>
-                </div>
-              </div>
-              <DialogFooter>
+              </ScrollArea>
+              <DialogFooter className="px-6 pb-6 pt-2">
                   <Button variant="outline" onClick={() => setIsFormOpen(false)}>{t('cancel')}</Button>
                   <Button onClick={handleAddOrUpdatePlan} disabled={!isFormValid}>
                     {editingPlanIndex !== null ? 'Atualizar Plano' : t('addPlan')}
@@ -450,6 +474,18 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
                         <DetailItem label="Período do Plano" value={periodOptions.find(p => p.value === planToShowDetails.planPeriod)?.label} />
                         <DetailItem label={t('dueDate')} value={planToShowDetails.dueDate} />
                     </div>
+                    {planToShowDetails.observations && (
+                      <>
+                        <Separator />
+                        <div>
+                          <h3 className="flex items-center gap-2 text-lg font-semibold text-primary mb-2">
+                            <BookText className="h-5 w-5" />
+                            {t('observations')}
+                          </h3>
+                          <p className="text-base text-muted-foreground whitespace-pre-wrap">{planToShowDetails.observations}</p>
+                        </div>
+                      </>
+                    )}
                     <Separator />
                     <h3 className="text-lg font-semibold text-primary">Pendências</h3>
                     <div className="p-3 bg-muted/50 rounded-lg border">
