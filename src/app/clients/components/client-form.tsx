@@ -317,7 +317,7 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
                 <FormItem>
                   <FormLabel>
                     {t('clientStatus')}{' '}
-                    <span className="text-muted-foreground">(Inativo como padrão)</span>
+                    <span className="text-muted-foreground">({t('statusDefault')})</span>
                   </FormLabel>
                   <Select
                     onValueChange={field.onChange}

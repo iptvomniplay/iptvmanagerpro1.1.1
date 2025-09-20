@@ -169,7 +169,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className="h-screen w-screen max-w-none flex flex-col p-0">
           <DialogHeader className="p-6 pb-4 border-b">
-            <DialogTitle className="text-2xl">Configure 1 teste</DialogTitle>
+            <DialogTitle className="text-2xl">{t('addTest')}</DialogTitle>
           </DialogHeader>
 
           <ScrollArea className="flex-1">
@@ -351,7 +351,7 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                                                 <CollapsibleTrigger asChild>
                                                     <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
                                                         <ChevronRight className="h-5 w-5 transition-transform data-[state=open]:rotate-90" />
-                                                        <span className="sr-only">Details</span>
+                                                        <span className="sr-only">{t('details')}</span>
                                                     </Button>
                                                 </CollapsibleTrigger>
                                             </div>

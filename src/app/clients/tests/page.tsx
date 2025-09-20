@@ -12,8 +12,7 @@ export default function ViewTestsPage() {
         <CardHeader>
           <CardTitle>{t('viewTests')}</CardTitle>
           <CardDescription>
-            {/* TODO: Implement a description for this page */}
-            Ainda em desenvolvimento.
+            {t('underDevelopment')}
           </CardDescription>
         </CardHeader>
         <CardContent>

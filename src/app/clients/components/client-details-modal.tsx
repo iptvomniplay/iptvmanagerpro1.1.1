@@ -53,8 +53,8 @@ const DetailItem = ({
 const PlanDetails = ({ plan, client }: { plan: SelectedPlan, client: Client }) => {
     const { t } = useLanguage();
     const periodOptions: { value: SelectedPlan['planPeriod']; label: string }[] = [
-        { value: '30d', label: '30 dias' }, { value: '3m', label: '3 meses' },
-        { value: '6m', label: '6 meses' }, { value: '1y', label: '1 ano' },
+        { value: '30d', label: t('30days') }, { value: '3m', label: t('3months') },
+        { value: '6m', label: t('6months') }, { value: '1y', label: t('1year') },
     ];
     
     const getPlanStatus = (plan: SelectedPlan, client: Client): PlanStatus => {
@@ -94,7 +94,7 @@ const PlanDetails = ({ plan, client }: { plan: SelectedPlan, client: Client }) =
                 <DetailItem label={t('plans')} value={plan.plan.name} />
                 <DetailItem label={t('screens')} value={plan.screens} />
                 <DetailItem label={t('planValue')} value={plan.isCourtesy ? t('courtesy') : plan.planValue} />
-                <DetailItem label="Período" value={periodOptions.find(p => p.value === plan.planPeriod)?.label} />
+                <DetailItem label={t('planPeriod')} value={periodOptions.find(p => p.value === plan.planPeriod)?.label} />
                 <DetailItem label={t('dueDate')} value={plan.dueDate} />
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">{t('status')}</p>
@@ -228,7 +228,7 @@ export function ClientDetailsModal({
             <DetailItem label={t('nickname')} value={client.nickname} />
             <DetailItem label={t('emailAddress')} value={client.email} />
             <DetailItem label={t('birthDate')} value={client.birthDate} />
-            <DetailItem label={t('clientID')} value={client.id || t('Sem ID')} />
+            <DetailItem label={t('clientID')} value={client.id || t('noId')} />
             <div>
               <p className="text-sm font-medium text-muted-foreground">
                 {t('phone')}

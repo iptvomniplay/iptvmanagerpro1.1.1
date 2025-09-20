@@ -150,7 +150,7 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
       />
       <div className="flex justify-end gap-2 p-4 border-t">
           <Button variant="ghost" onClick={handleCancelClick}>{t('cancel')}</Button>
-          <Button onClick={handleOkClick}>OK</Button>
+          <Button onClick={handleOkClick}>{t('ok')}</Button>
       </div>
     </>
   );

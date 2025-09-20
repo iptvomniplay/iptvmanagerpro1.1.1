@@ -15,18 +15,18 @@ interface PersistenceTestProps {
 const TestResultItem: React.FC<{ title: string; value: string | null | undefined; expected: string | null | undefined, isInitial: boolean }> = ({ title, value, expected, isInitial }) => {
   const { t } = useLanguage();
   let Icon = XCircle;
-  let text = `ID: ${value || '"vazio"'}`;
+  let text = `ID: ${value || t('emptyValue')}`;
   let color = 'text-destructive';
 
   if (isInitial) {
     Icon = AlertCircle;
-    text = "Aguardando ID ser salvo...";
+    text = t('awaitingIdSave');
     color = "text-yellow-500";
   } else if (value && value === expected) {
     Icon = CheckCircle;
     color = 'text-green-500';
   } else {
-     text = `Incorreto. Esperado: "${expected || 'vazio'}", Recebido: "${value || 'vazio'}"`;
+     text = `${t('incorrect')}. ${t('expected')}: "${expected || t('emptyValue')}", ${t('received')}: "${value || t('emptyValue')}"`;
   }
 
   return (
@@ -84,27 +84,27 @@ export function PersistenceTest({ selectedClient }: PersistenceTestProps) {
   return (
     <Card className="mt-6 border-dashed border-primary">
       <CardHeader>
-        <CardTitle className="text-lg">Teste de Persistência do ID</CardTitle>
+        <CardTitle className="text-lg">{t('persistenceTestTitle')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <Button onClick={runTest} disabled={!selectedClient} className="w-full">
-            Rodar Teste de Comparação Agora
+            {t('runComparisonTest')}
         </Button>
         <div className="space-y-3 rounded-md bg-muted/50 p-4">
             <TestResultItem 
-                title="1. Estado do Componente (selectedClient)"
+                title={t('componentStateTest')}
                 value={selectedClient?.id}
                 expected={manualIdUsedInTest}
                 isInitial={isTestInitialState}
             />
             <TestResultItem 
-                title="2. Lista Global (useData)"
+                title={t('globalListTest')}
                 value={globalClient?.id}
                 expected={manualIdUsedInTest}
                 isInitial={isTestInitialState}
             />
             <TestResultItem 
-                title="3. localStorage ('clients')"
+                title={t('localStorageTest')}
                 value={storedClient?.id}
                 expected={manualIdUsedInTest}
                 isInitial={isTestInitialState}

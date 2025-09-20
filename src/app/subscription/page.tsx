@@ -79,7 +79,7 @@ export default function SubscriptionPage() {
     if (!selectedClient) return;
     if (selectedClient.id && selectedClient.id === manualId) {
       toast({
-        title: "ID do Cliente já foi salvo!",
+        title: t('clientIdAlreadySaved'),
       });
       return;
     }
@@ -187,15 +187,15 @@ export default function SubscriptionPage() {
                   {selectedClient.plans && selectedClient.plans.length > 0 && (
                      <Alert variant="destructive">
                       <AlertTriangle className="h-4 w-4" />
-                      <AlertTitle>Atenção: Cliente já possui assinatura</AlertTitle>
+                      <AlertTitle>{t('attentionClientHasSubscription')}</AlertTitle>
                       <AlertDescription className="space-y-3">
                         {areAppsIncomplete ? (
-                           <p>Existem {totalScreensFromPlans - totalApplications} tela(s) com configurações pendentes.</p>
+                           <p>{t('pendingScreensWarning', { count: totalScreensFromPlans - totalApplications })}</p>
                         ) : (
-                          <p>Todos os aplicativos desta assinatura já foram configurados.</p>
+                          <p>{t('allAppsConfigured')}</p>
                         )}
                         <Button variant="secondary" onClick={() => setActiveTab('plans')}>
-                           Gerenciar Telas Pendentes
+                           {t('managePendingScreens')}
                         </Button>
                       </AlertDescription>
                     </Alert>
@@ -285,8 +285,8 @@ export default function SubscriptionPage() {
       <AlertDialog open={isIdSaveSuccessModalOpen} onOpenChange={setIsIdSaveSuccessModalOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>ID do Cliente salvo com sucesso</AlertDialogTitle>
-            <AlertDialogDescription>{`ID ${manualId} salvo para o cliente ${selectedClient?.name}.`}</AlertDialogDescription>
+            <AlertDialogTitle>{t('clientIdSavedSuccess')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('clientIdSavedMessage', { id: manualId, name: selectedClient?.name })}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogAction onClick={() => setIsIdSaveSuccessModalOpen(false)}>{t('ok')}</AlertDialogAction>
         </AlertDialogContent>

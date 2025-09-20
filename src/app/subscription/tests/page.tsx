@@ -12,7 +12,7 @@ export default function ViewSubscriptionTestsPage() {
         <CardHeader>
           <CardTitle>{t('viewTests')}</CardTitle>
           <CardDescription>
-            Ainda em desenvolvimento.
+            {t('underDevelopment')}
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -156,7 +156,7 @@ export default function ClientsPageContent() {
         <div className="flex items-center gap-4">
           <Button onClick={() => router.push('/subscription')} size="lg" className="flex-1">
               <CreditCard />
-              <span className="ml-2">Assinatura</span>
+              <span className="ml-2">{t('subscription')}</span>
           </Button>
           
           <DropdownMenu>
@@ -202,7 +202,7 @@ export default function ClientsPageContent() {
             <TableRow>
               <TableHead>{t('name')}</TableHead>
               <TableHead>{t('clientStatus')}</TableHead>
-              <TableHead>Expira em</TableHead>
+              <TableHead>{t('expiresIn')}</TableHead>
               <TableHead>{t('clientID')}</TableHead>
               <TableHead className="text-right">{t('actions')}</TableHead>
             </TableRow>
@@ -223,7 +223,7 @@ export default function ClientsPageContent() {
                               <AlertTriangle className="h-5 w-5 text-yellow-500" />
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>Este cliente tem configurações de aplicativo pendentes.</p>
+                              <p>{t('pendingAppsWarning')}</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -247,7 +247,7 @@ export default function ClientsPageContent() {
                     ) : null}
                   </TableCell>
                   <TableCell className="font-medium">
-                    {client.id ? client.id : t('Sem ID')}
+                    {client.id ? client.id : t('noId')}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>

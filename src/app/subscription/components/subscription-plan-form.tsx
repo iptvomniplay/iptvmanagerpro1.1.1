@@ -295,8 +295,8 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
   }
 
   const periodOptions: { value: PlanPeriod; label: string }[] = [
-    { value: '30d', label: '30 dias' }, { value: '3m', label: '3 meses' },
-    { value: '6m', label: '6 meses' }, { value: '1y', label: '1 ano' },
+    { value: '30d', label: t('30days') }, { value: '3m', label: t('3months') },
+    { value: '6m', label: t('6months') }, { value: '1y', label: t('1year') },
   ];
 
   const getPendingScreensCount = (plan: SelectedPlan) => {
@@ -324,7 +324,7 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
           <CardHeader className="flex flex-row items-center justify-between pb-4">
             <div>
                 <CardTitle>{t('subscriptionPlans')}</CardTitle>
-                <CardDescription>Planos contratados pelo cliente.</CardDescription>
+                <CardDescription>{t('clientSubscriptionPlans')}</CardDescription>
             </div>
             <Button onClick={() => handleOpenForm(null)} disabled={!selectedClient}>
                 <PlusCircle className="mr-2 h-4 w-4" />
@@ -375,7 +375,7 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
                 </div>
             ) : (
                 <div className="text-center py-10 text-muted-foreground">
-                    <p>{!selectedClient ? t('selectClientPrompt') : t('noSubServers')}</p>
+                    <p>{!selectedClient ? t('selectClientPrompt') : t('noPlansAdded')}</p>
                 </div>
             )}
           </CardContent>
@@ -384,9 +384,9 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
           <DialogContent className="sm:max-w-lg">
               <DialogHeader>
-                  <DialogTitle>{editingPlanIndex !== null ? 'Editar Plano' : t('addPlan')}</DialogTitle>
+                  <DialogTitle>{editingPlanIndex !== null ? t('editPlan') : t('addPlan')}</DialogTitle>
                   <DialogDescription>
-                      {editingPlanIndex !== null ? 'Altere os detalhes do plano abaixo.' : 'Preencha os detalhes do novo plano.'}
+                      {editingPlanIndex !== null ? t('editPlanDescription') : t('addPlanDescription')}
                   </DialogDescription>
               </DialogHeader>
               <ScrollArea className="max-h-[70vh]">
@@ -428,16 +428,16 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
                     </Select>
                   </div>
                   <div className="space-y-2">
-                      <Label htmlFor="plan-period">Período do Plano</Label>
+                      <Label htmlFor="plan-period">{t('planPeriod')}</Label>
                       <Select value={planPeriod} onValueChange={(value: PlanPeriod) => setPlanPeriod(value)} disabled={!selectedClient}>
-                          <SelectTrigger id="plan-period"><SelectValue placeholder="Selecione o período" /></SelectTrigger>
+                          <SelectTrigger id="plan-period"><SelectValue placeholder={t('selectPeriod')} /></SelectTrigger>
                           <SelectContent>{periodOptions.map((option) => (<SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>))}</SelectContent>
                       </Select>
                   </div>
                   <div className="space-y-2">
                      <Label htmlFor="due-date">{t('dueDate')}</Label>
                      <Select value={dueDate ? String(dueDate) : ''} onValueChange={(value) => setDueDate(parseInt(value, 10))} disabled={!planPeriod}>
-                        <SelectTrigger id="due-date"><SelectValue placeholder={"Escolha o dia de vencimento"} /></SelectTrigger>
+                        <SelectTrigger id="due-date"><SelectValue placeholder={t('selectDueDate')} /></SelectTrigger>
                         <SelectContent>{Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (<SelectItem key={day} value={String(day)}>{day}</SelectItem>))}</SelectContent>
                       </Select>
                   </div>
@@ -445,7 +445,7 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
                     <div className="p-3 bg-muted/50 rounded-lg border border-dashed animate-in fade-in-50 slide-in-from-bottom-2">
                       <div className="flex items-center gap-3">
                         <CalendarIcon className="h-5 w-5 text-primary" />
-                        <p className="font-semibold text-base">Próximo Vencimento: <span className="font-bold">{format(nextDueDate, 'dd/MM/yyyy')}</span></p>
+                        <p className="font-semibold text-base">{t('nextDueDate')}: <span className="font-bold">{format(nextDueDate, 'dd/MM/yyyy')}</span></p>
                       </div>
                     </div>
                   )}
@@ -478,7 +478,7 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
               <DialogFooter className="px-6 pb-6 pt-2">
                   <Button variant="outline" onClick={() => setIsFormOpen(false)}>{t('cancel')}</Button>
                   <Button onClick={handleAddOrUpdatePlan} disabled={!isFormValid}>
-                    {editingPlanIndex !== null ? 'Atualizar Plano' : t('addPlan')}
+                    {editingPlanIndex !== null ? t('updatePlan') : t('addPlan')}
                   </Button>
               </DialogFooter>
           </DialogContent>
@@ -488,9 +488,9 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
         <Dialog open={isDetailsModalOpen} onOpenChange={setIsDetailsModalOpen}>
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
-                    <DialogTitle>{t('details')} do Plano: {planToShowDetails.plan.name}</DialogTitle>
+                    <DialogTitle>{t('planDetailsTitle')}: {planToShowDetails.plan.name}</DialogTitle>
                     <DialogDescription>
-                        Revise as informações do plano contratado pelo cliente.
+                        {t('planDetailsDescription')}
                     </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
@@ -516,9 +516,9 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
                        </div>
                     </div>
                     <Separator />
-                    <h3 className="text-lg font-semibold text-primary">Detalhes de Pagamento</h3>
+                    <h3 className="text-lg font-semibold text-primary">{t('paymentDetails')}</h3>
                     <div className="grid grid-cols-2 gap-4">
-                        <DetailItem label="Período do Plano" value={periodOptions.find(p => p.value === planToShowDetails.planPeriod)?.label} />
+                        <DetailItem label={t('planPeriod')} value={periodOptions.find(p => p.value === planToShowDetails.planPeriod)?.label} />
                         <DetailItem label={t('dueDate')} value={planToShowDetails.dueDate} />
                     </div>
                     {planToShowDetails.observations && (
@@ -534,15 +534,15 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
                       </>
                     )}
                     <Separator />
-                    <h3 className="text-lg font-semibold text-primary">Pendências</h3>
+                    <h3 className="text-lg font-semibold text-primary">{t('pendencies')}</h3>
                     <div className="p-3 bg-muted/50 rounded-lg border">
                       {getPendingScreensCount(planToShowDetails) > 0 ? (
                         <div className="flex items-center gap-3 text-yellow-600 dark:text-yellow-400">
                            <AlertTriangle className="h-5 w-5" />
-                           <p className="font-semibold">Existem {getPendingScreensCount(planToShowDetails)} telas com configuração pendente.</p>
+                           <p className="font-semibold">{t('pendingScreensWarning', { count: getPendingScreensCount(planToShowDetails) })}</p>
                         </div>
                       ) : (
-                        <p className="text-muted-foreground">Nenhuma pendência encontrada para este plano.</p>
+                        <p className="text-muted-foreground">{t('noPendenciesFound')}</p>
                       )}
                     </div>
                 </div>
