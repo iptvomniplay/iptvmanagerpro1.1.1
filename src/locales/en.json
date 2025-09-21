@@ -493,5 +493,18 @@
     "notepadPlaceholder": "Type your notes here...",
     "saveNotes": "Save Notes",
     "notesSavedSuccess": "Notes saved successfully!",
-    "financial": "Financial"
+    "financial": "Financial",
+    "createNote": "Create Note",
+    "noNotesYet": "No notes yet.",
+    "noNotesYetDescription": "Click the button above to create your first note.",
+    "editNote": "Edit Note",
+    "editNoteDescription": "Make changes to your note.",
+    "createNoteDescription": "Write your note and choose a color for the card.",
+    "cardColor": "Card Color",
+    "saveNote": "Save Note",
+    "noteDetails": "Note Details",
+    "copyText": "Copy Text",
+    "textCopied": "Text Copied!",
+    "textCopiedSuccess": "The note content has been copied to the clipboard.",
+    "deleteNoteWarning": "Are you sure you want to delete this note? This action cannot be undone."
 }

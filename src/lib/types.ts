@@ -114,3 +114,9 @@ export type Server = {
   observations?: string;
   transactions?: Transaction[];
 };
+
+export type Note = {
+  id: string;
+  content: string;
+  color: string;
+};

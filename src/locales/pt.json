@@ -493,5 +493,19 @@
     "notepadPlaceholder": "Digite suas anotações aqui...",
     "saveNotes": "Salvar Anotações",
     "notesSavedSuccess": "Anotações salvas com sucesso!",
-    "financial": "Financeiro"
+    "financial": "Financeiro",
+    "createNote": "Criar Anotação",
+    "noNotesYet": "Nenhuma anotação ainda.",
+    "noNotesYetDescription": "Clique no botão acima para criar sua primeira anotação.",
+    "editNote": "Editar Anotação",
+    "editNoteDescription": "Faça alterações na sua anotação.",
+    "createNoteDescription": "Escreva sua nota e escolha uma cor para o card.",
+    "cardColor": "Cor do Card",
+    "saveNote": "Salvar Anotação",
+    "noteDetails": "Detalhes da Anotação",
+    "copyText": "Copiar Texto",
+    "textCopied": "Texto Copiado!",
+    "textCopiedSuccess": "O conteúdo da nota foi copiado para a área de transferência.",
+    "deleteNoteWarning": "Tem certeza de que deseja excluir esta anotação? Esta ação não pode ser desfeita."
 }
+
