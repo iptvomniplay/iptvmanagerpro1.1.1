@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -63,13 +64,14 @@ export default function SettingsPage() {
 
     (Object.keys(selectedConfigs) as ReportKey[]).forEach(reportKey => {
       const config = selectedConfigs[reportKey];
-      if (!config || !config.all) return;
+      if (!config) return;
       
       const reportMeta = reportConfig[reportKey];
       let headers: string[] = [];
       let rows: (string | undefined)[][] = [];
       
       if (reportMeta.type === 'fields') {
+          if (!config.all) return;
           let selectedFields = (Object.keys((config as any).fields) as (keyof typeof reportMeta.fields)[]).filter(
             fieldKey => (config as any).fields?.[fieldKey]
           );
@@ -137,6 +139,7 @@ export default function SettingsPage() {
                   break;
           }
       } else if (reportMeta.type === 'statistic') {
+          if (!config.all) return;
           switch(reportKey) {
             case 'panelUsage': {
                   headers = [t('serverName'), t('report_usagePercentage')];
@@ -423,6 +426,7 @@ export default function SettingsPage() {
     </>
   );
 }
+
 
 
 
