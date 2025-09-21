@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -24,7 +25,6 @@ import { ReportModal } from './components/report-modal';
 export default function SettingsPage() {
   const { language, setLanguage, t } = useLanguage();
   const { theme, setTheme } = useTheme();
-  const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const { newSubscriptionsPeriod, setNewSubscriptionsPeriod, expirationWarningDays, setExpirationWarningDays } = useDashboardSettings();
@@ -47,13 +47,6 @@ export default function SettingsPage() {
         value = 30;
     }
     setExpirationWarningDays(value);
-  }
-  
-  const handleSave = () => {
-    toast({
-        title: t('success'),
-        description: t('settingsSaved'),
-    });
   }
 
   const dashboardPeriodOptions: { value: DashboardPeriod; label: string }[] = [
@@ -283,9 +276,6 @@ export default function SettingsPage() {
           </Card>
 
         </div>
-      </div>
-      <div className="mt-auto flex justify-end pt-8">
-        <Button size="lg" onClick={handleSave}>{t('savePreferences')}</Button>
       </div>
     </div>
     <ReportModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} />
