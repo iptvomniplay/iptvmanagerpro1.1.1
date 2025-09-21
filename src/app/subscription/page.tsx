@@ -47,8 +47,14 @@ export default function SubscriptionPage() {
   const [isSubscriptionSuccessModalOpen, setIsSubscriptionSuccessModalOpen] = React.useState(false);
   
   const arePlansIncomplete = !selectedClient?.plans || selectedClient.plans.length === 0;
-  const areAppsIncomplete = !selectedClient?.applications || selectedClient.applications.length === 0;
   
+  const totalScreensFromPlans = React.useMemo(() => 
+    selectedClient?.plans?.reduce((sum, plan) => sum + plan.screens, 0) || 0,
+    [selectedClient?.plans]
+  );
+  const configuredAppsCount = selectedClient?.applications?.length || 0;
+  const areAppsIncomplete = totalScreensFromPlans > configuredAppsCount;
+
   const isReadyForActivation = selectedClient && selectedClient.id && !arePlansIncomplete && !areAppsIncomplete;
 
   const handleSelectClient = (client: Client | null) => {
@@ -68,10 +74,20 @@ export default function SubscriptionPage() {
 
   const handleUpdateClient = (updatedData: Partial<Client>) => {
     if (!selectedClient) return;
-    const newClientState = { ...selectedClient, ...updatedData };
+
+    // Fetch the most up-to-date client from the global list to avoid state inconsistencies
+    const currentGlobalClient = clients.find(c => c._tempId === selectedClient._tempId);
+    if (!currentGlobalClient) return;
+
+    const newClientState = { ...currentGlobalClient, ...updatedData };
+    
+    // Update the global state and localStorage
+    updateClient(newClientState);
+    
+    // Update the local state to reflect the changes immediately
     setSelectedClient(newClientState);
-    updateClient(newClientState); // This now behaves as if skipSave=true was passed
   };
+
 
   const saveManualId = () => {
     if (!selectedClient) return;

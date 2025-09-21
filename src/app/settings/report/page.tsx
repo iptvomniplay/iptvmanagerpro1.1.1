@@ -25,13 +25,12 @@ const ReportContent = () => {
     React.useEffect(() => {
         if (!isDataLoaded) return;
 
-        const storedConfigsRaw = sessionStorage.getItem('reportConfigs');
-        if (!storedConfigsRaw) {
-            setIsLoading(false);
-            return;
-        }
-
         try {
+            const storedConfigsRaw = sessionStorage.getItem('reportConfigs');
+            if (!storedConfigsRaw) {
+                return;
+            }
+
             const selectedConfigs: SelectedReportsState = JSON.parse(storedConfigsRaw);
             const generatedReports: GeneratedReportData[] = [];
 
@@ -44,7 +43,7 @@ const ReportContent = () => {
                 const selectedFields = (Object.keys(config.fields) as FieldKey<typeof reportKey>[]).filter(
                     fieldKey => config.fields?.[fieldKey as FieldKey<typeof reportKey>]
                 );
-
+                
                 if (selectedFields.length === 0) return;
 
                 const headers = selectedFields.map(fieldKey => t(reportMeta.fields[fieldKey as keyof typeof reportMeta.fields]));
@@ -118,7 +117,6 @@ const ReportContent = () => {
                 
                 generatedReports.push({ title: t(reportMeta.label as any), headers, rows });
             });
-
             setReports(generatedReports);
         } catch (error) {
             console.error("Failed to parse report configs:", error);
@@ -129,12 +127,15 @@ const ReportContent = () => {
     
     React.useEffect(() => {
         if (!isLoading) {
+            // Give the browser a moment to render the content before printing
             const timer = setTimeout(() => {
-                window.print();
-            }, 500); 
+                if (reports.length > 0 && reports.some(r => r.rows.length > 0)) {
+                    window.print();
+                }
+            }, 500);
             return () => clearTimeout(timer);
         }
-    }, [isLoading]);
+    }, [isLoading, reports]);
 
     if (isLoading) {
         return <div className="p-10 text-center">{t('loadingReport')}...</div>;
