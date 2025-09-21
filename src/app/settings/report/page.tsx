@@ -28,6 +28,7 @@ const ReportContent = () => {
         try {
             const storedConfigsRaw = sessionStorage.getItem('reportConfigs');
             if (!storedConfigsRaw) {
+                setIsLoading(false);
                 return;
             }
 
@@ -186,15 +187,6 @@ ReportContent.displayName = 'ReportContent';
 
 export default function ReportPage() {
     const { t } = useLanguage();
-    const [isClient, setIsClient] = React.useState(false);
-
-    React.useEffect(() => {
-        setIsClient(true);
-    }, []);
-
-    if (!isClient) {
-        return null;
-    }
 
     return (
         <LanguageProvider>
