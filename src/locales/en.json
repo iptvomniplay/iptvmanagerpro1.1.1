@@ -486,5 +486,11 @@
     "adjustmentQuantityDescription": "Use negative numbers to remove credits.",
     "adjustmentDescriptionPlaceholder": "E.g.: Initial balance correction.",
     "registrationAddedSuccess": "Registration Added Successfully",
-    "utilities": "Utilities"
+    "utilities": "Utilities",
+    "utilitiesDescription": "A collection of tools to help you with your daily tasks.",
+    "notepad": "Notepad",
+    "notepadDescription": "Use this space to save quick notes, greeting messages, or any text you need to have on hand.",
+    "notepadPlaceholder": "Type your notes here...",
+    "saveNotes": "Save Notes",
+    "notesSavedSuccess": "Notes saved successfully!"
 }

@@ -486,5 +486,11 @@
     "adjustmentQuantityDescription": "Use números negativos para remover créditos.",
     "adjustmentDescriptionPlaceholder": "Ex: Correção de saldo inicial.",
     "registrationAddedSuccess": "Cadastro Adicionado com Sucesso",
-    "utilities": "Utilitários"
+    "utilities": "Utilitários",
+    "utilitiesDescription": "Uma coleção de ferramentas para ajudar nas suas tarefas diárias.",
+    "notepad": "Bloco de Notas",
+    "notepadDescription": "Use este espaço para salvar anotações rápidas, mensagens de saudação ou qualquer texto que precise ter em mãos.",
+    "notepadPlaceholder": "Digite suas anotações aqui...",
+    "saveNotes": "Salvar Anotações",
+    "notesSavedSuccess": "Anotações salvas com sucesso!"
 }
