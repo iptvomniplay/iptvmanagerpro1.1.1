@@ -399,5 +399,7 @@
     "clientWithActiveTest": "Client with active test",
     "activateSubscription": "Activate Subscription",
     "pendingActivationTitle": "Pending Activation",
-    "pendingActivationDescription": "This client's subscription is not yet active. Fill in all the necessary information on the tabs below and click 'Activate Subscription' to complete the process."
+    "pendingActivationDescription": "This client's subscription is not yet active. Fill in all the necessary information on the tabs below and click 'Activate Subscription' to complete the process.",
+    "SelecaoServidor": "Server Selection",
+    "ConfiguracaoPlano": "Plan Configuration"
 }
