@@ -124,7 +124,6 @@ export default function SubscriptionPage() {
         updatedTests = selectedClient.tests?.map(test => {
             const expirationDate = add(parseISO(test.creationDate), { [test.durationUnit]: test.durationValue });
             if (isFuture(expirationDate)) {
-                // Encerra o teste zerando sua duração
                 return { ...test, durationValue: 0, durationUnit: 'hours' as 'hours' };
             }
             return test;
