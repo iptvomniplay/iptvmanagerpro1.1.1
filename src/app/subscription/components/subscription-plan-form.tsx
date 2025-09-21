@@ -401,11 +401,16 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange, onSelectCli
               <DialogHeader>
                   <DialogTitle>
                     {editingPlanIndex !== null ? t('editPlan') : t('addPlan')}
-                    {selectedClient && `: ${selectedClient.name}`}
                   </DialogTitle>
                   <DialogDescription>
                       {editingPlanIndex !== null ? t('editPlanDescription') : t('addPlanDescription')}
                   </DialogDescription>
+                  {selectedClient && (
+                    <div className="flex items-center gap-2 pt-2">
+                        <UserCheck className="h-5 w-5 text-primary"/>
+                        <p className="font-semibold text-base">{selectedClient.name}</p>
+                    </div>
+                  )}
               </DialogHeader>
               <ScrollArea className="max-h-[70vh]">
                 <div className="space-y-6 p-1 pr-6">
