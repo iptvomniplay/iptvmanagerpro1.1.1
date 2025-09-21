@@ -166,7 +166,7 @@ export default function Dashboard() {
           <CardContent>
             <div className="text-3xl font-bold">+{newSubscriptionsCount}</div>
             <p className="text-sm text-muted-foreground">
-              {t(newSubscriptionsPeriod, t('thisMonth'))}
+              {t(newSubscriptionsPeriod as any, t('thisMonth'))}
             </p>
           </CardContent>
         </Card>
