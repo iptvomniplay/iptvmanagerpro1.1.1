@@ -74,12 +74,10 @@ export default function StockPage() {
                       </TableCell>
                       <TableCell>{server.creditStock || 0}</TableCell>
                       <TableCell className="text-right">
-                        {server.paymentType === 'prepaid' && (
-                          <Button variant="outline" onClick={() => handleOpenModal(server)}>
+                        <Button variant="outline" onClick={() => handleOpenModal(server)}>
                             <Settings className="mr-2 h-4 w-4" />
                             {t('manage')}
                           </Button>
-                        )}
                       </TableCell>
                     </TableRow>
                   ))}

@@ -5,7 +5,7 @@ import type { Server } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { PlusCircle, Search, ChevronDown, Server as ServerIcon } from 'lucide-react';
+import { PlusCircle, Search, ChevronDown, Server as ServerIcon, Settings } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
 import { useData } from '@/hooks/use-data';
@@ -29,15 +29,19 @@ import { DeleteServerAlert } from './components/delete-server-alert';
 import { Input } from '@/components/ui/input';
 import { normalizeString } from '@/lib/utils';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { TransactionModal } from '../stock/components/transaction-modal';
+import type { Transaction } from '@/lib/types';
+
 
 export default function ServersPage() {
   const { t } = useLanguage();
   const router = useRouter();
-  const { servers, updateServer, deleteServer } = useData();
+  const { servers, updateServer, deleteServer, addTransactionToServer } = useData();
 
   const [selectedServer, setSelectedServer] = React.useState<Server | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = React.useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = React.useState(false);
+  const [isTransactionModalOpen, setIsTransactionModalOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [isListOpen, setIsListOpen] = React.useState(true);
 
@@ -94,6 +98,11 @@ export default function ServersPage() {
   
   const handleStatusChange = (server: Server, status: Server['status']) => {
     updateServer({ ...server, status });
+  };
+  
+  const handleAddTransaction = (transaction: Omit<Transaction, 'id' | 'date'>) => {
+    if (!selectedServer) return;
+    addTransactionToServer(selectedServer.id, transaction);
   };
 
   return (
@@ -196,6 +205,13 @@ export default function ServersPage() {
                                         </DropdownMenuItem>
                                         <DropdownMenuItem onClick={() => {
                                             setSelectedServer(server);
+                                            setIsTransactionModalOpen(true);
+                                        }}>
+                                            <Settings className="mr-2 h-4 w-4" />
+                                            {t('manage')}
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => {
+                                            setSelectedServer(server);
                                             handleEdit();
                                         }}>
                                             {t('edit')}
@@ -249,6 +265,15 @@ export default function ServersPage() {
           onClose={() => setIsDeleteAlertOpen(false)}
           onConfirm={confirmDelete}
           serverName={selectedServer.name}
+        />
+      )}
+
+      {selectedServer && (
+        <TransactionModal
+          isOpen={isTransactionModalOpen}
+          onClose={() => setIsTransactionModalOpen(false)}
+          server={selectedServer}
+          onAddTransaction={handleAddTransaction}
         />
       )}
     </>

@@ -205,15 +205,9 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
                 </div>
               </>
             ) : (
-                 <div className="col-span-2 md:col-span-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border bg-muted/50">
-                    <div className="flex-1">
-                        <p className="text-sm text-muted-foreground">{t('creditBalance')}</p>
-                        <p className="text-4xl font-bold">{server.creditStock || 0}</p>
-                    </div>
-                    <Button onClick={() => router.push('/stock')}>
-                        <Settings className="mr-2 h-4 w-4" />
-                        {t('manage')}
-                    </Button>
+                 <div className="col-span-2 md:col-span-3">
+                    <p className="text-sm text-muted-foreground">{t('creditBalance')}</p>
+                    <p className="text-4xl font-bold">{server.creditStock || 0}</p>
                 </div>
             )}
            </div>
