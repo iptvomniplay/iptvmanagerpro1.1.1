@@ -327,8 +327,13 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange, onSelectCli
                 <CardTitle>{t('subscriptionPlans')}</CardTitle>
                 <CardDescription>{t('clientSubscriptionPlans')}</CardDescription>
             </div>
-            <div className="flex items-center gap-4">
-              {selectedClient && (
+            <Button onClick={() => handleOpenForm(null)} disabled={!selectedClient}>
+                <PlusCircle className="mr-2 h-4 w-4" />
+                {t('addPlan')}
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {selectedClient && (
                 <div className="flex items-center gap-4 p-2 rounded-lg bg-muted border border-dashed animate-in fade-in-50">
                     <UserCheck className="h-6 w-6 text-primary"/>
                     <div className="flex flex-col">
@@ -340,13 +345,6 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange, onSelectCli
                     </Button>
                 </div>
               )}
-              <Button onClick={() => handleOpenForm(null)} disabled={!selectedClient}>
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  {t('addPlan')}
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
             {selectedClient?.plans && selectedClient.plans.length > 0 ? (
                 <div className="space-y-3">
                     {selectedClient.plans.map((item, index) => {
