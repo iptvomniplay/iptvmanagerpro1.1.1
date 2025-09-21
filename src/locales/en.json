@@ -145,7 +145,7 @@
     "creditBalanceDescription": "View and manage the credit balance for each panel.",
     "buyCredits": "Buy Credits",
     "addCreditsToServer": "Add credits to server {serverName}",
-    "newServerSuccess": "New server has been registered and form is ready for the next one.",
+    "newServerSuccess": "The new server has been registered successfully.",
     "editServerSuccess": "Server details have been updated.",
     "editClientSuccess": "Client details have been updated.",
     "newClientRegisteredSuccess": "The new client has been successfully registered.",
@@ -484,5 +484,6 @@
     "manualAdjustmentDescription": "Enter a positive value to add credits or a negative value to remove. This is for corrections or manual bonuses.",
     "adjustmentQuantity": "Quantity to Adjust (+/-)",
     "adjustmentQuantityDescription": "Use negative numbers to remove credits.",
-    "adjustmentDescriptionPlaceholder": "E.g.: Initial balance correction."
+    "adjustmentDescriptionPlaceholder": "E.g.: Initial balance correction.",
+    "registrationAddedSuccess": "Registration Added Successfully"
 }

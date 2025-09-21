@@ -145,7 +145,7 @@
     "creditBalanceDescription": "Visualize e gerencie o saldo de créditos de cada painel.",
     "buyCredits": "Comprar Créditos",
     "addCreditsToServer": "Adicionar créditos ao servidor {serverName}",
-    "newServerSuccess": "Novo servidor foi cadastrado e o formulário está pronto para o próximo.",
+    "newServerSuccess": "O novo servidor foi cadastrado com sucesso.",
     "editServerSuccess": "Os detalhes do servidor foram atualizados.",
     "editClientSuccess": "Os dados do cliente foram atualizados com sucesso.",
     "newClientRegisteredSuccess": "O novo cliente foi cadastrado com sucesso.",
@@ -484,5 +484,6 @@
     "manualAdjustmentDescription": "Insira um valor positivo para adicionar créditos ou negativo para remover. Serve para correções ou bônus manuais.",
     "adjustmentQuantity": "Quantidade para Ajustar (+/-)",
     "adjustmentQuantityDescription": "Use números negativos para remover créditos.",
-    "adjustmentDescriptionPlaceholder": "Ex: Correção de saldo inicial."
+    "adjustmentDescriptionPlaceholder": "Ex: Correção de saldo inicial.",
+    "registrationAddedSuccess": "Cadastro Adicionado com Sucesso"
 }
