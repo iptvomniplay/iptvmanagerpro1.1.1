@@ -73,7 +73,6 @@ export function ReportDisplayModal({ isOpen, onClose }: ReportDisplayModalProps)
         printWindow.document.close();
         printWindow.focus();
         printWindow.print();
-        printWindow.close();
       }
     }
   };
