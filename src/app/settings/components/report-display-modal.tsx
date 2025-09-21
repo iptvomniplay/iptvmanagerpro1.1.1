@@ -74,8 +74,8 @@ export function ReportDisplayModal({ isOpen, onClose, reports }: ReportDisplayMo
           `}
         </style>
 
-        <ScrollArea className="flex-1" id="print-section">
-          <div ref={reportContentRef} className="p-6 space-y-8">
+        <ScrollArea className="flex-1">
+          <div ref={reportContentRef} id="print-section" className="p-6 space-y-8">
             {reports.map((report, index) => (
               <div key={index}>
                 <h2 className="text-xl font-bold mb-4">{report.title}</h2>
@@ -123,3 +123,5 @@ export function ReportDisplayModal({ isOpen, onClose, reports }: ReportDisplayMo
     </Dialog>
   );
 }
+
+    

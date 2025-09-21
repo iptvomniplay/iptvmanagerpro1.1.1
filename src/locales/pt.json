@@ -436,8 +436,6 @@
     "report_activeTests": "Relatório de Testes Ativos e Expirados",
     "report_creditBalance": "Relatório de Saldo de Créditos por Painel",
     "generate": "Gerar",
-    "reportsGeneratedSuccessTitle": "Relatórios Solicitados",
-    "reportsGeneratedSuccessDescription": "Seus relatórios foram gerados e estarão disponíveis para download em breve.",
     "selectAllFields": "Selecionar Todos os Campos",
     "registeredDate": "Data de Cadastro",
     "lastPlan": "Último Plano",
@@ -450,3 +448,5 @@
     "close": "Fechar",
     "noDataForReport": "Nenhum dado disponível para este relatório."
 }
+
+    

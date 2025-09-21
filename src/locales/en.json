@@ -436,8 +436,6 @@
     "report_activeTests": "Active and Expired Tests Report",
     "report_creditBalance": "Credit Balance per Panel Report",
     "generate": "Generate",
-    "reportsGeneratedSuccessTitle": "Reports Requested",
-    "reportsGeneratedSuccessDescription": "Your reports have been generated and will be available for download shortly.",
     "selectAllFields": "Select All Fields",
     "registeredDate": "Registered Date",
     "lastPlan": "Last Plan",
@@ -450,3 +448,5 @@
     "close": "Close",
     "noDataForReport": "No data available for this report."
 }
+
+    

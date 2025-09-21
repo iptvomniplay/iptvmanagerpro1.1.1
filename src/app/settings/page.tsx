@@ -22,7 +22,7 @@ import { useDashboardSettings, DashboardPeriod } from '@/hooks/use-dashboard-set
 import { ReportModal, SelectedReportsState, ReportKey, reportConfig } from './components/report-modal';
 import { ReportDisplayModal, GeneratedReportData } from './components/report-display-modal';
 import { useData } from '@/hooks/use-data';
-import { add, isFuture, parseISO } from 'date-fns';
+import { add, isFuture, parseISO, format } from 'date-fns';
 
 export default function SettingsPage() {
   const { language, setLanguage, t } = useLanguage();
@@ -60,6 +60,7 @@ export default function SettingsPage() {
 
     Object.entries(selectedConfigs).forEach(([key, config]) => {
       const reportKey = key as ReportKey;
+      if (!config) return;
       const reportMeta = reportConfig[reportKey];
       const selectedFields = Object.keys(config.fields).filter(fieldKey => config.fields[fieldKey as keyof typeof config.fields]);
 
@@ -76,7 +77,7 @@ export default function SettingsPage() {
                 case 'fullName': return client.name;
                 case 'clientId': return client.id || t('noId');
                 case 'status': return t(client.status.toLowerCase());
-                case 'registeredDate': return client.registeredDate;
+                case 'registeredDate': return client.registeredDate ? format(parseISO(client.registeredDate), 'dd/MM/yyyy') : '';
                 case 'contact': return client.phones.map(p => p.number).join(', ');
                 default: return '';
               }
@@ -91,7 +92,7 @@ export default function SettingsPage() {
                     switch (field) {
                         case 'fullName': return client.name;
                         case 'lastPlan': return lastPlan?.plan.name || 'N/A';
-                        case 'expirationDate': return client.expirationDate || 'N/A';
+                        case 'expirationDate': return client.expirationDate ? format(parseISO(client.expirationDate), 'dd/MM/yyyy') : 'N/A';
                         case 'contact': return client.phones.map(p => p.number).join(', ');
                         default: return '';
                     }
@@ -381,3 +382,5 @@ export default function SettingsPage() {
     </>
   );
 }
+
+    
