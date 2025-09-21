@@ -145,23 +145,11 @@ export default function SubscriptionPage() {
     <div className="flex flex-col h-full">
       <div className="space-y-8 flex-1">
         <Card>
-          <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+          <CardHeader>
             <div>
               <CardTitle>{t('subscriptionManagement')}</CardTitle>
               <CardDescription>{t('subscriptionManagementDescription')}</CardDescription>
             </div>
-            {selectedClient && (
-                <div className="flex items-center gap-4 p-2 rounded-lg bg-muted border border-dashed animate-in fade-in-50">
-                    <UserCheck className="h-6 w-6 text-primary"/>
-                    <div className="flex flex-col">
-                      <span className="text-sm text-muted-foreground">{t('client')}</span>
-                      <p className="font-bold text-lg">{selectedClient.name}</p>
-                    </div>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => handleSelectClient(null)}>
-                        <X className="h-5 w-5"/>
-                    </Button>
-                </div>
-            )}
           </CardHeader>
           <CardContent className="space-y-4">
              {!selectedClient && (
@@ -232,6 +220,7 @@ export default function SubscriptionPage() {
             <SubscriptionPlanForm
               selectedClient={selectedClient}
               onPlanChange={(plans) => handleUpdateClient({ plans })}
+              onSelectClient={handleSelectClient}
             />
             <ApplicationsForm
               selectedClient={selectedClient}

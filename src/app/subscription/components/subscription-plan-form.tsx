@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { X, Calendar as CalendarIcon, FilePenLine, PlusCircle, Eye, AlertTriangle, EyeOff, ChevronsUpDown, BookText } from 'lucide-react';
+import { X, Calendar as CalendarIcon, FilePenLine, PlusCircle, Eye, AlertTriangle, EyeOff, ChevronsUpDown, BookText, UserCheck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { add, format, lastDayOfMonth } from 'date-fns';
@@ -24,6 +24,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 interface SubscriptionPlanFormProps {
     selectedClient: Client | null;
     onPlanChange: (plans: SelectedPlan[]) => void;
+    onSelectClient: (client: Client | null) => void;
 }
 
 const DetailItem = ({ label, value }: { label: string; value?: string | number | null }) => {
@@ -78,7 +79,7 @@ const ValueDisplay = ({ value, isCourtesy }: { value?: number; isCourtesy?: bool
   );
 };
 
-export function SubscriptionPlanForm({ selectedClient, onPlanChange }: SubscriptionPlanFormProps) {
+export function SubscriptionPlanForm({ selectedClient, onPlanChange, onSelectClient }: SubscriptionPlanFormProps) {
   const { t, language } = useLanguage();
   const { servers: panels } = useData();
 
@@ -321,15 +322,29 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange }: Subscript
   return (
     <div className="space-y-4">
       <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-4">
+          <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4">
             <div>
                 <CardTitle>{t('subscriptionPlans')}</CardTitle>
                 <CardDescription>{t('clientSubscriptionPlans')}</CardDescription>
             </div>
-            <Button onClick={() => handleOpenForm(null)} disabled={!selectedClient}>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                {t('addPlan')}
-            </Button>
+            <div className="flex items-center gap-4">
+              {selectedClient && (
+                <div className="flex items-center gap-4 p-2 rounded-lg bg-muted border border-dashed animate-in fade-in-50">
+                    <UserCheck className="h-6 w-6 text-primary"/>
+                    <div className="flex flex-col">
+                      <span className="text-sm text-muted-foreground">{t('client')}</span>
+                      <p className="font-bold text-lg">{selectedClient.name}</p>
+                    </div>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => onSelectClient(null)}>
+                        <X className="h-5 w-5"/>
+                    </Button>
+                </div>
+              )}
+              <Button onClick={() => handleOpenForm(null)} disabled={!selectedClient}>
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  {t('addPlan')}
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             {selectedClient?.plans && selectedClient.plans.length > 0 ? (
