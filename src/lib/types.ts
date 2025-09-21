@@ -84,12 +84,14 @@ export type SubServer = {
   status: 'Online' | 'Offline' | 'Suspended' | 'Maintenance';
 };
 
+export type TransactionType = 'purchase' | 'consumption' | 'reversal' | 'adjustment';
+
 export type Transaction = {
   id: string;
-  type: 'purchase' | 'consumption' | 'adjustment' | 'refund';
+  type: TransactionType;
   date: string;
-  credits: number;
-  totalValue: number;
+  credits: number; // Pode ser negativo para estornos e consumos
+  totalValue: number; // Pode ser negativo para estornos
   unitValue: number;
   description?: string;
 };

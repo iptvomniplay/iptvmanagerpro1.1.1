@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
-import type { Client, Server, Test, SelectedPlan, Transaction } from '@/lib/types';
+import type { Client, Server, Test, SelectedPlan, Transaction, TransactionType } from '@/lib/types';
 import { format } from 'date-fns';
 import { clients as initialClients, servers as initialServers } from '@/lib/data';
 
@@ -172,8 +172,10 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             id: `trans_${Date.now()}_${Math.random()}`,
             date: new Date().toISOString(),
           };
-          const updatedTransactions = [...(server.transactions || []), newTransaction];
-          const newCreditStock = server.creditStock + transactionData.credits;
+          const updatedTransactions = [newTransaction, ...(server.transactions || [])];
+          // O saldo de crédito é a soma dos créditos de todas as transações
+          const newCreditStock = updatedTransactions.reduce((acc, trans) => acc + trans.credits, 0);
+
           return { ...server, transactions: updatedTransactions, creditStock: newCreditStock };
         }
         return server;

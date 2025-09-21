@@ -14,9 +14,9 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { CreditPurchaseModal } from './components/credit-purchase-modal';
+import { TransactionModal } from './components/transaction-modal';
 
 export default function StockPage() {
   const { t } = useLanguage();
@@ -28,22 +28,17 @@ export default function StockPage() {
     setSelectedServer(server);
     setIsModalOpen(true);
   };
-
-  const handlePurchase = (quantity: number, totalValue: number) => {
-    if (!selectedServer) return;
-
-    const unitValue = totalValue / quantity;
-    const transaction: Omit<Transaction, 'id' | 'date'> = {
-      type: 'purchase',
-      credits: quantity,
-      totalValue,
-      unitValue,
-      description: `Compra de ${quantity} créditos`,
-    };
-
-    addTransactionToServer(selectedServer.id, transaction);
+  
+  const handleCloseModal = () => {
     setIsModalOpen(false);
+    setSelectedServer(null);
+  }
+
+  const handleAddTransaction = (transaction: Omit<Transaction, 'id' | 'date'>) => {
+    if (!selectedServer) return;
+    addTransactionToServer(selectedServer.id, transaction);
   };
+
 
   return (
     <>
@@ -81,8 +76,8 @@ export default function StockPage() {
                       <TableCell className="text-right">
                         {server.paymentType === 'prepaid' && (
                           <Button variant="outline" onClick={() => handleOpenModal(server)}>
-                            <ShoppingCart className="mr-2 h-4 w-4" />
-                            {t('buyCredits')}
+                            <Settings className="mr-2 h-4 w-4" />
+                            {t('manage')}
                           </Button>
                         )}
                       </TableCell>
@@ -96,11 +91,11 @@ export default function StockPage() {
       </div>
 
       {selectedServer && (
-        <CreditPurchaseModal
+        <TransactionModal
           isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onConfirm={handlePurchase}
-          serverName={selectedServer?.name || ''}
+          onClose={handleCloseModal}
+          server={selectedServer}
+          onAddTransaction={handleAddTransaction}
         />
       )}
     </>
