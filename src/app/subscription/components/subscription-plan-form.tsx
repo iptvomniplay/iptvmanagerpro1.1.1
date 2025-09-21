@@ -333,20 +333,24 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange, onSelectCli
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
-            {selectedClient && (
-                 <div className="flex items-center justify-between p-2 rounded-lg bg-muted border border-dashed animate-in fade-in-50 w-fit">
+            {selectedClient ? (
+                <div className="flex items-center justify-between p-2 rounded-lg bg-muted border border-dashed animate-in fade-in-50 w-fit">
                     <div className="flex items-center gap-3">
                         <UserCheck className="h-6 w-6 text-primary"/>
                         <div className="flex flex-col">
-                          <span className="text-sm text-muted-foreground">{t('client')}</span>
-                          <p className="font-bold text-lg">{selectedClient.name}</p>
+                            <span className="text-sm text-muted-foreground">{t('client')}</span>
+                            <p className="font-bold text-lg">{selectedClient.name}</p>
                         </div>
                     </div>
                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => onSelectClient(null)}>
                         <X className="h-5 w-5"/>
                     </Button>
                 </div>
-              )}
+              ) : (
+                <div className="text-center py-10 text-muted-foreground">
+                    <p>{!selectedClient ? t('selectClientPrompt') : t('noPlansAdded')}</p>
+                </div>
+            )}
             {selectedClient?.plans && selectedClient.plans.length > 0 ? (
                 <div className="space-y-3">
                     {selectedClient.plans.map((item, index) => {
@@ -390,7 +394,7 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange, onSelectCli
                 </div>
             ) : (
                 <div className="text-center py-10 text-muted-foreground">
-                    <p>{!selectedClient ? t('selectClientPrompt') : t('noPlansAdded')}</p>
+                    <p>{!selectedClient ? '' : t('noPlansAdded')}</p>
                 </div>
             )}
           </CardContent>
