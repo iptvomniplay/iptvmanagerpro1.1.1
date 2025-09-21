@@ -42,30 +42,46 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const storedCashFlow = localStorage.getItem('cashFlow');
       let loadedCashFlow: CashFlowEntry[] = storedCashFlow ? JSON.parse(storedCashFlow) : [];
 
-      // Retroactively create initial purchase transactions for servers
+      const newCashFlowEntries: CashFlowEntry[] = [];
+
       loadedServers = loadedServers.map(server => {
-        if (server.paymentType === 'prepaid' && server.creditStock > 0 && (!server.transactions || server.transactions.length === 0)) {
+        let serverTransactions = server.transactions || [];
+        if (server.paymentType === 'prepaid' && server.creditStock > 0 && serverTransactions.length === 0) {
             const initialPurchase: Transaction = {
                 id: `trans_${Date.now()}_${Math.random()}`,
                 type: 'purchase',
-                date: new Date().toISOString(), // Assume the purchase happened "now" for retro-compatibility
+                date: new Date().toISOString(),
                 credits: server.creditStock,
-                totalValue: 0, // We don't know the value, so we assume it was a bonus or initial setup
+                totalValue: 0, 
                 unitValue: 0,
-                description: 'Carga inicial de créditos'
+                description: 'Carga inicial de créditos (Valor desconhecido)'
             };
-            return {
-                ...server,
-                transactions: [initialPurchase]
-            };
+            serverTransactions = [initialPurchase];
         }
-        return server;
+
+        serverTransactions.forEach(transaction => {
+            if (transaction.type === 'purchase' && transaction.totalValue > 0) {
+                const hasEntry = loadedCashFlow.some(entry => entry.sourceTransactionId === transaction.id);
+                if (!hasEntry) {
+                    newCashFlowEntries.push({
+                        id: `cf_${Date.now()}_${Math.random()}`,
+                        date: transaction.date,
+                        type: 'expense',
+                        amount: transaction.totalValue,
+                        description: `Compra de créditos: ${server.name}`,
+                        sourceTransactionId: transaction.id
+                    });
+                }
+            }
+        });
+
+        return {
+            ...server,
+            transactions: serverTransactions
+        };
       });
       setServers(loadedServers);
 
-
-      // Retroactively create cash flow entries for existing active clients
-      const newCashFlowEntries: CashFlowEntry[] = [];
       loadedClients.forEach((client: Client) => {
         if (client.status === 'Active' && client.plans && client.plans.length > 0) {
           const alreadyHasEntry = loadedCashFlow.some((entry: CashFlowEntry) => 
@@ -114,12 +130,6 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       localStorage.setItem('cashFlow', JSON.stringify(cashFlow));
     }
   }, [clients, servers, cashFlow, isDataLoaded]);
-
-  const saveDataToStorage = useCallback(<T,>(key: string, data: T[]) => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(key, JSON.stringify(data));
-    }
-  }, []);
   
   const addCashFlowEntry = useCallback((entryData: Omit<CashFlowEntry, 'id' | 'date'>) => {
     setCashFlow(prevCashFlow => {
@@ -149,7 +159,6 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const updateClient = useCallback((clientData: Client, options?: { skipCashFlow?: boolean }) => {
-    // Check for new activation to add to cash flow
     const previousClientState = clients.find(c => c._tempId === clientData._tempId);
     if (!options?.skipCashFlow && clientData.status === 'Active' && previousClientState?.status !== 'Active' && clientData.plans) {
         const totalAmount = clientData.plans.reduce((sum, plan) => sum + (plan.isCourtesy ? 0 : plan.planValue), 0);
@@ -163,7 +172,6 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             });
         }
         
-        // Create consumption transaction
         setServers(prevServers => {
             const updatedServers = [...prevServers];
             let cashFlowEntries: Omit<CashFlowEntry, 'id' | 'date'>[] = [];
@@ -310,13 +318,15 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const addTransactionToServer = useCallback((serverId: string, transactionData: Omit<Transaction, 'id' | 'date'>) => {
     let serverName = '';
+    const newTransactionId = `trans_${Date.now()}_${Math.random()}`;
+
     setServers(prevServers => {
       const updatedServers = prevServers.map(server => {
         if (server.id === serverId) {
           serverName = server.name;
           const newTransaction: Transaction = {
             ...transactionData,
-            id: `trans_${Date.now()}_${Math.random()}`,
+            id: newTransactionId,
             date: new Date().toISOString(),
           };
           const updatedTransactions = [newTransaction, ...(server.transactions || [])];
@@ -333,7 +343,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         addCashFlowEntry({
             type: 'expense',
             amount: transactionData.totalValue,
-            description: `Compra de créditos para o painel ${serverName}`,
+            description: `Compra de créditos: ${serverName}`,
+            sourceTransactionId: newTransactionId,
         });
     }
   }, [addCashFlowEntry]);
