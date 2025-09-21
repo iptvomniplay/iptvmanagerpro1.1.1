@@ -23,7 +23,6 @@ const ReportContent = () => {
     
     React.useEffect(() => {
         if (!isDataLoaded) {
-            setIsLoading(true);
             return;
         }
 
