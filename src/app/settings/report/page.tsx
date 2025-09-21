@@ -118,12 +118,12 @@ const ReportPageContent = () => {
     }, [clients, servers, t]);
     
     React.useEffect(() => {
-        if (!isLoading && reports.length > 0) {
+        if (!isLoading) {
             setTimeout(() => {
                 window.print();
-            }, 500); // Small delay to ensure content is rendered
+            }, 500);
         }
-    }, [isLoading, reports]);
+    }, [isLoading]);
 
 
     if (isLoading) {

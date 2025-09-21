@@ -10,7 +10,7 @@ interface DataContextType {
   clients: Client[];
   servers: Server[];
   addClient: (clientData: Omit<Client, 'registeredDate' | 'plans' | '_tempId'>) => void;
-  updateClient: (clientData: Client, skipSave?: boolean) => void;
+  updateClient: (clientData: Client) => void;
   deleteClient: (clientId: string) => void;
   addServer: (serverData: Omit<Server, 'id' | 'status'>) => void;
   updateServer: (serverData: Server) => void;
@@ -83,14 +83,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
   }, [saveDataToStorage]);
 
-  const updateClient = useCallback((clientData: Client, skipSave = false) => {
+  const updateClient = useCallback((clientData: Client) => {
     setClients(prevClients => {
        const updatedClients = prevClients.map(c => 
         (c._tempId === clientData._tempId) ? { ...c, ...clientData } : c
       );
-      if (!skipSave) {
-        saveDataToStorage('clients', updatedClients);
-      }
+      saveDataToStorage('clients', updatedClients);
        return updatedClients;
     });
   }, [saveDataToStorage]);

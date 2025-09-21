@@ -70,7 +70,7 @@ export default function SubscriptionPage() {
     if (!selectedClient) return;
     const newClientState = { ...selectedClient, ...updatedData };
     setSelectedClient(newClientState);
-    updateClient(newClientState, true); // skipSave = true
+    updateClient(newClientState); // This now behaves as if skipSave=true was passed
   };
 
   const saveManualId = () => {
@@ -92,7 +92,7 @@ export default function SubscriptionPage() {
       return;
     }
     const newClientState = { ...selectedClient, id: manualId };
-    updateClient(newClientState, false); 
+    updateClient(newClientState); 
     setSelectedClient(newClientState); 
     setIsIdSaveSuccessModalOpen(true);
   };
