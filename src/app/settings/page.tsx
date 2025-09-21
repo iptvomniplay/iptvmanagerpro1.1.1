@@ -20,13 +20,10 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { useDashboardSettings, DashboardPeriod } from '@/hooks/use-dashboard-settings';
 import { ReportModal, SelectedReportsState } from './components/report-modal';
-import { useRouter } from 'next/navigation';
-
 
 export default function SettingsPage() {
   const { language, setLanguage, t } = useLanguage();
   const { theme, setTheme } = useTheme();
-  const router = useRouter();
 
   const [mounted, setMounted] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
