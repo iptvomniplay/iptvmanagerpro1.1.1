@@ -420,10 +420,12 @@
     "expiringToday": "Expirando hoje",
     "expiredClients": "Expirados",
     "inactiveClients": "Inativos",
+    "expiringInNextDay": "Expirando em 1 dia",
+    "expiringInNextXDays": "Expirando em {days} dias",
+    "expiringIn1Day": "Expirando em 1 dia: {count}",
+    "expiringInXDays": "Expirando em {days} dias: {count}",
     "settingsSaved": "Configurações salvas com sucesso!",
     "expirationWarningDescription": "Defina com quantos dias de antecedência deseja ser avisado sobre as assinaturas que estão expirando.",
-    "expiringInNextXDays": "Expirando em {days} dias",
-    "expiringInNextDay": "Expirando em {days} dia",
     "reports": "Relatórios",
     "reportsDescription": "Exporte dados e insights sobre seus clientes e servidores.",
     "generateReport": "Gerar Relatório",
@@ -441,5 +443,10 @@
     "lastPlan": "Último Plano",
     "expirationDate": "Data de Expiração",
     "clientName": "Nome do Cliente",
-    "currentBalance": "Saldo Atual"
+    "currentBalance": "Saldo Atual",
+    "generatedReport": "Relatório Gerado",
+    "generatedReportDescription": "Aqui estão os relatórios que você solicitou. Você pode imprimir esta visualização ou salvá-la como PDF.",
+    "print": "Imprimir",
+    "close": "Fechar",
+    "noDataForReport": "Nenhum dado disponível para este relatório."
 }

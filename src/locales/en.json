@@ -420,10 +420,12 @@
     "expiringToday": "Expiring today",
     "expiredClients": "Expired",
     "inactiveClients": "Inactive",
+    "expiringInNextDay": "Expiring in 1 day",
+    "expiringInNextXDays": "Expiring in {days} days",
+    "expiringIn1Day": "Expiring in 1 day: {count}",
+    "expiringInXDays": "Expiring in {days} days: {count}",
     "settingsSaved": "Settings saved successfully!",
     "expirationWarningDescription": "Define the number of days in advance to be warned about expiring subscriptions.",
-    "expiringInNextXDays": "Expiring in {days} days",
-    "expiringInNextDay": "Expiring in {days} day",
     "reports": "Reports",
     "reportsDescription": "Export data and insights about your clients and servers.",
     "generateReport": "Generate Report",
@@ -441,5 +443,10 @@
     "lastPlan": "Last Plan",
     "expirationDate": "Expiration Date",
     "clientName": "Client Name",
-    "currentBalance": "Current Balance"
+    "currentBalance": "Current Balance",
+    "generatedReport": "Generated Report",
+    "generatedReportDescription": "Here are the reports you requested. You can print this view or save it as a PDF.",
+    "print": "Print",
+    "close": "Close",
+    "noDataForReport": "No data available for this report."
 }

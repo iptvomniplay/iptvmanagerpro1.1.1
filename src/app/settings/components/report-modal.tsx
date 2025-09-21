@@ -14,17 +14,11 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useLanguage } from '@/hooks/use-language';
-import { useToast } from '@/hooks/use-toast';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
-interface ReportModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const reportConfig = {
+export const reportConfig = {
   clientList: {
     label: 'report_clientList',
     fields: {
@@ -63,19 +57,24 @@ const reportConfig = {
   },
 } as const;
 
-type ReportKey = keyof typeof reportConfig;
-type FieldKey<T extends ReportKey> = keyof (typeof reportConfig)[T]['fields'];
+export type ReportKey = keyof typeof reportConfig;
+export type FieldKey<T extends ReportKey> = keyof (typeof reportConfig)[T]['fields'];
 
-type SelectedReportsState = {
+export type SelectedReportsState = {
   [K in ReportKey]?: {
     all: boolean;
     fields: { [P in FieldKey<K>]?: boolean };
   };
 };
 
-export function ReportModal({ isOpen, onClose }: ReportModalProps) {
+interface ReportModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onGenerate: (selectedReports: SelectedReportsState) => void;
+}
+
+export function ReportModal({ isOpen, onClose, onGenerate }: ReportModalProps) {
   const { t } = useLanguage();
-  const { toast } = useToast();
   const [selectedReports, setSelectedReports] = React.useState<SelectedReportsState>({});
   const [openCollapsibles, setOpenCollapsibles] = React.useState<Record<ReportKey, boolean>>({});
 
@@ -98,7 +97,9 @@ export function ReportModal({ isOpen, onClose }: ReportModalProps) {
     setSelectedReports(prev => {
       const currentReport = prev[reportKey] || { all: false, fields: {} };
       const updatedFields = { ...currentReport.fields, [fieldKey]: checked };
-      const allChecked = Object.values(updatedFields).every(v => v);
+      
+      const allFields = Object.keys(reportConfig[reportKey].fields);
+      const allChecked = allFields.every(field => updatedFields[field as FieldKey<ReportKey>]);
 
       return {
         ...prev,
@@ -110,14 +111,8 @@ export function ReportModal({ isOpen, onClose }: ReportModalProps) {
     });
   };
 
-  const handleGenerate = () => {
-    // For now, this just shows a toast and closes the modal.
-    // The actual report generation logic will be added later.
-    toast({
-      title: t('reportsGeneratedSuccessTitle'),
-      description: t('reportsGeneratedSuccessDescription'),
-    });
-    onClose();
+  const handleGenerateClick = () => {
+    onGenerate(selectedReports);
   };
   
   const isAnyReportSelected = Object.values(selectedReports).some(
@@ -167,7 +162,7 @@ export function ReportModal({ isOpen, onClose }: ReportModalProps) {
                             onCheckedChange={(checked) => handleFieldChange(reportKey, fieldKey as FieldKey<ReportKey>, checked as boolean)}
                           />
                           <Label htmlFor={`${reportKey}-${fieldKey}`} className="text-base font-normal cursor-pointer">
-                            {t(fieldLabel)}
+                            {t(fieldLabel as any)}
                           </Label>
                         </div>
                       ))}
@@ -182,7 +177,7 @@ export function ReportModal({ isOpen, onClose }: ReportModalProps) {
           <Button variant="outline" onClick={onClose}>
             {t('cancel')}
           </Button>
-          <Button onClick={handleGenerate} disabled={!isAnyReportSelected}>
+          <Button onClick={handleGenerateClick} disabled={!isAnyReportSelected}>
             {t('generate')}
           </Button>
         </DialogFooter>
