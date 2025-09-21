@@ -20,11 +20,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Trash2, FilePenLine, ChevronRight, ChevronsUpDown, Eye, EyeOff, BookText } from 'lucide-react';
+import { Trash2, FilePenLine, ChevronRight, ChevronsUpDown, Eye, EyeOff, BookText, Calendar, Settings } from 'lucide-react';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { useData } from '@/hooks/use-data';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { format, set, isBefore } from 'date-fns';
+import { useRouter } from 'next/navigation';
 
 interface ServerDetailsModalProps {
   isOpen: boolean;
@@ -74,6 +76,7 @@ const PasswordDisplay = ({ password }: { password?: string }) => {
 export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }: ServerDetailsModalProps) {
   const { t } = useLanguage();
   const { updateServer } = useData();
+  const router = useRouter();
   const [observations, setObservations] = React.useState(server?.observations || '');
 
   React.useEffect(() => {
@@ -119,7 +122,19 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
     );
     updateServer({ ...server, subServers: updatedSubServers });
   };
+  
+  const getNextDueDate = () => {
+    if (server.paymentType !== 'postpaid' || !server.dueDate) return null;
 
+    const today = new Date();
+    let nextDueDate = set(today, { date: server.dueDate });
+
+    if (isBefore(nextDueDate, today)) {
+        nextDueDate = set(new Date(today.getFullYear(), today.getMonth() + 1, 1), { date: server.dueDate });
+    }
+
+    return format(nextDueDate, 'dd/MM/yyyy');
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -136,17 +151,6 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
             </div>
             <DetailItem label={t('login')} value={server.login} />
             <PasswordDisplay password={server.password} />
-            <Separator className="col-span-2 md:col-span-3 my-2"/>
-            <DetailItem label={t('responsibleName')} value={server.responsibleName} />
-            <DetailItem label={t('nickname')} value={server.nickname} />
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">{t('phone')}</p>
-              <div className="flex flex-wrap gap-2 mt-1">
-                {server.phones?.map((phone, index) => (
-                  <Badge key={index} variant="outline" className="text-base">{phone.number}</Badge>
-                ))}
-              </div>
-            </div>
              <div>
               <p className="text-sm font-medium text-muted-foreground">{t('status')}</p>
                <DropdownMenu>
@@ -163,21 +167,56 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
+          </div>
+          
+          <Separator />
+          <h3 className="text-xl font-semibold text-primary">{t('responsibleName')}</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+             <DetailItem label={t('responsibleName')} value={server.responsibleName} />
+            <DetailItem label={t('nickname')} value={server.nickname} />
             <div>
+              <p className="text-sm font-medium text-muted-foreground">{t('phone')}</p>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {server.phones?.map((phone, index) => (
+                  <Badge key={index} variant="outline" className="text-base">{phone.number}</Badge>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          <Separator />
+          <h3 className="text-xl font-semibold text-primary">{t('paymentDetails')}</h3>
+           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+             <div>
               <p className="text-sm font-medium text-muted-foreground">{t('paymentMethod')}</p>
               <Badge variant={server.paymentType === 'prepaid' ? 'default' : 'secondary'} className="text-base mt-1">
                 {t(server.paymentType as any)}
               </Badge>
             </div>
-
-            {server.paymentType === 'postpaid' && (
+            {server.paymentType === 'postpaid' ? (
               <>
                 <DetailItem label={t('panelValue')} value={server.panelValue} />
                 <DetailItem label={t('dueDate')} value={server.dueDate} />
+                <div className="p-3 bg-muted/50 rounded-lg border border-dashed col-span-full animate-in fade-in-50">
+                    <div className="flex items-center gap-3">
+                        <Calendar className="h-5 w-5 text-primary" />
+                        <p className="font-semibold text-base">{t('nextDueDate')}: <span className="font-bold">{getNextDueDate()}</span></p>
+                    </div>
+                </div>
               </>
+            ) : (
+                 <div className="col-span-2 md:col-span-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border bg-muted/50">
+                    <div className="flex-1">
+                        <p className="text-sm text-muted-foreground">{t('creditBalance')}</p>
+                        <p className="text-4xl font-bold">{server.creditStock || 0}</p>
+                    </div>
+                    <Button onClick={() => router.push('/stock')}>
+                        <Settings className="mr-2 h-4 w-4" />
+                        {t('manage')}
+                    </Button>
+                </div>
             )}
-             <DetailItem label={t('creditBalance')} value={server.creditStock || 0} />
-          </div>
+           </div>
 
           {server.subServers && server.subServers.length > 0 && (
             <>
