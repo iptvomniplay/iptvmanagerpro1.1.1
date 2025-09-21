@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarFooter,
 } from '@/components/ui/sidebar';
-import { Home, Users, Server, Settings, Tv2, Package, Wrench } from 'lucide-react';
+import { Home, Users, Server, Settings, Tv2, Package, Wrench, Landmark } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useLanguage } from '@/hooks/use-language';
 
@@ -23,6 +23,7 @@ export default function SidebarNav() {
     { href: '/clients', label: t('clients'), icon: Users },
     { href: '/servers', label: t('servers'), icon: Server },
     { href: '/stock', label: t('stock'), icon: Package },
+    { href: '/financial', label: t('financial'), icon: Landmark },
     { href: '/utilities', label: t('utilities'), icon: Wrench },
   ];
   
