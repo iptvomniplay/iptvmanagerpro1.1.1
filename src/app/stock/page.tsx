@@ -95,12 +95,14 @@ export default function StockPage() {
         </Card>
       </div>
 
-      <CreditPurchaseModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onConfirm={handlePurchase}
-        serverName={selectedServer?.name || ''}
-      />
+      {selectedServer && (
+        <CreditPurchaseModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handlePurchase}
+          serverName={selectedServer?.name || ''}
+        />
+      )}
     </>
   );
 }
