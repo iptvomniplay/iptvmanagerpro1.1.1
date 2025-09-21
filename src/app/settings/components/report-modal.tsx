@@ -15,7 +15,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useLanguage } from '@/hooks/use-language';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, FileText } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 export const reportConfig = {
@@ -114,6 +114,23 @@ export function ReportModal({ isOpen, onClose, onGenerate }: ReportModalProps) {
   const handleGenerateClick = () => {
     onGenerate(selectedReports);
   };
+
+  const handleGenerateFullReport = () => {
+    const fullReportState: SelectedReportsState = {};
+    for (const key in reportConfig) {
+        const reportKey = key as ReportKey;
+        const allFields = Object.keys(reportConfig[reportKey].fields).reduce((acc, field) => {
+            acc[field as FieldKey<ReportKey>] = true;
+            return acc;
+        }, {} as { [P in FieldKey<ReportKey>]?: boolean });
+        
+        fullReportState[reportKey] = {
+            all: true,
+            fields: allFields
+        };
+    }
+    onGenerate(fullReportState);
+  };
   
   const isAnyReportSelected = Object.values(selectedReports).some(
     report => report && Object.values(report.fields).some(field => field)
@@ -126,52 +143,64 @@ export function ReportModal({ isOpen, onClose, onGenerate }: ReportModalProps) {
           <DialogTitle>{t('selectReports')}</DialogTitle>
           <DialogDescription>{t('selectReportsDescription')}</DialogDescription>
         </DialogHeader>
-        <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto pr-4">
-          {Object.entries(reportConfig).map(([key, config]) => {
-            const reportKey = key as ReportKey;
-            return (
-              <Collapsible
-                key={reportKey}
-                open={openCollapsibles[reportKey]}
-                onOpenChange={(isOpen) => setOpenCollapsibles(prev => ({ ...prev, [reportKey]: isOpen }))}
-                className="border rounded-lg"
-              >
-                <CollapsibleTrigger className="flex items-center justify-between w-full p-4 font-semibold text-lg hover:bg-accent transition-colors">
-                  <span>{t(config.label)}</span>
-                  <ChevronDown className={`h-5 w-5 transition-transform ${openCollapsibles[reportKey] ? 'rotate-180' : ''}`} />
-                </CollapsibleTrigger>
-                <CollapsibleContent className="p-4 pt-0">
-                  <div className="pt-4 border-t space-y-3">
-                    <div className="flex items-center space-x-3 p-2 rounded-md bg-muted/50">
-                      <Checkbox
-                        id={`${reportKey}-all`}
-                        checked={selectedReports[reportKey]?.all || false}
-                        onCheckedChange={(checked) => handleSelectAll(reportKey, checked as boolean)}
-                      />
-                      <Label htmlFor={`${reportKey}-all`} className="text-base font-bold cursor-pointer">
-                        {t('selectAllFields')}
-                      </Label>
-                    </div>
-                    <Separator />
-                    <div className="grid grid-cols-2 gap-3">
-                      {Object.entries(config.fields).map(([fieldKey, fieldLabel]) => (
-                        <div key={fieldKey} className="flex items-center space-x-3 p-2 rounded-md">
+        <div className="py-4 max-h-[60vh] overflow-y-auto pr-4 space-y-4">
+          <Button onClick={handleGenerateFullReport} className="w-full" size="lg">
+              <FileText className="mr-2 h-5 w-5" />
+              {t('generateFullReport')}
+          </Button>
+
+          <div className="relative my-4">
+              <Separator />
+              <span className="absolute left-1/2 -translate-x-1/2 -top-3 bg-background px-2 text-muted-foreground text-sm">{t('or')}</span>
+          </div>
+
+          <div className="space-y-4">
+              {Object.entries(reportConfig).map(([key, config]) => {
+                const reportKey = key as ReportKey;
+                return (
+                  <Collapsible
+                    key={reportKey}
+                    open={openCollapsibles[reportKey]}
+                    onOpenChange={(isOpen) => setOpenCollapsibles(prev => ({ ...prev, [reportKey]: isOpen }))}
+                    className="border rounded-lg"
+                  >
+                    <CollapsibleTrigger className="flex items-center justify-between w-full p-4 font-semibold text-lg hover:bg-accent transition-colors">
+                      <span>{t(config.label)}</span>
+                      <ChevronDown className={`h-5 w-5 transition-transform ${openCollapsibles[reportKey] ? 'rotate-180' : ''}`} />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="p-4 pt-0">
+                      <div className="pt-4 border-t space-y-3">
+                        <div className="flex items-center space-x-3 p-2 rounded-md bg-muted/50">
                           <Checkbox
-                            id={`${reportKey}-${fieldKey}`}
-                            checked={selectedReports[reportKey]?.fields?.[fieldKey as FieldKey<ReportKey>] || false}
-                            onCheckedChange={(checked) => handleFieldChange(reportKey, fieldKey as FieldKey<ReportKey>, checked as boolean)}
+                            id={`${reportKey}-all`}
+                            checked={selectedReports[reportKey]?.all || false}
+                            onCheckedChange={(checked) => handleSelectAll(reportKey, checked as boolean)}
                           />
-                          <Label htmlFor={`${reportKey}-${fieldKey}`} className="text-base font-normal cursor-pointer">
-                            {t(fieldLabel as any)}
+                          <Label htmlFor={`${reportKey}-all`} className="text-base font-bold cursor-pointer">
+                            {t('selectAllFields')}
                           </Label>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-            );
-          })}
+                        <Separator />
+                        <div className="grid grid-cols-2 gap-3">
+                          {Object.entries(config.fields).map(([fieldKey, fieldLabel]) => (
+                            <div key={fieldKey} className="flex items-center space-x-3 p-2 rounded-md">
+                              <Checkbox
+                                id={`${reportKey}-${fieldKey}`}
+                                checked={selectedReports[reportKey]?.fields?.[fieldKey as FieldKey<ReportKey>] || false}
+                                onCheckedChange={(checked) => handleFieldChange(reportKey, fieldKey as FieldKey<ReportKey>, checked as boolean)}
+                              />
+                              <Label htmlFor={`${reportKey}-${fieldKey}`} className="text-base font-normal cursor-pointer">
+                                {t(fieldLabel as any)}
+                              </Label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+                );
+              })}
+          </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
