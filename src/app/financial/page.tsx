@@ -24,16 +24,25 @@ import { DollarSign, ArrowDownUp, ArrowUp, ArrowDown, Landmark } from 'lucide-re
 import { format, parseISO } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { EntryModal } from './components/entry-modal';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function FinancialPage() {
   const { t, language } = useLanguage();
   const { cashFlow, addCashFlowEntry } = useData();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [modalType, setModalType] = React.useState<'income' | 'expense'>('income');
+  const [filter, setFilter] = React.useState<'all' | 'income' | 'expense'>('all');
 
   const allEntries = React.useMemo(() => {
     return [...cashFlow].sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime());
   }, [cashFlow]);
+
+  const filteredEntries = React.useMemo(() => {
+    if (filter === 'all') {
+      return allEntries;
+    }
+    return allEntries.filter(entry => entry.type === filter);
+  }, [allEntries, filter]);
 
   const totalRevenue = React.useMemo(() => {
     return allEntries.filter(e => e.type === 'income').reduce((sum, entry) => sum + entry.amount, 0);
@@ -127,38 +136,45 @@ export default function FinancialPage() {
             <CardDescription>{t('cashFlowEntriesDescription')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="rounded-xl border shadow-sm">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{t('date')}</TableHead>
-                    <TableHead>{t('description')}</TableHead>
-                    <TableHead className="text-right">{t('value')}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {allEntries.length > 0 ? (
-                    allEntries.map((entry) => (
-                      <TableRow key={entry.id}>
-                        <TableCell>{format(parseISO(entry.date), 'dd/MM/yyyy')}</TableCell>
-                        <TableCell className="font-medium">{entry.description}</TableCell>
-                        <TableCell className="text-right">
-                          <Badge variant={entry.type === 'income' ? 'success' : 'destructive'}>
-                            {entry.type === 'expense' && '- '}{formatCurrency(entry.amount)}
-                          </Badge>
-                        </TableCell>
+            <Tabs value={filter} onValueChange={(value) => setFilter(value as any)} className="w-full">
+                <TabsList className="grid w-full grid-cols-3 mb-4">
+                    <TabsTrigger value="all">{t('all')}</TabsTrigger>
+                    <TabsTrigger value="income">{t('income')}</TabsTrigger>
+                    <TabsTrigger value="expense">{t('expense')}</TabsTrigger>
+                </TabsList>
+                <div className="rounded-xl border shadow-sm">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>{t('date')}</TableHead>
+                        <TableHead>{t('description')}</TableHead>
+                        <TableHead className="text-right">{t('value')}</TableHead>
                       </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={3} className="h-24 text-center">
-                        {t('noTransactionsFound')}
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredEntries.length > 0 ? (
+                        filteredEntries.map((entry) => (
+                          <TableRow key={entry.id}>
+                            <TableCell>{format(parseISO(entry.date), 'dd/MM/yyyy')}</TableCell>
+                            <TableCell className="font-medium">{entry.description}</TableCell>
+                            <TableCell className="text-right">
+                              <Badge variant={entry.type === 'income' ? 'success' : 'destructive'}>
+                                {entry.type === 'expense' && '- '}{formatCurrency(entry.amount)}
+                              </Badge>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={3} className="h-24 text-center">
+                            {t('noTransactionsFound')}
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+            </Tabs>
           </CardContent>
         </Card>
       </div>

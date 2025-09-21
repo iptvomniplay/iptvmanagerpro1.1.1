@@ -523,8 +523,9 @@
     "entryType": "Tipo de Lançamento",
     "entryValue": "Valor do Lançamento",
     "entryDescription": "Descrição do Lançamento",
-    "entryDescriptionPlaceholder": "Ex: Venda de equipamento",
+    "entryDescriptionPlaceholder": "Ex: Venda de equipamento.",
     "fieldRequired": "Campo obrigatório",
     "valueMustBePositive": "O valor deve ser positivo.",
-    "initialSubscription": "Assinatura inicial"
+    "initialSubscription": "Assinatura inicial",
+    "all": "Todos"
 }

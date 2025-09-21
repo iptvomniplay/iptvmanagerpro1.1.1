@@ -523,8 +523,9 @@
     "entryType": "Entry Type",
     "entryValue": "Entry Value",
     "entryDescription": "Entry Description",
-    "entryDescriptionPlaceholder": "E.g.: Sale of equipment",
+    "entryDescriptionPlaceholder": "E.g.: Sale of equipment.",
     "fieldRequired": "Field required",
     "valueMustBePositive": "Value must be positive.",
-    "initialSubscription": "Initial subscription"
+    "initialSubscription": "Initial subscription",
+    "all": "All"
 }
