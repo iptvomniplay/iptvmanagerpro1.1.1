@@ -514,7 +514,6 @@
     "netBalance": "Saldo Líquido",
     "transactions": "Transações",
     "cashFlowEntriesDescription": "Visualize todas as entradas e saídas de caixa.",
-    "noTransactionsFound": "Nenhuma transação encontrada.",
     "addIncome": "Adicionar Receita",
     "addExpense": "Adicionar Despesa",
     "income": "Receita",
