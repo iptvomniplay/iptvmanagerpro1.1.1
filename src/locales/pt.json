@@ -456,13 +456,8 @@
     "generateFullReport": "Gerar Relatório Completo",
     "or": "ou",
     "report_numberOfTests": "Nº de Testes",
-    "report_serverUsage": "Estatísticas de Uso",
-    "report_usageStats": "Uso de Painéis e Servidores",
-    "report_mostUsedPanel": "Painel Mais Utilizado",
-    "report_mostUsedServer": "Servidor Mais Utilizado",
-    "report_leastUsedServer": "Servidor Menos Utilizado",
-    "report_statistic": "Estatística",
-    "report_item": "Item",
-    "report_usage": "Uso",
-    "report": "Relatório"
+    "report": "Relatório",
+    "report_panelUsage": "Uso de Painéis",
+    "report_subServerUsage": "Uso de Servidores",
+    "report_usagePercentage": "% de Uso"
 }

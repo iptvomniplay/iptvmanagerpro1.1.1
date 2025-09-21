@@ -58,10 +58,19 @@ export const reportConfig = {
     },
     globalOnly: true,
   },
-  serverUsage: {
-    label: 'report_serverUsage',
+  panelUsage: {
+    label: 'report_panelUsage',
     fields: {
-      usageStats: 'report_usageStats',
+      panelName: 'serverName',
+      usagePercentage: 'report_usagePercentage',
+    },
+    globalOnly: true,
+  },
+  subServerUsage: {
+    label: 'report_subServerUsage',
+    fields: {
+      serverName: 'serverName',
+      usagePercentage: 'report_usagePercentage',
     },
     globalOnly: true,
   },

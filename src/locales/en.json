@@ -456,13 +456,8 @@
     "generateFullReport": "Generate Full Report",
     "or": "or",
     "report_numberOfTests": "Nº of Tests",
-    "report_serverUsage": "Usage Statistics",
-    "report_usageStats": "Panel and Server Usage",
-    "report_mostUsedPanel": "Most Used Panel",
-    "report_mostUsedServer": "Most Used Server",
-    "report_leastUsedServer": "Least Used Server",
-    "report_statistic": "Statistic",
-    "report_item": "Item",
-    "report_usage": "Usage",
-    "report": "Report"
+    "report": "Report",
+    "report_panelUsage": "Panel Usage",
+    "report_subServerUsage": "Sub-Server Usage",
+    "report_usagePercentage": "Usage %"
 }

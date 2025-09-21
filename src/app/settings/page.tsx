@@ -139,40 +139,34 @@ export default function SettingsPage() {
                   })
               );
               break;
-          case 'serverUsage':
-            const allPlans = clients.flatMap(c => c.plans || []);
-            const totalPlans = allPlans.length;
-            
-            const panelUsage: Record<string, number> = {};
-            const serverUsage: Record<string, number> = {};
+          case 'panelUsage': {
+                const allPlans = clients.flatMap(c => c.plans || []);
+                const totalPlans = allPlans.length;
+                const panelUsage: Record<string, number> = {};
 
-            allPlans.forEach(plan => {
-              panelUsage[plan.panel.name] = (panelUsage[plan.panel.name] || 0) + 1;
-              serverUsage[plan.server.name] = (serverUsage[plan.server.name] || 0) + 1;
-            });
-            
-            const sortedPanels = Object.entries(panelUsage).sort((a, b) => b[1] - a[1]);
-            const sortedServers = Object.entries(serverUsage).sort((a, b) => b[1] - a[1]);
-
-            let usageRows: (string | undefined)[][] = [];
-
-            if (totalPlans > 0) {
-              if (sortedPanels.length > 0) {
-                  const [mostUsedPanel, mostUsedCount] = sortedPanels[0];
-                  usageRows.push([t('report_mostUsedPanel'), mostUsedPanel, `${((mostUsedCount / totalPlans) * 100).toFixed(2)}%`]);
-              }
-              if (sortedServers.length > 0) {
-                  const [mostUsedServer, mostUsedCount] = sortedServers[0];
-                  usageRows.push([t('report_mostUsedServer'), mostUsedServer, `${((mostUsedCount / totalPlans) * 100).toFixed(2)}%`]);
-                  
-                  const [leastUsedServer, leastUsedCount] = sortedServers[sortedServers.length - 1];
-                  usageRows.push([t('report_leastUsedServer'), leastUsedServer, `${((leastUsedCount / totalPlans) * 100).toFixed(2)}%`]);
-              }
+                allPlans.forEach(plan => {
+                    panelUsage[plan.panel.name] = (panelUsage[plan.panel.name] || 0) + 1;
+                });
+                
+                rows = Object.entries(panelUsage)
+                    .map(([panelName, count]) => [panelName, `${((count / totalPlans) * 100).toFixed(2)}%`])
+                    .sort((a, b) => parseFloat(b[1]) - parseFloat(a[1]));
+                break;
             }
+          case 'subServerUsage': {
+              const allPlans = clients.flatMap(c => c.plans || []);
+              const totalPlans = allPlans.length;
+              const serverUsage: Record<string, number> = {};
 
-            rows = usageRows;
-            headers = [t('report_statistic'), t('report_item'), t('report_usage')];
-            break;
+              allPlans.forEach(plan => {
+                  serverUsage[plan.server.name] = (serverUsage[plan.server.name] || 0) + 1;
+              });
+
+              rows = Object.entries(serverUsage)
+                  .map(([serverName, count]) => [serverName, `${((count / totalPlans) * 100).toFixed(2)}%`])
+                  .sort((a, b) => parseFloat(b[1]) - parseFloat(a[1]));
+              break;
+          }
       }
       
       generatedReports.push({ title: t(reportMeta.label as any), headers, rows });
