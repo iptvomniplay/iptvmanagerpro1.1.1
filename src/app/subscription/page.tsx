@@ -20,7 +20,7 @@ import { ClientSearch } from './components/client-search';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { User, FileText, AppWindow, AlertTriangle, Save, Info } from 'lucide-react';
+import { User, FileText, AppWindow, AlertTriangle, Save, Info, UserCheck, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SubscriptionPlanForm } from './components/subscription-plan-form';
 import { ApplicationsForm } from './components/applications-form';
@@ -52,15 +52,24 @@ export default function SubscriptionPage() {
   const [validationMessage, setValidationMessage] = React.useState('');
   const [isIdSaveSuccessModalOpen, setIsIdSaveSuccessModalOpen] = React.useState(false);
   const [isSubscriptionSuccessModalOpen, setIsSubscriptionSuccessModalOpen] = React.useState(false);
+  
+  const totalScreensFromPlans = selectedClient?.plans?.reduce((sum, plan) => sum + plan.screens, 0) || 0;
+  const totalApplications = selectedClient?.applications?.length || 0;
+  const arePlansIncomplete = !selectedClient?.plans || selectedClient.plans.length === 0;
+  const areAppsIncomplete = totalApplications < totalScreensFromPlans;
+  
+  const isReadyForActivation = selectedClient && selectedClient.id && !arePlansIncomplete && !areAppsIncomplete;
 
   const handleSelectClient = (client: Client | null) => {
     if (client) {
       const fullClientData = clients.find(c => c._tempId === client._tempId) || client;
       setSelectedClient(fullClientData);
       setManualId(fullClientData.id || '');
+      setActiveTab('client');
     } else {
       setSelectedClient(null);
       setManualId('');
+      setActiveTab('client');
     }
   };
   
@@ -77,6 +86,17 @@ export default function SubscriptionPage() {
 
   const saveManualId = () => {
     if (!selectedClient) return;
+    
+    // Validar se o ID manual não está vazio
+    if (!manualId.trim()) {
+        toast({
+            variant: "destructive",
+            title: t('validationError'),
+            description: t('clientIdRequired'),
+        });
+        return;
+    }
+
     if (selectedClient.id && selectedClient.id === manualId) {
       toast({
         title: t('clientIdAlreadySaved'),
@@ -89,53 +109,68 @@ export default function SubscriptionPage() {
     setIsIdSaveSuccessModalOpen(true);
   };
 
-  const validateForms = () => {
+  const validateForms = (targetTab?: string) => {
     if (!selectedClient) return false;
 
-    if (!manualId && selectedClient.status !== 'Active') {
-      setValidationMessage(t('clientIdRequired'));
-      setActiveTab('client');
-      document.getElementById('manual-client-id')?.focus();
-      return false;
+    if (targetTab === 'client') {
+        return true;
+    }
+
+    if (targetTab === 'plans') {
+        if (!selectedClient.id && !manualId) {
+          setValidationMessage(t('clientIdRequired'));
+          setActiveTab('client');
+          setTimeout(() => document.getElementById('manual-client-id')?.focus(), 0);
+          setIsValidationError(true);
+          return false;
+        }
+        return true;
     }
     
-     if (!selectedClient.plans || selectedClient.plans.length === 0) {
-      setValidationMessage(t('addAtLeastOnePlan'));
-      setActiveTab('plans');
-      return false;
+     if (targetTab === 'apps') {
+        if (arePlansIncomplete) {
+            setValidationMessage(t('addAtLeastOnePlan'));
+            setActiveTab('plans');
+            setIsValidationError(true);
+            return false;
+        }
+        return true;
+    }
+    
+    if (!isReadyForActivation) {
+        if (!selectedClient.id) setValidationMessage(t('clientIdRequired'));
+        else if (arePlansIncomplete) setValidationMessage(t('addAtLeastOnePlan'));
+        else if (areAppsIncomplete) setValidationMessage(t('fillAllApplications'));
+        
+        setIsValidationError(true);
+        return false;
     }
 
     return true;
   };
 
   const handleSave = () => {
-    if (!selectedClient) return;
-
-    if (!validateForms()) {
-      setIsValidationError(true);
-      return;
-    }
+    if (!validateForms()) return;
 
     const clientToUpdate: Client = {
-      ...selectedClient,
+      ...selectedClient!,
       status: 'Active',
-      id: manualId || selectedClient.id,
+      id: manualId || selectedClient!.id,
     };
 
     updateClient(clientToUpdate);
     setIsSubscriptionSuccessModalOpen(true);
   };
-
-  const handleCancel = () => {
-    setSelectedClient(null);
-    setManualId('');
-    setActiveTab('client');
+  
+  const handleTabChange = (newTab: string) => {
+    if (validateForms(newTab)) {
+        setActiveTab(newTab);
+    }
   };
 
-  const totalScreensFromPlans = selectedClient?.plans?.reduce((sum, plan) => sum + plan.screens, 0) || 0;
-  const totalApplications = selectedClient?.applications?.length || 0;
-  const arePlansIncomplete = !selectedClient?.plans || selectedClient.plans.length === 0;
-  const areAppsIncomplete = totalApplications < totalScreensFromPlans;
+  const handleCancel = () => {
+    handleSelectClient(null);
+  };
 
   const getStatusVariant = (status: Client['status']) => {
     switch (status) {
@@ -151,14 +186,30 @@ export default function SubscriptionPage() {
     <div className="flex flex-col h-full">
       <div className="space-y-8 flex-1">
         <Card>
-          <CardHeader>
-            <CardTitle>{t('subscriptionManagement')}</CardTitle>
-            <CardDescription>{t('subscriptionManagementDescription')}</CardDescription>
+          <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <div>
+              <CardTitle>{t('subscriptionManagement')}</CardTitle>
+              <CardDescription>{t('subscriptionManagementDescription')}</CardDescription>
+            </div>
+            {selectedClient && (
+                <div className="flex items-center gap-4 p-2 rounded-lg bg-muted border border-dashed animate-in fade-in-50">
+                    <UserCheck className="h-6 w-6 text-primary"/>
+                    <div className="flex flex-col">
+                      <span className="text-sm text-muted-foreground">{t('client')}</span>
+                      <p className="font-bold text-lg">{selectedClient.name}</p>
+                    </div>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => handleSelectClient(null)}>
+                        <X className="h-5 w-5"/>
+                    </Button>
+                </div>
+            )}
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="w-full md:w-1/2">
-              <ClientSearch onSelectClient={handleSelectClient} selectedClient={selectedClient} />
-            </div>
+             {!selectedClient && (
+                 <div className="w-full md:w-1/2">
+                    <ClientSearch onSelectClient={handleSelectClient} selectedClient={selectedClient} />
+                </div>
+             )}
           </CardContent>
         </Card>
 
@@ -174,14 +225,19 @@ export default function SubscriptionPage() {
               </Alert>
             )}
 
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 gap-2 h-auto rounded-lg p-1 bg-transparent border-b-0">
-                <TabsTrigger value="client" className="py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+               <TabsList className="grid w-full grid-cols-3 gap-2 h-auto rounded-lg p-1 bg-transparent border-b-0">
+                <TabsTrigger value="client" className="relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
+                   {isValidationError && activeTab !== 'client' && (!selectedClient.id && !manualId) && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
                   <User className="mr-2 h-5 w-5" /> {t('client')}
                 </TabsTrigger>
-                <TabsTrigger value="plans" className="relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
-                  {(arePlansIncomplete || areAppsIncomplete) && isValidationError && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
+                <TabsTrigger value="plans" disabled={!selectedClient} className="relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                  {isValidationError && activeTab !== 'plans' && arePlansIncomplete && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
                   <FileText className="mr-2 h-5 w-5" /> {t('subscriptionPlans')}
+                </TabsTrigger>
+                <TabsTrigger value="apps" disabled={!selectedClient || arePlansIncomplete} className="relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                    {isValidationError && activeTab !== 'apps' && areAppsIncomplete && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
+                    <AppWindow className="mr-2 h-5 w-5" /> {t('applications')}
                 </TabsTrigger>
               </TabsList>
 
@@ -205,7 +261,7 @@ export default function SubscriptionPage() {
                           ) : (
                             <p>{t('allAppsConfigured')}</p>
                           )}
-                          <Button variant="secondary" onClick={() => setActiveTab('plans')}>
+                          <Button variant="secondary" onClick={() => setActiveTab('apps')}>
                             {t('managePendingScreens')}
                           </Button>
                         </AlertDescription>
@@ -236,13 +292,12 @@ export default function SubscriptionPage() {
                             autoComplete="off"
                             value={manualId}
                             onChange={handleManualIdChange}
-                            className={cn('pr-12', !manualId && selectedClient.status !== 'Active' && isValidationError && 'ring-2 ring-destructive ring-offset-2 ring-offset-background')}
+                            className={cn('pr-12', isValidationError && !manualId && 'ring-2 ring-destructive ring-offset-2 ring-offset-background')}
                           />
                           <Button type="button" size="icon" variant="ghost" className="absolute right-1 top-1/2 -translate-y-1/2 h-9 w-10 text-muted-foreground hover:bg-transparent" onClick={saveManualId}>
                             <Save className="h-5 w-5" />
                           </Button>
                         </div>
-                        {!manualId && selectedClient.status !== 'Active' && isValidationError && <p className="text-sm text-destructive">{t('clientIdRequired')}</p>}
                       </div>
                     </div>
                     <PersistenceTest selectedClient={selectedClient} />
@@ -255,7 +310,10 @@ export default function SubscriptionPage() {
                   selectedClient={selectedClient}
                   onPlanChange={(plans) => handleUpdateClient({ plans })}
                 />
-                <ApplicationsForm
+              </TabsContent>
+              
+              <TabsContent value="apps" className="mt-6 space-y-6">
+                 <ApplicationsForm
                   selectedClient={selectedClient}
                   onUpdateApplications={(applications) => handleUpdateClient({ applications })}
                 />
@@ -276,9 +334,13 @@ export default function SubscriptionPage() {
 
       <div className="mt-auto flex justify-end items-center gap-4 pt-8">
         <Button variant="outline" onClick={() => router.push('/')}>{t('back')}</Button>
-        <Button variant="outline" onClick={handleCancel}>{t('cancel')}</Button>
         {selectedClient && (
-          <Button onClick={handleSave}>{t('activateSubscription')}</Button>
+            <>
+                <Button variant="outline" onClick={handleCancel}>{t('cancel')}</Button>
+                <Button onClick={handleSave} disabled={!isReadyForActivation}>
+                    {t('activateSubscription')}
+                </Button>
+            </>
         )}
       </div>
 
