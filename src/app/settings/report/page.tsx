@@ -65,15 +65,13 @@ const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
                         rows = expiredClients.map(client =>
                             selectedFields.map(field => {
                                 const lastPlan = client.plans && client.plans.length > 0 ? client.plans[client.plans.length - 1] : null;
-                                return (() => {
-                                    switch (field) {
-                                        case 'fullName': return client.name;
-                                        case 'lastPlan': return lastPlan?.plan.name || 'N/A';
-                                        case 'expirationDate': return client.expirationDate ? format(new Date(client.expirationDate), 'dd/MM/yyyy') : 'N/A';
-                                        case 'contact': return client.phones.map(p => p.number).join(', ');
-                                        default: return '';
-                                    }
-                                })();
+                                switch (field) {
+                                    case 'fullName': return client.name;
+                                    case 'lastPlan': return lastPlan?.plan.name || 'N/A';
+                                    case 'expirationDate': return client.expirationDate ? format(new Date(client.expirationDate), 'dd/MM/yyyy') : 'N/A';
+                                    case 'contact': return client.phones.map(p => p.number).join(', ');
+                                    default: return '';
+                                }
                             })
                         );
                         break;
@@ -86,31 +84,27 @@ const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
                         });
                         rows = allTests.map(({ client, test }) =>
                             selectedFields.map(field => {
-                                return (() => {
-                                    switch (field) {
-                                        case 'clientName': return client.name;
-                                        case 'testPackage': return test.package;
-                                        case 'startTime': return format(new Date(test.creationDate), 'dd/MM/yyyy HH:mm');
-                                        case 'endTime':
-                                            const expiration = add(new Date(test.creationDate), { [test.durationUnit]: test.durationValue });
-                                            return format(expiration, 'dd/MM/yyyy HH:mm');
-                                        default: return '';
-                                    }
-                                })();
+                                switch (field) {
+                                    case 'clientName': return client.name;
+                                    case 'testPackage': return test.package;
+                                    case 'startTime': return format(new Date(test.creationDate), 'dd/MM/yyyy HH:mm');
+                                    case 'endTime':
+                                        const expiration = add(new Date(test.creationDate), { [test.durationUnit]: test.durationValue });
+                                        return format(expiration, 'dd/MM/yyyy HH:mm');
+                                    default: return '';
+                                }
                             })
                         );
                         break;
                     case 'creditBalance':
                         rows = servers.map(server =>
                             selectedFields.map(field => {
-                                return (() => {
-                                    switch (field) {
-                                        case 'panelName': return server.name;
-                                        case 'currentBalance': return String(server.creditStock || 0);
-                                        case 'paymentMethod': return t(server.paymentType as any);
-                                        default: return '';
-                                    }
-                                })();
+                                switch (field) {
+                                    case 'panelName': return server.name;
+                                    case 'currentBalance': return String(server.creditStock || 0);
+                                    case 'paymentMethod': return t(server.paymentType as any);
+                                    default: return '';
+                                }
                             })
                         );
                         break;
@@ -133,12 +127,12 @@ const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
 
     return (
         <div ref={ref} className="p-8 report-container">
-             {reports.length > 0 ? (
+             {reports.length > 0 && reports.some(r => r.rows.length > 0) ? (
                 <div className="space-y-8 report-content">
                     {reports.map((report, index) => (
-                        <div key={index} className="page-break">
-                            <h2 className="text-xl font-semibold mb-4">{report.title}</h2>
-                            {report.rows.length > 0 ? (
+                        report.rows.length > 0 && (
+                            <div key={index} className="page-break">
+                                <h2 className="text-xl font-semibold mb-4">{report.title}</h2>
                                 <div className="rounded-lg border">
                                     <Table>
                                         <TableHeader>
@@ -159,10 +153,8 @@ const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
                                         </TableBody>
                                     </Table>
                                 </div>
-                            ) : (
-                                <p className="text-muted-foreground">{t('noDataForReport')}</p>
-                            )}
-                        </div>
+                            </div>
+                        )
                     ))}
                 </div>
             ) : (
@@ -184,7 +176,7 @@ export default function ReportPage() {
         setIsClient(true);
         const timer = setTimeout(() => {
             window.print();
-        }, 1000); // Wait 1 second for data to render before printing
+        }, 1000); 
 
         return () => clearTimeout(timer);
     }, []);
@@ -223,4 +215,3 @@ export default function ReportPage() {
         </ThemeProvider>
     );
 }
-
