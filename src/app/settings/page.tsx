@@ -23,6 +23,7 @@ import { ReportModal, SelectedReportsState, reportConfig, ReportKey, FieldKey } 
 import { ReportDisplayModal, GeneratedReportData } from './components/report-display-modal';
 import { useData } from '@/hooks/use-data';
 import { add, format, isFuture, parseISO } from 'date-fns';
+import type { Client } from '@/lib/types';
 
 export default function SettingsPage() {
   const { language, setLanguage, t } = useLanguage();
@@ -55,9 +56,10 @@ export default function SettingsPage() {
     setExpirationWarningDays(value);
   }
   
-  const handleGenerateReport = (selectedConfigs: SelectedReportsState) => {
+  const handleGenerateReport = (selectedConfigs: SelectedReportsState, clientContext?: Client | null) => {
     setIsReportModalOpen(false);
     const generatedReports: GeneratedReportData[] = [];
+    const reportClients = clientContext ? [clientContext] : clients;
 
     (Object.keys(selectedConfigs) as ReportKey[]).forEach(reportKey => {
       const config = selectedConfigs[reportKey];
@@ -76,7 +78,7 @@ export default function SettingsPage() {
       
       switch (reportKey) {
           case 'clientList':
-              rows = clients.map(client =>
+              rows = reportClients.map(client =>
                   selectedFields.map(field => {
                       switch (field) {
                           case 'fullName': return client.name;
@@ -91,7 +93,7 @@ export default function SettingsPage() {
               );
               break;
           case 'expiredSubscriptions':
-              const expiredClients = clients.filter(c => c.status === 'Expired');
+              const expiredClients = reportClients.filter(c => c.status === 'Expired');
               rows = expiredClients.map(client =>
                   selectedFields.map(field => {
                       const lastPlan = client.plans && client.plans.length > 0 ? client.plans[client.plans.length - 1] : null;
@@ -106,7 +108,7 @@ export default function SettingsPage() {
               );
               break;
           case 'activeTests':
-               const allTests = clients.flatMap(client =>
+               const allTests = reportClients.flatMap(client =>
                   (client.tests || []).map(test => ({ client, test }))
               ).filter(({ test, client }) => {
                    const expirationDate = add(parseISO(test.creationDate), { [test.durationUnit]: test.durationValue });
@@ -127,49 +129,41 @@ export default function SettingsPage() {
                   })
               );
               break;
-          case 'creditBalance':
-              rows = servers.map(server =>
-                  selectedFields.map(field => {
-                      switch (field) {
-                          case 'panelName': return server.name;
-                          case 'currentBalance': return String(server.creditStock || 0);
-                          case 'paymentMethod': return t(server.paymentType as any);
-                          default: return '';
-                      }
-                  })
-              );
-              break;
           case 'panelUsage': {
                 const allPlans = clients.flatMap(c => c.plans || []);
-                const totalPlans = allPlans.length;
-                const panelUsage: Record<string, number> = {};
+                if (allPlans.length > 0) {
+                    const panelUsage: Record<string, number> = {};
 
-                allPlans.forEach(plan => {
-                    panelUsage[plan.panel.name] = (panelUsage[plan.panel.name] || 0) + 1;
-                });
-                
-                rows = Object.entries(panelUsage)
-                    .map(([panelName, count]) => [panelName, `${((count / totalPlans) * 100).toFixed(2)}%`])
-                    .sort((a, b) => parseFloat(b[1]) - parseFloat(a[1]));
+                    allPlans.forEach(plan => {
+                        panelUsage[plan.panel.name] = (panelUsage[plan.panel.name] || 0) + 1;
+                    });
+                    
+                    rows = Object.entries(panelUsage)
+                        .map(([panelName, count]) => [panelName, `${((count / allPlans.length) * 100).toFixed(2)}%`])
+                        .sort((a, b) => parseFloat(b[1]) - parseFloat(a[1]));
+                }
                 break;
             }
           case 'subServerUsage': {
               const allPlans = clients.flatMap(c => c.plans || []);
-              const totalPlans = allPlans.length;
-              const serverUsage: Record<string, number> = {};
+              if (allPlans.length > 0) {
+                  const serverUsage: Record<string, number> = {};
 
-              allPlans.forEach(plan => {
-                  serverUsage[plan.server.name] = (serverUsage[plan.server.name] || 0) + 1;
-              });
+                  allPlans.forEach(plan => {
+                      serverUsage[plan.server.name] = (serverUsage[plan.server.name] || 0) + 1;
+                  });
 
-              rows = Object.entries(serverUsage)
-                  .map(([serverName, count]) => [serverName, `${((count / totalPlans) * 100).toFixed(2)}%`])
-                  .sort((a, b) => parseFloat(b[1]) - parseFloat(a[1]));
+                  rows = Object.entries(serverUsage)
+                      .map(([serverName, count]) => [serverName, `${((count / allPlans.length) * 100).toFixed(2)}%`])
+                      .sort((a, b) => parseFloat(b[1]) - parseFloat(a[1]));
+              }
               break;
           }
       }
       
-      generatedReports.push({ title: t(reportMeta.label as any), headers, rows });
+      if(rows.length > 0) {
+        generatedReports.push({ title: t(reportMeta.label as any), headers, rows });
+      }
     });
     
     if (typeof window !== 'undefined') {

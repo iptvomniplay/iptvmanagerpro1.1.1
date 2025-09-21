@@ -15,9 +15,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useLanguage } from '@/hooks/use-language';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, FileText } from 'lucide-react';
+import { ChevronDown, FileText, X, UserCheck } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import type { Client } from '@/lib/types';
+import { ClientSearch } from '@/app/subscription/components/client-search';
 
 export const reportConfig = {
   clientList: {
@@ -48,15 +49,6 @@ export const reportConfig = {
       startTime: 'startTime',
       endTime: 'endTime',
     },
-  },
-  creditBalance: {
-    label: 'report_creditBalance',
-    fields: {
-      panelName: 'serverName',
-      currentBalance: 'creditBalance',
-      paymentMethod: 'paymentMethod',
-    },
-    globalOnly: true,
   },
   panelUsage: {
     label: 'report_panelUsage',
@@ -90,14 +82,22 @@ export type SelectedReportsState = {
 interface ReportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onGenerate: (selectedReports: SelectedReportsState) => void;
-  clientContext?: Client | null;
+  onGenerate: (selectedReports: SelectedReportsState, clientContext?: Client | null) => void;
+  initialClientContext?: Client | null;
 }
 
-export function ReportModal({ isOpen, onClose, onGenerate, clientContext = null }: ReportModalProps) {
+export function ReportModal({ isOpen, onClose, onGenerate, initialClientContext = null }: ReportModalProps) {
   const { t } = useLanguage();
   const [selectedReports, setSelectedReports] = React.useState<SelectedReportsState>({});
   const [openCollapsibles, setOpenCollapsibles] = React.useState<Record<string, boolean>>({});
+  const [clientContext, setClientContext] = React.useState<Client | null>(initialClientContext);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setClientContext(initialClientContext);
+      setSelectedReports({});
+    }
+  }, [isOpen, initialClientContext]);
 
   const handleSelectAll = (reportKey: ReportKey, checked: boolean) => {
     const allFields = Object.keys(reportConfig[reportKey].fields).reduce((acc, field) => {
@@ -133,7 +133,7 @@ export function ReportModal({ isOpen, onClose, onGenerate, clientContext = null 
   };
 
   const handleGenerateClick = () => {
-    onGenerate(selectedReports);
+    onGenerate(selectedReports, clientContext);
   };
 
   const handleGenerateFullReport = () => {
@@ -153,7 +153,7 @@ export function ReportModal({ isOpen, onClose, onGenerate, clientContext = null 
             fields: allFields
         };
     }
-    onGenerate(fullReportState);
+    onGenerate(fullReportState, clientContext);
   };
   
   const isAnyReportSelected = Object.values(selectedReports).some(
@@ -169,12 +169,34 @@ export function ReportModal({ isOpen, onClose, onGenerate, clientContext = null 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>{clientContext ? t('generateClientReport', { clientName: clientContext.name }) : t('selectReports')}</DialogTitle>
           <DialogDescription>{t('selectReportsDescription')}</DialogDescription>
         </DialogHeader>
-        <div className="py-4 max-h-[60vh] overflow-y-auto pr-4 space-y-4">
+        <div className="py-4 max-h-[70vh] overflow-y-auto pr-4 space-y-4">
+          {!initialClientContext && (
+            <div className="space-y-4">
+                {clientContext ? (
+                    <div className="flex items-center justify-between p-2 rounded-lg bg-muted border border-dashed w-fit">
+                        <div className="flex items-center gap-3">
+                            <UserCheck className="h-6 w-6 text-primary"/>
+                            <div className="flex flex-col">
+                                <span className="text-sm text-muted-foreground">{t('client')}</span>
+                                <p className="font-bold text-lg">{clientContext.name}</p>
+                            </div>
+                        </div>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => setClientContext(null)}>
+                            <X className="h-5 w-5"/>
+                        </Button>
+                    </div>
+                ) : (
+                    <ClientSearch onSelectClient={setClientContext} selectedClient={clientContext} />
+                )}
+                <Separator />
+            </div>
+          )}
+          
           <Button onClick={handleGenerateFullReport} className="w-full" size="lg">
               <FileText className="mr-2 h-5 w-5" />
               {t('generateFullReport')}

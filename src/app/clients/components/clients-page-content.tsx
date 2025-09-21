@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -177,11 +178,11 @@ export default function ClientsPageContent() {
     setIsReportModalOpen(true);
   };
 
-  const handleGenerateReport = (selectedConfigs: SelectedReportsState) => {
+  const handleGenerateReport = (selectedConfigs: SelectedReportsState, clientContext?: Client | null) => {
     setIsReportModalOpen(false);
-    if (!clientForReport) return;
+    
+    const reportClients = clientContext ? [clientContext] : clients;
 
-    const reportClients = [clientForReport];
     const generatedReports: GeneratedReportData[] = [];
 
     (Object.keys(selectedConfigs) as ReportKey[]).forEach(reportKey => {
@@ -250,7 +251,9 @@ export default function ClientsPageContent() {
               break;
       }
       
-      generatedReports.push({ title: t(reportMeta.label as any), headers, rows });
+      if(rows.length > 0){
+        generatedReports.push({ title: t(reportMeta.label as any), headers, rows });
+      }
     });
     
     if (typeof window !== 'undefined') {
@@ -468,7 +471,7 @@ export default function ClientsPageContent() {
         isOpen={isReportModalOpen} 
         onClose={() => setIsReportModalOpen(false)}
         onGenerate={handleGenerateReport}
-        clientContext={clientForReport}
+        initialClientContext={clientForReport}
       />
       <ReportDisplayModal
         isOpen={isReportDisplayModalOpen}
