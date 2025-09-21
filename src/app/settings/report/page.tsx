@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -25,6 +24,7 @@ const ReportContent = () => {
     React.useEffect(() => {
         if (!isDataLoaded) return;
 
+        setIsLoading(true);
         try {
             const storedConfigsRaw = sessionStorage.getItem('reportConfigs');
             if (!storedConfigsRaw) {
@@ -127,12 +127,10 @@ const ReportContent = () => {
     }, [isDataLoaded, clients, servers, t]);
     
     React.useEffect(() => {
-        if (!isLoading) {
+        if (!isLoading && reports.length > 0 && reports.some(r => r.rows.length > 0)) {
             // Give the browser a moment to render the content before printing
             const timer = setTimeout(() => {
-                if (reports.length > 0 && reports.some(r => r.rows.length > 0)) {
-                    window.print();
-                }
+                window.print();
             }, 500);
             return () => clearTimeout(timer);
         }

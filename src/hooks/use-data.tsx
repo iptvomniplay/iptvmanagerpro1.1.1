@@ -4,7 +4,6 @@ import React, { createContext, useContext, useState, useCallback, ReactNode, use
 import type { Client, Server, Test, SelectedPlan } from '@/lib/types';
 import { format } from 'date-fns';
 import { clients as initialClients, servers as initialServers } from '@/lib/data';
-import { useToast } from './use-toast';
 
 interface DataContextType {
   clients: Client[];
@@ -26,40 +25,33 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [clients, setClients] = useState<Client[]>([]);
   const [servers, setServers] = useState<Server[]>([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
-  const { toast } = useToast();
 
   useEffect(() => {
-    // This effect runs only on the client side
-    let clientsLoaded = false;
+    // This effect runs only on the client side and loads data from localStorage.
     try {
       const storedClients = localStorage.getItem('clients');
       if (storedClients) {
         setClients(JSON.parse(storedClients));
-        clientsLoaded = true;
+      } else {
+         const clientsWithTempId = initialClients.map(c => ({...c, _tempId: c._tempId || `temp_${Date.now()}_${Math.random()}`}));
+         setClients(clientsWithTempId);
       }
-    } catch (error) {
-      console.error('Failed to load clients from localStorage', error);
-    }
-    if (!clientsLoaded) {
-      const clientsWithTempId = initialClients.map(c => ({...c, _tempId: c._tempId || `temp_${Date.now()}_${Math.random()}`}));
-      setClients(clientsWithTempId);
-    }
 
-    let serversLoaded = false;
-    try {
       const storedServers = localStorage.getItem('servers');
       if (storedServers) {
         setServers(JSON.parse(storedServers));
-        serversLoaded = true;
+      } else {
+        setServers(initialServers);
       }
     } catch (error) {
-      console.error('Failed to load servers from localStorage', error);
-    }
-    if (!serversLoaded) {
+      console.error('Failed to load data from localStorage', error);
+      // Set initial data if localStorage fails
+      const clientsWithTempId = initialClients.map(c => ({...c, _tempId: c._tempId || `temp_${Date.now()}_${Math.random()}`}));
+      setClients(clientsWithTempId);
       setServers(initialServers);
+    } finally {
+        setIsDataLoaded(true);
     }
-
-    setIsDataLoaded(true);
   }, []);
 
   const saveDataToStorage = useCallback(<T,>(key: string, data: T[]) => {
