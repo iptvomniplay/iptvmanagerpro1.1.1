@@ -1,13 +1,14 @@
 'use client';
 
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
-import type { Client, Server, Test, SelectedPlan, Transaction, TransactionType } from '@/lib/types';
+import type { Client, Server, Test, SelectedPlan, Transaction, TransactionType, CashFlowEntry } from '@/lib/types';
 import { format } from 'date-fns';
 import { clients as initialClients, servers as initialServers } from '@/lib/data';
 
 interface DataContextType {
   clients: Client[];
   servers: Server[];
+  cashFlow: CashFlowEntry[];
   isDataLoaded: boolean;
   addClient: (clientData: Omit<Client, 'registeredDate' | 'plans' | '_tempId'>) => void;
   updateClient: (clientData: Client) => void;
@@ -18,6 +19,7 @@ interface DataContextType {
   addTestToClient: (clientId: string, testData: Omit<Test, 'creationDate'>) => void;
   updateTestInClient: (clientId: string, testCreationDate: string, updatedTest: Partial<Test>) => void;
   addTransactionToServer: (serverId: string, transaction: Omit<Transaction, 'id' | 'date'>) => void;
+  addCashFlowEntry: (entry: Omit<CashFlowEntry, 'id' | 'date'>) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -25,6 +27,7 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [clients, setClients] = useState<Client[]>([]);
   const [servers, setServers] = useState<Server[]>([]);
+  const [cashFlow, setCashFlow] = useState<CashFlowEntry[]>([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
@@ -44,12 +47,21 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       } else {
         setServers(initialServers);
       }
+
+      const storedCashFlow = localStorage.getItem('cashFlow');
+      if (storedCashFlow) {
+        setCashFlow(JSON.parse(storedCashFlow));
+      } else {
+        setCashFlow([]);
+      }
+
     } catch (error) {
       console.error('Failed to load data from localStorage', error);
       // Set initial data if localStorage fails
       const clientsWithTempId = initialClients.map(c => ({...c, _tempId: c._tempId || `temp_${Date.now()}_${Math.random()}`}));
       setClients(clientsWithTempId);
       setServers(initialServers);
+      setCashFlow([]);
     } finally {
         setIsDataLoaded(true);
     }
@@ -185,9 +197,23 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
   }, [saveDataToStorage]);
 
+  const addCashFlowEntry = useCallback((entryData: Omit<CashFlowEntry, 'id' | 'date'>) => {
+    setCashFlow(prevCashFlow => {
+      const newEntry: CashFlowEntry = {
+        ...entryData,
+        id: `cf_${Date.now()}_${Math.random()}`,
+        date: new Date().toISOString(),
+      };
+      const updatedCashFlow = [newEntry, ...prevCashFlow];
+      saveDataToStorage('cashFlow', updatedCashFlow);
+      return updatedCashFlow;
+    });
+  }, [saveDataToStorage]);
+
   const value = {
     clients,
     servers,
+    cashFlow,
     isDataLoaded,
     addClient,
     updateClient,
@@ -198,6 +224,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     addTestToClient,
     updateTestInClient,
     addTransactionToServer,
+    addCashFlowEntry,
   };
   
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

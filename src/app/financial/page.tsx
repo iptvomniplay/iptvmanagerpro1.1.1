@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useLanguage } from '@/hooks/use-language';
 import { useData } from '@/hooks/use-data';
-import type { Client, SelectedPlan } from '@/lib/types';
+import type { Client, CashFlowEntry } from '@/lib/types';
 import {
   Card,
   CardContent,
@@ -20,46 +20,69 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { DollarSign, ArrowDownUp } from 'lucide-react';
+import { DollarSign, ArrowDownUp, ArrowUp, ArrowDown, Landmark } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
-
-type CashFlowEntry = {
-  date: string;
-  client: Client;
-  description: string;
-  amount: number;
-  type: 'income' | 'expense';
-};
+import { Button } from '@/components/ui/button';
+import { EntryModal } from './components/entry-modal';
 
 export default function FinancialPage() {
   const { t, language } = useLanguage();
-  const { clients, isDataLoaded } = useData();
-  const [cashFlowEntries, setCashFlowEntries] = React.useState<CashFlowEntry[]>([]);
-  const [totalRevenue, setTotalRevenue] = React.useState(0);
-
+  const { clients, cashFlow, addCashFlowEntry, isDataLoaded } = useData();
+  const [allEntries, setAllEntries] = React.useState<CashFlowEntry[]>([]);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [modalType, setModalType] = React.useState<'income' | 'expense'>('income');
+  
+  // Combina entradas automáticas e manuais
   React.useEffect(() => {
     if (isDataLoaded) {
-      const entries = clients
+      const automaticEntries: CashFlowEntry[] = clients
         .filter(client => client.status === 'Active' && client.activationDate && client.plans && client.plans.length > 0)
-        .map(client => {
+        .flatMap(client => {
+          // Verifica se já existe um lançamento para a ativação deste cliente no fluxo de caixa manual
+          const existingEntry = cashFlow.find(entry => entry.clientId === client._tempId && entry.description.includes('Assinatura inicial'));
+          if (existingEntry) {
+            return []; // Já foi lançado, não gera novamente
+          }
+
           const totalAmount = client.plans!.reduce((sum, plan) => sum + plan.planValue, 0);
-          const description = client.plans!.map(p => p.plan.name).join(', ');
+          const description = t('initialSubscription') + ' - ' + client.plans!.map(p => p.plan.name).join(', ');
           
-          return {
+          return [{
+            id: `auto_${client._tempId}`,
             date: client.activationDate!,
-            client: client,
+            clientId: client._tempId,
+            clientName: client.name,
             description: description,
             amount: totalAmount,
             type: 'income' as const,
-          };
-        })
-        .sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime());
+          }];
+        });
 
-      setCashFlowEntries(entries);
-      const revenue = entries.reduce((sum, entry) => sum + entry.amount, 0);
-      setTotalRevenue(revenue);
+      // Junta as entradas automáticas com as manuais já existentes e ordena por data
+      const combined = [...automaticEntries, ...cashFlow].sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime());
+      setAllEntries(combined);
     }
-  }, [clients, isDataLoaded]);
+  }, [clients, cashFlow, isDataLoaded, t]);
+
+  const totalRevenue = React.useMemo(() => {
+    return allEntries.filter(e => e.type === 'income').reduce((sum, entry) => sum + entry.amount, 0);
+  }, [allEntries]);
+
+  const totalExpenses = React.useMemo(() => {
+    return allEntries.filter(e => e.type === 'expense').reduce((sum, entry) => sum + entry.amount, 0);
+  }, [allEntries]);
+  
+  const netBalance = totalRevenue - totalExpenses;
+
+  const handleOpenModal = (type: 'income' | 'expense') => {
+    setModalType(type);
+    setIsModalOpen(true);
+  };
+  
+  const handleSaveEntry = (entry: Omit<CashFlowEntry, 'id' | 'date'>) => {
+    addCashFlowEntry(entry);
+    setIsModalOpen(false);
+  };
   
   const formatCurrency = (value: number) => {
     const locale = language === 'pt-BR' ? 'pt-BR' : 'en-US';
@@ -68,77 +91,113 @@ export default function FinancialPage() {
   };
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">{t('financial')}</h1>
-        <p className="mt-2 text-lg text-muted-foreground">
-          {t('cashFlowDescription')}
-        </p>
-      </div>
-      
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <>
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">{t('financial')}</h1>
+          <p className="mt-2 text-lg text-muted-foreground">
+            {t('cashFlowDescription')}
+          </p>
+        </div>
+
+        <div className="flex gap-4">
+            <Button size="lg" onClick={() => handleOpenModal('income')}>
+                <ArrowUp className="mr-2 h-5 w-5" />
+                {t('addIncome')}
+            </Button>
+            <Button size="lg" variant="destructive" onClick={() => handleOpenModal('expense')}>
+                <ArrowDown className="mr-2 h-5 w-5" />
+                {t('addExpense')}
+            </Button>
+        </div>
+        
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{t('totalRevenue')}</CardTitle>
+              <ArrowUp className="h-4 w-4 text-green-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-500">{formatCurrency(totalRevenue)}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{t('totalExpense')}</CardTitle>
+              <ArrowDown className="h-4 w-4 text-red-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-red-500">{formatCurrency(totalExpenses)}</div>
+            </CardContent>
+          </Card>
+           <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{t('netBalance')}</CardTitle>
+              <Landmark className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{formatCurrency(netBalance)}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{t('transactions')}</CardTitle>
+              <ArrowDownUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{allEntries.length}</div>
+            </CardContent>
+          </Card>
+        </div>
+
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('totalRevenue', { 'pt-BR': 'Receita Total' })}</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          <CardHeader>
+            <CardTitle>{t('cashFlow')}</CardTitle>
+            <CardDescription>{t('cashFlowEntriesDescription')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(totalRevenue)}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('transactions', { 'pt-BR': 'Transações' })}</CardTitle>
-            <ArrowDownUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{cashFlowEntries.length}</div>
+            <div className="rounded-xl border shadow-sm">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t('date')}</TableHead>
+                    <TableHead>{t('description')}</TableHead>
+                    <TableHead className="text-right">{t('value')}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {allEntries.length > 0 ? (
+                    allEntries.map((entry) => (
+                      <TableRow key={entry.id}>
+                        <TableCell>{format(parseISO(entry.date), 'dd/MM/yyyy')}</TableCell>
+                        <TableCell className="font-medium">{entry.description}</TableCell>
+                        <TableCell className="text-right">
+                          <Badge variant={entry.type === 'income' ? 'success' : 'destructive'}>
+                            {entry.type === 'expense' && '- '}{formatCurrency(entry.amount)}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={3} className="h-24 text-center">
+                        {t('noTransactionsFound')}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('cashFlow')}</CardTitle>
-          <CardDescription>{t('cashFlowEntriesDescription', { 'pt-BR': 'Visualize todas as entradas e saídas de caixa.' })}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-xl border shadow-sm">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t('date')}</TableHead>
-                  <TableHead>{t('client')}</TableHead>
-                  <TableHead>{t('description')}</TableHead>
-                  <TableHead className="text-right">{t('value')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {cashFlowEntries.length > 0 ? (
-                  cashFlowEntries.map((entry, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{format(parseISO(entry.date), 'dd/MM/yyyy')}</TableCell>
-                      <TableCell className="font-medium">{entry.client.name}</TableCell>
-                      <TableCell>{entry.description}</TableCell>
-                      <TableCell className="text-right">
-                        <Badge variant={entry.type === 'income' ? 'success' : 'destructive'}>
-                          {formatCurrency(entry.amount)}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={4} className="h-24 text-center">
-                      {t('noTransactionsFound', { 'pt-BR': 'Nenhuma transação encontrada.' })}
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+      <EntryModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSaveEntry}
+        type={modalType}
+      />
+    </>
   );
 }

@@ -120,3 +120,13 @@ export type Note = {
   content: string;
   color: string;
 };
+
+export type CashFlowEntry = {
+  id: string;
+  date: string;
+  description: string;
+  amount: number;
+  type: 'income' | 'expense';
+  clientId?: string; // Opcional, para vincular a um cliente
+  clientName?: string; // Opcional, para exibição
+};
