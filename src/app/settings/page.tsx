@@ -32,8 +32,7 @@ export default function SettingsPage() {
   const [mounted, setMounted] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [isReportDisplayModalOpen, setIsReportDisplayModalOpen] = useState(false);
-  const [generatedReportData, setGeneratedReportData] = useState<GeneratedReportData[]>([]);
-
+  
   const { newSubscriptionsPeriod, setNewSubscriptionsPeriod, expirationWarningDays, setExpirationWarningDays } = useDashboardSettings();
 
   useEffect(() => {
@@ -143,8 +142,11 @@ export default function SettingsPage() {
       
       generatedReports.push({ title: t(reportMeta.label as any), headers, rows });
     });
+    
+    if (typeof window !== 'undefined') {
+        sessionStorage.setItem('generatedReportData', JSON.stringify(generatedReports));
+    }
 
-    setGeneratedReportData(generatedReports);
     setIsReportDisplayModalOpen(true);
   };
 
@@ -386,7 +388,6 @@ export default function SettingsPage() {
     <ReportDisplayModal
         isOpen={isReportDisplayModalOpen}
         onClose={() => setIsReportDisplayModalOpen(false)}
-        reportData={generatedReportData}
     />
     </>
   );

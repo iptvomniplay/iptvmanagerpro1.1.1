@@ -1,3 +1,4 @@
+
 {
     "home": "Início",
     "clients": "Clientes",
@@ -447,5 +448,8 @@
     "print": "Imprimir",
     "close": "Fechar",
     "noDataForReport": "Nenhum dado disponível para este relatório.",
-    "loadingReport": "Carregando relatório"
+    "loadingReport": "Carregando relatório",
+    "dataVerification": "Verificação de Dados",
+    "dataVerificationDescription": "Clique no botão abaixo para ver os dados brutos que estão sendo usados para gerar o relatório, conforme estão salvos na sessão do navegador.",
+    "checkSavedData": "Verificar Dados Salvos"
 }

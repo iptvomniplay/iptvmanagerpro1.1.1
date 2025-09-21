@@ -1,3 +1,4 @@
+
 {
     "home": "Home",
     "clients": "Clients",
@@ -447,5 +448,8 @@
     "print": "Print",
     "close": "Close",
     "noDataForReport": "No data available for this report.",
-    "loadingReport": "Loading report"
+    "loadingReport": "Loading report",
+    "dataVerification": "Data Verification",
+    "dataVerificationDescription": "Click the button below to see the raw data being used to generate the report, as it is saved in the browser session.",
+    "checkSavedData": "Check Saved Data"
 }
