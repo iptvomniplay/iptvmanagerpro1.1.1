@@ -9,6 +9,7 @@ import { add, format, isFuture, parseISO } from 'date-fns';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Button } from '@/components/ui/button';
+import { useReactToPrint } from 'react-to-print';
 
 type GeneratedReportData = {
   title: string;
@@ -16,12 +17,11 @@ type GeneratedReportData = {
   rows: string[][];
 };
 
-const ReportContent = () => {
+const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
     const { t } = useLanguage();
     const { clients, servers } = useData();
     const [reports, setReports] = React.useState<GeneratedReportData[]>([]);
     const [isLoading, setIsLoading] = React.useState(true);
-    const contentRef = React.useRef<HTMLDivElement>(null);
     
     React.useEffect(() => {
         const storedConfigsRaw = sessionStorage.getItem('reportConfigs');
@@ -36,10 +36,10 @@ const ReportContent = () => {
 
             Object.entries(selectedConfigs).forEach(([key, config]) => {
                 const reportKey = key as ReportKey;
-                if (!config) return;
+                if (!config || !config.fields) return;
 
                 const reportMeta = reportConfig[reportKey];
-                const selectedFields = Object.keys(config.fields).filter(fieldKey => config.fields[fieldKey as FieldKey<typeof reportKey>]) as FieldKey<typeof reportKey>[];
+                const selectedFields = Object.keys(config.fields).filter(fieldKey => (config.fields as any)[fieldKey]) as FieldKey<typeof reportKey>[];
 
                 if (selectedFields.length === 0) return;
 
@@ -128,28 +128,12 @@ const ReportContent = () => {
         }
     }, [clients, servers, t]);
     
-    React.useEffect(() => {
-        if (!isLoading) {
-            setTimeout(() => {
-                window.print();
-            }, 500); 
-        }
-    }, [isLoading]);
-
-
     if (isLoading) {
         return <div className="p-10 text-center">{t('loadingReport')}...</div>;
     }
 
     return (
-        <div ref={contentRef} className="p-8 report-container">
-            <div className="report-header hidden-on-print mb-8 flex justify-between items-center">
-                <h1 className="text-2xl font-bold">{t('generatedReport')}</h1>
-                <div className="flex gap-2">
-                    <Button variant="outline" onClick={() => window.close()}>{t('close')}</Button>
-                    <Button onClick={() => window.print()}>{t('print')}</Button>
-                </div>
-            </div>
+        <div ref={ref} className="p-8 report-container">
              {reports.length > 0 ? (
                 <div className="space-y-8 report-content">
                     {reports.map((report, index) => (
@@ -189,33 +173,41 @@ const ReportContent = () => {
             )}
         </div>
     );
-};
+});
+ReportContent.displayName = 'ReportContent';
+
 
 export default function ReportPage() {
+    const { t } = useLanguage();
+    const componentRef = React.useRef<HTMLDivElement>(null);
+    const [isClient, setIsClient] = React.useState(false);
+
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+        onAfterPrint: () => window.close(),
+    });
+
+    React.useEffect(() => {
+        setIsClient(true);
+        setTimeout(() => {
+            handlePrint();
+        }, 500);
+    }, [handlePrint]);
+
+    if (!isClient) {
+        return null; // Or a loading spinner
+    }
+
     return (
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <style jsx global>{`
-                @media print {
-                    body {
-                        -webkit-print-color-adjust: exact;
-                        print-color-adjust: exact;
-                    }
-                    .hidden-on-print {
-                        display: none !important;
-                    }
-                    .report-container {
-                        padding: 0 !important;
-                        margin: 0 !important;
-                    }
-                    .page-break {
-                        page-break-after: always;
-                    }
-                     .page-break:last-child {
-                        page-break-after: auto;
-                    }
-                }
-            `}</style>
-            <ReportContent />
+             <div className="report-header p-8 flex justify-between items-center">
+                <h1 className="text-2xl font-bold">{t('generatedReport')}</h1>
+                <div className="flex gap-2">
+                    <Button variant="outline" onClick={() => window.close()}>{t('close')}</Button>
+                    <Button onClick={handlePrint}>{t('print')}</Button>
+                </div>
+            </div>
+            <ReportContent ref={componentRef} />
         </ThemeProvider>
     );
 }
