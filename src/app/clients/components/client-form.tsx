@@ -379,9 +379,9 @@ export function ClientForm({ client, onCancel, onSubmitted }: ClientFormProps) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('registrationAddedSuccess')}</AlertDialogTitle>
+            <AlertDialogTitle>{t('success')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t(client ? 'editClientSuccess' : 'newClientSuccess')}
+              {t(client ? 'editClientSuccess' : 'newClientRegisteredSuccess')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogAction onClick={handleSuccessModalClose}>
