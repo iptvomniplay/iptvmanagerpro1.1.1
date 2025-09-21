@@ -56,7 +56,14 @@ export const reportConfig = {
       paymentMethod: 'paymentMethod',
     },
   },
+  serverUsage: {
+    label: 'report_serverUsage',
+    fields: {
+      usageStats: 'report_usageStats',
+    },
+  },
 } as const;
+
 
 export type ReportKey = keyof typeof reportConfig;
 export type FieldKey<T extends ReportKey> = keyof (typeof reportConfig)[T]['fields'];
@@ -77,7 +84,7 @@ interface ReportModalProps {
 export function ReportModal({ isOpen, onClose, onGenerate }: ReportModalProps) {
   const { t } = useLanguage();
   const [selectedReports, setSelectedReports] = React.useState<SelectedReportsState>({});
-  const [openCollapsibles, setOpenCollapsibles] = React.useState<Record<ReportKey, boolean>>({});
+  const [openCollapsibles, setOpenCollapsibles] = React.useState<Record<string, boolean>>({});
 
   const handleSelectAll = (reportKey: ReportKey, checked: boolean) => {
     const allFields = Object.keys(reportConfig[reportKey].fields).reduce((acc, field) => {
