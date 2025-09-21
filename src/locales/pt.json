@@ -417,5 +417,7 @@
     "inTheNextXDays": "nos próximos {days} dias",
     "expirationWarning": "Aviso de Expiração",
     "7days": "7 dias",
-    "15days": "15 dias"
+    "15days": "15 dias",
+    "activeTests": "Testes Ativos",
+    "expiredTests": "Testes Expirados"
 }

@@ -417,5 +417,7 @@
     "inTheNextXDays": "in the next {days} days",
     "expirationWarning": "Expiration Warning",
     "7days": "7 days",
-    "15days": "15 days"
+    "15days": "15 days",
+    "activeTests": "Active Tests",
+    "expiredTests": "Expired Tests"
 }

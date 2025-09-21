@@ -9,6 +9,7 @@ import {
   PlusCircle,
   Activity,
   AlertTriangle,
+  TestTube,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,7 +23,7 @@ import {
 import { useLanguage } from '@/hooks/use-language';
 import { useData } from '@/hooks/use-data';
 import { useDashboardSettings } from '@/hooks/use-dashboard-settings';
-import { subDays, startOfMonth, startOfYear, isWithinInterval, add, differenceInDays } from 'date-fns';
+import { subDays, startOfMonth, startOfYear, isWithinInterval, add, differenceInDays, isFuture, parseISO } from 'date-fns';
 import type { PlanPeriod } from '@/lib/types';
 
 export default function Dashboard() {
@@ -64,7 +65,6 @@ export default function Dashboard() {
   
   const getExpiringSubscriptionsCount = () => {
     const now = new Date();
-    const warningDate = add(now, { days: expirationWarningDays });
 
     return clients.filter(client => {
       if (client.status !== 'Active' || !client.activationDate || !client.plans || client.plans.length === 0) {
@@ -87,13 +87,35 @@ export default function Dashboard() {
     }).length;
   };
   
+  const testCounts = React.useMemo(() => {
+    let active = 0;
+    let expired = 0;
+
+    clients.forEach(client => {
+      if (client.tests && client.tests.length > 0) {
+        client.tests.forEach(test => {
+          const expirationDate = add(parseISO(test.creationDate), { [test.durationUnit]: test.durationValue });
+          const isTestActive = isFuture(expirationDate) && client.status !== 'Inactive';
+
+          if (isTestActive) {
+            active++;
+          } else {
+            expired++;
+          }
+        });
+      }
+    });
+
+    return { active, expired };
+  }, [clients]);
+
   const newSubscriptionsCount = getNewSubscriptionsCount();
   const expiringSubscriptionsCount = getExpiringSubscriptionsCount();
 
 
   return (
     <div className="flex flex-1 flex-col gap-6 md:gap-10">
-      <div className="grid gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-5">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-base font-medium">{t('totalClients')}</CardTitle>
@@ -145,6 +167,18 @@ export default function Dashboard() {
             </p>
           </CardContent>
         </Card>
+         <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-base font-medium">{t('activeTests')}</CardTitle>
+            <TestTube className="h-5 w-5 text-green-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">{testCounts.active}</div>
+            <p className="text-sm text-muted-foreground">
+              {t('expiredTests')}: {testCounts.expired}
+            </p>
+          </CardContent>
+        </Card>
       </div>
       <div className="grid gap-6 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
         <div className="grid auto-rows-fr gap-6">
@@ -163,13 +197,6 @@ export default function Dashboard() {
                 {t('configureServersMessage')}
               </CardDescription>
             </CardHeader>
-            <CardFooter>
-              <Button asChild size="lg">
-                <Link href="/servers">
-                  {t('goToServers')} <ArrowRight />
-                </Link>
-              </Button>
-            </CardFooter>
           </Card>
         </div>
 
