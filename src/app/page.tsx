@@ -212,7 +212,7 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
-      <div className="grid gap-6 md:gap-8 lg:grid-cols-2">
+      <div className="grid gap-6 md:gap-8 lg:grid-cols-1">
         <Card>
           <CardHeader className="pb-4">
             <CardTitle>{t('welcome')}</CardTitle>
@@ -225,49 +225,6 @@ export default function Dashboard() {
               <Link href="/clients">{t('manageClients')}</Link>
             </Button>
           </CardFooter>
-        </Card>
-        <Card className="overflow-hidden">
-          <CardHeader className="flex flex-row items-start bg-muted/50 p-6">
-            <div className="grid gap-1">
-              <CardTitle className="group flex items-center gap-2 text-xl">
-                {t('quickManagement')}
-              </CardTitle>
-              <CardDescription>
-                {t('quickManagementMessage')}
-              </CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent className="grid gap-6 p-6 sm:grid-cols-2">
-             <Card className="group flex flex-col justify-between hover:bg-muted/50 transition-colors">
-                <CardHeader>
-                  <Users className="h-10 w-10 text-primary mb-4" />
-                  <CardTitle>{t('clients')}</CardTitle>
-                  <CardDescription>{t('viewAndManageClients')}</CardDescription>
-                </CardHeader>
-                <CardFooter>
-                  <Button asChild className="mt-auto">
-                    <Link href="/clients">
-                      {t('goToClients')} <ArrowRight />
-                    </Link>
-                  </Button>
-                </CardFooter>
-              </Card>
-
-              <Card className="group flex flex-col justify-between hover:bg-muted/50 transition-colors">
-                <CardHeader>
-                  <Server className="h-10 w-10 text-primary mb-4" />
-                  <CardTitle>{t('servers')}</CardTitle>
-                  <CardDescription>{t('monitorServerStatus')}</CardDescription>
-                </CardHeader>
-                <CardFooter>
-                  <Button asChild className="mt-auto">
-                    <Link href="/servers">
-                      {t('goToServers')} <ArrowRight />
-                    </Link>
-                  </Button>
-                </CardFooter>
-              </Card>
-          </CardContent>
         </Card>
       </div>
     </div>
