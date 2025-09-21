@@ -334,11 +334,13 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange, onSelectCli
           </CardHeader>
           <CardContent className="space-y-4">
             {selectedClient && (
-                <div className="flex items-center gap-4 p-2 rounded-lg bg-muted border border-dashed animate-in fade-in-50">
-                    <UserCheck className="h-6 w-6 text-primary"/>
-                    <div className="flex flex-col">
-                      <span className="text-sm text-muted-foreground">{t('client')}</span>
-                      <p className="font-bold text-lg">{selectedClient.name}</p>
+                <div className="flex items-center justify-between p-2 rounded-lg bg-muted border border-dashed animate-in fade-in-50 w-fit">
+                    <div className="flex items-center gap-3">
+                        <UserCheck className="h-6 w-6 text-primary"/>
+                        <div className="flex flex-col">
+                          <span className="text-sm text-muted-foreground">{t('client')}</span>
+                          <p className="font-bold text-lg">{selectedClient.name}</p>
+                        </div>
                     </div>
                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => onSelectClient(null)}>
                         <X className="h-5 w-5"/>
