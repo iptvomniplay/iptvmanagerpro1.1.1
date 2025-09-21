@@ -258,12 +258,14 @@ export function ReportModal({ isOpen, onClose, onGenerate, initialClientContext 
           </div>
 
           <div className="space-y-6">
-            {Object.entries(reportGroups).map(([category, reports]) => (
+            {Object.entries(reportGroups).map(([category, reports]) => {
+              if (reports.length === 0) return null;
+              return (
               <Collapsible key={category} asChild defaultOpen>
                 <div>
                   <CollapsibleTrigger asChild>
                     <h3 className="text-xl font-semibold flex items-center gap-2 cursor-pointer mb-4">
-                      {t(`${category}Reports` as any)}
+                      {category === 'client' ? t('clientReports') : t('statisticsReports')}
                        <ChevronDown className="h-5 w-5 transition-transform data-[state=open]:rotate-0 data-[state=closed]:-rotate-90" />
                     </h3>
                   </CollapsibleTrigger>
@@ -331,7 +333,7 @@ export function ReportModal({ isOpen, onClose, onGenerate, initialClientContext 
                   </CollapsibleContent>
                 </div>
               </Collapsible>
-            ))}
+            )})}
           </div>
         </div>
         <DialogFooter>
