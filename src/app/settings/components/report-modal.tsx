@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -22,7 +23,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 export const reportConfig = {
   clientList: {
-    label: 'report_clientList',
+    label: 'geralClientes',
     type: 'fields',
     category: 'client',
     icon: UserCheck,
@@ -36,7 +37,7 @@ export const reportConfig = {
     },
   },
   expiredSubscriptions: {
-    label: 'report_expiredSubscriptions',
+    label: 'assinaturasExpiradas',
     type: 'fields',
     category: 'client',
     icon: UserX,
@@ -48,7 +49,7 @@ export const reportConfig = {
     },
   },
   activeTests: {
-    label: 'report_activeTests',
+    label: 'testesAtivosExpirados',
     type: 'fields',
     category: 'client',
     icon: TestTube,
@@ -266,7 +267,7 @@ export function ReportModal({ isOpen, onClose, onGenerate, initialClientContext 
             {Object.entries(reportGroups).map(([category, reports]) => {
               if (reports.length === 0) return null;
               return (
-              <Collapsible key={category} asChild>
+              <Collapsible key={category} asChild defaultOpen={false}>
                 <div>
                   <CollapsibleTrigger asChild>
                     <h3 className="text-xl font-semibold flex items-center gap-2 cursor-pointer mb-4">
