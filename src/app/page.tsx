@@ -134,13 +134,6 @@ export default function Dashboard() {
                 {t('welcomeMessage')}
               </CardDescription>
             </CardHeader>
-            <CardFooter>
-              <Button asChild size="lg">
-                <Link href="/clients/new">
-                  {t('manageClients')} <PlusCircle />
-                </Link>
-              </Button>
-            </CardFooter>
           </Card>
           <Card>
             <CardHeader className="pb-4">
