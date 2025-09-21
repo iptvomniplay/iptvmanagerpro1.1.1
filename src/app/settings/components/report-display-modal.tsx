@@ -13,7 +13,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/use-language';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Textarea } from '@/components/ui/textarea';
 import { Tv2 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -32,7 +31,6 @@ export function ReportDisplayModal({ isOpen, onClose }: ReportDisplayModalProps)
   const { t } = useLanguage();
   const reportContentRef = React.useRef<HTMLDivElement>(null);
   const [reportData, setReportData] = React.useState<GeneratedReportData[]>([]);
-  const [sessionData, setSessionData] = React.useState('');
   const [generationDate, setGenerationDate] = React.useState<Date | null>(null);
 
   React.useEffect(() => {
@@ -105,12 +103,6 @@ export function ReportDisplayModal({ isOpen, onClose }: ReportDisplayModalProps)
     }
   };
 
-
-  const checkSessionStorage = () => {
-    const data = sessionStorage.getItem('generatedReportData');
-    setSessionData(data ? JSON.stringify(JSON.parse(data), null, 2) : 'No data found in sessionStorage.');
-  };
-
   const hasData = reportData.length > 0 && reportData.some(r => r.rows.length > 0);
 
   return (
@@ -121,18 +113,6 @@ export function ReportDisplayModal({ isOpen, onClose }: ReportDisplayModalProps)
           <DialogDescription>{t('generatedReportDescription')}</DialogDescription>
         </DialogHeader>
         <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-muted/30 rounded-md">
-           <div className="no-print border-b pb-4">
-            <h3 className="text-lg font-semibold mb-2">{t('dataVerification')}</h3>
-            <p className="text-sm text-muted-foreground mb-2">{t('dataVerificationDescription')}</p>
-            <Button onClick={checkSessionStorage} variant="outline">{t('checkSavedData')}</Button>
-            {sessionData && (
-              <Textarea
-                readOnly
-                value={sessionData}
-                className="mt-2 h-32 bg-muted/50 font-mono text-xs"
-              />
-            )}
-          </div>
           <div ref={reportContentRef} className="report-content-printable">
             {hasData ? (
                 <div className="space-y-6 printable-page">
@@ -210,4 +190,3 @@ export function ReportDisplayModal({ isOpen, onClose }: ReportDisplayModalProps)
     </Dialog>
   );
 }
-
