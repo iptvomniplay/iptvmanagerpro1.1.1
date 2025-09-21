@@ -31,7 +31,7 @@ interface ReportDisplayModalProps {
 }
 
 const ReportContent = React.forwardRef<HTMLDivElement, { reports: GeneratedReportData[], t: (key: string) => string }>(({ reports, t }, ref) => (
-  <div ref={ref} className="p-6 space-y-8">
+  <div ref={ref} className="p-6 space-y-8 report-content">
     {reports.map((report, index) => (
       <div key={index} style={{ pageBreakInside: 'avoid', pageBreakAfter: index < reports.length - 1 ? 'always' : 'auto' }}>
         <h2 className="text-xl font-bold mb-4">{report.title}</h2>
@@ -102,4 +102,3 @@ export function ReportDisplayModal({ isOpen, onClose, reports }: ReportDisplayMo
     </Dialog>
   );
 }
-
