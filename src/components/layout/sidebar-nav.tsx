@@ -23,6 +23,7 @@ export default function SidebarNav() {
     { href: '/clients', label: t('clients'), icon: Users },
     { href: '/servers', label: t('servers'), icon: Server },
     { href: '/stock', label: t('stock'), icon: Package },
+    { href: '/utilities', label: t('utilities'), icon: Wrench },
   ];
   
   const bottomLinks = [

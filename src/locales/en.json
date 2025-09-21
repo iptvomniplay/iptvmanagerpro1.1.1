@@ -485,5 +485,6 @@
     "adjustmentQuantity": "Quantity to Adjust (+/-)",
     "adjustmentQuantityDescription": "Use negative numbers to remove credits.",
     "adjustmentDescriptionPlaceholder": "E.g.: Initial balance correction.",
-    "registrationAddedSuccess": "Registration Added Successfully"
+    "registrationAddedSuccess": "Registration Added Successfully",
+    "utilities": "Utilities"
 }

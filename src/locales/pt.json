@@ -485,5 +485,6 @@
     "adjustmentQuantity": "Quantidade para Ajustar (+/-)",
     "adjustmentQuantityDescription": "Use números negativos para remover créditos.",
     "adjustmentDescriptionPlaceholder": "Ex: Correção de saldo inicial.",
-    "registrationAddedSuccess": "Cadastro Adicionado com Sucesso"
+    "registrationAddedSuccess": "Cadastro Adicionado com Sucesso",
+    "utilities": "Utilitários"
 }
