@@ -16,14 +16,14 @@ type GeneratedReportData = {
   rows: (string | undefined)[][];
 };
 
-const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
+const ReportContent = () => {
     const { t } = useLanguage();
-    const { clients, servers } = useData();
+    const { clients, servers, isDataLoaded } = useData();
     const [reports, setReports] = React.useState<GeneratedReportData[]>([]);
     const [isLoading, setIsLoading] = React.useState(true);
     
     React.useEffect(() => {
-        if (!clients.length && !servers.length) return;
+        if (!isDataLoaded) return;
 
         const storedConfigsRaw = sessionStorage.getItem('reportConfigs');
         if (!storedConfigsRaw) {
@@ -125,7 +125,7 @@ const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
         } finally {
             setIsLoading(false);
         }
-    }, [clients, servers, t]);
+    }, [isDataLoaded, clients, servers, t]);
     
     React.useEffect(() => {
         if (!isLoading) {
@@ -141,7 +141,7 @@ const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
     }
 
     return (
-        <div ref={ref} className="p-8 report-container">
+        <div className="p-8 report-container">
              {reports.length > 0 && reports.some(r => r.rows.length > 0) ? (
                 <div className="space-y-8 report-content">
                     {reports.map((report, index) => (
@@ -179,7 +179,7 @@ const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
             )}
         </div>
     );
-});
+};
 ReportContent.displayName = 'ReportContent';
 
 
@@ -246,4 +246,3 @@ export default function ReportPage() {
         </LanguageProvider>
     );
 }
-

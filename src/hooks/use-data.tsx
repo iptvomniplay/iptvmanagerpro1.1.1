@@ -9,6 +9,7 @@ import { useToast } from './use-toast';
 interface DataContextType {
   clients: Client[];
   servers: Server[];
+  isDataLoaded: boolean;
   addClient: (clientData: Omit<Client, 'registeredDate' | 'plans' | '_tempId'>) => void;
   updateClient: (clientData: Client) => void;
   deleteClient: (clientId: string) => void;
@@ -24,11 +25,11 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [clients, setClients] = useState<Client[]>([]);
   const [servers, setServers] = useState<Server[]>([]);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
   const { toast } = useToast();
-  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || isLoaded) return;
+    if (typeof window === 'undefined' || isDataLoaded) return;
 
     // Load clients
     try {
@@ -58,8 +59,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setServers(initialServers);
     }
     
-    setIsLoaded(true);
-  }, [isLoaded]);
+    setIsDataLoaded(true);
+  }, [isDataLoaded]);
 
   const saveDataToStorage = useCallback(<T,>(key: string, data: T[]) => {
     if (typeof window !== 'undefined') {
@@ -171,6 +172,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const value = {
     clients,
     servers,
+    isDataLoaded,
     addClient,
     updateClient,
     deleteClient,
