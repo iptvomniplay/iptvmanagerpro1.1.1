@@ -19,7 +19,6 @@ import { Separator } from '@/components/ui/separator';
 import type { Client } from '@/lib/types';
 import { ClientSearch } from '@/app/subscription/components/client-search';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
 
 export const reportConfig = {
   clientList: {
@@ -199,10 +198,16 @@ export function ReportModal({ isOpen, onClose, onGenerate, initialClientContext 
   
   const isAnyReportSelected = Object.values(selectedReports).some(report => {
     if (!report) return false;
+
     if (report.all) return true;
-    if ('fields' in report && report.fields) {
+    
+    const reportKey = Object.keys(selectedReports).find(key => selectedReports[key as ReportKey] === report) as ReportKey;
+    const config = reportConfig[reportKey];
+
+    if (config.type === 'fields' && 'fields' in report && report.fields) {
         return Object.values(report.fields).some(field => field);
     }
+    
     return false;
   });
 
@@ -261,7 +266,7 @@ export function ReportModal({ isOpen, onClose, onGenerate, initialClientContext 
             {Object.entries(reportGroups).map(([category, reports]) => {
               if (reports.length === 0) return null;
               return (
-              <Collapsible key={category} asChild defaultOpen>
+              <Collapsible key={category} asChild>
                 <div>
                   <CollapsibleTrigger asChild>
                     <h3 className="text-xl font-semibold flex items-center gap-2 cursor-pointer mb-4">
