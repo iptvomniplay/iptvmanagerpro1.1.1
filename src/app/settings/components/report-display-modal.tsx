@@ -73,6 +73,7 @@ export function ReportDisplayModal({ isOpen, onClose }: ReportDisplayModalProps)
         printWindow.document.close();
         printWindow.focus();
         printWindow.print();
+        
       }
     }
   };
@@ -92,6 +93,18 @@ export function ReportDisplayModal({ isOpen, onClose }: ReportDisplayModalProps)
           <DialogDescription>{t('generatedReportDescription')}</DialogDescription>
         </DialogHeader>
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
+           <div className="no-print border-b pb-4">
+            <h3 className="text-lg font-semibold mb-2">{t('dataVerification')}</h3>
+            <p className="text-sm text-muted-foreground mb-2">{t('dataVerificationDescription')}</p>
+            <Button onClick={checkSessionStorage} variant="outline">{t('checkSavedData')}</Button>
+            {sessionData && (
+              <Textarea
+                readOnly
+                value={sessionData}
+                className="mt-2 h-48 bg-muted/50 font-mono text-xs"
+              />
+            )}
+          </div>
           <div ref={reportContentRef} className="report-content-printable">
             {hasData ? (
               <div className="space-y-8">
@@ -127,18 +140,6 @@ export function ReportDisplayModal({ isOpen, onClose }: ReportDisplayModalProps)
               <div className="text-center py-20">
                 <p className="text-lg text-muted-foreground">{t('noDataForReport')}</p>
               </div>
-            )}
-          </div>
-          <div className="no-print border-t pt-4">
-            <h3 className="text-lg font-semibold mb-2">{t('dataVerification')}</h3>
-            <p className="text-sm text-muted-foreground mb-2">{t('dataVerificationDescription')}</p>
-            <Button onClick={checkSessionStorage} variant="outline">{t('checkSavedData')}</Button>
-            {sessionData && (
-              <Textarea
-                readOnly
-                value={sessionData}
-                className="mt-2 h-48 bg-muted/50 font-mono text-xs"
-              />
             )}
           </div>
         </div>
