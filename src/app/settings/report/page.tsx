@@ -22,12 +22,15 @@ const ReportContent = () => {
     const [isLoading, setIsLoading] = React.useState(true);
     
     React.useEffect(() => {
-        if (!isDataLoaded) return;
+        if (!isDataLoaded) {
+            setIsLoading(true);
+            return;
+        }
 
-        setIsLoading(true);
         try {
             const storedConfigsRaw = sessionStorage.getItem('reportConfigs');
             if (!storedConfigsRaw) {
+                setReports([]);
                 setIsLoading(false);
                 return;
             }
@@ -121,18 +124,21 @@ const ReportContent = () => {
             setReports(generatedReports);
         } catch (error) {
             console.error("Failed to parse report configs:", error);
+            setReports([]);
         } finally {
             setIsLoading(false);
         }
     }, [isDataLoaded, clients, servers, t]);
-
+    
     if (isLoading) {
         return <div className="p-10 text-center">{t('loadingReport')}...</div>;
     }
 
+    const hasData = reports.length > 0 && reports.some(r => r.rows.length > 0);
+
     return (
-        <div className="p-8 report-container">
-             {reports.length > 0 && reports.some(r => r.rows.length > 0) ? (
+        <div className="report-container">
+             {hasData ? (
                 <div className="space-y-8 report-content">
                     {reports.map((report, index) => (
                         report.rows.length > 0 && (
@@ -180,7 +186,7 @@ export default function ReportPage() {
         <LanguageProvider>
             <DataProvider>
                 <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-                    <div className="print-header p-8 flex justify-between items-center">
+                    <div className="print-header p-8 flex justify-between items-center bg-background border-b sticky top-0 z-10">
                         <h1 className="text-2xl font-bold">{t('generatedReport')}</h1>
                         <div className="flex gap-2">
                             <Button variant="outline" onClick={() => window.close()}>{t('close')}</Button>
@@ -218,7 +224,7 @@ export default function ReportPage() {
                             margin: 2rem auto;
                             min-height: 297mm;
                             box-shadow: 0 0 0.5cm rgba(0,0,0,0.5);
-                            padding: 1cm;
+                            padding: 2cm;
                           }
                         }
                     `}</style>
