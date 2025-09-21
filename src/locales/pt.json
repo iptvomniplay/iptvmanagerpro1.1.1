@@ -446,7 +446,6 @@
     "generatedReportDescription": "Aqui estão os relatórios que você solicitou. Você pode imprimir esta visualização ou salvá-la como PDF.",
     "print": "Imprimir",
     "close": "Fechar",
-    "noDataForReport": "Nenhum dado disponível para este relatório."
+    "noDataForReport": "Nenhum dado disponível para este relatório.",
+    "loadingReport": "Carregando relatório"
 }
-
-    

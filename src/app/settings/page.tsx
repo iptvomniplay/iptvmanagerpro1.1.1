@@ -19,19 +19,17 @@ import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { useDashboardSettings, DashboardPeriod } from '@/hooks/use-dashboard-settings';
-import { ReportModal, SelectedReportsState, ReportKey, reportConfig } from './components/report-modal';
-import { ReportDisplayModal, GeneratedReportData } from './components/report-display-modal';
-import { useData } from '@/hooks/use-data';
-import { add, isFuture, parseISO, format } from 'date-fns';
+import { ReportModal, SelectedReportsState } from './components/report-modal';
+import { useRouter } from 'next/navigation';
+
 
 export default function SettingsPage() {
   const { language, setLanguage, t } = useLanguage();
   const { theme, setTheme } = useTheme();
-  const { clients, servers } = useData();
+  const router = useRouter();
+
   const [mounted, setMounted] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-  const [isReportDisplayOpen, setIsReportDisplayOpen] = useState(false);
-  const [generatedReportData, setGeneratedReportData] = useState<GeneratedReportData[]>([]);
 
   const { newSubscriptionsPeriod, setNewSubscriptionsPeriod, expirationWarningDays, setExpirationWarningDays } = useDashboardSettings();
 
@@ -56,87 +54,13 @@ export default function SettingsPage() {
   }
   
   const handleGenerateReport = (selectedConfigs: SelectedReportsState) => {
-    const reports: GeneratedReportData[] = [];
-
-    Object.entries(selectedConfigs).forEach(([key, config]) => {
-      const reportKey = key as ReportKey;
-      if (!config) return;
-      const reportMeta = reportConfig[reportKey];
-      const selectedFields = Object.keys(config.fields).filter(fieldKey => config.fields[fieldKey as keyof typeof config.fields]);
-
-      if (selectedFields.length === 0) return;
-
-      const headers = selectedFields.map(fieldKey => t(reportMeta.fields[fieldKey as keyof typeof reportMeta.fields]));
-      let rows: string[][] = [];
-
-      switch (reportKey) {
-        case 'clientList':
-          rows = clients.map(client =>
-            selectedFields.map(field => {
-              switch (field) {
-                case 'fullName': return client.name;
-                case 'clientId': return client.id || t('noId');
-                case 'status': return t(client.status.toLowerCase());
-                case 'registeredDate': return client.registeredDate ? format(parseISO(client.registeredDate), 'dd/MM/yyyy') : '';
-                case 'contact': return client.phones.map(p => p.number).join(', ');
-                default: return '';
-              }
-            })
-          );
-          break;
-        case 'expiredSubscriptions':
-            const expiredClients = clients.filter(c => c.status === 'Expired');
-            rows = expiredClients.map(client =>
-                selectedFields.map(field => {
-                    const lastPlan = client.plans && client.plans.length > 0 ? client.plans[client.plans.length - 1] : null;
-                    switch (field) {
-                        case 'fullName': return client.name;
-                        case 'lastPlan': return lastPlan?.plan.name || 'N/A';
-                        case 'expirationDate': return client.expirationDate ? format(parseISO(client.expirationDate), 'dd/MM/yyyy') : 'N/A';
-                        case 'contact': return client.phones.map(p => p.number).join(', ');
-                        default: return '';
-                    }
-                })
-            );
-            break;
-        case 'activeTests':
-            const allTests = clients.flatMap(client =>
-                (client.tests || []).map(test => ({ client, test }))
-            );
-            rows = allTests.map(({ client, test }) =>
-                selectedFields.map(field => {
-                    switch (field) {
-                        case 'clientName': return client.name;
-                        case 'testPackage': return test.package;
-                        case 'startTime': return format(parseISO(test.creationDate), 'dd/MM/yyyy HH:mm');
-                        case 'endTime':
-                            const expiration = add(parseISO(test.creationDate), { [test.durationUnit]: test.durationValue });
-                            return format(expiration, 'dd/MM/yyyy HH:mm');
-                        default: return '';
-                    }
-                })
-            );
-            break;
-        case 'creditBalance':
-            rows = servers.map(server =>
-                selectedFields.map(field => {
-                    switch (field) {
-                        case 'panelName': return server.name;
-                        case 'currentBalance': return String(server.creditStock || 0);
-                        case 'paymentMethod': return t(server.paymentType);
-                        default: return '';
-                    }
-                })
-            );
-            break;
-      }
-      
-      reports.push({ title: t(reportMeta.label), headers, rows });
-    });
-
-    setGeneratedReportData(reports);
+    // Store selected configs in session storage to be picked up by the report page
+    sessionStorage.setItem('reportConfigs', JSON.stringify(selectedConfigs));
     setIsReportModalOpen(false);
-    setIsReportDisplayOpen(true);
+    
+    // Open a new tab for the report.
+    // This is better for user experience as they don't lose their place on the settings page.
+    window.open('/settings/report', '_blank');
   };
 
 
@@ -374,13 +298,6 @@ export default function SettingsPage() {
         onClose={() => setIsReportModalOpen(false)}
         onGenerate={handleGenerateReport}
     />
-    <ReportDisplayModal
-        isOpen={isReportDisplayOpen}
-        onClose={() => setIsReportDisplayOpen(false)}
-        reports={generatedReportData}
-    />
     </>
   );
 }
-
-    

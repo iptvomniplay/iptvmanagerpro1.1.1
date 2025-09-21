@@ -446,7 +446,6 @@
     "generatedReportDescription": "Here are the reports you requested. You can print this view or save it as a PDF.",
     "print": "Print",
     "close": "Close",
-    "noDataForReport": "No data available for this report."
+    "noDataForReport": "No data available for this report.",
+    "loadingReport": "Loading report"
 }
-
-    
