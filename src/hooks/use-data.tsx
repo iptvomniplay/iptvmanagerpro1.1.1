@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
-import type { Client, Server, Test, SelectedPlan } from '@/lib/types';
+import type { Client, Server, Test, SelectedPlan, Transaction } from '@/lib/types';
 import { format } from 'date-fns';
 import { clients as initialClients, servers as initialServers } from '@/lib/data';
 
@@ -17,6 +17,7 @@ interface DataContextType {
   deleteServer: (serverId: string) => void;
   addTestToClient: (clientId: string, testData: Omit<Test, 'creationDate'>) => void;
   updateTestInClient: (clientId: string, testCreationDate: string, updatedTest: Partial<Test>) => void;
+  addTransactionToServer: (serverId: string, transaction: Omit<Transaction, 'id' | 'date'>) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -101,6 +102,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         id: `S${(Math.random() * 100).toFixed(0).padStart(2, '0')}`,
         status: 'Online',
         subServers: serverData.subServers || [],
+        transactions: [],
         };
         const updatedServers = [newServer, ...prevServers];
         saveDataToStorage('servers', updatedServers);
@@ -161,6 +163,26 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
   }, [saveDataToStorage]);
 
+  const addTransactionToServer = useCallback((serverId: string, transactionData: Omit<Transaction, 'id' | 'date'>) => {
+    setServers(prevServers => {
+      const updatedServers = prevServers.map(server => {
+        if (server.id === serverId) {
+          const newTransaction: Transaction = {
+            ...transactionData,
+            id: `trans_${Date.now()}_${Math.random()}`,
+            date: new Date().toISOString(),
+          };
+          const updatedTransactions = [...(server.transactions || []), newTransaction];
+          const newCreditStock = server.creditStock + transactionData.credits;
+          return { ...server, transactions: updatedTransactions, creditStock: newCreditStock };
+        }
+        return server;
+      });
+      saveDataToStorage('servers', updatedServers);
+      return updatedServers;
+    });
+  }, [saveDataToStorage]);
+
   const value = {
     clients,
     servers,
@@ -173,6 +195,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     deleteServer,
     addTestToClient,
     updateTestInClient,
+    addTransactionToServer,
   };
   
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

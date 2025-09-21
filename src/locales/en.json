@@ -144,6 +144,7 @@
     "creditBalance": "Credit Balance",
     "creditBalanceDescription": "View and manage the credit balance for each panel.",
     "buyCredits": "Buy Credits",
+    "addCreditsToServer": "Add credits to server {serverName}",
     "newServerSuccess": "New server has been registered and form is ready for the next one.",
     "editServerSuccess": "Server details have been updated.",
     "editClientSuccess": "Client details have been updated.",

@@ -84,6 +84,16 @@ export type SubServer = {
   status: 'Online' | 'Offline' | 'Suspended' | 'Maintenance';
 };
 
+export type Transaction = {
+  id: string;
+  type: 'purchase' | 'consumption' | 'adjustment' | 'refund';
+  date: string;
+  credits: number;
+  totalValue: number;
+  unitValue: number;
+  description?: string;
+};
+
 export type Server = {
   id: string;
   name: string;
@@ -100,4 +110,5 @@ export type Server = {
   creditStock: number;
   subServers?: SubServer[];
   observations?: string;
+  transactions?: Transaction[];
 };

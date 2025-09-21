@@ -144,6 +144,7 @@
     "creditBalance": "Saldo de Créditos",
     "creditBalanceDescription": "Visualize e gerencie o saldo de créditos de cada painel.",
     "buyCredits": "Comprar Créditos",
+    "addCreditsToServer": "Adicionar créditos ao servidor {serverName}",
     "newServerSuccess": "Novo servidor foi cadastrado e o formulário está pronto para o próximo.",
     "editServerSuccess": "Os detalhes do servidor foram atualizados.",
     "editClientSuccess": "Os dados do cliente foram atualizados com sucesso.",
