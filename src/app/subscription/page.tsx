@@ -32,6 +32,7 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { add, isFuture, parseISO } from 'date-fns';
+import { PersistenceTest } from './components/persistence-test';
 
 export default function SubscriptionPage() {
   const { t } = useLanguage();
@@ -255,6 +256,7 @@ export default function SubscriptionPage() {
               selectedClient={selectedClient}
               onUpdateApplications={(applications) => handleUpdateClient({ applications })}
             />
+            <PersistenceTest selectedClient={selectedClient} />
           </>
         ) : (
           <Card className="flex flex-col items-center justify-center text-center py-20 mt-6">
