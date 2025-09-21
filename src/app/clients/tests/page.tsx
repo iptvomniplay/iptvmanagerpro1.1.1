@@ -25,6 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { add, isFuture, parseISO } from 'date-fns';
 
 type ClientWithTest = {
   client: Client;
@@ -63,7 +64,7 @@ const TestList = ({ tests, onUpdateClient, onViewDetails, isExpiredList }: { tes
                 </TableHeader>
                 <TableBody>
                     {tests.map(({ client, test, panel }) => (
-                        <TableRow key={client._tempId} onClick={() => onViewDetails(client)} className="cursor-pointer">
+                        <TableRow key={`${client._tempId}-${test.creationDate}`} onClick={() => onViewDetails(client)} className="cursor-pointer">
                             <TableCell className="font-semibold text-primary">
                                 {client.name}
                             </TableCell>
@@ -78,7 +79,7 @@ const TestList = ({ tests, onUpdateClient, onViewDetails, isExpiredList }: { tes
                             </TableCell>
                             <TableCell>
                                 <div onClick={(e) => e.stopPropagation()}>
-                                    {client.status === 'Test' ? (
+                                    {isFuture(add(parseISO(test.creationDate), { [test.durationUnit]: test.durationValue })) && client.status !== 'Inactive' ? (
                                         <ClientExpiration
                                             key={`${client._tempId}-test-list`}
                                             clientId={client._tempId}
@@ -92,7 +93,7 @@ const TestList = ({ tests, onUpdateClient, onViewDetails, isExpiredList }: { tes
                                     )}
                                 </div>
                             </TableCell>
-                            {!isExpiredList && (
+                            {!isExpiredList && client.status === 'Test' && (
                                 <TableCell className="text-right">
                                     <Button variant="destructive" size="sm" onClick={(e) => { e.stopPropagation(); handleInterruptTest(client);}}>
                                         {t('interruptTest')}
@@ -118,44 +119,39 @@ export default function ViewTestsPage() {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = React.useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = React.useState(false);
 
+  const allClientTests = React.useMemo(() => {
+    return clients.flatMap(client => 
+        (client.tests || []).map(test => ({
+            client: client,
+            test: test,
+            panel: servers.find(s => s.id === test.panelId)
+        }))
+    ).sort((a, b) => new Date(b.test.creationDate).getTime() - new Date(a.test.creationDate).getTime());
+  }, [clients, servers]);
+
   const testsInProgress: ClientWithTest[] = React.useMemo(() => {
-    const tests = clients
-      .filter(client => client.status === 'Test' && client.tests && client.tests.length > 0)
-      .map(client => {
-        const latestTest = [...client.tests!].sort((a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime())[0];
-        const panelForTest = servers.find(s => s.id === latestTest.panelId);
-        return { client, test: latestTest, panel: panelForTest };
-      });
-      
-    if (!searchTerm) {
-      return tests;
-    }
+    const tests = allClientTests.filter(({ client, test }) => {
+      const expirationDate = add(parseISO(test.creationDate), { [test.durationUnit]: test.durationValue });
+      const isInterrupted = client.status === 'Inactive' && isFuture(expirationDate);
+      return isFuture(expirationDate) && !isInterrupted;
+    });
 
+    if (!searchTerm) return tests;
     const normalizedSearchTerm = normalizeString(searchTerm);
-    return tests.filter(({ client }) => 
-      normalizeString(client.name).includes(normalizedSearchTerm)
-    );
-
-  }, [clients, servers, searchTerm]);
+    return tests.filter(({ client }) => normalizeString(client.name).includes(normalizedSearchTerm));
+  }, [allClientTests, searchTerm]);
 
   const expiredTests: ClientWithTest[] = React.useMemo(() => {
-    const tests = clients
-      .filter(client => (client.status === 'Expired' || client.status === 'Inactive') && client.tests && client.tests.length > 0)
-      .map(client => {
-        const latestTest = [...client.tests!].sort((a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime())[0];
-        const panelForTest = servers.find(s => s.id === latestTest.panelId);
-        return { client, test: latestTest, panel: panelForTest };
-      });
-      
-    if (!searchTerm) {
-      return tests;
-    }
+    const tests = allClientTests.filter(({ client, test }) => {
+      const expirationDate = add(parseISO(test.creationDate), { [test.durationUnit]: test.durationValue });
+      const isInterrupted = client.status === 'Inactive' && isFuture(expirationDate);
+      return !isFuture(expirationDate) || isInterrupted;
+    });
 
+    if (!searchTerm) return tests;
     const normalizedSearchTerm = normalizeString(searchTerm);
-    return tests.filter(({ client }) => 
-      normalizeString(client.name).includes(normalizedSearchTerm)
-    );
-  }, [clients, servers, searchTerm]);
+    return tests.filter(({ client }) => normalizeString(client.name).includes(normalizedSearchTerm));
+  }, [allClientTests, searchTerm]);
   
   const handleViewDetails = (client: Client) => {
     setSelectedClient(client);
