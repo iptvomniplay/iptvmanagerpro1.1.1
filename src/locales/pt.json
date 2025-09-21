@@ -433,7 +433,7 @@
     "generateClientReport": "Relatório para: {clientName}",
     "selectReports": "Selecionar Relatórios",
     "selectReportsDescription": "Selecione os relatórios que deseja gerar.",
-    "geralClientes": "Geral de Clientes",
+    "geralDeClientes": "Geral de Clientes",
     "assinaturasExpiradas": "Assinaturas Expiradas",
     "testesAtivosExpirados": "Testes Ativos e Expirados",
     "report_creditBalance": "Saldo de Créditos por Painel",

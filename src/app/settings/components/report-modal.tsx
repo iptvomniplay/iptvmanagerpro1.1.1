@@ -23,7 +23,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 export const reportConfig = {
   clientList: {
-    label: 'geralClientes',
+    label: 'geralDeClientes',
     type: 'fields',
     category: 'client',
     icon: UserCheck,
@@ -33,6 +33,8 @@ export const reportConfig = {
       status: 'status',
       registeredDate: 'registeredDate',
       contact: 'phone',
+      panel: 'panel',
+      server: 'servers',
       numberOfTests: 'report_numberOfTests',
     },
   },
@@ -111,11 +113,14 @@ export function ReportModal({ isOpen, onClose, onGenerate, initialClientContext 
   const { t } = useLanguage();
   const [selectedReports, setSelectedReports] = React.useState<SelectedReportsState>({});
   const [clientContext, setClientContext] = React.useState<Client | null>(initialClientContext);
+  const [openSections, setOpenSections] = React.useState<Record<string, boolean>>({ client: true, statistic: true });
+  const [openCards, setOpenCards] = React.useState<Record<ReportKey, boolean>>({});
 
   React.useEffect(() => {
     if (isOpen) {
       setClientContext(initialClientContext);
       setSelectedReports({});
+      setOpenCards({});
     }
   }, [isOpen, initialClientContext]);
 
@@ -200,9 +205,11 @@ export function ReportModal({ isOpen, onClose, onGenerate, initialClientContext 
   const isAnyReportSelected = Object.values(selectedReports).some(report => {
     if (!report) return false;
 
-    if (report.all) return true;
+    if ('all' in report && report.all) return true;
     
     const reportKey = Object.keys(selectedReports).find(key => selectedReports[key as ReportKey] === report) as ReportKey;
+    if(!reportKey) return false;
+
     const config = reportConfig[reportKey];
 
     if (config.type === 'fields' && 'fields' in report && report.fields) {
@@ -267,7 +274,7 @@ export function ReportModal({ isOpen, onClose, onGenerate, initialClientContext 
             {Object.entries(reportGroups).map(([category, reports]) => {
               if (reports.length === 0) return null;
               return (
-              <Collapsible key={category} asChild defaultOpen={false}>
+              <Collapsible key={category} asChild open={openSections[category] ?? false} onOpenChange={(isOpen) => setOpenSections(prev => ({ ...prev, [category]: isOpen }))}>
                 <div>
                   <CollapsibleTrigger asChild>
                     <h3 className="text-xl font-semibold flex items-center gap-2 cursor-pointer mb-4">
@@ -279,7 +286,7 @@ export function ReportModal({ isOpen, onClose, onGenerate, initialClientContext 
                     {reports.map(([reportKey, config]) => {
                       const Icon = config.icon;
                       return(
-                      <Collapsible key={reportKey} asChild>
+                      <Collapsible key={reportKey} asChild open={openCards[reportKey] ?? false} onOpenChange={(isOpen) => setOpenCards(prev => ({ ...prev, [reportKey]: isOpen }))}>
                         <Card>
                           <CardHeader className="p-0">
                             <div className="flex items-center justify-between p-4">

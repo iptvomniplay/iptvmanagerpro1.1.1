@@ -192,18 +192,17 @@ export default function ClientsPageContent() {
       let headers: string[] = [];
       let rows: (string | undefined)[][] = [];
       
-      if (reportMeta.type === 'fields') {
-          if (!config.all) return;
+      if (reportMeta.type === 'fields' && config.all) {
           let selectedFields = (Object.keys((config as any).fields) as (keyof typeof reportMeta.fields)[]).filter(
             fieldKey => (config as any).fields?.[fieldKey]
           );
           
           if (selectedFields.length === 0) return;
-
+          
           if (clientContext) {
             selectedFields = selectedFields.filter(field => field !== 'fullName' && field !== 'clientName');
           }
-          
+
           headers = selectedFields.map(fieldKey => t(reportMeta.fields[fieldKey as keyof typeof reportMeta.fields]));
 
           switch (reportKey) {
@@ -216,6 +215,8 @@ export default function ClientsPageContent() {
                               case 'status': return t(client.status.toLowerCase());
                               case 'registeredDate': return client.registeredDate ? format(new Date(client.registeredDate), 'dd/MM/yyyy') : '';
                               case 'contact': return client.phones.map(p => p.number).join(', ');
+                              case 'panel': return client.plans?.map(p => p.panel.name).join(', ');
+                              case 'server': return client.plans?.map(p => p.server.name).join(', ');
                               case 'numberOfTests': return String(client.tests?.length || 0);
                               default: return '';
                           }
@@ -260,8 +261,7 @@ export default function ClientsPageContent() {
                   );
                   break;
           }
-      } else if (reportMeta.type === 'statistic') {
-          if (!config.all) return;
+      } else if (reportMeta.type === 'statistic' && config.all) {
           switch(reportKey) {
             case 'panelUsage': {
                   headers = [t('serverName'), t('report_usagePercentage')];
@@ -523,6 +523,7 @@ export default function ClientsPageContent() {
     </>
   );
 }
+
 
 
 
