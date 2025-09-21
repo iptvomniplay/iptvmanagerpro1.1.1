@@ -414,7 +414,6 @@
     "last_30_days": "Last 30 Days",
     "this_year": "This Year",
     "expiringSubscriptions": "Subscription Status",
-    "inTheNextXDays": "in the next {days} days",
     "expirationWarning": "Expiration Warning",
     "7days": "7 days",
     "15days": "15 days",
@@ -425,5 +424,17 @@
     "settingsSaved": "Settings saved successfully!",
     "expirationWarningDescription": "Define the number of days in advance to be warned about expiring subscriptions.",
     "expiringInNextXDays": "Expiring in {days} days",
-    "expiringInNextDay": "Expiring in {days} day"
+    "expiringInNextDay": "Expiring in {days} day",
+    "reports": "Reports",
+    "reportsDescription": "Export data and insights about your clients and servers.",
+    "generateReport": "Generate Report",
+    "selectReports": "Select Reports",
+    "selectReportsDescription": "Check the reports you want to generate.",
+    "report_clientList": "Full Client List",
+    "report_expiredSubscriptions": "Expired Subscriptions Report",
+    "report_activeTests": "Active and Expired Tests Report",
+    "report_creditBalance": "Credit Balance per Panel",
+    "generate": "Generate",
+    "reportsGeneratedSuccessTitle": "Reports Requested",
+    "reportsGeneratedSuccessDescription": "Your reports have been generated and will be available for download shortly."
 }

@@ -414,7 +414,6 @@
     "last_30_days": "Últimos 30 Dias",
     "this_year": "Este Ano",
     "expiringSubscriptions": "Status das Assinaturas",
-    "inTheNextXDays": "nos próximos {days} dias",
     "expirationWarning": "Aviso de Expiração",
     "7days": "7 dias",
     "15days": "15 dias",
@@ -425,5 +424,17 @@
     "settingsSaved": "Configurações salvas com sucesso!",
     "expirationWarningDescription": "Defina com quantos dias de antecedência deseja ser avisado sobre as assinaturas que estão expirando.",
     "expiringInNextXDays": "Expirando em {days} dias",
-    "expiringInNextDay": "Expirando em {days} dia"
+    "expiringInNextDay": "Expirando em {days} dia",
+    "reports": "Relatórios",
+    "reportsDescription": "Exporte dados e insights sobre seus clientes e servidores.",
+    "generateReport": "Gerar Relatório",
+    "selectReports": "Selecionar Relatórios",
+    "selectReportsDescription": "Marque os relatórios que deseja gerar.",
+    "report_clientList": "Lista Completa de Clientes",
+    "report_expiredSubscriptions": "Relatório de Assinaturas Expiradas",
+    "report_activeTests": "Relatório de Testes Ativos e Expirados",
+    "report_creditBalance": "Balanço de Créditos por Painel",
+    "generate": "Gerar",
+    "reportsGeneratedSuccessTitle": "Relatórios Solicitados",
+    "reportsGeneratedSuccessDescription": "Seus relatórios foram gerados e estarão disponíveis para download em breve."
 }

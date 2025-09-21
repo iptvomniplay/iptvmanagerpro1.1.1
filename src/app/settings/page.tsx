@@ -19,12 +19,14 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { useDashboardSettings, DashboardPeriod } from '@/hooks/use-dashboard-settings';
 import { useToast } from '@/hooks/use-toast';
+import { ReportModal } from './components/report-modal';
 
 export default function SettingsPage() {
   const { language, setLanguage, t } = useLanguage();
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const { newSubscriptionsPeriod, setNewSubscriptionsPeriod, expirationWarningDays, setExpirationWarningDays } = useDashboardSettings();
 
   useEffect(() => {
@@ -48,8 +50,6 @@ export default function SettingsPage() {
   }
   
   const handleSave = () => {
-    // A lógica de salvar já está no `onCheckedChange`, `onValueChange` e `onChange` dos componentes
-    // que chamam os setters do hook `useDashboardSettings`
     toast({
         title: t('success'),
         description: t('settingsSaved'),
@@ -68,6 +68,7 @@ export default function SettingsPage() {
   }
 
   return (
+    <>
     <div className="flex flex-col h-full">
       <div className="space-y-8 flex-1">
         <div>
@@ -77,7 +78,7 @@ export default function SettingsPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 xl:grid-cols-3">
           <Card>
             <CardHeader className="p-8">
               <CardTitle className="text-2xl">{t('appearance')}</CardTitle>
@@ -268,11 +269,26 @@ export default function SettingsPage() {
               </div>
             </CardContent>
           </Card>
+
+          <Card>
+            <CardHeader className="p-8">
+              <CardTitle className="text-2xl">{t('reports')}</CardTitle>
+              <CardDescription className="text-lg">
+                {t('reportsDescription')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-8 pt-0">
+              <Button onClick={() => setIsReportModalOpen(true)}>{t('generateReport')}</Button>
+            </CardContent>
+          </Card>
+
         </div>
       </div>
       <div className="mt-auto flex justify-end pt-8">
         <Button size="lg" onClick={handleSave}>{t('savePreferences')}</Button>
       </div>
     </div>
+    <ReportModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} />
+    </>
   );
 }
