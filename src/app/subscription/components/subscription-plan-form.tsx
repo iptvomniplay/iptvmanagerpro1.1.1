@@ -333,7 +333,7 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange, onSelectCli
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
-            {selectedClient && (
+             {selectedClient && (
                  <div className="flex items-center justify-between p-2 rounded-lg bg-muted border border-dashed animate-in fade-in-50 w-fit">
                     <div className="flex items-center gap-3">
                         <UserCheck className="h-6 w-6 text-primary"/>
