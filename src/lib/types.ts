@@ -129,4 +129,5 @@ export type CashFlowEntry = {
   type: 'income' | 'expense';
   clientId?: string; // Opcional, para vincular a um cliente
   clientName?: string; // Opcional, para exibição
+  sourceTransactionId?: string; // Vincula a uma transação de estoque
 };

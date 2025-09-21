@@ -11,7 +11,7 @@ interface DataContextType {
   cashFlow: CashFlowEntry[];
   isDataLoaded: boolean;
   addClient: (clientData: Omit<Client, 'registeredDate' | 'plans' | '_tempId'>) => void;
-  updateClient: (clientData: Client) => void;
+  updateClient: (clientData: Client, options?: { skipCashFlow?: boolean }) => void;
   deleteClient: (clientId: string) => void;
   addServer: (serverData: Omit<Server, 'id' | 'status'>) => void;
   updateServer: (serverData: Server) => void;
@@ -72,6 +72,19 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       localStorage.setItem(key, JSON.stringify(data));
     }
   }, []);
+  
+  const addCashFlowEntry = useCallback((entryData: Omit<CashFlowEntry, 'id' | 'date'>) => {
+    setCashFlow(prevCashFlow => {
+      const newEntry: CashFlowEntry = {
+        ...entryData,
+        id: `cf_${Date.now()}_${Math.random()}`,
+        date: new Date().toISOString(),
+      };
+      const updatedCashFlow = [newEntry, ...prevCashFlow];
+      saveDataToStorage('cashFlow', updatedCashFlow);
+      return updatedCashFlow;
+    });
+  }, [saveDataToStorage]);
 
   const addClient = useCallback((clientData: Omit<Client, 'registeredDate' | 'plans' | '_tempId'>) => {
     setClients(prevClients => {
@@ -89,7 +102,91 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
   }, [saveDataToStorage]);
 
-  const updateClient = useCallback((clientData: Client) => {
+  const updateClient = useCallback((clientData: Client, options?: { skipCashFlow?: boolean }) => {
+    // Check for new activation to add to cash flow
+    const previousClientState = clients.find(c => c._tempId === clientData._tempId);
+    if (!options?.skipCashFlow && clientData.status === 'Active' && previousClientState?.status !== 'Active' && clientData.plans) {
+        const totalAmount = clientData.plans.reduce((sum, plan) => sum + (plan.isCourtesy ? 0 : plan.planValue), 0);
+        if (totalAmount > 0) {
+            addCashFlowEntry({
+                type: 'income',
+                amount: totalAmount,
+                description: `Assinatura inicial - ${clientData.name}`,
+                clientId: clientData._tempId,
+                clientName: clientData.name,
+            });
+        }
+        
+        // Create consumption transaction
+        setServers(prevServers => {
+            const updatedServers = [...prevServers];
+            let cashFlowEntries: Omit<CashFlowEntry, 'id' | 'date'>[] = [];
+
+            clientData.plans?.forEach(plan => {
+                const serverIndex = updatedServers.findIndex(s => s.id === plan.panel.id);
+                if (serverIndex !== -1) {
+                    const server = updatedServers[serverIndex];
+                    const creditsToConsume = 1; 
+
+                    const purchaseTransactions = (server.transactions || [])
+                        .filter(t => t.type === 'purchase')
+                        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+                    let costOfConsumption = 0;
+                    if (purchaseTransactions.length > 0) {
+                        costOfConsumption = creditsToConsume * purchaseTransactions[0].unitValue;
+                    }
+
+                    const consumptionTransaction: Omit<Transaction, 'id' | 'date'> = {
+                        type: 'consumption',
+                        credits: -creditsToConsume,
+                        description: `Consumo para cliente ${clientData.name} (${plan.plan.name})`,
+                        totalValue: -costOfConsumption,
+                        unitValue: costOfConsumption,
+                    };
+                    
+                    const newTransaction: Transaction = {
+                        ...consumptionTransaction,
+                        id: `trans_${Date.now()}_${Math.random()}`,
+                        date: new Date().toISOString(),
+                    };
+
+                    const updatedTransactions = [newTransaction, ...(server.transactions || [])];
+                    const newCreditStock = updatedTransactions.reduce((acc, trans) => acc + trans.credits, 0);
+
+                    updatedServers[serverIndex] = { ...server, transactions: updatedTransactions, creditStock: newCreditStock };
+
+                     if (costOfConsumption > 0) {
+                        cashFlowEntries.push({
+                            type: 'expense',
+                            amount: costOfConsumption,
+                            description: `Custo do crédito: ${clientData.name} (${plan.plan.name})`,
+                            clientId: clientData._tempId,
+                            clientName: clientData.name,
+                            sourceTransactionId: newTransaction.id,
+                        });
+                    }
+                }
+            });
+            
+            if (cashFlowEntries.length > 0) {
+                setCashFlow(prevCashFlow => {
+                    const newEntries = cashFlowEntries.map(entry => ({
+                        ...entry,
+                        id: `cf_${Date.now()}_${Math.random()}`,
+                        date: new Date().toISOString(),
+                    }));
+                    const updatedCashFlow = [...newEntries, ...prevCashFlow];
+                    saveDataToStorage('cashFlow', updatedCashFlow);
+                    return updatedCashFlow;
+                });
+            }
+
+            saveDataToStorage('servers', updatedServers);
+            return updatedServers;
+        });
+    }
+    
     setClients(prevClients => {
        const updatedClients = prevClients.map(c => 
         (c._tempId === clientData._tempId) ? { ...c, ...clientData } : c
@@ -97,7 +194,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       saveDataToStorage('clients', updatedClients);
        return updatedClients;
     });
-  }, [saveDataToStorage]);
+  }, [clients, addCashFlowEntry, saveDataToStorage]);
 
   const deleteClient = useCallback((tempId: string) => {
     setClients(prevClients => {
@@ -194,19 +291,6 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
       saveDataToStorage('servers', updatedServers);
       return updatedServers;
-    });
-  }, [saveDataToStorage]);
-
-  const addCashFlowEntry = useCallback((entryData: Omit<CashFlowEntry, 'id' | 'date'>) => {
-    setCashFlow(prevCashFlow => {
-      const newEntry: CashFlowEntry = {
-        ...entryData,
-        id: `cf_${Date.now()}_${Math.random()}`,
-        date: new Date().toISOString(),
-      };
-      const updatedCashFlow = [newEntry, ...prevCashFlow];
-      saveDataToStorage('cashFlow', updatedCashFlow);
-      return updatedCashFlow;
     });
   }, [saveDataToStorage]);
 

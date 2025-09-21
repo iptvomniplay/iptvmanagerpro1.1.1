@@ -35,31 +35,11 @@ export default function FinancialPage() {
   // Combina entradas automáticas e manuais
   React.useEffect(() => {
     if (isDataLoaded) {
-      const automaticEntries: CashFlowEntry[] = clients
-        .filter(client => client.status === 'Active' && client.activationDate && client.plans && client.plans.length > 0)
-        .flatMap(client => {
-          // Verifica se já existe um lançamento para a ativação deste cliente no fluxo de caixa manual
-          const existingEntry = cashFlow.find(entry => entry.clientId === client._tempId && entry.description.includes('Assinatura inicial'));
-          if (existingEntry) {
-            return []; // Já foi lançado, não gera novamente
-          }
-
-          const totalAmount = client.plans!.reduce((sum, plan) => sum + plan.planValue, 0);
-          const description = t('initialSubscription') + ' - ' + client.plans!.map(p => p.plan.name).join(', ');
-          
-          return [{
-            id: `auto_${client._tempId}`,
-            date: client.activationDate!,
-            clientId: client._tempId,
-            clientName: client.name,
-            description: description,
-            amount: totalAmount,
-            type: 'income' as const,
-          }];
-        });
+      // Ordena o cashFlow para garantir que as entradas mais recentes sejam verificadas primeiro
+      const sortedCashFlow = [...cashFlow].sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime());
 
       // Junta as entradas automáticas com as manuais já existentes e ordena por data
-      const combined = [...automaticEntries, ...cashFlow].sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime());
+      const combined = [...sortedCashFlow].sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime());
       setAllEntries(combined);
     }
   }, [clients, cashFlow, isDataLoaded, t]);
