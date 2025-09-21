@@ -23,6 +23,7 @@ import { ClientSearch } from '@/app/subscription/components/client-search';
 export const reportConfig = {
   clientList: {
     label: 'report_clientList',
+    type: 'fields',
     fields: {
       fullName: 'fullName',
       clientId: 'clientID',
@@ -34,6 +35,7 @@ export const reportConfig = {
   },
   expiredSubscriptions: {
     label: 'report_expiredSubscriptions',
+    type: 'fields',
     fields: {
       fullName: 'fullName',
       lastPlan: 'lastPlan',
@@ -43,6 +45,7 @@ export const reportConfig = {
   },
   activeTests: {
     label: 'report_activeTests',
+    type: 'fields',
     fields: {
       clientName: 'clientName',
       testPackage: 'testPackage',
@@ -52,32 +55,39 @@ export const reportConfig = {
   },
   panelUsage: {
     label: 'report_panelUsage',
-    fields: {
-      panelName: 'serverName',
-      usagePercentage: 'report_usagePercentage',
-    },
+    type: 'statistic',
     globalOnly: true,
   },
   subServerUsage: {
     label: 'report_subServerUsage',
-    fields: {
-      serverName: 'serverName',
-      usagePercentage: 'report_usagePercentage',
-    },
+    type: 'statistic',
     globalOnly: true,
   },
 } as const;
 
 
 export type ReportKey = keyof typeof reportConfig;
-export type FieldKey<T extends ReportKey> = keyof (typeof reportConfig)[T]['fields'];
+
+type FieldReportConfig = {
+  [K in ReportKey]: (typeof reportConfig)[K] extends { type: 'fields' } ? (typeof reportConfig)[K] : never;
+}[ReportKey];
+
+type StatisticReportConfig = {
+  [K in ReportKey]: (typeof reportConfig)[K] extends { type: 'statistic' } ? (typeof reportConfig)[K] : never;
+}[ReportKey];
+
+
+export type FieldKey<T extends FieldReportConfig['label']> = keyof {
+    [K in ReportKey as (typeof reportConfig)[K]['label'] extends T ? K : never]: (typeof reportConfig)[K] extends { fields: any } ? (typeof reportConfig)[K]['fields'] : never
+}[keyof any];
+
 
 export type SelectedReportsState = {
-  [K in ReportKey]?: {
-    all: boolean;
-    fields: { [P in FieldKey<K>]?: boolean };
-  };
+  [K in ReportKey]?: (typeof reportConfig)[K] extends { type: 'fields' }
+    ? { all: boolean; fields: { [P in keyof (typeof reportConfig)[K]['fields']]?: boolean } }
+    : { all: boolean };
 };
+
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -100,27 +110,40 @@ export function ReportModal({ isOpen, onClose, onGenerate, initialClientContext 
   }, [isOpen, initialClientContext]);
 
   const handleSelectAll = (reportKey: ReportKey, checked: boolean) => {
-    const allFields = Object.keys(reportConfig[reportKey].fields).reduce((acc, field) => {
-      acc[field as FieldKey<ReportKey>] = checked;
-      return acc;
-    }, {} as { [P in FieldKey<ReportKey>]?: boolean });
+    const config = reportConfig[reportKey];
+    if (config.type === 'fields') {
+      const allFields = Object.keys(config.fields).reduce((acc, field) => {
+        acc[field as keyof typeof config.fields] = checked;
+        return acc;
+      }, {} as { [P in keyof typeof config.fields]?: boolean });
 
-    setSelectedReports(prev => ({
-      ...prev,
-      [reportKey]: {
-        all: checked,
-        fields: allFields,
-      },
-    }));
+      setSelectedReports(prev => ({
+        ...prev,
+        [reportKey]: {
+          all: checked,
+          fields: allFields,
+        },
+      }));
+    } else {
+       setSelectedReports(prev => ({
+        ...prev,
+        [reportKey]: {
+          all: checked,
+        },
+      }));
+    }
   };
 
-  const handleFieldChange = (reportKey: ReportKey, fieldKey: FieldKey<ReportKey>, checked: boolean) => {
+  const handleFieldChange = (reportKey: ReportKey, fieldKey: string, checked: boolean) => {
     setSelectedReports(prev => {
-      const currentReport = prev[reportKey] || { all: false, fields: {} };
-      const updatedFields = { ...currentReport.fields, [fieldKey]: checked };
+      const currentReport = prev[reportKey] as SelectedReportsState[typeof reportKey] & { fields: any } | undefined;
+      const updatedFields = { ...currentReport?.fields, [fieldKey]: checked };
       
-      const allFields = Object.keys(reportConfig[reportKey].fields);
-      const allChecked = allFields.every(field => updatedFields[field as FieldKey<ReportKey>]);
+      const config = reportConfig[reportKey];
+      if (config.type !== 'fields') return prev;
+
+      const allFields = Object.keys(config.fields);
+      const allChecked = allFields.every(field => updatedFields[field as keyof typeof config.fields]);
 
       return {
         ...prev,
@@ -140,25 +163,31 @@ export function ReportModal({ isOpen, onClose, onGenerate, initialClientContext 
     const fullReportState: SelectedReportsState = {};
     for (const key in reportConfig) {
         const reportKey = key as ReportKey;
-        if (clientContext && reportConfig[reportKey].globalOnly) {
+        const config = reportConfig[reportKey];
+        if (clientContext && config.globalOnly) {
           continue;
         }
-        const allFields = Object.keys(reportConfig[reportKey].fields).reduce((acc, field) => {
-            acc[field as FieldKey<ReportKey>] = true;
-            return acc;
-        }, {} as { [P in FieldKey<ReportKey>]?: boolean });
-        
-        fullReportState[reportKey] = {
-            all: true,
-            fields: allFields
-        };
+
+        if (config.type === 'fields') {
+            const allFields = Object.keys(config.fields).reduce((acc, field) => {
+                acc[field as keyof typeof config.fields] = true;
+                return acc;
+            }, {} as { [P in keyof typeof config.fields]?: boolean });
+            
+            fullReportState[reportKey] = {
+                all: true,
+                fields: allFields
+            };
+        } else {
+             fullReportState[reportKey] = {
+                all: true
+            };
+        }
     }
     onGenerate(fullReportState, clientContext);
   };
   
-  const isAnyReportSelected = Object.values(selectedReports).some(
-    report => report && Object.values(report.fields).some(field => field)
-  );
+  const isAnyReportSelected = Object.values(selectedReports).some(report => report?.all);
 
   const reportEntries = Object.entries(reportConfig).filter(([key]) => {
     if (clientContext) {
@@ -210,6 +239,23 @@ export function ReportModal({ isOpen, onClose, onGenerate, initialClientContext 
           <div className="space-y-4">
               {reportEntries.map(([key, config]) => {
                 const reportKey = key as ReportKey;
+                const isStatisticReport = config.type === 'statistic';
+                
+                if (isStatisticReport) {
+                  return (
+                     <div key={reportKey} className="flex items-center space-x-3 p-4 rounded-lg border">
+                        <Checkbox
+                          id={`${reportKey}-all`}
+                          checked={selectedReports[reportKey]?.all || false}
+                          onCheckedChange={(checked) => handleSelectAll(reportKey, checked as boolean)}
+                        />
+                        <Label htmlFor={`${reportKey}-all`} className="text-lg font-semibold cursor-pointer">
+                          {t(config.label)}
+                        </Label>
+                      </div>
+                  )
+                }
+
                 return (
                   <Collapsible
                     key={reportKey}
@@ -239,8 +285,8 @@ export function ReportModal({ isOpen, onClose, onGenerate, initialClientContext 
                             <div key={fieldKey} className="flex items-center space-x-3 p-2 rounded-md">
                               <Checkbox
                                 id={`${reportKey}-${fieldKey}`}
-                                checked={selectedReports[reportKey]?.fields?.[fieldKey as FieldKey<ReportKey>] || false}
-                                onCheckedChange={(checked) => handleFieldChange(reportKey, fieldKey as FieldKey<ReportKey>, checked as boolean)}
+                                checked={(selectedReports[reportKey] as any)?.fields?.[fieldKey] || false}
+                                onCheckedChange={(checked) => handleFieldChange(reportKey, fieldKey, checked as boolean)}
                               />
                               <Label htmlFor={`${reportKey}-${fieldKey}`} className="text-base font-normal cursor-pointer">
                                 {t(fieldLabel as any)}
@@ -267,3 +313,4 @@ export function ReportModal({ isOpen, onClose, onGenerate, initialClientContext 
     </Dialog>
   );
 }
+

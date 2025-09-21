@@ -70,7 +70,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { add, isFuture, parseISO, format } from 'date-fns';
-import { ReportModal, SelectedReportsState, reportConfig, ReportKey, FieldKey } from '@/app/settings/components/report-modal';
+import { ReportModal, SelectedReportsState, reportConfig, ReportKey } from '@/app/settings/components/report-modal';
 import { ReportDisplayModal, GeneratedReportData } from '@/app/settings/components/report-display-modal';
 
 
@@ -180,78 +180,113 @@ export default function ClientsPageContent() {
 
   const handleGenerateReport = (selectedConfigs: SelectedReportsState, clientContext?: Client | null) => {
     setIsReportModalOpen(false);
-    
-    const reportClients = clientContext ? [clientContext] : clients;
-
     const generatedReports: GeneratedReportData[] = [];
+    const reportClients = clientContext ? [clientContext] : clients;
 
     (Object.keys(selectedConfigs) as ReportKey[]).forEach(reportKey => {
       const config = selectedConfigs[reportKey];
-      if (!config || !config.fields) return;
-
+      if (!config || !config.all) return;
+      
       const reportMeta = reportConfig[reportKey];
-      
-      const selectedFields = (Object.keys(config.fields) as FieldKey<typeof reportKey>[]).filter(
-        fieldKey => config.fields?.[fieldKey as FieldKey<typeof reportKey>]
-      );
-      
-      if (selectedFields.length === 0) return;
-
-      let headers = selectedFields.map(fieldKey => t(reportMeta.fields[fieldKey as keyof typeof reportMeta.fields]));
+      let headers: string[] = [];
       let rows: (string | undefined)[][] = [];
       
-      switch (reportKey) {
-          case 'clientList':
-              rows = reportClients.map(client =>
-                  selectedFields.map(field => {
-                      switch (field) {
-                          case 'fullName': return client.name;
-                          case 'clientId': return client.id || t('noId');
-                          case 'status': return t(client.status.toLowerCase());
-                          case 'registeredDate': return client.registeredDate ? format(new Date(client.registeredDate), 'dd/MM/yyyy') : '';
-                          case 'contact': return client.phones.map(p => p.number).join(', ');
-                          case 'numberOfTests': return String(client.tests?.length || 0);
-                          default: return '';
-                      }
-                  })
-              );
-              break;
-          case 'expiredSubscriptions':
-              const expiredClients = reportClients.filter(c => c.status === 'Expired');
-              rows = expiredClients.map(client =>
-                  selectedFields.map(field => {
-                      const lastPlan = client.plans && client.plans.length > 0 ? client.plans[client.plans.length - 1] : null;
-                      switch (field) {
-                          case 'fullName': return client.name;
-                          case 'lastPlan': return lastPlan?.plan.name || 'N/A';
-                          case 'expirationDate': return client.expirationDate ? format(new Date(client.expirationDate), 'dd/MM/yyyy') : 'N/A';
-                          case 'contact': return client.phones.map(p => p.number).join(', ');
-                          default: return '';
-                      }
-                  })
-              );
-              break;
-          case 'activeTests':
-               const allTests = reportClients.flatMap(client =>
-                  (client.tests || []).map(test => ({ client, test }))
-              );
-              rows = allTests.map(({ client, test }) =>
-                  selectedFields.map(field => {
-                      switch (field) {
-                          case 'clientName': return client.name;
-                          case 'testPackage': return test.package;
-                          case 'startTime': return format(new Date(test.creationDate), 'dd/MM/yyyy HH:mm');
-                          case 'endTime':
-                              const expiration = add(new Date(test.creationDate), { [test.durationUnit]: test.durationValue });
-                              return format(expiration, 'dd/MM/yyyy HH:mm');
-                          default: return '';
-                      }
-                  })
-              );
-              break;
+      if (reportMeta.type === 'fields') {
+          const selectedFields = (Object.keys((config as any).fields) as (keyof typeof reportMeta.fields)[]).filter(
+            fieldKey => (config as any).fields?.[fieldKey]
+          );
+          
+          if (selectedFields.length === 0) return;
+          headers = selectedFields.map(fieldKey => t(reportMeta.fields[fieldKey as keyof typeof reportMeta.fields]));
+
+          switch (reportKey) {
+              case 'clientList':
+                  rows = reportClients.map(client =>
+                      selectedFields.map(field => {
+                          switch (field) {
+                              case 'fullName': return client.name;
+                              case 'clientId': return client.id || t('noId');
+                              case 'status': return t(client.status.toLowerCase());
+                              case 'registeredDate': return client.registeredDate ? format(new Date(client.registeredDate), 'dd/MM/yyyy') : '';
+                              case 'contact': return client.phones.map(p => p.number).join(', ');
+                              case 'numberOfTests': return String(client.tests?.length || 0);
+                              default: return '';
+                          }
+                      })
+                  );
+                  break;
+              case 'expiredSubscriptions':
+                  const expiredClients = reportClients.filter(c => c.status === 'Expired');
+                  rows = expiredClients.map(client =>
+                      selectedFields.map(field => {
+                          const lastPlan = client.plans && client.plans.length > 0 ? client.plans[client.plans.length - 1] : null;
+                          switch (field) {
+                              case 'fullName': return client.name;
+                              case 'lastPlan': return lastPlan?.plan.name || 'N/A';
+                              case 'expirationDate': return client.expirationDate ? format(new Date(client.expirationDate), 'dd/MM/yyyy') : 'N/A';
+                              case 'contact': return client.phones.map(p => p.number).join(', ');
+                              default: return '';
+                          }
+                      })
+                  );
+                  break;
+              case 'activeTests':
+                   const allTests = reportClients.flatMap(client =>
+                      (client.tests || []).map(test => ({ client, test }))
+                  ).filter(({ test, client }) => {
+                       const expirationDate = add(parseISO(test.creationDate), { [test.durationUnit]: test.durationValue });
+                       const isInterrupted = client.status === 'Inactive' && isFuture(expirationDate);
+                       return isFuture(expirationDate) && !isInterrupted;
+                  });
+                  rows = allTests.map(({ client, test }) =>
+                      selectedFields.map(field => {
+                          switch (field) {
+                              case 'clientName': return client.name;
+                              case 'testPackage': return test.package;
+                              case 'startTime': return format(new Date(test.creationDate), 'dd/MM/yyyy HH:mm');
+                              case 'endTime':
+                                  const expiration = add(new Date(test.creationDate), { [test.durationUnit]: test.durationValue });
+                                  return format(expiration, 'dd/MM/yyyy HH:mm');
+                              default: return '';
+                          }
+                      })
+                  );
+                  break;
+          }
+      } else if (reportMeta.type === 'statistic') {
+          switch(reportKey) {
+            case 'panelUsage': {
+                  headers = [t('serverName'), t('report_usagePercentage')];
+                  const allPlans = clients.flatMap(c => c.plans || []);
+                  if (allPlans.length > 0) {
+                      const panelUsage: Record<string, number> = {};
+                      allPlans.forEach(plan => {
+                          panelUsage[plan.panel.name] = (panelUsage[plan.panel.name] || 0) + 1;
+                      });
+                      rows = Object.entries(panelUsage)
+                          .map(([panelName, count]) => [panelName, `${((count / allPlans.length) * 100).toFixed(2)}%`])
+                          .sort((a, b) => parseFloat(b[1]) - parseFloat(a[1]));
+                  }
+                  break;
+              }
+            case 'subServerUsage': {
+                headers = [t('serverName'), t('report_usagePercentage')];
+                const allPlans = clients.flatMap(c => c.plans || []);
+                if (allPlans.length > 0) {
+                    const serverUsage: Record<string, number> = {};
+                    allPlans.forEach(plan => {
+                        serverUsage[plan.server.name] = (serverUsage[plan.server.name] || 0) + 1;
+                    });
+                    rows = Object.entries(serverUsage)
+                        .map(([serverName, count]) => [serverName, `${((count / allPlans.length) * 100).toFixed(2)}%`])
+                        .sort((a, b) => parseFloat(b[1]) - parseFloat(a[1]));
+                }
+                break;
+            }
+          }
       }
       
-      if(rows.length > 0){
+      if(rows.length > 0) {
         generatedReports.push({ title: t(reportMeta.label as any), headers, rows });
       }
     });
@@ -480,3 +515,4 @@ export default function ClientsPageContent() {
     </>
   );
 }
+
