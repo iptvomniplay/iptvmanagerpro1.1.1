@@ -123,5 +123,3 @@ export function ReportDisplayModal({ isOpen, onClose, reports }: ReportDisplayMo
     </Dialog>
   );
 }
-
-    
