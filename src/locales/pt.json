@@ -412,5 +412,10 @@
     "today_subtitle": "Exibindo assinaturas ativadas hoje.",
     "this_month": "Este Mês",
     "last_30_days": "Últimos 30 Dias",
-    "this_year": "Este Ano"
+    "this_year": "Este Ano",
+    "expiringSubscriptions": "Assinaturas a Expirar",
+    "inTheNextXDays": "nos próximos {days} dias",
+    "expirationWarning": "Aviso de Expiração",
+    "7days": "7 dias",
+    "15days": "15 dias"
 }

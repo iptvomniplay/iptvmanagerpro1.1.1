@@ -23,7 +23,7 @@ export default function SettingsPage() {
   const { language, setLanguage, t } = useLanguage();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const { newSubscriptionsPeriod, setNewSubscriptionsPeriod } = useDashboardSettings();
+  const { newSubscriptionsPeriod, setNewSubscriptionsPeriod, expirationWarningDays, setExpirationWarningDays } = useDashboardSettings();
 
   useEffect(() => {
     setMounted(true);
@@ -38,6 +38,12 @@ export default function SettingsPage() {
     { value: 'this_month', label: t('thisMonth') },
     { value: 'last_30_days', label: t('last30Days') },
     { value: 'this_year', label: t('thisYear') },
+  ];
+  
+  const expirationWarningOptions: { value: number; label: string }[] = [
+    { value: 7, label: t('7days') },
+    { value: 15, label: t('15days') },
+    { value: 30, label: t('30days') },
   ];
 
   if (!mounted) {
@@ -210,7 +216,7 @@ export default function SettingsPage() {
                 {t('dashboardSettingsDescription')}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6 p-8 pt-0">
+            <CardContent className="space-y-8 p-8 pt-0">
                <div className="space-y-4">
                 <Label className="text-lg">{t('newSubscriptionsPeriod')}</Label>
                  <RadioGroup
@@ -227,33 +233,20 @@ export default function SettingsPage() {
                  </RadioGroup>
               </div>
               <Separator/>
-              <div className="flex items-center justify-between rounded-lg border p-6">
-                <div className="space-y-1">
-                  <Label
-                    htmlFor="server-offline"
-                    className="text-lg cursor-pointer"
+              <div className="space-y-4">
+                <Label className="text-lg">{t('expirationWarning')}</Label>
+                 <RadioGroup
+                    value={String(expirationWarningDays)}
+                    onValueChange={(value) => setExpirationWarningDays(Number(value))}
+                    className="space-y-2"
                   >
-                    {t('serverOfflineAlerts')}
-                  </Label>
-                  <p className="text-base text-muted-foreground">
-                    {t('serverOfflineAlertsDescription')}
-                  </p>
-                </div>
-                <Switch id="server-offline" defaultChecked />
-              </div>
-              <div className="flex items-center justify-between rounded-lg border p-6">
-                <div className="space-y-1">
-                  <Label
-                    htmlFor="client-expiry"
-                    className="text-lg cursor-pointer"
-                  >
-                    {t('clientExpiryWarnings')}
-                  </Label>
-                  <p className="text-base text-muted-foreground">
-                    {t('clientExpiryWarningsDescription')}
-                  </p>
-                </div>
-                <Switch id="client-expiry" defaultChecked />
+                  {expirationWarningOptions.map(option => (
+                     <div className="flex items-center space-x-2" key={option.value}>
+                       <RadioGroupItem value={String(option.value)} id={`exp-warn-${option.value}`} />
+                       <Label htmlFor={`exp-warn-${option.value}`} className="text-base font-normal cursor-pointer">{option.label}</Label>
+                     </div>
+                  ))}
+                 </RadioGroup>
               </div>
             </CardContent>
           </Card>

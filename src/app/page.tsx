@@ -8,6 +8,7 @@ import {
   Users,
   PlusCircle,
   Activity,
+  AlertTriangle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,23 +19,17 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useLanguage } from '@/hooks/use-language';
 import { useData } from '@/hooks/use-data';
 import { useDashboardSettings } from '@/hooks/use-dashboard-settings';
-import { subDays, startOfMonth, startOfYear, isWithinInterval } from 'date-fns';
+import { subDays, startOfMonth, startOfYear, isWithinInterval, add, differenceInDays } from 'date-fns';
+import type { PlanPeriod } from '@/lib/types';
 
 export default function Dashboard() {
   const { t } = useLanguage();
   const { clients, servers } = useData();
-  const { newSubscriptionsPeriod } = useDashboardSettings();
+  const { newSubscriptionsPeriod, expirationWarningDays } = useDashboardSettings();
 
-  const clientImage = PlaceHolderImages.find(
-    (img) => img.id === 'dashboard-clients'
-  );
-  const serverImage = PlaceHolderImages.find(
-    (img) => img.id === 'dashboard-servers'
-  );
   const onlineServers = servers.filter(
     (server) => server.status === 'Online'
   ).length;
@@ -67,7 +62,33 @@ export default function Dashboard() {
     ).length;
   };
   
+  const getExpiringSubscriptionsCount = () => {
+    const now = new Date();
+    const warningDate = add(now, { days: expirationWarningDays });
+
+    return clients.filter(client => {
+      if (client.status !== 'Active' || !client.activationDate || !client.plans || client.plans.length === 0) {
+        return false;
+      }
+      
+      const getDuration = (period: PlanPeriod) => {
+          switch (period) {
+              case '30d': return { days: 30 };
+              case '3m': return { months: 3 };
+              case '6m': return { months: 6 };
+              case '1y': return { years: 1 };
+              default: return {};
+          }
+      }
+      // Assuming the first plan dictates the expiration for this logic
+      const expirationDate = add(new Date(client.activationDate), getDuration(client.plans[0].planPeriod));
+      
+      return differenceInDays(expirationDate, now) >= 0 && differenceInDays(expirationDate, now) <= expirationWarningDays;
+    }).length;
+  };
+  
   const newSubscriptionsCount = getNewSubscriptionsCount();
+  const expiringSubscriptionsCount = getExpiringSubscriptionsCount();
 
 
   return (
@@ -114,13 +135,13 @@ export default function Dashboard() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-base font-medium">{t('recentAlerts')}</CardTitle>
-            <Activity className="h-5 w-5 text-muted-foreground" />
+            <CardTitle className="text-base font-medium">{t('expiringSubscriptions')}</CardTitle>
+            <AlertTriangle className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">3</div>
+            <div className="text-3xl font-bold">{expiringSubscriptionsCount}</div>
             <p className="text-sm text-muted-foreground">
-              {t('highCPU')}
+              {t('inTheNextXDays', {days: expirationWarningDays})}
             </p>
           </CardContent>
         </Card>

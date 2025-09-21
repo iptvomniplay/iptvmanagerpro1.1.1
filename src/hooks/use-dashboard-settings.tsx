@@ -1,24 +1,31 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export type DashboardPeriod = 'today' | 'this_month' | 'last_30_days' | 'this_year';
 
 interface DashboardSettingsContextType {
   newSubscriptionsPeriod: DashboardPeriod;
   setNewSubscriptionsPeriod: (period: DashboardPeriod) => void;
-  t: (key: string) => string; 
+  expirationWarningDays: number;
+  setExpirationWarningDays: (days: number) => void;
+  t: (key: string, replacements?: Record<string, string | number>) => string; 
 }
 
 const DashboardSettingsContext = createContext<DashboardSettingsContextType | undefined>(undefined);
 
 export const DashboardSettingsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [newSubscriptionsPeriod, setNewSubscriptionsPeriodState] = useState<DashboardPeriod>('this_month');
+  const [expirationWarningDays, setExpirationWarningDaysState] = useState<number>(7);
 
   useEffect(() => {
     const storedPeriod = localStorage.getItem('dashboard_newSubscriptionsPeriod') as DashboardPeriod;
     if (storedPeriod) {
       setNewSubscriptionsPeriodState(storedPeriod);
+    }
+    const storedWarningDays = localStorage.getItem('dashboard_expirationWarningDays');
+    if (storedWarningDays) {
+      setExpirationWarningDaysState(Number(storedWarningDays));
     }
   }, []);
 
@@ -27,6 +34,11 @@ export const DashboardSettingsProvider: React.FC<{ children: ReactNode }> = ({ c
     setNewSubscriptionsPeriodState(period);
   };
   
+  const setExpirationWarningDays = (days: number) => {
+    localStorage.setItem('dashboard_expirationWarningDays', String(days));
+    setExpirationWarningDaysState(days);
+  }
+
   const t = (key: string) => {
     // This is a placeholder. In a real app, you'd use a full i18n library.
     // For now, we'll just return the key in a more readable format.
@@ -34,7 +46,7 @@ export const DashboardSettingsProvider: React.FC<{ children: ReactNode }> = ({ c
   }
 
   return (
-    <DashboardSettingsContext.Provider value={{ newSubscriptionsPeriod, setNewSubscriptionsPeriod, t }}>
+    <DashboardSettingsContext.Provider value={{ newSubscriptionsPeriod, setNewSubscriptionsPeriod, expirationWarningDays, setExpirationWarningDays, t }}>
       {children}
     </DashboardSettingsContext.Provider>
   );
