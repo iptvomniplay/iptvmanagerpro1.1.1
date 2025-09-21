@@ -29,38 +29,38 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const { toast } = useToast();
 
   useEffect(() => {
-    if (typeof window === 'undefined' || isDataLoaded) return;
-
-    // Load clients
+    // This effect runs only on the client side
+    let clientsLoaded = false;
     try {
       const storedClients = localStorage.getItem('clients');
       if (storedClients) {
-          setClients(JSON.parse(storedClients));
-      } else {
-        const clientsWithTempId = initialClients.map(c => ({...c, _tempId: c._tempId || `temp_${Date.now()}_${Math.random()}`}));
-        setClients(clientsWithTempId);
+        setClients(JSON.parse(storedClients));
+        clientsLoaded = true;
       }
     } catch (error) {
       console.error('Failed to load clients from localStorage', error);
+    }
+    if (!clientsLoaded) {
       const clientsWithTempId = initialClients.map(c => ({...c, _tempId: c._tempId || `temp_${Date.now()}_${Math.random()}`}));
       setClients(clientsWithTempId);
     }
 
-    // Load servers
+    let serversLoaded = false;
     try {
       const storedServers = localStorage.getItem('servers');
       if (storedServers) {
         setServers(JSON.parse(storedServers));
-      } else {
-        setServers(initialServers);
+        serversLoaded = true;
       }
     } catch (error) {
       console.error('Failed to load servers from localStorage', error);
+    }
+    if (!serversLoaded) {
       setServers(initialServers);
     }
-    
+
     setIsDataLoaded(true);
-  }, [isDataLoaded]);
+  }, []);
 
   const saveDataToStorage = useCallback(<T,>(key: string, data: T[]) => {
     if (typeof window !== 'undefined') {
