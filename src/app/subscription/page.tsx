@@ -46,10 +46,8 @@ export default function SubscriptionPage() {
   const [isIdSaveSuccessModalOpen, setIsIdSaveSuccessModalOpen] = React.useState(false);
   const [isSubscriptionSuccessModalOpen, setIsSubscriptionSuccessModalOpen] = React.useState(false);
   
-  const totalScreensFromPlans = selectedClient?.plans?.reduce((sum, plan) => sum + plan.screens, 0) || 0;
-  const totalApplications = selectedClient?.applications?.length || 0;
   const arePlansIncomplete = !selectedClient?.plans || selectedClient.plans.length === 0;
-  const areAppsIncomplete = totalApplications < totalScreensFromPlans;
+  const areAppsIncomplete = !selectedClient?.applications || selectedClient.applications.length === 0;
   
   const isReadyForActivation = selectedClient && selectedClient.id && !arePlansIncomplete && !areAppsIncomplete;
 

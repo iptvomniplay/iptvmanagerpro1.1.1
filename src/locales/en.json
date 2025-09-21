@@ -311,7 +311,7 @@
     "idAtual": "Current ID",
     "noScreensOrClient": "No screens in the plan or no client selected.",
     "addAtLeastOnePlan": "You must add at least one subscription plan.",
-    "fillAllApplications": "You must register an application for each hired screen.",
+    "fillAllApplications": "You must configure at least one application for one screen.",
     "clientIdRequired": "The Client ID is required to activate the subscription.",
     "clientIdRequiredInForm": "The client ID is required and must be filled in the client's edit form.",
     "clientStatus": "Client Status",
