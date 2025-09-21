@@ -2,8 +2,8 @@
 'use client';
 
 import * as React from 'react';
-import { useLanguage } from '@/hooks/use-language';
-import { useData } from '@/hooks/use-data';
+import { useLanguage, LanguageProvider } from '@/hooks/use-language';
+import { useData, DataProvider } from '@/hooks/use-data';
 import { SelectedReportsState, reportConfig, ReportKey, FieldKey } from '../components/report-modal';
 import { add, format, isFuture, parseISO } from 'date-fns';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -23,6 +23,8 @@ const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
     const [isLoading, setIsLoading] = React.useState(true);
     
     React.useEffect(() => {
+        if (!clients.length && !servers.length) return;
+
         const storedConfigsRaw = sessionStorage.getItem('reportConfigs');
         if (!storedConfigsRaw) {
             setIsLoading(false);
@@ -58,6 +60,7 @@ const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
                                     case 'status': return t(client.status.toLowerCase());
                                     case 'registeredDate': return client.registeredDate ? format(new Date(client.registeredDate), 'dd/MM/yyyy') : '';
                                     case 'contact': return client.phones.map(p => p.number).join(', ');
+                                    default: return '';
                                 }
                             })
                         );
@@ -72,6 +75,7 @@ const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
                                     case 'lastPlan': return lastPlan?.plan.name || 'N/A';
                                     case 'expirationDate': return client.expirationDate ? format(new Date(client.expirationDate), 'dd/MM/yyyy') : 'N/A';
                                     case 'contact': return client.phones.map(p => p.number).join(', ');
+                                    default: return '';
                                 }
                             })
                         );
@@ -93,6 +97,7 @@ const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
                                     case 'endTime':
                                         const expiration = add(new Date(test.creationDate), { [test.durationUnit]: test.durationValue });
                                         return format(expiration, 'dd/MM/yyyy HH:mm');
+                                    default: return '';
                                 }
                             })
                         );
@@ -104,6 +109,7 @@ const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
                                     case 'panelName': return server.name;
                                     case 'currentBalance': return String(server.creditStock || 0);
                                     case 'paymentMethod': return t(server.paymentType as any);
+                                    default: return '';
                                 }
                             })
                         );
@@ -121,6 +127,15 @@ const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
         }
     }, [clients, servers, t]);
     
+    React.useEffect(() => {
+        if (!isLoading) {
+            const timer = setTimeout(() => {
+                window.print();
+            }, 500); 
+            return () => clearTimeout(timer);
+        }
+    }, [isLoading]);
+
     if (isLoading) {
         return <div className="p-10 text-center">{t('loadingReport')}...</div>;
     }
@@ -174,12 +189,6 @@ export default function ReportPage() {
 
     React.useEffect(() => {
         setIsClient(true);
-        // Delay printing to allow data to load and render
-        const timer = setTimeout(() => {
-            window.print();
-        }, 1000); 
-
-        return () => clearTimeout(timer);
     }, []);
 
     if (!isClient) {
@@ -187,50 +196,54 @@ export default function ReportPage() {
     }
 
     return (
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <div className="print-header p-8 flex justify-between items-center">
-                <h1 className="text-2xl font-bold">{t('generatedReport')}</h1>
-                <div className="flex gap-2">
-                    <Button variant="outline" onClick={() => window.close()}>{t('close')}</Button>
-                    <Button onClick={() => window.print()}>{t('print')}</Button>
-                </div>
-            </div>
-            <ReportContent />
-            <style jsx global>{`
-                @media print {
-                    .print-header {
-                        display: none;
-                    }
-                    body {
-                        margin: 0;
-                        padding: 0;
-                    }
-                    .report-container {
-                        padding: 1cm;
-                    }
-                    .page-break {
-                        page-break-after: always;
-                    }
-                    @page {
-                        size: A4;
-                        margin: 1cm;
-                    }
-                }
-                @media screen {
-                  body {
-                    background-color: hsl(var(--muted));
-                  }
-                  .report-container {
-                    background: white;
-                    width: 210mm;
-                    height: 297mm;
-                    margin: 2rem auto;
-                    box-shadow: 0 0 0.5cm rgba(0,0,0,0.5);
-                    padding: 1cm;
-                  }
-                }
-            `}</style>
-        </ThemeProvider>
+        <LanguageProvider>
+            <DataProvider>
+                <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+                    <div className="print-header p-8 flex justify-between items-center">
+                        <h1 className="text-2xl font-bold">{t('generatedReport')}</h1>
+                        <div className="flex gap-2">
+                            <Button variant="outline" onClick={() => window.close()}>{t('close')}</Button>
+                            <Button onClick={() => window.print()}>{t('print')}</Button>
+                        </div>
+                    </div>
+                    <ReportContent />
+                    <style jsx global>{`
+                        @media print {
+                            .print-header {
+                                display: none;
+                            }
+                            body {
+                                margin: 0;
+                                padding: 0;
+                            }
+                            .report-container {
+                                padding: 1cm;
+                            }
+                            .page-break {
+                                page-break-after: always;
+                            }
+                            @page {
+                                size: A4;
+                                margin: 1cm;
+                            }
+                        }
+                        @media screen {
+                          body {
+                            background-color: hsl(var(--muted));
+                          }
+                          .report-container {
+                            background: white;
+                            width: 210mm;
+                            margin: 2rem auto;
+                            min-height: 297mm;
+                            box-shadow: 0 0 0.5cm rgba(0,0,0,0.5);
+                            padding: 1cm;
+                          }
+                        }
+                    `}</style>
+                </ThemeProvider>
+            </DataProvider>
+        </LanguageProvider>
     );
 }
 

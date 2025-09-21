@@ -28,7 +28,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || isLoaded) return;
 
     // Load clients
     try {
@@ -59,7 +59,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
     
     setIsLoaded(true);
-  }, []);
+  }, [isLoaded]);
 
   const saveDataToStorage = useCallback(<T,>(key: string, data: T[]) => {
     if (typeof window !== 'undefined') {
