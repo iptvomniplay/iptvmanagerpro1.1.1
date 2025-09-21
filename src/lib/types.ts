@@ -62,6 +62,7 @@ export type Client = {
   phones: Phone[];
   status: 'Active' | 'Inactive' | 'Expired' | 'Test';
   registeredDate: string;
+  activationDate?: string;
   expirationDate?: string;
   tests?: Test[];
   applications?: Application[];

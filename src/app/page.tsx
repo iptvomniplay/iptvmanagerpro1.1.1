@@ -21,10 +21,14 @@ import {
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useLanguage } from '@/hooks/use-language';
 import { useData } from '@/hooks/use-data';
+import { useDashboardSettings } from '@/hooks/use-dashboard-settings';
+import { subDays, startOfMonth, startOfYear, isWithinInterval } from 'date-fns';
 
 export default function Dashboard() {
   const { t } = useLanguage();
   const { clients, servers } = useData();
+  const { newSubscriptionsPeriod } = useDashboardSettings();
+
   const clientImage = PlaceHolderImages.find(
     (img) => img.id === 'dashboard-clients'
   );
@@ -36,6 +40,36 @@ export default function Dashboard() {
   ).length;
   const totalClients = clients.length;
 
+  const getNewSubscriptionsCount = () => {
+    const now = new Date();
+    let interval: Interval;
+
+    switch (newSubscriptionsPeriod) {
+      case 'today':
+        const startOfToday = new Date(now.setHours(0, 0, 0, 0));
+        const endOfToday = new Date(now.setHours(23, 59, 59, 999));
+        interval = { start: startOfToday, end: endOfToday };
+        break;
+      case 'last_30_days':
+        interval = { start: subDays(now, 30), end: now };
+        break;
+      case 'this_year':
+        interval = { start: startOfYear(now), end: now };
+        break;
+      case 'this_month':
+      default:
+        interval = { start: startOfMonth(now), end: now };
+        break;
+    }
+
+    return clients.filter(client => 
+      client.activationDate && isWithinInterval(new Date(client.activationDate), interval)
+    ).length;
+  };
+  
+  const newSubscriptionsCount = getNewSubscriptionsCount();
+
+
   return (
     <div className="flex flex-1 flex-col gap-6 md:gap-10">
       <div className="grid gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
@@ -46,9 +80,6 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{totalClients}</div>
-            <p className="text-sm text-muted-foreground">
-              {t('lastMonth.plus10')}
-            </p>
           </CardContent>
         </Card>
         <Card>
@@ -75,9 +106,9 @@ export default function Dashboard() {
             <Users className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">+25</div>
+            <div className="text-3xl font-bold">+{newSubscriptionsCount}</div>
             <p className="text-sm text-muted-foreground">
-              {t('lastMonth.plus12')}
+              {t(newSubscriptionsPeriod, t('thisMonth'))}
             </p>
           </CardContent>
         </Card>

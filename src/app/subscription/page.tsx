@@ -133,6 +133,7 @@ export default function SubscriptionPage() {
       status: 'Active',
       id: manualId || selectedClient!.id,
       tests: updatedTests,
+      activationDate: new Date().toISOString(),
     };
 
     updateClient(clientToUpdate);

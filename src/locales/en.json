@@ -401,5 +401,16 @@
     "pendingActivationTitle": "Pending Activation",
     "pendingActivationDescription": "This client's subscription is not yet active. Fill in all the necessary information on the tabs below and click 'Activate Subscription' to complete the process.",
     "SelecaoServidor": "Server Selection",
-    "ConfiguracaoPlano": "Plan Configuration"
+    "ConfiguracaoPlano": "Plan Configuration",
+    "dashboard": "Dashboard",
+    "dashboardSettingsDescription": "Customize settings for your main dashboard.",
+    "newSubscriptionsPeriod": "Period for 'New Subscriptions'",
+    "today": "Today",
+    "thisMonth": "This Month",
+    "last30Days": "Last 30 days",
+    "thisYear": "This Year",
+    "today_subtitle": "Showing subscriptions activated today.",
+    "this_month": "This Month",
+    "last_30_days": "Last 30 Days",
+    "this_year": "This Year"
 }

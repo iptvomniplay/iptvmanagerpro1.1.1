@@ -401,5 +401,16 @@
     "pendingActivationTitle": "Ativação Pendente",
     "pendingActivationDescription": "A assinatura deste cliente ainda não está ativa. Preencha todas as informações necessárias nas abas abaixo e clique em 'Ativar Assinatura' para concluir o processo.",
     "SelecaoServidor": "Seleção de Servidor",
-    "ConfiguracaoPlano": "Configuração do Plano"
+    "ConfiguracaoPlano": "Configuração do Plano",
+    "dashboard": "Dashboard",
+    "dashboardSettingsDescription": "Personalize as configurações do seu painel principal.",
+    "newSubscriptionsPeriod": "Período para 'Novas Assinaturas'",
+    "today": "Hoje",
+    "thisMonth": "Este Mês",
+    "last30Days": "Últimos 30 dias",
+    "thisYear": "Este Ano",
+    "today_subtitle": "Exibindo assinaturas ativadas hoje.",
+    "this_month": "Este Mês",
+    "last_30_days": "Últimos 30 Dias",
+    "this_year": "Este Ano"
 }

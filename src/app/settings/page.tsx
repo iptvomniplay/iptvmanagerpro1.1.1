@@ -17,11 +17,13 @@ import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
+import { useDashboardSettings, DashboardPeriod } from '@/hooks/use-dashboard-settings';
 
 export default function SettingsPage() {
   const { language, setLanguage, t } = useLanguage();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const { newSubscriptionsPeriod, setNewSubscriptionsPeriod } = useDashboardSettings();
 
   useEffect(() => {
     setMounted(true);
@@ -30,6 +32,13 @@ export default function SettingsPage() {
   const handleLanguageChange = (lang: 'pt-BR' | 'en-US') => {
     setLanguage(lang);
   };
+
+  const dashboardPeriodOptions: { value: DashboardPeriod; label: string }[] = [
+    { value: 'today', label: t('today') },
+    { value: 'this_month', label: t('thisMonth') },
+    { value: 'last_30_days', label: t('last30Days') },
+    { value: 'this_year', label: t('thisYear') },
+  ];
 
   if (!mounted) {
     return null;
@@ -196,12 +205,28 @@ export default function SettingsPage() {
 
           <Card>
             <CardHeader className="p-8">
-              <CardTitle className="text-2xl">{t('notifications')}</CardTitle>
+              <CardTitle className="text-2xl">{t('dashboard')}</CardTitle>
               <CardDescription className="text-lg">
-                {t('notificationsDescription')}
+                {t('dashboardSettingsDescription')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6 p-8 pt-0">
+               <div className="space-y-4">
+                <Label className="text-lg">{t('newSubscriptionsPeriod')}</Label>
+                 <RadioGroup
+                    value={newSubscriptionsPeriod}
+                    onValueChange={(value) => setNewSubscriptionsPeriod(value as DashboardPeriod)}
+                    className="space-y-2"
+                  >
+                  {dashboardPeriodOptions.map(option => (
+                     <div className="flex items-center space-x-2" key={option.value}>
+                       <RadioGroupItem value={option.value} id={option.value} />
+                       <Label htmlFor={option.value} className="text-base font-normal cursor-pointer">{option.label}</Label>
+                     </div>
+                  ))}
+                 </RadioGroup>
+              </div>
+              <Separator/>
               <div className="flex items-center justify-between rounded-lg border p-6">
                 <div className="space-y-1">
                   <Label
@@ -229,20 +254,6 @@ export default function SettingsPage() {
                   </p>
                 </div>
                 <Switch id="client-expiry" defaultChecked />
-              </div>
-              <div className="flex items-center justify-between rounded-lg border p-6">
-                <div className="space-y-1">
-                  <Label
-                    htmlFor="weekly-summary"
-                    className="text-lg cursor-pointer"
-                  >
-                    {t('weeklySummary')}
-                  </Label>
-                  <p className="text-base text-muted-foreground">
-                    {t('weeklySummaryDescription')}
-                  </p>
-                </div>
-                <Switch id="weekly-summary" />
               </div>
             </CardContent>
           </Card>
