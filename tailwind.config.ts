@@ -56,6 +56,10 @@ export default {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
         },
+        info: {
+          DEFAULT: 'hsl(210, 100%, 30%)', // Azul escuro
+          foreground: 'hsl(0, 0%, 98%)', // Branco para contraste
+        },
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',

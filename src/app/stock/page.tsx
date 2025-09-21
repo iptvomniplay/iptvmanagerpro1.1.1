@@ -68,7 +68,7 @@ export default function StockPage() {
                     <TableRow key={server.id}>
                       <TableCell className="font-medium">{server.name}</TableCell>
                       <TableCell>
-                        <Badge variant={server.paymentType === 'prepaid' ? 'default' : 'secondary'}>
+                        <Badge variant={server.paymentType === 'prepaid' ? 'default' : 'info'}>
                           {t(server.paymentType as any)}
                         </Badge>
                       </TableCell>
