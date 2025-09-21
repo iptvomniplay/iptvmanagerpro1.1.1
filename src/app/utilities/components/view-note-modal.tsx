@@ -6,8 +6,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-  DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/use-language';
@@ -15,6 +13,7 @@ import type { Note } from '@/lib/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { Copy } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ViewNoteModalProps {
   isOpen: boolean;
@@ -37,7 +36,7 @@ export function ViewNoteModal({ isOpen, onClose, note }: ViewNoteModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-xl" style={{ backgroundColor: note.color }}>
+      <DialogContent className={cn("sm:max-w-xl border-t-8")} style={{ borderTopColor: note.color }}>
         <DialogHeader>
           <DialogTitle>{t('noteDetails')}</DialogTitle>
         </DialogHeader>

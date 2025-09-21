@@ -15,6 +15,7 @@ import { NoteModal } from './components/note-modal';
 import { ViewNoteModal } from './components/view-note-modal';
 import { DeleteNoteAlert } from './components/delete-note-alert';
 import type { Note } from '@/lib/types';
+import { cn } from '@/lib/utils';
 
 export default function UtilitiesPage() {
   const { t } = useLanguage();
@@ -117,8 +118,11 @@ export default function UtilitiesPage() {
                 {notes.map((note) => (
                     <Card 
                         key={note.id} 
-                        className="flex flex-col justify-between cursor-pointer transition-transform hover:scale-105"
-                        style={{ backgroundColor: note.color, borderColor: note.color }}
+                        className={cn(
+                            "flex flex-col justify-between cursor-pointer transition-transform hover:scale-105 overflow-hidden",
+                            "border-b-4"
+                        )}
+                        style={{ borderColor: note.color }}
                         onClick={() => handleOpenView(note)}
                     >
                         <CardContent className="p-4">
@@ -126,7 +130,7 @@ export default function UtilitiesPage() {
                                 {truncateText(note.content, 120)}
                             </p>
                         </CardContent>
-                        <div className="flex justify-end p-2 gap-1 border-t" style={{ borderColor: 'rgba(0,0,0,0.1)' }}>
+                        <div className="flex justify-end p-2 gap-1 border-t">
                             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); handleOpenEdit(note); }}>
                                 <Edit className="h-4 w-4" />
                             </Button>

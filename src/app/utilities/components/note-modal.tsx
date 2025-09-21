@@ -24,12 +24,12 @@ interface NoteModalProps {
 }
 
 const colorPalette = [
-  '#FFF2AC', // Amarelo Claro
-  '#CBF0F8', // Azul Claro
-  '#D4F8CB', // Verde Claro
-  '#FAD6D2', // Vermelho Claro
-  '#E6D2FA', // Roxo Claro
-  '#F5F5F5', // Cinza Claro
+  '#fde047', // yellow-400
+  '#60a5fa', // blue-400
+  '#4ade80', // green-400
+  '#f87171', // red-400
+  '#c084fc', // purple-400
+  '#9ca3af', // gray-400
 ];
 
 export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
@@ -78,13 +78,13 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
                   type="button"
                   className={cn(
                     'h-8 w-8 rounded-full border-2 transition-all',
-                    selectedColor === color ? 'border-primary ring-2 ring-ring' : 'border-transparent'
+                    selectedColor === color ? 'ring-2 ring-ring ring-offset-2' : 'border-transparent'
                   )}
                   style={{ backgroundColor: color }}
                   onClick={() => setSelectedColor(color)}
                   aria-label={`Select color ${color}`}
                 >
-                  {selectedColor === color && <Check className="h-5 w-5 mx-auto my-auto text-primary" />}
+                  {selectedColor === color && <Check className="h-5 w-5 mx-auto my-auto text-white" />}
                 </button>
               ))}
             </div>
