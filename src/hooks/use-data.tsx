@@ -309,16 +309,17 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const addTransactionToServer = useCallback((serverId: string, transactionData: Omit<Transaction, 'id' | 'date'>) => {
+    let serverName = '';
     setServers(prevServers => {
       const updatedServers = prevServers.map(server => {
         if (server.id === serverId) {
+          serverName = server.name;
           const newTransaction: Transaction = {
             ...transactionData,
             id: `trans_${Date.now()}_${Math.random()}`,
             date: new Date().toISOString(),
           };
           const updatedTransactions = [newTransaction, ...(server.transactions || [])];
-          // O saldo de crédito é a soma dos créditos de todas as transações
           const newCreditStock = updatedTransactions.reduce((acc, trans) => acc + trans.credits, 0);
 
           return { ...server, transactions: updatedTransactions, creditStock: newCreditStock };
@@ -327,7 +328,15 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
       return updatedServers;
     });
-  }, []);
+
+    if (transactionData.type === 'purchase' && transactionData.totalValue > 0) {
+        addCashFlowEntry({
+            type: 'expense',
+            amount: transactionData.totalValue,
+            description: `Compra de créditos para o painel ${serverName}`,
+        });
+    }
+  }, [addCashFlowEntry]);
 
   const value = {
     clients,
