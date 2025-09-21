@@ -424,5 +424,6 @@
     "expiredClients": "Expired",
     "inactiveClients": "Inactive",
     "settingsSaved": "Settings saved successfully!",
-    "expirationWarningDescription": "Define the number of days in advance to be warned about expiring subscriptions."
+    "expirationWarningDescription": "Define the number of days in advance to be warned about expiring subscriptions.",
+    "expiringInNextXDays": "Expiring in the next {days} days"
 }

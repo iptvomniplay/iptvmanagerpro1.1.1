@@ -2,32 +2,29 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import {
   ArrowRight,
   Server,
   Users,
-  PlusCircle,
-  Activity,
-  AlertTriangle,
-  TestTube,
   UserX,
   UserCheck,
   CalendarClock,
+  TestTube,
+  CalendarX,
+  UserCog,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import { useLanguage } from '@/hooks/use-language';
 import { useData } from '@/hooks/use-data';
 import { useDashboardSettings } from '@/hooks/use-dashboard-settings';
-import { subDays, startOfMonth, startOfYear, isWithinInterval, add, differenceInDays, isFuture, parseISO, isToday } from 'date-fns';
+import { subDays, startOfMonth, startOfYear, isWithinInterval, add, differenceInDays, isFuture, parseISO, isToday, endOfDay, startOfDay } from 'date-fns';
 import type { PlanPeriod } from '@/lib/types';
 
 export default function Dashboard() {
@@ -70,8 +67,12 @@ export default function Dashboard() {
   const getSubscriptionStatusCounts = () => {
     const now = new Date();
     let expiringToday = 0;
+    let expiringInPeriod = 0;
     const inactiveClients = clients.filter(c => c.status === 'Inactive').length;
     const expiredClients = clients.filter(c => c.status === 'Expired').length;
+
+    const warningPeriodStart = startOfDay(add(now, { days: 1 }));
+    const warningPeriodEnd = endOfDay(add(now, { days: expirationWarningDays }));
 
     clients.forEach(client => {
       if (client.status !== 'Active' || !client.activationDate || !client.plans || client.plans.length === 0) {
@@ -87,15 +88,18 @@ export default function Dashboard() {
               default: return {};
           }
       }
+      
       // Assuming the first plan dictates the expiration for this logic
       const expirationDate = add(new Date(client.activationDate), getDuration(client.plans[0].planPeriod));
       
       if (isToday(expirationDate)) {
         expiringToday++;
+      } else if (isWithinInterval(expirationDate, { start: warningPeriodStart, end: warningPeriodEnd })) {
+        expiringInPeriod++;
       }
     });
 
-    return { expiringToday, inactiveClients, expiredClients };
+    return { expiringToday, expiringInPeriod, inactiveClients, expiredClients };
   };
   
   const testCounts = React.useMemo(() => {
@@ -121,7 +125,7 @@ export default function Dashboard() {
   }, [clients]);
 
   const newSubscriptionsCount = getNewSubscriptionsCount();
-  const { expiringToday, inactiveClients, expiredClients } = getSubscriptionStatusCounts();
+  const { expiringToday, expiringInPeriod, inactiveClients, expiredClients } = getSubscriptionStatusCounts();
 
 
   return (
@@ -171,8 +175,12 @@ export default function Dashboard() {
             <CardTitle className="text-base font-medium">{t('expiringSubscriptions')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
-            <div className="flex items-center gap-2">
+             <div className="flex items-center gap-2">
               <CalendarClock className="h-4 w-4 text-amber-500" />
+              <span>{t('expiringInNextXDays', {days: expirationWarningDays})}: <strong>{expiringInPeriod}</strong></span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CalendarX className="h-4 w-4 text-orange-600" />
               <span>{t('expiringToday')}: <strong>{expiringToday}</strong></span>
             </div>
             <div className="flex items-center gap-2">
@@ -180,7 +188,7 @@ export default function Dashboard() {
               <span>{t('expiredClients')}: <strong>{expiredClients}</strong></span>
             </div>
             <div className="flex items-center gap-2">
-              <UserX className="h-4 w-4 text-gray-500" />
+              <UserCog className="h-4 w-4 text-gray-500" />
               <span>{t('inactiveClients')}: <strong>{inactiveClients}</strong></span>
             </div>
           </CardContent>
