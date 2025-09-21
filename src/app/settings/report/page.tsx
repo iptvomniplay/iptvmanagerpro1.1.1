@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 type GeneratedReportData = {
   title: string;
   headers: string[];
-  rows: string[][];
+  rows: (string | undefined)[][];
 };
 
 const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
@@ -33,17 +33,20 @@ const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
             const selectedConfigs: SelectedReportsState = JSON.parse(storedConfigsRaw);
             const generatedReports: GeneratedReportData[] = [];
 
-            Object.entries(selectedConfigs).forEach(([key, config]) => {
-                const reportKey = key as ReportKey;
+            (Object.keys(selectedConfigs) as ReportKey[]).forEach(reportKey => {
+                const config = selectedConfigs[reportKey];
                 if (!config || !config.fields) return;
 
                 const reportMeta = reportConfig[reportKey];
-                const selectedFields = Object.keys(config.fields).filter(fieldKey => config.fields[fieldKey as FieldKey<typeof reportKey>]) as FieldKey<typeof reportKey>[];
+                
+                const selectedFields = (Object.keys(config.fields) as FieldKey<typeof reportKey>[]).filter(
+                    fieldKey => config.fields?.[fieldKey]
+                );
 
                 if (selectedFields.length === 0) return;
 
                 const headers = selectedFields.map(fieldKey => t(reportMeta.fields[fieldKey as keyof typeof reportMeta.fields]));
-                let rows: string[][] = [];
+                let rows: (string | undefined)[][] = [];
                 
                 switch (reportKey) {
                     case 'clientList':
@@ -55,7 +58,6 @@ const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
                                     case 'status': return t(client.status.toLowerCase());
                                     case 'registeredDate': return client.registeredDate ? format(new Date(client.registeredDate), 'dd/MM/yyyy') : '';
                                     case 'contact': return client.phones.map(p => p.number).join(', ');
-                                    default: return '';
                                 }
                             })
                         );
@@ -70,7 +72,6 @@ const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
                                     case 'lastPlan': return lastPlan?.plan.name || 'N/A';
                                     case 'expirationDate': return client.expirationDate ? format(new Date(client.expirationDate), 'dd/MM/yyyy') : 'N/A';
                                     case 'contact': return client.phones.map(p => p.number).join(', ');
-                                    default: return '';
                                 }
                             })
                         );
@@ -78,9 +79,10 @@ const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
                     case 'activeTests':
                          const allTests = clients.flatMap(client =>
                             (client.tests || []).map(test => ({ client, test }))
-                        ).filter(({ test }) => {
+                        ).filter(({ test, client }) => {
                              const expirationDate = add(parseISO(test.creationDate), { [test.durationUnit]: test.durationValue });
-                             return isFuture(expirationDate);
+                             const isInterrupted = client.status === 'Inactive' && isFuture(expirationDate);
+                             return isFuture(expirationDate) && !isInterrupted;
                         });
                         rows = allTests.map(({ client, test }) =>
                             selectedFields.map(field => {
@@ -91,7 +93,6 @@ const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
                                     case 'endTime':
                                         const expiration = add(new Date(test.creationDate), { [test.durationUnit]: test.durationValue });
                                         return format(expiration, 'dd/MM/yyyy HH:mm');
-                                    default: return '';
                                 }
                             })
                         );
@@ -103,7 +104,6 @@ const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
                                     case 'panelName': return server.name;
                                     case 'currentBalance': return String(server.creditStock || 0);
                                     case 'paymentMethod': return t(server.paymentType as any);
-                                    default: return '';
                                 }
                             })
                         );
@@ -146,7 +146,7 @@ const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
                                             {report.rows.map((row, rIndex) => (
                                             <TableRow key={rIndex}>
                                                 {row.map((cell, cIndex) => (
-                                                <TableCell key={cIndex}>{cell}</TableCell>
+                                                <TableCell key={cIndex}>{cell || '-'}</TableCell>
                                                 ))}
                                             </TableRow>
                                             ))}
@@ -174,6 +174,7 @@ export default function ReportPage() {
 
     React.useEffect(() => {
         setIsClient(true);
+        // Delay printing to allow data to load and render
         const timer = setTimeout(() => {
             window.print();
         }, 1000); 
@@ -210,8 +211,26 @@ export default function ReportPage() {
                     .page-break {
                         page-break-after: always;
                     }
+                    @page {
+                        size: A4;
+                        margin: 1cm;
+                    }
+                }
+                @media screen {
+                  body {
+                    background-color: hsl(var(--muted));
+                  }
+                  .report-container {
+                    background: white;
+                    width: 210mm;
+                    height: 297mm;
+                    margin: 2rem auto;
+                    box-shadow: 0 0 0.5cm rgba(0,0,0,0.5);
+                    padding: 1cm;
+                  }
                 }
             `}</style>
         </ThemeProvider>
     );
 }
+
