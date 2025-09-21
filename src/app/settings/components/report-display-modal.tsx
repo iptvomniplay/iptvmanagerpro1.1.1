@@ -39,43 +39,14 @@ export function ReportDisplayModal({ isOpen, onClose, reports }: ReportDisplayMo
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0">
+      <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 print:hidden">
         <DialogHeader className="p-6 pb-4 border-b">
           <DialogTitle className="text-2xl">{t('generatedReport')}</DialogTitle>
           <DialogDescription>{t('generatedReportDescription')}</DialogDescription>
         </DialogHeader>
 
-        <style>
-          {`
-            @media print {
-              body * {
-                visibility: hidden;
-              }
-              #print-section, #print-section * {
-                visibility: visible;
-              }
-              #print-section {
-                position: absolute;
-                left: 0;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                width: 100%;
-                height: 100%;
-              }
-              .no-print {
-                display: none;
-              }
-              @page {
-                size: auto;
-                margin: 0.5in;
-              }
-            }
-          `}
-        </style>
-
         <ScrollArea className="flex-1">
-          <div ref={reportContentRef} id="print-section" className="p-6 space-y-8">
+          <div ref={reportContentRef} className="p-6 space-y-8">
             {reports.map((report, index) => (
               <div key={index}>
                 <h2 className="text-xl font-bold mb-4">{report.title}</h2>
@@ -109,7 +80,7 @@ export function ReportDisplayModal({ isOpen, onClose, reports }: ReportDisplayMo
           </div>
         </ScrollArea>
 
-        <DialogFooter className="p-6 border-t no-print">
+        <DialogFooter className="p-6 border-t">
           <Button variant="outline" onClick={onClose}>
             <X className="mr-2 h-4 w-4" />
             {t('close')}
@@ -120,6 +91,61 @@ export function ReportDisplayModal({ isOpen, onClose, reports }: ReportDisplayMo
           </Button>
         </DialogFooter>
       </DialogContent>
+      {/* This section will be visible only for printing */}
+      <div id="print-section" className="hidden print:block p-6 space-y-8">
+          <style>
+              {`
+                @media print {
+                  body > *:not(#print-section) {
+                    display: none;
+                  }
+                  #print-section {
+                    display: block;
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    right: 0;
+                    bottom: 0;
+                    width: 100%;
+                    height: auto;
+                  }
+                  @page {
+                    size: auto;
+                    margin: 0.75in;
+                  }
+                }
+              `}
+          </style>
+          {reports.map((report, index) => (
+              <div key={`print-${index}`} style={{ pageBreakInside: 'avoid', pageBreakAfter: index < reports.length - 1 ? 'always' : 'auto' }}>
+                  <h2 className="text-xl font-bold mb-4">{report.title}</h2>
+                  {report.rows.length > 0 ? (
+                  <div className="rounded-lg border">
+                      <Table>
+                      <TableHeader>
+                          <TableRow>
+                          {report.headers.map((header, hIndex) => (
+                              <TableHead key={hIndex}>{header}</TableHead>
+                          ))}
+                          </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                          {report.rows.map((row, rIndex) => (
+                          <TableRow key={rIndex}>
+                              {row.map((cell, cIndex) => (
+                              <TableCell key={cIndex}>{cell}</TableCell>
+                              ))}
+                          </TableRow>
+                          ))}
+                      </TableBody>
+                      </Table>
+                  </div>
+                  ) : (
+                  <p className="text-muted-foreground">{t('noDataForReport')}</p>
+                  )}
+              </div>
+          ))}
+      </div>
     </Dialog>
   );
 }
