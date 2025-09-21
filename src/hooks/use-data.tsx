@@ -37,11 +37,32 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setClients(loadedClients);
 
       const storedServers = localStorage.getItem('servers');
-      const loadedServers = storedServers ? JSON.parse(storedServers) : initialServers;
+      let loadedServers: Server[] = storedServers ? JSON.parse(storedServers) : initialServers;
+      
+      const storedCashFlow = localStorage.getItem('cashFlow');
+      let loadedCashFlow: CashFlowEntry[] = storedCashFlow ? JSON.parse(storedCashFlow) : [];
+
+      // Retroactively create initial purchase transactions for servers
+      loadedServers = loadedServers.map(server => {
+        if (server.paymentType === 'prepaid' && server.creditStock > 0 && (!server.transactions || server.transactions.length === 0)) {
+            const initialPurchase: Transaction = {
+                id: `trans_${Date.now()}_${Math.random()}`,
+                type: 'purchase',
+                date: new Date().toISOString(), // Assume the purchase happened "now" for retro-compatibility
+                credits: server.creditStock,
+                totalValue: 0, // We don't know the value, so we assume it was a bonus or initial setup
+                unitValue: 0,
+                description: 'Carga inicial de créditos'
+            };
+            return {
+                ...server,
+                transactions: [initialPurchase]
+            };
+        }
+        return server;
+      });
       setServers(loadedServers);
 
-      const storedCashFlow = localStorage.getItem('cashFlow');
-      let loadedCashFlow = storedCashFlow ? JSON.parse(storedCashFlow) : [];
 
       // Retroactively create cash flow entries for existing active clients
       const newCashFlowEntries: CashFlowEntry[] = [];
@@ -71,7 +92,6 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       if (newCashFlowEntries.length > 0) {
         loadedCashFlow = [...newCashFlowEntries, ...loadedCashFlow];
-        localStorage.setItem('cashFlow', JSON.stringify(loadedCashFlow));
       }
 
       setCashFlow(loadedCashFlow);
@@ -87,6 +107,14 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, []);
 
+  useEffect(() => {
+    if (isDataLoaded) {
+      localStorage.setItem('clients', JSON.stringify(clients));
+      localStorage.setItem('servers', JSON.stringify(servers));
+      localStorage.setItem('cashFlow', JSON.stringify(cashFlow));
+    }
+  }, [clients, servers, cashFlow, isDataLoaded]);
+
   const saveDataToStorage = useCallback(<T,>(key: string, data: T[]) => {
     if (typeof window !== 'undefined') {
       localStorage.setItem(key, JSON.stringify(data));
@@ -101,10 +129,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         date: new Date().toISOString(),
       };
       const updatedCashFlow = [newEntry, ...prevCashFlow];
-      saveDataToStorage('cashFlow', updatedCashFlow);
       return updatedCashFlow;
     });
-  }, [saveDataToStorage]);
+  }, []);
 
   const addClient = useCallback((clientData: Omit<Client, 'registeredDate' | 'plans' | '_tempId'>) => {
     setClients(prevClients => {
@@ -117,10 +144,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             plans: [],
         };
         const updatedClients = [newClient, ...prevClients];
-        saveDataToStorage('clients', updatedClients);
         return updatedClients;
     });
-  }, [saveDataToStorage]);
+  }, []);
 
   const updateClient = useCallback((clientData: Client, options?: { skipCashFlow?: boolean }) => {
     // Check for new activation to add to cash flow
@@ -197,12 +223,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                         date: new Date().toISOString(),
                     }));
                     const updatedCashFlow = [...newEntries, ...prevCashFlow];
-                    saveDataToStorage('cashFlow', updatedCashFlow);
                     return updatedCashFlow;
                 });
             }
-
-            saveDataToStorage('servers', updatedServers);
             return updatedServers;
         });
     }
@@ -211,18 +234,16 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
        const updatedClients = prevClients.map(c => 
         (c._tempId === clientData._tempId) ? { ...c, ...clientData } : c
       );
-      saveDataToStorage('clients', updatedClients);
        return updatedClients;
     });
-  }, [clients, addCashFlowEntry, saveDataToStorage]);
+  }, [clients, addCashFlowEntry]);
 
   const deleteClient = useCallback((tempId: string) => {
     setClients(prevClients => {
       const updatedClients = prevClients.filter(c => c._tempId !== tempId);
-      saveDataToStorage('clients', updatedClients);
       return updatedClients;
     });
-  }, [saveDataToStorage]);
+  }, []);
 
   const addServer = useCallback((serverData: Omit<Server, 'id' | 'status'>) => {
     setServers(prevServers => {
@@ -234,26 +255,23 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         transactions: [],
         };
         const updatedServers = [newServer, ...prevServers];
-        saveDataToStorage('servers', updatedServers);
         return updatedServers;
     });
-  }, [saveDataToStorage]);
+  }, []);
 
   const updateServer = useCallback((serverData: Server) => {
     setServers(prevServers => {
       const updatedServers = prevServers.map(s => (s.id === serverData.id ? {...s, ...serverData} : s));
-      saveDataToStorage('servers', updatedServers);
       return updatedServers;
     });
-  }, [saveDataToStorage]);
+  }, []);
 
   const deleteServer = useCallback((serverId: string) => {
     setServers(prevServers => {
       const updatedServers = prevServers.filter(s => s.id !== serverId);
-      saveDataToStorage('servers', updatedServers);
       return updatedServers;
     });
-  }, [saveDataToStorage]);
+  }, []);
 
   const addTestToClient = useCallback((clientId: string, testData: Omit<Test, 'creationDate'>) => {
     const newTest: Test = {
@@ -267,11 +285,10 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             }
             return client;
         });
-        saveDataToStorage('clients', updatedClients);
         return updatedClients;
       }
     );
-  }, [saveDataToStorage]);
+  }, []);
 
   const updateTestInClient = useCallback((clientId: string, testCreationDate: string, updatedTest: Partial<Test>) => {
     setClients(prev => {
@@ -287,10 +304,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
         return client;
       });
-      saveDataToStorage('clients', updatedClients);
       return updatedClients;
     });
-  }, [saveDataToStorage]);
+  }, []);
 
   const addTransactionToServer = useCallback((serverId: string, transactionData: Omit<Transaction, 'id' | 'date'>) => {
     setServers(prevServers => {
@@ -309,10 +325,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
         return server;
       });
-      saveDataToStorage('servers', updatedServers);
       return updatedServers;
     });
-  }, [saveDataToStorage]);
+  }, []);
 
   const value = {
     clients,
