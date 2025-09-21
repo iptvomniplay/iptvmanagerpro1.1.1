@@ -508,5 +508,9 @@
     "textCopiedSuccess": "The note content has been copied to the clipboard.",
     "deleteNoteWarning": "Are you sure you want to delete this note? This action cannot be undone.",
     "cashFlow": "Cash Flow",
-    "cashFlowDescription": "Track all your income and expenses."
+    "cashFlowDescription": "Track all your income and expenses.",
+    "totalRevenue": "Total Revenue",
+    "transactions": "Transactions",
+    "cashFlowEntriesDescription": "View all cash inflows and outflows.",
+    "noTransactionsFound": "No transactions found."
 }

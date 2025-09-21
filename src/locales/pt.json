@@ -508,6 +508,9 @@
     "textCopiedSuccess": "O conteúdo da nota foi copiado para a área de transferência.",
     "deleteNoteWarning": "Tem certeza de que deseja excluir esta anotação? Esta ação não pode ser desfeita.",
     "cashFlow": "Fluxo de Caixa",
-    "cashFlowDescription": "Acompanhe todas as suas receitas e despesas."
+    "cashFlowDescription": "Acompanhe todas as suas receitas e despesas.",
+    "totalRevenue": "Receita Total",
+    "transactions": "Transações",
+    "cashFlowEntriesDescription": "Visualize todas as entradas e saídas de caixa.",
+    "noTransactionsFound": "Nenhuma transação encontrada."
 }
-
