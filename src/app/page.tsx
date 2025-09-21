@@ -176,6 +176,10 @@ export default function Dashboard() {
             <CardTitle className="text-base font-medium">{t('expiringSubscriptions')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
+            <div className="flex items-center gap-2">
+              <CalendarX className="h-4 w-4 text-orange-600" />
+              <span>{t('expiringToday')}: <strong>{expiringToday}</strong></span>
+            </div>
              <div className="flex items-center gap-2">
               <CalendarClock className="h-4 w-4 text-amber-500" />
               <span>
@@ -184,10 +188,6 @@ export default function Dashboard() {
                   : t('expiringInNextXDays', { days: expirationWarningDays }) + ': '}
                 <strong>{expiringInPeriod}</strong>
               </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CalendarX className="h-4 w-4 text-orange-600" />
-              <span>{t('expiringToday')}: <strong>{expiringToday}</strong></span>
             </div>
             <div className="flex items-center gap-2">
               <UserX className="h-4 w-4 text-red-500" />
