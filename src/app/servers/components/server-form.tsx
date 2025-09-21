@@ -83,7 +83,7 @@ const createFormSchema = (t: (key: any) => string) =>
       nickname: z.string().optional(),
       phones: z.array(phoneSchema).min(1, { message: t('phoneRequired') }),
       paymentType: z.enum(['prepaid', 'postpaid'], { required_error: t('paymentMethodRequired') }),
-      panelValue: z.string().optional(),
+      panelValue: z.number().optional(),
       dueDate: z.coerce.number().optional(),
       hasInitialStock: z.boolean().default(false).optional(),
       creditStock: z.coerce.number({invalid_type_error: t('creditStockIsRequired')}).optional(),
@@ -92,7 +92,7 @@ const createFormSchema = (t: (key: any) => string) =>
     })
     .superRefine((data, ctx) => {
       if (data.paymentType === 'postpaid') {
-        if (!data.panelValue) {
+        if (!data.panelValue || data.panelValue <= 0) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: t('panelValueIsRequired'),
@@ -142,7 +142,15 @@ const initialSubServerValues: Omit<SubServerFormValues, 'status'> = {
     plans: [],
 };
 
-const getInitialValues = (server: Server | null): ServerFormValues => ({
+const getInitialValues = (server: Server | null, language: string): ServerFormValues => {
+    const formatCurrency = (value?: number) => {
+    if (value === undefined) return '';
+    const currency = language === 'pt-BR' ? 'BRL' : 'USD';
+    const locale = language === 'pt-BR' ? 'pt-BR' : 'en-US';
+    return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(value);
+  }
+  
+  return {
   name: server?.name || '',
   url: server?.url || '',
   login: server?.login || '',
@@ -151,13 +159,13 @@ const getInitialValues = (server: Server | null): ServerFormValues => ({
   nickname: server?.nickname || '',
   phones: server?.phones || [],
   paymentType: server?.paymentType || undefined,
-  panelValue: server?.panelValue || '',
+  panelValue: server?.panelValue,
   dueDate: server?.dueDate || undefined,
   hasInitialStock: !!server?.creditStock && server.creditStock > 0,
   creditStock: server?.creditStock,
   subServers: server?.subServers ? server.subServers.map(s => ({...s, plans: s.plans.map(p => typeof p === 'string' ? p : p.name)})) : [],
   observations: server?.observations || '',
-});
+}};
 
 
 export function ServerForm({ server }: ServerFormProps) {
@@ -175,6 +183,7 @@ export function ServerForm({ server }: ServerFormProps) {
   
   const [subServerFormState, setSubServerFormState] = React.useState<Omit<SubServerFormValues, 'status'>>(initialSubServerValues);
   const [currentPlan, setCurrentPlan] = React.useState<PlanFormValues>(initialPlanValues);
+  const [panelValueDisplay, setPanelValueDisplay] = React.useState('');
 
   const [isPhoneModalOpen, setIsPhoneModalOpen] = React.useState(false);
   
@@ -197,7 +206,7 @@ export function ServerForm({ server }: ServerFormProps) {
 
   const form = useForm<ServerFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: getInitialValues(server),
+    defaultValues: getInitialValues(server, language),
     shouldFocusError: false,
   });
 
@@ -216,6 +225,14 @@ export function ServerForm({ server }: ServerFormProps) {
   });
   
   const hasSubServers = fields.length > 0 || subServerFormState.name || subServerFormState.type || subServerFormState.screens || subServerFormState.plans.length > 0 || currentPlan.name.trim() !== '';
+
+  React.useEffect(() => {
+    if (server?.panelValue) {
+        const locale = language === 'pt-BR' ? 'pt-BR' : 'en-US';
+        const currency = language === 'pt-BR' ? 'BRL' : 'USD';
+        setPanelValueDisplay(new Intl.NumberFormat(locale, { style: 'currency', currency }).format(server.panelValue));
+    }
+  }, [server, language])
 
   React.useEffect(() => {
     if (hasInitialStock) {
@@ -313,23 +330,22 @@ export function ServerForm({ server }: ServerFormProps) {
     }));
   };
 
-  const handleCurrencyChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    fieldName: keyof ServerFormValues
-  ) => {
-    let value = e.target.value;
-    value = value.replace(/\D/g, '');
+  const handleCurrencyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, '');
     if (!value) {
-      setValue(fieldName as any, '');
+      setPanelValueDisplay('');
+      setValue('panelValue', 0);
       return;
     }
     const numericValue = parseInt(value, 10) / 100;
-
-    const formatter = new Intl.NumberFormat(language, {
-      style: 'currency',
-      currency: language === 'pt-BR' ? 'BRL' : 'USD',
-    });
-    setValue(fieldName as any, formatter.format(numericValue));
+    
+    const locale = language === 'pt-BR' ? 'pt-BR' : 'en-US';
+    const currency = language === 'pt-BR' ? 'BRL' : 'USD';
+    const formatter = new Intl.NumberFormat(locale, { style: 'currency', currency });
+    
+    setPanelValueDisplay(formatter.format(numericValue));
+    setValue('panelValue', numericValue);
+    trigger('panelValue');
   };
   
   const processSubServerForValidation = () => {
@@ -478,9 +494,10 @@ export function ServerForm({ server }: ServerFormProps) {
     if (server) {
         router.push('/servers');
     } else {
-        reset(getInitialValues(null));
+        reset(getInitialValues(null, language));
         setSubServerFormState(initialSubServerValues);
         setCurrentPlan(initialPlanValues);
+        setPanelValueDisplay('');
         remove();
         setIsPaymentTypeVisible(false);
         setIsObservationsVisible(false);
@@ -799,8 +816,8 @@ export function ServerForm({ server }: ServerFormProps) {
                         <Input
                           {...field}
                           autoComplete="off"
-                          value={field.value ?? ''}
-                          onChange={(e) => handleCurrencyChange(e, 'panelValue')}
+                          value={panelValueDisplay}
+                          onChange={handleCurrencyChange}
                           placeholder={
                             language === 'pt-BR' ? t('currencyPlaceholderBRL') : t('currencyPlaceholderUSD')
                           }

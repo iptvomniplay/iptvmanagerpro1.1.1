@@ -29,15 +29,23 @@ interface ConfirmationModalProps {
   serverData: Partial<Server>;
 }
 
-const DetailItem = ({ label, value }: { label: string; value?: string | number | null; }) => {
+const DetailItem = ({ label, value, isCurrency = false }: { label: string; value?: string | number | null; isCurrency?: boolean }) => {
+  const { t } = useLanguage();
   const displayValue = value ?? 0;
   
   if (!value && value !== 0) return null;
 
+  let formattedValue = String(displayValue);
+  if (isCurrency && typeof displayValue === 'number') {
+    const locale = t('currency') === 'BRL' ? 'pt-BR' : 'en-US';
+    const currency = t('currency') === 'BRL' ? 'BRL' : 'USD';
+    formattedValue = new Intl.NumberFormat(locale, { style: 'currency', currency }).format(displayValue);
+  }
+
   return (
     <div>
       <p className="text-sm font-medium text-muted-foreground">{label}</p>
-      <p className="text-lg">{String(displayValue)}</p>
+      <p className="text-lg">{formattedValue}</p>
     </div>
   );
 };
@@ -114,7 +122,7 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, serverData }: Co
 
             {serverData.paymentType === 'postpaid' && (
               <>
-                <DetailItem label={t('panelValue')} value={serverData.panelValue} />
+                <DetailItem label={t('panelValue')} value={serverData.panelValue} isCurrency />
                 <DetailItem label={t('dueDate')} value={serverData.dueDate} />
               </>
             )}

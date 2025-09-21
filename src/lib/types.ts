@@ -107,7 +107,7 @@ export type Server = {
   nickname?: string;
   phones?: Phone[];
   paymentType: 'prepaid' | 'postpaid';
-  panelValue?: string;
+  panelValue?: number;
   dueDate?: number;
   creditStock: number;
   subServers?: SubServer[];
@@ -130,4 +130,5 @@ export type CashFlowEntry = {
   clientId?: string; // Opcional, para vincular a um cliente
   clientName?: string; // Opcional, para exibição
   sourceTransactionId?: string; // Vincula a uma transação de estoque
+  sourceServerId?: string; // Vincula a um servidor (para custos de painel)
 };

@@ -74,6 +74,20 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 }
             }
         });
+        
+        if (server.paymentType === 'postpaid' && server.panelValue && server.panelValue > 0) {
+          const hasEntry = loadedCashFlow.some(entry => entry.sourceServerId === server.id && entry.description.includes('Pagamento do painel'));
+          if(!hasEntry) {
+             newCashFlowEntries.push({
+                id: `cf_${Date.now()}_${Math.random()}`,
+                date: new Date().toISOString(),
+                type: 'expense',
+                amount: server.panelValue,
+                description: `Pagamento do painel: ${server.name}`,
+                sourceServerId: server.id
+            });
+          }
+        }
 
         return {
             ...server,
@@ -254,10 +268,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const addServer = useCallback((serverData: Omit<Server, 'id' | 'status'>) => {
+    const newServerId = `S${(Math.random() * 100).toFixed(0).padStart(2, '0')}`;
     setServers(prevServers => {
         const newServer: Server = {
         ...serverData,
-        id: `S${(Math.random() * 100).toFixed(0).padStart(2, '0')}`,
+        id: newServerId,
         status: 'Online',
         subServers: serverData.subServers || [],
         transactions: [],
@@ -265,14 +280,46 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const updatedServers = [newServer, ...prevServers];
         return updatedServers;
     });
-  }, []);
+    
+    if (serverData.paymentType === 'postpaid' && serverData.panelValue && serverData.panelValue > 0) {
+      addCashFlowEntry({
+        type: 'expense',
+        amount: serverData.panelValue,
+        description: `Pagamento do painel: ${serverData.name}`,
+        sourceServerId: newServerId
+      });
+    }
+
+  }, [addCashFlowEntry]);
 
   const updateServer = useCallback((serverData: Server) => {
+    const oldServer = servers.find(s => s.id === serverData.id);
+    
     setServers(prevServers => {
       const updatedServers = prevServers.map(s => (s.id === serverData.id ? {...s, ...serverData} : s));
       return updatedServers;
     });
-  }, []);
+    
+    if (serverData.paymentType === 'postpaid' && serverData.panelValue && serverData.panelValue > 0) {
+      if (!oldServer || oldServer.panelValue !== serverData.panelValue) {
+        setCashFlow(prev => {
+          const newFlow = prev.filter(entry => !(entry.sourceServerId === serverData.id && entry.description.includes('Pagamento do painel')));
+          const newEntry: CashFlowEntry = {
+            id: `cf_${Date.now()}_${Math.random()}`,
+            date: new Date().toISOString(),
+            type: 'expense',
+            amount: serverData.panelValue!,
+            description: `Pagamento do painel: ${serverData.name}`,
+            sourceServerId: serverData.id
+          };
+          return [newEntry, ...newFlow];
+        });
+      }
+    } else if (serverData.paymentType !== 'postpaid') {
+      setCashFlow(prev => prev.filter(entry => !(entry.sourceServerId === serverData.id && entry.description.includes('Pagamento do painel'))));
+    }
+
+  }, [servers]);
 
   const deleteServer = useCallback((serverId: string) => {
     setServers(prevServers => {
