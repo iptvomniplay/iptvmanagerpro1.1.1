@@ -9,7 +9,6 @@ import { add, format, isFuture, parseISO } from 'date-fns';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Button } from '@/components/ui/button';
-import { useReactToPrint } from 'react-to-print';
 
 type GeneratedReportData = {
   title: string;
@@ -39,7 +38,7 @@ const ReportContent = React.forwardRef<HTMLDivElement>((props, ref) => {
                 if (!config || !config.fields) return;
 
                 const reportMeta = reportConfig[reportKey];
-                const selectedFields = Object.keys(config.fields).filter(fieldKey => (config.fields as any)[fieldKey]) as FieldKey<typeof reportKey>[];
+                const selectedFields = Object.keys(config.fields).filter(fieldKey => config.fields[fieldKey as FieldKey<typeof reportKey>]) as FieldKey<typeof reportKey>[];
 
                 if (selectedFields.length === 0) return;
 
@@ -179,35 +178,48 @@ ReportContent.displayName = 'ReportContent';
 
 export default function ReportPage() {
     const { t } = useLanguage();
-    const componentRef = React.useRef<HTMLDivElement>(null);
     const [isClient, setIsClient] = React.useState(false);
-
-    const handlePrint = useReactToPrint({
-        content: () => componentRef.current,
-        onAfterPrint: () => window.close(),
-    });
 
     React.useEffect(() => {
         setIsClient(true);
-        setTimeout(() => {
-            handlePrint();
-        }, 500);
-    }, [handlePrint]);
+        const timer = setTimeout(() => {
+            window.print();
+        }, 1000); // Wait 1 second for data to render before printing
+
+        return () => clearTimeout(timer);
+    }, []);
 
     if (!isClient) {
-        return null; // Or a loading spinner
+        return null;
     }
 
     return (
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-             <div className="report-header p-8 flex justify-between items-center">
+            <div className="print-header p-8 flex justify-between items-center">
                 <h1 className="text-2xl font-bold">{t('generatedReport')}</h1>
                 <div className="flex gap-2">
                     <Button variant="outline" onClick={() => window.close()}>{t('close')}</Button>
-                    <Button onClick={handlePrint}>{t('print')}</Button>
+                    <Button onClick={() => window.print()}>{t('print')}</Button>
                 </div>
             </div>
-            <ReportContent ref={componentRef} />
+            <ReportContent />
+            <style jsx global>{`
+                @media print {
+                    .print-header {
+                        display: none;
+                    }
+                    body {
+                        margin: 0;
+                        padding: 0;
+                    }
+                    .report-container {
+                        padding: 1cm;
+                    }
+                    .page-break {
+                        page-break-after: always;
+                    }
+                }
+            `}</style>
         </ThemeProvider>
     );
 }
