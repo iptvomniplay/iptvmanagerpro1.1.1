@@ -286,7 +286,16 @@ export default function SubscriptionPage() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t('clientIdSavedSuccess')}</AlertDialogTitle>
-            <AlertDialogDescription>{t('clientIdSavedMessage', { id: manualId, name: selectedClient?.name })}</AlertDialogDescription>
+             <AlertDialogDescription>
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: t('clientIdSavedMessage', {
+                    id: `<strong>${manualId}</strong>`,
+                    name: `<strong>${selectedClient?.name}</strong>`,
+                  }),
+                }}
+              />
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogAction onClick={() => setIsIdSaveSuccessModalOpen(false)}>{t('ok')}</AlertDialogAction>
         </AlertDialogContent>
