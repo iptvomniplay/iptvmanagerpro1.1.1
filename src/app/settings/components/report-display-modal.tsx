@@ -66,7 +66,7 @@ export function ReportDisplayModal({ isOpen, onClose }: ReportDisplayModalProps)
             }
           })
           .join('');
-        printWindow.document.write(`<style>${styles} body { -webkit-print-color-adjust: exact; } .no-print { display: none; } </style>`);
+        printWindow.document.write('<style>@media print { .no-print { display: none !important; } body { -webkit-print-color-adjust: exact; } .page-break { page-break-inside: avoid; } }</style>');
         printWindow.document.write('</head><body>');
         printWindow.document.write(printContent.innerHTML);
         printWindow.document.write('</body></html>');
