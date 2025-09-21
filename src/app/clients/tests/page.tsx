@@ -93,11 +93,13 @@ const TestList = ({ tests, onUpdateClient, onViewDetails, isExpiredList }: { tes
                                     )}
                                 </div>
                             </TableCell>
-                            {!isExpiredList && client.status === 'Test' && (
+                            {!isExpiredList && (
                                 <TableCell className="text-right">
+                                  {client.status === 'Test' && (
                                     <Button variant="destructive" size="sm" onClick={(e) => { e.stopPropagation(); handleInterruptTest(client);}}>
                                         {t('interruptTest')}
                                     </Button>
+                                  )}
                                 </TableCell>
                             )}
                         </TableRow>
