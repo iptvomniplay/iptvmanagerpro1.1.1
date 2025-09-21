@@ -82,6 +82,7 @@ export function ClientExpiration({
 
     let startDate: Date;
     let expiration: Date;
+    let isTest = false;
 
     if (planPeriod && planStartDate) {
       startDate = parseISO(planStartDate);
@@ -99,6 +100,7 @@ export function ClientExpiration({
       startDate = parseISO(testCreationDate);
       const duration = { [testDurationUnit]: testDurationValue };
       expiration = add(startDate, duration);
+      isTest = true;
     } else {
       return; // Not enough data to calculate
     }
@@ -113,7 +115,10 @@ export function ClientExpiration({
         setRemainingSeconds(0);
         setRemainingTimeText(formatRemainingTime(0));
         if (!hasExpired) {
-          onExpire();
+          if (isTest) {
+            // Only trigger expire if it's a test, plan expiration is handled differently or manually
+            onExpire();
+          }
           setHasExpired(true);
         }
         clearInterval(intervalId);

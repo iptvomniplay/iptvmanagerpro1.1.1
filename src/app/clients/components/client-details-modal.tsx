@@ -228,7 +228,7 @@ const TestDetails = ({ test, panel, clientStatus }: { test: Test; panel?: Server
 
   const startDate = parseISO(test.creationDate);
   const expirationDate = add(startDate, { [test.durationUnit]: test.durationValue });
-  const isInterrupted = clientStatus === 'Inactive' && new Date() < expirationDate;
+  const isInterrupted = clientStatus === 'Inactive' && new Date() < expirationDate && clientStatus !== 'Active';
   const endDate = isInterrupted ? new Date() : expirationDate;
 
   const testStatus = isInterrupted

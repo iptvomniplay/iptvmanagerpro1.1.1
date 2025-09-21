@@ -36,7 +36,9 @@ const TestList = ({ tests, onUpdateClient, onViewDetails, isExpiredList }: { tes
     const { t } = useLanguage();
 
     const handleInterruptTest = (client: Client) => {
-        onUpdateClient({ ...client, status: 'Inactive' });
+        if (client.status === 'Test') {
+            onUpdateClient({ ...client, status: 'Inactive' });
+        }
     }
 
     if (tests.length === 0) {

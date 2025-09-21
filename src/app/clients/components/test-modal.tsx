@@ -133,12 +133,15 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
         durationValue: values.durationValue,
         durationUnit: values.durationUnit,
       };
+      
+      const clientIsActive = selectedClient.status === 'Active';
+
       addTestToClient(selectedClient._tempId, newTest);
-       if (selectedClient) {
+
+      if (!clientIsActive) {
         updateClient({ ...selectedClient, status: 'Test' });
       }
     }
-    console.log('Test data:', { ...values, clientId: selectedClient?.id, panelId: selectedPanel?.id, subServer: selectedSubServer });
     handleClose();
   };
 
