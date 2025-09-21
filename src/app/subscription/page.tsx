@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import type { Application, Client, Plan, Server, SubServer } from '@/lib/types';
+import type { Application, Client } from '@/lib/types';
 import { useLanguage } from '@/hooks/use-language';
 import {
   Card,
@@ -10,18 +10,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
 import { ClientSearch } from './components/client-search';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { User, FileText, AppWindow, AlertTriangle, Save, Info, UserCheck, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { User, Save, UserCheck, X, AlertTriangle, Info } from 'lucide-react';
 import { SubscriptionPlanForm } from './components/subscription-plan-form';
 import { ApplicationsForm } from './components/applications-form';
 import { useData } from '@/hooks/use-data';
@@ -36,7 +27,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { PersistenceTest } from './components/persistence-test';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function SubscriptionPage() {
@@ -47,7 +40,6 @@ export default function SubscriptionPage() {
 
   const [selectedClient, setSelectedClient] = React.useState<Client | null>(null);
   const [manualId, setManualId] = React.useState('');
-  const [activeTab, setActiveTab] = React.useState('client');
   const [isValidationError, setIsValidationError] = React.useState(false);
   const [validationMessage, setValidationMessage] = React.useState('');
   const [isIdSaveSuccessModalOpen, setIsIdSaveSuccessModalOpen] = React.useState(false);
@@ -65,11 +57,9 @@ export default function SubscriptionPage() {
       const fullClientData = clients.find(c => c._tempId === client._tempId) || client;
       setSelectedClient(fullClientData);
       setManualId(fullClientData.id || '');
-      setActiveTab('client');
     } else {
       setSelectedClient(null);
       setManualId('');
-      setActiveTab('client');
     }
   };
   
@@ -81,13 +71,12 @@ export default function SubscriptionPage() {
     if (!selectedClient) return;
     const newClientState = { ...selectedClient, ...updatedData };
     setSelectedClient(newClientState);
-    updateClient(newClientState, true); // skipSave = true to avoid saving to LS on every change
+    updateClient(newClientState, true); // skipSave = true
   };
 
   const saveManualId = () => {
     if (!selectedClient) return;
     
-    // Validar se o ID manual não está vazio
     if (!manualId.trim()) {
         toast({
             variant: "destructive",
@@ -104,54 +93,30 @@ export default function SubscriptionPage() {
       return;
     }
     const newClientState = { ...selectedClient, id: manualId };
-    updateClient(newClientState, false); // Persistência ativada
+    updateClient(newClientState, false); 
     setSelectedClient(newClientState); 
     setIsIdSaveSuccessModalOpen(true);
   };
 
-  const validateForms = (targetTab?: string) => {
-    if (!selectedClient) return false;
+  const validateAndSave = () => {
+    if (!selectedClient) return;
 
-    if (targetTab === 'client') {
-        return true;
+    if (!selectedClient.id && !manualId) {
+      setValidationMessage(t('clientIdRequired'));
+      setIsValidationError(true);
+      return;
     }
-
-    if (targetTab === 'plans') {
-        if (!selectedClient.id && !manualId) {
-          setValidationMessage(t('clientIdRequired'));
-          setActiveTab('client');
-          setTimeout(() => document.getElementById('manual-client-id')?.focus(), 0);
-          setIsValidationError(true);
-          return false;
-        }
-        return true;
-    }
-    
-     if (targetTab === 'apps') {
-        if (arePlansIncomplete) {
-            setValidationMessage(t('addAtLeastOnePlan'));
-            setActiveTab('plans');
-            setIsValidationError(true);
-            return false;
-        }
-        return true;
-    }
-    
-    if (!isReadyForActivation) {
-        if (!selectedClient.id) setValidationMessage(t('clientIdRequired'));
-        else if (arePlansIncomplete) setValidationMessage(t('addAtLeastOnePlan'));
-        else if (areAppsIncomplete) setValidationMessage(t('fillAllApplications'));
-        
+    if (arePlansIncomplete) {
+        setValidationMessage(t('addAtLeastOnePlan'));
         setIsValidationError(true);
-        return false;
+        return;
     }
-
-    return true;
-  };
-
-  const handleSave = () => {
-    if (!validateForms()) return;
-
+    if (areAppsIncomplete) {
+        setValidationMessage(t('fillAllApplications'));
+        setIsValidationError(true);
+        return;
+    }
+    
     const clientToUpdate: Client = {
       ...selectedClient!,
       status: 'Active',
@@ -160,12 +125,6 @@ export default function SubscriptionPage() {
 
     updateClient(clientToUpdate);
     setIsSubscriptionSuccessModalOpen(true);
-  };
-  
-  const handleTabChange = (newTab: string) => {
-    if (validateForms(newTab)) {
-        setActiveTab(newTab);
-    }
   };
 
   const handleCancel = () => {
@@ -215,7 +174,7 @@ export default function SubscriptionPage() {
 
         {selectedClient ? (
           <>
-            {selectedClient.status !== 'Active' && (
+             {selectedClient.status !== 'Active' && (
               <Alert variant="default" className="border-primary text-primary">
                 <Info className="h-4 w-4" />
                 <AlertTitle>{t('pendingActivationTitle')}</AlertTitle>
@@ -225,48 +184,15 @@ export default function SubscriptionPage() {
               </Alert>
             )}
 
-            <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-               <TabsList className="grid w-full grid-cols-3 gap-2 h-auto rounded-lg p-1 bg-transparent border-b-0">
-                <TabsTrigger value="client" className="relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
-                   {isValidationError && activeTab !== 'client' && (!selectedClient.id && !manualId) && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
-                  <User className="mr-2 h-5 w-5" /> {t('client')}
-                </TabsTrigger>
-                <TabsTrigger value="plans" disabled={!selectedClient} className="relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary disabled:opacity-50 disabled:cursor-not-allowed">
-                  {isValidationError && activeTab !== 'plans' && arePlansIncomplete && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
-                  <FileText className="mr-2 h-5 w-5" /> {t('subscriptionPlans')}
-                </TabsTrigger>
-                <TabsTrigger value="apps" disabled={!selectedClient || arePlansIncomplete} className="relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary disabled:opacity-50 disabled:cursor-not-allowed">
-                    {isValidationError && activeTab !== 'apps' && areAppsIncomplete && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
-                    <AppWindow className="mr-2 h-5 w-5" /> {t('applications')}
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="client" className="mt-6">
-                <Card>
-                  <CardHeader>
+            <Card>
+                <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-xl">
                       <User className="h-6 w-6" />
                       <span>{selectedClient.name}</span>
                     </CardTitle>
-                    <CardDescription>{t('clientDetails')}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    {selectedClient.plans && selectedClient.plans.length > 0 && (
-                      <Alert variant="destructive">
-                        <AlertTriangle className="h-4 w-4" />
-                        <AlertTitle>{t('attentionClientHasSubscription')}</AlertTitle>
-                        <AlertDescription className="space-y-3">
-                          {areAppsIncomplete ? (
-                            <p>{t('pendingScreensWarning', { count: totalScreensFromPlans - totalApplications })}</p>
-                          ) : (
-                            <p>{t('allAppsConfigured')}</p>
-                          )}
-                          <Button variant="secondary" onClick={() => setActiveTab('apps')}>
-                            {t('managePendingScreens')}
-                          </Button>
-                        </AlertDescription>
-                      </Alert>
-                    )}
+                     <CardDescription>{t('clientDetails')}</CardDescription>
+                </CardHeader>
+                 <CardContent className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-sm">
                       <div>
                         <p className="font-medium text-muted-foreground">{t('nickname')}</p>
@@ -300,26 +226,17 @@ export default function SubscriptionPage() {
                         </div>
                       </div>
                     </div>
-                    <PersistenceTest selectedClient={selectedClient} />
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="plans" className="mt-6 space-y-6">
-                <SubscriptionPlanForm
-                  selectedClient={selectedClient}
-                  onPlanChange={(plans) => handleUpdateClient({ plans })}
-                />
-              </TabsContent>
-              
-              <TabsContent value="apps" className="mt-6 space-y-6">
-                 <ApplicationsForm
-                  selectedClient={selectedClient}
-                  onUpdateApplications={(applications) => handleUpdateClient({ applications })}
-                />
-              </TabsContent>
-
-            </Tabs>
+                </CardContent>
+            </Card>
+            
+            <SubscriptionPlanForm
+              selectedClient={selectedClient}
+              onPlanChange={(plans) => handleUpdateClient({ plans })}
+            />
+            <ApplicationsForm
+              selectedClient={selectedClient}
+              onUpdateApplications={(applications) => handleUpdateClient({ applications })}
+            />
           </>
         ) : (
           <Card className="flex flex-col items-center justify-center text-center py-20 mt-6">
@@ -337,7 +254,7 @@ export default function SubscriptionPage() {
         {selectedClient && (
             <>
                 <Button variant="outline" onClick={handleCancel}>{t('cancel')}</Button>
-                <Button onClick={handleSave} disabled={!isReadyForActivation}>
+                <Button onClick={validateAndSave} disabled={!isReadyForActivation}>
                     {t('activateSubscription')}
                 </Button>
             </>
@@ -360,7 +277,7 @@ export default function SubscriptionPage() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t('clientIdSavedSuccess')}</AlertDialogTitle>
-             <AlertDialogDescription>
+            <AlertDialogDescription>
               <span
                 dangerouslySetInnerHTML={{
                   __html: t('clientIdSavedMessage', {
