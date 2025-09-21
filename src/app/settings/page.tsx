@@ -70,11 +70,16 @@ export default function SettingsPage() {
       let rows: (string | undefined)[][] = [];
       
       if (reportMeta.type === 'fields') {
-          const selectedFields = (Object.keys((config as any).fields) as (keyof typeof reportMeta.fields)[]).filter(
+          let selectedFields = (Object.keys((config as any).fields) as (keyof typeof reportMeta.fields)[]).filter(
             fieldKey => (config as any).fields?.[fieldKey]
           );
           
           if (selectedFields.length === 0) return;
+          
+          if (clientContext) {
+            selectedFields = selectedFields.filter(field => field !== 'fullName' && field !== 'clientName');
+          }
+
           headers = selectedFields.map(fieldKey => t(reportMeta.fields[fieldKey as keyof typeof reportMeta.fields]));
 
           switch (reportKey) {
@@ -418,5 +423,6 @@ export default function SettingsPage() {
     </>
   );
 }
+
 
 
