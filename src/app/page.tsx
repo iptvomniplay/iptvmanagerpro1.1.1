@@ -11,6 +11,9 @@ import {
   Activity,
   AlertTriangle,
   TestTube,
+  UserX,
+  UserCheck,
+  CalendarClock,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -24,7 +27,7 @@ import {
 import { useLanguage } from '@/hooks/use-language';
 import { useData } from '@/hooks/use-data';
 import { useDashboardSettings } from '@/hooks/use-dashboard-settings';
-import { subDays, startOfMonth, startOfYear, isWithinInterval, add, differenceInDays, isFuture, parseISO } from 'date-fns';
+import { subDays, startOfMonth, startOfYear, isWithinInterval, add, differenceInDays, isFuture, parseISO, isToday } from 'date-fns';
 import type { PlanPeriod } from '@/lib/types';
 
 export default function Dashboard() {
@@ -64,12 +67,15 @@ export default function Dashboard() {
     ).length;
   };
   
-  const getExpiringSubscriptionsCount = () => {
+  const getSubscriptionStatusCounts = () => {
     const now = new Date();
+    let expiringToday = 0;
+    const inactiveClients = clients.filter(c => c.status === 'Inactive').length;
+    const expiredClients = clients.filter(c => c.status === 'Expired').length;
 
-    return clients.filter(client => {
+    clients.forEach(client => {
       if (client.status !== 'Active' || !client.activationDate || !client.plans || client.plans.length === 0) {
-        return false;
+        return;
       }
       
       const getDuration = (period: PlanPeriod) => {
@@ -84,8 +90,12 @@ export default function Dashboard() {
       // Assuming the first plan dictates the expiration for this logic
       const expirationDate = add(new Date(client.activationDate), getDuration(client.plans[0].planPeriod));
       
-      return differenceInDays(expirationDate, now) >= 0 && differenceInDays(expirationDate, now) <= expirationWarningDays;
-    }).length;
+      if (isToday(expirationDate)) {
+        expiringToday++;
+      }
+    });
+
+    return { expiringToday, inactiveClients, expiredClients };
   };
   
   const testCounts = React.useMemo(() => {
@@ -111,7 +121,7 @@ export default function Dashboard() {
   }, [clients]);
 
   const newSubscriptionsCount = getNewSubscriptionsCount();
-  const expiringSubscriptionsCount = getExpiringSubscriptionsCount();
+  const { expiringToday, inactiveClients, expiredClients } = getSubscriptionStatusCounts();
 
 
   return (
@@ -147,7 +157,7 @@ export default function Dashboard() {
             <CardTitle className="text-base font-medium">
               {t('newSubscriptions')}
             </CardTitle>
-            <Users className="h-5 w-5 text-muted-foreground" />
+            <UserCheck className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">+{newSubscriptionsCount}</div>
@@ -157,15 +167,22 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="pb-2">
             <CardTitle className="text-base font-medium">{t('expiringSubscriptions')}</CardTitle>
-            <AlertTriangle className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{expiringSubscriptionsCount}</div>
-            <p className="text-sm text-muted-foreground">
-              {t('inTheNextXDays', {days: expirationWarningDays})}
-            </p>
+          <CardContent className="space-y-2 text-sm">
+            <div className="flex items-center gap-2">
+              <CalendarClock className="h-4 w-4 text-amber-500" />
+              <span>{t('expiringToday')}: <strong>{expiringToday}</strong></span>
+            </div>
+            <div className="flex items-center gap-2">
+              <UserX className="h-4 w-4 text-red-500" />
+              <span>{t('expiredClients')}: <strong>{expiredClients}</strong></span>
+            </div>
+            <div className="flex items-center gap-2">
+              <UserX className="h-4 w-4 text-gray-500" />
+              <span>{t('inactiveClients')}: <strong>{inactiveClients}</strong></span>
+            </div>
           </CardContent>
         </Card>
          <Card>

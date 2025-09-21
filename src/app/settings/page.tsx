@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/use-language';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -18,10 +18,12 @@ import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { useDashboardSettings, DashboardPeriod } from '@/hooks/use-dashboard-settings';
+import { useToast } from '@/hooks/use-toast';
 
 export default function SettingsPage() {
   const { language, setLanguage, t } = useLanguage();
   const { theme, setTheme } = useTheme();
+  const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
   const { newSubscriptionsPeriod, setNewSubscriptionsPeriod, expirationWarningDays, setExpirationWarningDays } = useDashboardSettings();
 
@@ -32,18 +34,33 @@ export default function SettingsPage() {
   const handleLanguageChange = (lang: 'pt-BR' | 'en-US') => {
     setLanguage(lang);
   };
+  
+  const handleWarningDaysChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = parseInt(e.target.value, 10);
+    if (isNaN(value)) {
+        value = 1;
+    } else if (value < 1) {
+        value = 1;
+    } else if (value > 30) {
+        value = 30;
+    }
+    setExpirationWarningDays(value);
+  }
+  
+  const handleSave = () => {
+    // A lógica de salvar já está no `onCheckedChange`, `onValueChange` e `onChange` dos componentes
+    // que chamam os setters do hook `useDashboardSettings`
+    toast({
+        title: t('success'),
+        description: t('settingsSaved'),
+    });
+  }
 
   const dashboardPeriodOptions: { value: DashboardPeriod; label: string }[] = [
     { value: 'today', label: t('today') },
     { value: 'this_month', label: t('thisMonth') },
     { value: 'last_30_days', label: t('last30Days') },
     { value: 'this_year', label: t('thisYear') },
-  ];
-  
-  const expirationWarningOptions: { value: number; label: string }[] = [
-    { value: 7, label: t('7days') },
-    { value: 15, label: t('15days') },
-    { value: 30, label: t('30days') },
   ];
 
   if (!mounted) {
@@ -234,26 +251,27 @@ export default function SettingsPage() {
               </div>
               <Separator/>
               <div className="space-y-4">
-                <Label className="text-lg">{t('expirationWarning')}</Label>
-                 <RadioGroup
-                    value={String(expirationWarningDays)}
-                    onValueChange={(value) => setExpirationWarningDays(Number(value))}
-                    className="space-y-2"
-                  >
-                  {expirationWarningOptions.map(option => (
-                     <div className="flex items-center space-x-2" key={option.value}>
-                       <RadioGroupItem value={String(option.value)} id={`exp-warn-${option.value}`} />
-                       <Label htmlFor={`exp-warn-${option.value}`} className="text-base font-normal cursor-pointer">{option.label}</Label>
-                     </div>
-                  ))}
-                 </RadioGroup>
+                <Label className="text-lg" htmlFor="expiration-warning-days">{t('expirationWarning')}</Label>
+                 <div className="flex items-center gap-4">
+                    <Input 
+                        id="expiration-warning-days"
+                        type="number"
+                        min="1"
+                        max="30"
+                        value={expirationWarningDays}
+                        onChange={handleWarningDaysChange}
+                        className="w-24"
+                    />
+                    <span className="text-muted-foreground">{t('days')}</span>
+                 </div>
+                 <p className="text-sm text-muted-foreground">{t('expirationWarningDescription')}</p>
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
       <div className="mt-auto flex justify-end pt-8">
-        <Button size="lg">{t('savePreferences')}</Button>
+        <Button size="lg" onClick={handleSave}>{t('savePreferences')}</Button>
       </div>
     </div>
   );

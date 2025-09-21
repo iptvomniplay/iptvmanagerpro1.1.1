@@ -25,7 +25,8 @@ export const DashboardSettingsProvider: React.FC<{ children: ReactNode }> = ({ c
     }
     const storedWarningDays = localStorage.getItem('dashboard_expirationWarningDays');
     if (storedWarningDays) {
-      setExpirationWarningDaysState(Number(storedWarningDays));
+      const days = Number(storedWarningDays);
+      setExpirationWarningDaysState(isNaN(days) ? 7 : days);
     }
   }, []);
 
@@ -35,8 +36,9 @@ export const DashboardSettingsProvider: React.FC<{ children: ReactNode }> = ({ c
   };
   
   const setExpirationWarningDays = (days: number) => {
-    localStorage.setItem('dashboard_expirationWarningDays', String(days));
-    setExpirationWarningDaysState(days);
+    const validDays = Math.max(1, Math.min(30, days));
+    localStorage.setItem('dashboard_expirationWarningDays', String(validDays));
+    setExpirationWarningDaysState(validDays);
   }
 
   const t = (key: string) => {

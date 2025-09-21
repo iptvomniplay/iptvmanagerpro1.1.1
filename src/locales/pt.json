@@ -413,11 +413,16 @@
     "this_month": "Este Mês",
     "last_30_days": "Últimos 30 Dias",
     "this_year": "Este Ano",
-    "expiringSubscriptions": "Assinaturas a Expirar",
+    "expiringSubscriptions": "Status das Assinaturas",
     "inTheNextXDays": "nos próximos {days} dias",
     "expirationWarning": "Aviso de Expiração",
     "7days": "7 dias",
     "15days": "15 dias",
     "activeTests": "Testes Ativos",
-    "expiredTests": "Testes Expirados"
+    "expiredTests": "Testes Expirados",
+    "expiringToday": "Expirando hoje",
+    "expiredClients": "Expirados",
+    "inactiveClients": "Inativos",
+    "settingsSaved": "Configurações salvas com sucesso!",
+    "expirationWarningDescription": "Defina com quantos dias de antecedência deseja ser avisado sobre as assinaturas que estão expirando."
 }

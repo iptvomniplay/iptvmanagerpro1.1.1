@@ -200,7 +200,7 @@
     "phonePtBRPlaceholder": "(XX) XXXXX-XXXX",
     "ok": "OK",
     "currencyPlaceholderUSD": "$ 0.00",
-    "currencyPlaceholderBRL": "R$ 0.00",
+    "currencyPlaceholderBRL": "R$ 0,00",
     "dashboardClientsDesc": "A representation of managing clients.",
     "dashboardServersDesc": "A representation of servers.",
     "serverNameRequired": "Server name is required",
@@ -413,11 +413,16 @@
     "this_month": "This Month",
     "last_30_days": "Last 30 Days",
     "this_year": "This Year",
-    "expiringSubscriptions": "Expiring Subscriptions",
+    "expiringSubscriptions": "Subscription Status",
     "inTheNextXDays": "in the next {days} days",
     "expirationWarning": "Expiration Warning",
     "7days": "7 days",
     "15days": "15 days",
     "activeTests": "Active Tests",
-    "expiredTests": "Expired Tests"
+    "expiredTests": "Expired Tests",
+    "expiringToday": "Expiring today",
+    "expiredClients": "Expired",
+    "inactiveClients": "Inactive",
+    "settingsSaved": "Settings saved successfully!",
+    "expirationWarningDescription": "Define the number of days in advance to be warned about expiring subscriptions."
 }
