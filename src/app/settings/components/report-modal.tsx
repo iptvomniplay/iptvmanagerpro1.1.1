@@ -297,8 +297,16 @@ export function ReportModal({ isOpen, onClose, onGenerate, initialClientContext 
                 </div>
               )}
               {reportGroups.statistic && (
-                 <div className="space-y-4">
-                    <h3 className="text-xl font-semibold">{t('statisticsReports')}</h3>
+                <Collapsible
+                  open={openCollapsibles['statistics']}
+                  onOpenChange={(isOpen) => setOpenCollapsibles(prev => ({ ...prev, ['statistics']: isOpen }))}
+                  className="space-y-4"
+                >
+                  <CollapsibleTrigger className="flex items-center justify-between w-full text-xl font-semibold">
+                    <h3>{t('statisticsReports')}</h3>
+                    <ChevronDown className={`h-5 w-5 transition-transform ${openCollapsibles['statistics'] ? 'rotate-180' : ''}`} />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="space-y-4">
                     {reportGroups.statistic.map(([key, config]) => {
                        const reportKey = key as ReportKey;
                        return (
@@ -314,7 +322,8 @@ export function ReportModal({ isOpen, onClose, onGenerate, initialClientContext 
                           </div>
                        );
                     })}
-                 </div>
+                  </CollapsibleContent>
+                </Collapsible>
               )}
           </div>
         </div>
