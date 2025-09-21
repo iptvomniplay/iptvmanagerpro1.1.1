@@ -304,7 +304,7 @@ export default function SubscriptionPage() {
       <AlertDialog open={isSubscriptionSuccessModalOpen} onOpenChange={setIsSubscriptionSuccessModalOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('registrationAddedSuccess')}</AlertDialogTitle>
+            <AlertDialogTitle>{t('success')}</AlertDialogTitle>
             <AlertDialogDescription>{t('newSubscriptionSuccess')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogAction onClick={() => { setIsSubscriptionSuccessModalOpen(false); handleCancel(); }}>{t('ok')}</AlertDialogAction>
