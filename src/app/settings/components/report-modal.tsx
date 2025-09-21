@@ -15,7 +15,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useLanguage } from '@/hooks/use-language';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, FileText, X, UserCheck, PieChart, UserX, TestTube } from 'lucide-react';
+import { ChevronDown, FileText, X, UserCheck, PieChart, UserX, TestTube, Wallet } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import type { Client } from '@/lib/types';
 import { ClientSearch } from '@/app/subscription/components/client-search';
@@ -75,6 +75,18 @@ export const reportConfig = {
     category: 'statistic',
     icon: PieChart,
     globalOnly: true,
+  },
+  creditBalance: {
+    label: 'report_creditBalance',
+    type: 'fields',
+    category: 'statistic',
+    icon: Wallet,
+    globalOnly: true,
+    fields: {
+      panelName: 'serverName',
+      currentBalance: 'currentBalance',
+      paymentMethod: 'paymentMethod',
+    },
   },
 } as const;
 

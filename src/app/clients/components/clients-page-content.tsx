@@ -260,6 +260,18 @@ export default function ClientsPageContent() {
                       })
                   );
                   break;
+                case 'creditBalance':
+                    rows = servers.map(server =>
+                        selectedFields.map(field => {
+                            switch (field) {
+                                case 'panelName': return server.name;
+                                case 'currentBalance': return String(server.creditStock || 0);
+                                case 'paymentMethod': return t(server.paymentType as any);
+                                default: return '';
+                            }
+                        })
+                    );
+                    break;
           }
       } else if (reportMeta.type === 'statistic' && config.all) {
           switch(reportKey) {
@@ -523,8 +535,3 @@ export default function ClientsPageContent() {
     </>
   );
 }
-
-
-
-
-
