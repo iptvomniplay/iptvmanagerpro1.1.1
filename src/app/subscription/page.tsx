@@ -20,7 +20,7 @@ import { ClientSearch } from './components/client-search';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { User, FileText, AppWindow, AlertTriangle, Save } from 'lucide-react';
+import { User, FileText, AppWindow, AlertTriangle, Save, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SubscriptionPlanForm } from './components/subscription-plan-form';
 import { ApplicationsForm } from './components/applications-form';
@@ -163,94 +163,106 @@ export default function SubscriptionPage() {
         </Card>
 
         {selectedClient ? (
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 gap-2 h-auto rounded-lg p-1 bg-transparent border-b-0">
-              <TabsTrigger value="client" className="py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
-                <User className="mr-2 h-5 w-5" /> {t('client')}
-              </TabsTrigger>
-              <TabsTrigger value="plans" className="relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
-                {(arePlansIncomplete || areAppsIncomplete) && isValidationError && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
-                <FileText className="mr-2 h-5 w-5" /> {t('subscriptionPlans')}
-              </TabsTrigger>
-            </TabsList>
+          <>
+            {selectedClient.status !== 'Active' && (
+              <Alert variant="default" className="border-primary text-primary">
+                <Info className="h-4 w-4" />
+                <AlertTitle>{t('pendingActivationTitle')}</AlertTitle>
+                <AlertDescription>
+                  {t('pendingActivationDescription')}
+                </AlertDescription>
+              </Alert>
+            )}
 
-            <TabsContent value="client" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3 text-xl">
-                    <User className="h-6 w-6" />
-                    <span>{selectedClient.name}</span>
-                  </CardTitle>
-                  <CardDescription>{t('clientDetails')}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {selectedClient.plans && selectedClient.plans.length > 0 && (
-                     <Alert variant="destructive">
-                      <AlertTriangle className="h-4 w-4" />
-                      <AlertTitle>{t('attentionClientHasSubscription')}</AlertTitle>
-                      <AlertDescription className="space-y-3">
-                        {areAppsIncomplete ? (
-                           <p>{t('pendingScreensWarning', { count: totalScreensFromPlans - totalApplications })}</p>
-                        ) : (
-                          <p>{t('allAppsConfigured')}</p>
-                        )}
-                        <Button variant="secondary" onClick={() => setActiveTab('plans')}>
-                           {t('managePendingScreens')}
-                        </Button>
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-sm">
-                    <div>
-                      <p className="font-medium text-muted-foreground">{t('nickname')}</p>
-                      <p className="mt-1">{selectedClient.nickname || '---'}</p>
-                    </div>
-                    <div>
-                      <p className="font-medium text-muted-foreground">{t('emailAddress')}</p>
-                      <p className="mt-1 truncate" title={selectedClient.email}>{selectedClient.email || '---'}</p>
-                    </div>
-                    <div>
-                      <p className="font-medium text-muted-foreground">{t('clientStatus')}</p>
-                      <Badge variant={getStatusVariant(selectedClient.status)} className="text-base mt-1">{t(selectedClient.status.toLowerCase() as any)}</Badge>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label htmlFor="manual-client-id">{t('clientID')}:</Label>
-                        {selectedClient.id && <Badge variant="outline" className="border-green-500/50 text-green-500">{selectedClient.id}</Badge>}
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-2 gap-2 h-auto rounded-lg p-1 bg-transparent border-b-0">
+                <TabsTrigger value="client" className="py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
+                  <User className="mr-2 h-5 w-5" /> {t('client')}
+                </TabsTrigger>
+                <TabsTrigger value="plans" className="relative py-3 text-base rounded-md font-semibold bg-card shadow-sm border border-primary text-card-foreground hover:bg-muted data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:border-primary">
+                  {(arePlansIncomplete || areAppsIncomplete) && isValidationError && <AlertTriangle className="absolute -top-2 -right-2 h-5 w-5 text-destructive animate-pulse" />}
+                  <FileText className="mr-2 h-5 w-5" /> {t('subscriptionPlans')}
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="client" className="mt-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3 text-xl">
+                      <User className="h-6 w-6" />
+                      <span>{selectedClient.name}</span>
+                    </CardTitle>
+                    <CardDescription>{t('clientDetails')}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {selectedClient.plans && selectedClient.plans.length > 0 && (
+                      <Alert variant="destructive">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertTitle>{t('attentionClientHasSubscription')}</AlertTitle>
+                        <AlertDescription className="space-y-3">
+                          {areAppsIncomplete ? (
+                            <p>{t('pendingScreensWarning', { count: totalScreensFromPlans - totalApplications })}</p>
+                          ) : (
+                            <p>{t('allAppsConfigured')}</p>
+                          )}
+                          <Button variant="secondary" onClick={() => setActiveTab('plans')}>
+                            {t('managePendingScreens')}
+                          </Button>
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-sm">
+                      <div>
+                        <p className="font-medium text-muted-foreground">{t('nickname')}</p>
+                        <p className="mt-1">{selectedClient.nickname || '---'}</p>
                       </div>
-                      <div className="relative">
-                        <Input
-                          id="manual-client-id"
-                          placeholder={t('clientIdManualPlaceholder')}
-                          autoComplete="off"
-                          value={manualId}
-                          onChange={handleManualIdChange}
-                          className={cn('pr-12', !manualId && selectedClient.status !== 'Active' && isValidationError && 'ring-2 ring-destructive ring-offset-2 ring-offset-background')}
-                        />
-                        <Button type="button" size="icon" variant="ghost" className="absolute right-1 top-1/2 -translate-y-1/2 h-9 w-10 text-muted-foreground hover:bg-transparent" onClick={saveManualId}>
-                          <Save className="h-5 w-5" />
-                        </Button>
+                      <div>
+                        <p className="font-medium text-muted-foreground">{t('emailAddress')}</p>
+                        <p className="mt-1 truncate" title={selectedClient.email}>{selectedClient.email || '---'}</p>
                       </div>
-                      {!manualId && selectedClient.status !== 'Active' && isValidationError && <p className="text-sm text-destructive">{t('clientIdRequired')}</p>}
+                      <div>
+                        <p className="font-medium text-muted-foreground">{t('clientStatus')}</p>
+                        <Badge variant={getStatusVariant(selectedClient.status)} className="text-base mt-1">{t(selectedClient.status.toLowerCase() as any)}</Badge>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="manual-client-id">{t('clientID')}:</Label>
+                          {selectedClient.id && <Badge variant="outline" className="border-green-500/50 text-green-500">{selectedClient.id}</Badge>}
+                        </div>
+                        <div className="relative">
+                          <Input
+                            id="manual-client-id"
+                            placeholder={t('clientIdManualPlaceholder')}
+                            autoComplete="off"
+                            value={manualId}
+                            onChange={handleManualIdChange}
+                            className={cn('pr-12', !manualId && selectedClient.status !== 'Active' && isValidationError && 'ring-2 ring-destructive ring-offset-2 ring-offset-background')}
+                          />
+                          <Button type="button" size="icon" variant="ghost" className="absolute right-1 top-1/2 -translate-y-1/2 h-9 w-10 text-muted-foreground hover:bg-transparent" onClick={saveManualId}>
+                            <Save className="h-5 w-5" />
+                          </Button>
+                        </div>
+                        {!manualId && selectedClient.status !== 'Active' && isValidationError && <p className="text-sm text-destructive">{t('clientIdRequired')}</p>}
+                      </div>
                     </div>
-                  </div>
-                  <PersistenceTest selectedClient={selectedClient} />
-                </CardContent>
-              </Card>
-            </TabsContent>
+                    <PersistenceTest selectedClient={selectedClient} />
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
-            <TabsContent value="plans" className="mt-6 space-y-6">
-              <SubscriptionPlanForm
-                selectedClient={selectedClient}
-                onPlanChange={(plans) => handleUpdateClient({ plans })}
-              />
-              <ApplicationsForm
-                selectedClient={selectedClient}
-                onUpdateApplications={(applications) => handleUpdateClient({ applications })}
-              />
-            </TabsContent>
+              <TabsContent value="plans" className="mt-6 space-y-6">
+                <SubscriptionPlanForm
+                  selectedClient={selectedClient}
+                  onPlanChange={(plans) => handleUpdateClient({ plans })}
+                />
+                <ApplicationsForm
+                  selectedClient={selectedClient}
+                  onUpdateApplications={(applications) => handleUpdateClient({ applications })}
+                />
+              </TabsContent>
 
-          </Tabs>
+            </Tabs>
+          </>
         ) : (
           <Card className="flex flex-col items-center justify-center text-center py-20 mt-6">
             <CardHeader>
@@ -266,7 +278,7 @@ export default function SubscriptionPage() {
         <Button variant="outline" onClick={() => router.push('/')}>{t('back')}</Button>
         <Button variant="outline" onClick={handleCancel}>{t('cancel')}</Button>
         {selectedClient && (
-          <Button onClick={handleSave}>{t('save')}</Button>
+          <Button onClick={handleSave}>{t('activateSubscription')}</Button>
         )}
       </div>
 

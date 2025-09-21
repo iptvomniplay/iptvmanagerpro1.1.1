@@ -334,9 +334,9 @@
     "incorrect": "Incorreto",
     "expected": "Esperado",
     "received": "recebido",
-    "newSubscriptionSuccess": "Nova assinatura cadastrada com sucesso!",
+    "newSubscriptionSuccess": "A assinatura foi ativada com sucesso!",
     "clientIdSavedSuccess": "ID Salvo com Sucesso",
-    "clientIdSavedMessage": "O ID {id} foi salvo para o cliente {name}.",
+    "clientIdSavedMessage": "O ID <strong>{id}</strong> foi atribuído ao cliente <strong>{name}</strong>.",
     "clientIdAlreadySaved": "Este ID de Cliente já foi salvo.",
     "managePendingScreens": "Gerenciar Telas Pendentes",
     "allAppsConfigured": "Todos os aplicativos para os planos contratados já foram configurados.",
@@ -396,5 +396,8 @@
     "startTime": "Início",
     "endTime": "Término",
     "interrupted": "Interrompido",
-    "clientWithActiveTest": "Cliente com teste ativo"
+    "clientWithActiveTest": "Cliente com teste ativo",
+    "activateSubscription": "Ativar Assinatura",
+    "pendingActivationTitle": "Ativação Pendente",
+    "pendingActivationDescription": "A assinatura deste cliente ainda não está ativa. Preencha todas as informações necessárias nas abas abaixo e clique em 'Ativar Assinatura' para concluir o processo."
 }

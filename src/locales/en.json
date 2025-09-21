@@ -334,9 +334,9 @@
     "incorrect": "Incorrect",
     "expected": "Expected",
     "received": "received",
-    "newSubscriptionSuccess": "New subscription successfully registered!",
+    "newSubscriptionSuccess": "The subscription has been activated successfully!",
     "clientIdSavedSuccess": "ID Saved Successfully",
-    "clientIdSavedMessage": "The ID {id} has been saved for the client {name}.",
+    "clientIdSavedMessage": "The ID <strong>{id}</strong> has been assigned to client <strong>{name}</strong>.",
     "clientIdAlreadySaved": "This Client ID has already been saved.",
     "managePendingScreens": "Manage Pending Screens",
     "allAppsConfigured": "All applications for the contracted plans have already been configured.",
@@ -396,5 +396,8 @@
     "startTime": "Start Time",
     "endTime": "End Time",
     "interrupted": "Interrupted",
-    "clientWithActiveTest": "Client with active test"
+    "clientWithActiveTest": "Client with active test",
+    "activateSubscription": "Activate Subscription",
+    "pendingActivationTitle": "Pending Activation",
+    "pendingActivationDescription": "This client's subscription is not yet active. Fill in all the necessary information on the tabs below and click 'Activate Subscription' to complete the process."
 }
