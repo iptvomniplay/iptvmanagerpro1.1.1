@@ -174,8 +174,18 @@ const ReportPageContent = () => {
 export default function ReportPage() {
     return (
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <style jsx global>{`
+                @media print {
+                    body {
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
+                    }
+                    .report-content {
+                        padding: 0;
+                    }
+                }
+            `}</style>
             <ReportPageContent />
         </ThemeProvider>
     );
 }
-
