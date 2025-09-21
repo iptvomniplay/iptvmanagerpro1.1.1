@@ -33,12 +33,14 @@ type ClientWithTest = {
   panel?: ServerType;
 }
 
-const TestList = ({ tests, onUpdateClient, onViewDetails, isExpiredList }: { tests: ClientWithTest[], onUpdateClient: (client: Client) => void, onViewDetails: (client: Client) => void, isExpiredList?: boolean }) => {
+const TestList = ({ tests, onUpdateClient, onViewDetails, isExpiredList, onUpdateTest }: { tests: ClientWithTest[], onUpdateClient: (client: Client) => void, onViewDetails: (client: Client) => void, isExpiredList?: boolean, onUpdateTest: (clientId: string, testCreationDate: string, updatedTest: Partial<Test>) => void }) => {
     const { t } = useLanguage();
 
-    const handleInterruptTest = (client: Client) => {
+    const handleInterruptTest = (client: Client, test: Test) => {
         if (client.status === 'Test') {
             onUpdateClient({ ...client, status: 'Inactive' });
+        } else if (client.status === 'Active') {
+            onUpdateTest(client._tempId, test.creationDate, { durationValue: 0 });
         }
     }
 
@@ -93,10 +95,10 @@ const TestList = ({ tests, onUpdateClient, onViewDetails, isExpiredList }: { tes
                                     )}
                                 </div>
                             </TableCell>
-                            {!isExpiredList && (
+                             {!isExpiredList && (
                                 <TableCell className="text-right">
-                                  {client.status === 'Test' && (
-                                    <Button variant="destructive" size="sm" onClick={(e) => { e.stopPropagation(); handleInterruptTest(client);}}>
+                                  {isFuture(add(parseISO(test.creationDate), { [test.durationUnit]: test.durationValue })) && (
+                                    <Button variant="destructive" size="sm" onClick={(e) => { e.stopPropagation(); handleInterruptTest(client, test);}}>
                                         {t('interruptTest')}
                                     </Button>
                                   )}
@@ -113,7 +115,7 @@ const TestList = ({ tests, onUpdateClient, onViewDetails, isExpiredList }: { tes
 
 export default function ViewTestsPage() {
   const { t } = useLanguage();
-  const { clients, servers, updateClient, deleteClient } = useData();
+  const { clients, servers, updateClient, deleteClient, updateTestInClient } = useData();
   const [isTestModalOpen, setIsTestModalOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [activeTab, setActiveTab] = React.useState('inProgress');
@@ -216,10 +218,10 @@ export default function ViewTestsPage() {
                         />
                     </div>
                     <TabsContent value="inProgress" className="mt-4">
-                        <TestList tests={testsInProgress} onUpdateClient={updateClient} onViewDetails={handleViewDetails} />
+                        <TestList tests={testsInProgress} onUpdateClient={updateClient} onViewDetails={handleViewDetails} onUpdateTest={updateTestInClient} />
                     </TabsContent>
                     <TabsContent value="expired" className="mt-4">
-                        <TestList tests={expiredTests} onUpdateClient={updateClient} onViewDetails={handleViewDetails} isExpiredList={true} />
+                        <TestList tests={expiredTests} onUpdateClient={updateClient} onViewDetails={handleViewDetails} isExpiredList={true} onUpdateTest={updateTestInClient} />
                     </TabsContent>
                 </Tabs>
             </CardContent>

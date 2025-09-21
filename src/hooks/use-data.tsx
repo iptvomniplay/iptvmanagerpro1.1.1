@@ -16,6 +16,7 @@ interface DataContextType {
   updateServer: (serverData: Server) => void;
   deleteServer: (serverId: string) => void;
   addTestToClient: (clientId: string, testData: Omit<Test, 'creationDate'>) => void;
+  updateTestInClient: (clientId: string, testCreationDate: string, updatedTest: Partial<Test>) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -150,6 +151,25 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     );
   }, [saveDataToStorage]);
 
+  const updateTestInClient = useCallback((clientId: string, testCreationDate: string, updatedTest: Partial<Test>) => {
+    setClients(prev => {
+      const updatedClients = prev.map(client => {
+        if (client._tempId === clientId) {
+          const newTests = (client.tests || []).map(test => {
+            if (test.creationDate === testCreationDate) {
+              return { ...test, ...updatedTest };
+            }
+            return test;
+          });
+          return { ...client, tests: newTests };
+        }
+        return client;
+      });
+      saveDataToStorage('clients', updatedClients);
+      return updatedClients;
+    });
+  }, [saveDataToStorage]);
+
   const value = {
     clients,
     servers,
@@ -160,6 +180,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     updateServer,
     deleteServer,
     addTestToClient,
+    updateTestInClient,
   };
   
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
