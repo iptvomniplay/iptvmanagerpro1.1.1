@@ -27,6 +27,7 @@ export const reportConfig = {
       status: 'status',
       registeredDate: 'registeredDate',
       contact: 'phone',
+      numberOfTests: 'report_numberOfTests',
     },
   },
   expiredSubscriptions: {

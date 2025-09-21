@@ -84,6 +84,7 @@ export default function SettingsPage() {
                           case 'status': return t(client.status.toLowerCase());
                           case 'registeredDate': return client.registeredDate ? format(new Date(client.registeredDate), 'dd/MM/yyyy') : '';
                           case 'contact': return client.phones.map(p => p.number).join(', ');
+                          case 'numberOfTests': return String(client.tests?.length || 0);
                           default: return '';
                       }
                   })

@@ -453,5 +453,6 @@
     "dataVerificationDescription": "Clique no botão abaixo para ver os dados brutos que estão sendo usados para gerar o relatório, conforme estão salvos na sessão do navegador.",
     "checkSavedData": "Verificar Dados Salvos",
     "generateFullReport": "Gerar Relatório Completo",
-    "or": "ou"
+    "or": "ou",
+    "report_numberOfTests": "Nº de Testes"
 }
