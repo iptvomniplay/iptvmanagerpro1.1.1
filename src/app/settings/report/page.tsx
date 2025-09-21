@@ -125,16 +125,6 @@ const ReportContent = () => {
             setIsLoading(false);
         }
     }, [isDataLoaded, clients, servers, t]);
-    
-    React.useEffect(() => {
-        if (!isLoading && reports.length > 0 && reports.some(r => r.rows.length > 0)) {
-            // Give the browser a moment to render the content before printing
-            const timer = setTimeout(() => {
-                window.print();
-            }, 500);
-            return () => clearTimeout(timer);
-        }
-    }, [isLoading, reports]);
 
     if (isLoading) {
         return <div className="p-10 text-center">{t('loadingReport')}...</div>;
