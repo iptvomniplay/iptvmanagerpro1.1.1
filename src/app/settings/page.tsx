@@ -54,12 +54,8 @@ export default function SettingsPage() {
   }
   
   const handleGenerateReport = (selectedConfigs: SelectedReportsState) => {
-    // Store selected configs in session storage to be picked up by the report page
     sessionStorage.setItem('reportConfigs', JSON.stringify(selectedConfigs));
     setIsReportModalOpen(false);
-    
-    // Open a new tab for the report.
-    // This is better for user experience as they don't lose their place on the settings page.
     window.open('/settings/report', '_blank');
   };
 
