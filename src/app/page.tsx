@@ -212,37 +212,21 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
-      <div className="grid gap-6 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
-        <div className="grid auto-rows-fr gap-6">
-          <Card>
-            <CardHeader className="pb-4">
-              <CardTitle>{t('welcome')}</CardTitle>
-              <CardDescription className="max-w-lg text-balance leading-relaxed text-base">
-                {t('welcomeMessage')}
-              </CardDescription>
-            </CardHeader>
-            <CardFooter>
-               <Button asChild>
-                <Link href="/clients">{t('manageClients')}</Link>
-              </Button>
-            </CardFooter>
-          </Card>
-          <Card>
-            <CardHeader className="pb-4">
-              <CardTitle>{t('configureServers')}</CardTitle>
-              <CardDescription className="max-w-lg text-balance leading-relaxed text-base">
-                {t('configureServersMessage')}
-              </CardDescription>
-            </CardHeader>
-            <CardFooter>
-              <Button asChild>
-                <Link href="/servers">{t('goToServers')}</Link>
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
-
-        <Card className="overflow-hidden xl:col-span-2">
+      <div className="grid gap-6 md:gap-8 lg:grid-cols-2">
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle>{t('welcome')}</CardTitle>
+            <CardDescription className="max-w-lg text-balance leading-relaxed text-base">
+              {t('welcomeMessage')}
+            </CardDescription>
+          </CardHeader>
+          <CardFooter>
+             <Button asChild>
+              <Link href="/clients">{t('manageClients')}</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+        <Card className="overflow-hidden">
           <CardHeader className="flex flex-row items-start bg-muted/50 p-6">
             <div className="grid gap-1">
               <CardTitle className="group flex items-center gap-2 text-xl">
