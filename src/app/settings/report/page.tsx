@@ -136,7 +136,14 @@ const ReportContent = () => {
     const hasData = reports.length > 0 && reports.some(r => r.rows.length > 0);
 
     return (
-        <div className="report-container">
+        <div className="report-container p-8">
+            <div className="print-header flex justify-between items-center bg-background border-b pb-4 mb-8 sticky top-0 z-10">
+                <h1 className="text-2xl font-bold">{t('generatedReport')}</h1>
+                <div className="flex gap-2">
+                    <Button variant="outline" onClick={() => window.close()}>{t('close')}</Button>
+                    <Button onClick={() => window.print()} disabled={!hasData}>{t('print')}</Button>
+                </div>
+            </div>
              {hasData ? (
                 <div className="space-y-8 report-content">
                     {reports.map((report, index) => (
@@ -179,19 +186,11 @@ ReportContent.displayName = 'ReportContent';
 
 
 export default function ReportPage() {
-    const { t } = useLanguage();
 
     return (
         <LanguageProvider>
             <DataProvider>
-                <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-                    <div className="print-header p-8 flex justify-between items-center bg-background border-b sticky top-0 z-10">
-                        <h1 className="text-2xl font-bold">{t('generatedReport')}</h1>
-                        <div className="flex gap-2">
-                            <Button variant="outline" onClick={() => window.close()}>{t('close')}</Button>
-                            <Button onClick={() => window.print()}>{t('print')}</Button>
-                        </div>
-                    </div>
+                <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
                     <ReportContent />
                     <style jsx global>{`
                         @media print {
@@ -202,29 +201,6 @@ export default function ReportPage() {
                                 margin: 0;
                                 padding: 0;
                             }
-                            .report-container {
-                                padding: 1cm;
-                            }
-                            .page-break {
-                                page-break-after: always;
-                            }
-                            @page {
-                                size: A4;
-                                margin: 1cm;
-                            }
-                        }
-                        @media screen {
-                          body {
-                            background-color: hsl(var(--muted));
-                          }
-                          .report-container {
-                            background: white;
-                            width: 210mm;
-                            margin: 2rem auto;
-                            min-height: 297mm;
-                            box-shadow: 0 0 0.5cm rgba(0,0,0,0.5);
-                            padding: 2cm;
-                          }
                         }
                     `}</style>
                 </ThemeProvider>
