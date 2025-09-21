@@ -117,7 +117,7 @@
     "editServerDescription": "Update the details for this server.",
     "panelAndServerRegistration": "Panel and Server(s) Registration",
     "next": "Next",
-    "addNewPanel": "Add Panel",
+    "addNewPanel": "Add Painel",
     "responsibleName": "Responsible Name",
     "nickname": "Nickname",
     "nicknamePlaceholder": "Do you have a nickname?",
@@ -424,6 +424,6 @@
     "inactiveClients": "Inactive",
     "settingsSaved": "Settings saved successfully!",
     "expirationWarningDescription": "Define the number of days in advance to be warned about expiring subscriptions.",
-    "expiringInNextXDays": "Expiring in the next {days} days",
-    "expiringInNextDay": "Expiring in the next day"
+    "expiringInNextXDays": "Expiring in {days} days",
+    "expiringInNextDay": "Expiring in {days} day"
 }

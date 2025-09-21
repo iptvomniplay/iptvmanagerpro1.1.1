@@ -424,6 +424,6 @@
     "inactiveClients": "Inativos",
     "settingsSaved": "Configurações salvas com sucesso!",
     "expirationWarningDescription": "Defina com quantos dias de antecedência deseja ser avisado sobre as assinaturas que estão expirando.",
-    "expiringInNextXDays": "Expirando nos próximos {days} dias",
-    "expiringInNextDay": "Expirando no próximo dia"
+    "expiringInNextXDays": "Expirando em {days} dias",
+    "expiringInNextDay": "Expirando em {days} dia"
 }

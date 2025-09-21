@@ -184,7 +184,7 @@ export default function Dashboard() {
               <CalendarClock className="h-4 w-4 text-amber-500" />
               <span>
                 {expirationWarningDays === 1
-                  ? `${t('expiringInNextDay')}: `
+                  ? t('expiringInNextDay', { days: expirationWarningDays }) + ': '
                   : t('expiringInNextXDays', { days: expirationWarningDays }) + ': '}
                 <strong>{expiringInPeriod}</strong>
               </span>
@@ -221,6 +221,11 @@ export default function Dashboard() {
                 {t('welcomeMessage')}
               </CardDescription>
             </CardHeader>
+            <CardFooter>
+               <Button asChild>
+                <Link href="/clients">{t('manageClients')}</Link>
+              </Button>
+            </CardFooter>
           </Card>
           <Card>
             <CardHeader className="pb-4">
