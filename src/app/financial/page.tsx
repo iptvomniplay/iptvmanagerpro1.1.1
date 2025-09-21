@@ -26,7 +26,7 @@ export default function FinancialPage() {
           <CardDescription>{t('cashFlowDescription')}</CardDescription>
         </CardHeader>
         <CardContent>
-          <p>{t('awaitingInput')}</p>
+          <p>{t('underDevelopment')}</p>
         </CardContent>
       </Card>
     </div>
