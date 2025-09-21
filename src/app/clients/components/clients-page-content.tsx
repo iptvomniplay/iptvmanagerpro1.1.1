@@ -57,6 +57,11 @@ import { normalizeString } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ClientExpiration } from './client-expiration';
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -239,16 +244,14 @@ export default function ClientsPageContent() {
                         )}
 
                         {hasPendingApps(client) && (
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger>
-                                <AlertTriangle className="h-5 w-5 text-yellow-500" />
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>{t('pendingAppsWarning')}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+                          <Popover>
+                            <PopoverTrigger>
+                              <AlertTriangle className="h-6 w-6 text-yellow-500" />
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto max-w-xs">
+                              <p>{t('pendingAppsWarning')}</p>
+                            </PopoverContent>
+                          </Popover>
                         )}
                       </div>
                     </TableCell>
