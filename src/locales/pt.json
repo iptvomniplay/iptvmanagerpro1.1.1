@@ -430,6 +430,7 @@
     "reports": "Relatórios",
     "reportsDescription": "Exporte dados e insights sobre seus clientes e servidores.",
     "generateReport": "Gerar Relatório",
+    "generateClientReport": "Relatório para: {clientName}",
     "selectReports": "Selecionar Relatórios",
     "selectReportsDescription": "Selecione os relatórios que deseja gerar.",
     "report_clientList": "Relatório Geral de Clientes",
@@ -462,5 +463,6 @@
     "report_leastUsedServer": "Servidor Menos Utilizado",
     "report_statistic": "Estatística",
     "report_item": "Item",
-    "report_usage": "Uso"
+    "report_usage": "Uso",
+    "report": "Relatório"
 }

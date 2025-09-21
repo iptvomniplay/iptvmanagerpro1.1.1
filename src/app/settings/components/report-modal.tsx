@@ -17,6 +17,7 @@ import { useLanguage } from '@/hooks/use-language';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, FileText } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import type { Client } from '@/lib/types';
 
 export const reportConfig = {
   clientList: {
@@ -55,12 +56,14 @@ export const reportConfig = {
       currentBalance: 'creditBalance',
       paymentMethod: 'paymentMethod',
     },
+    globalOnly: true,
   },
   serverUsage: {
     label: 'report_serverUsage',
     fields: {
       usageStats: 'report_usageStats',
     },
+    globalOnly: true,
   },
 } as const;
 
@@ -79,9 +82,10 @@ interface ReportModalProps {
   isOpen: boolean;
   onClose: () => void;
   onGenerate: (selectedReports: SelectedReportsState) => void;
+  clientContext?: Client | null;
 }
 
-export function ReportModal({ isOpen, onClose, onGenerate }: ReportModalProps) {
+export function ReportModal({ isOpen, onClose, onGenerate, clientContext = null }: ReportModalProps) {
   const { t } = useLanguage();
   const [selectedReports, setSelectedReports] = React.useState<SelectedReportsState>({});
   const [openCollapsibles, setOpenCollapsibles] = React.useState<Record<string, boolean>>({});
@@ -127,6 +131,9 @@ export function ReportModal({ isOpen, onClose, onGenerate }: ReportModalProps) {
     const fullReportState: SelectedReportsState = {};
     for (const key in reportConfig) {
         const reportKey = key as ReportKey;
+        if (clientContext && reportConfig[reportKey].globalOnly) {
+          continue;
+        }
         const allFields = Object.keys(reportConfig[reportKey].fields).reduce((acc, field) => {
             acc[field as FieldKey<ReportKey>] = true;
             return acc;
@@ -144,11 +151,18 @@ export function ReportModal({ isOpen, onClose, onGenerate }: ReportModalProps) {
     report => report && Object.values(report.fields).some(field => field)
   );
 
+  const reportEntries = Object.entries(reportConfig).filter(([key]) => {
+    if (clientContext) {
+      return !reportConfig[key as ReportKey].globalOnly;
+    }
+    return true;
+  });
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{t('selectReports')}</DialogTitle>
+          <DialogTitle>{clientContext ? t('generateClientReport', { clientName: clientContext.name }) : t('selectReports')}</DialogTitle>
           <DialogDescription>{t('selectReportsDescription')}</DialogDescription>
         </DialogHeader>
         <div className="py-4 max-h-[60vh] overflow-y-auto pr-4 space-y-4">
@@ -163,7 +177,7 @@ export function ReportModal({ isOpen, onClose, onGenerate }: ReportModalProps) {
           </div>
 
           <div className="space-y-4">
-              {Object.entries(reportConfig).map(([key, config]) => {
+              {reportEntries.map(([key, config]) => {
                 const reportKey = key as ReportKey;
                 return (
                   <Collapsible

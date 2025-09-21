@@ -39,6 +39,7 @@ import {
   ChevronDown,
   CreditCard,
   AlertTriangle,
+  FileText,
 } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { useData } from '@/hooks/use-data';
@@ -67,14 +68,16 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { add, isFuture, parseISO } from 'date-fns';
+import { add, isFuture, parseISO, format } from 'date-fns';
+import { ReportModal, SelectedReportsState, reportConfig, ReportKey, FieldKey } from '@/app/settings/components/report-modal';
+import { ReportDisplayModal, GeneratedReportData } from '@/app/settings/components/report-display-modal';
 
 
 export type ClientFormValues = Omit<Client, 'id' | 'registeredDate'>;
 
 export default function ClientsPageContent() {
   const { t } = useLanguage();
-  const { clients, deleteClient, updateClient } = useData();
+  const { clients, servers, deleteClient, updateClient } = useData();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = React.useState('');
   const [isFormOpen, setIsFormOpen] = React.useState(false);
@@ -85,6 +88,9 @@ export default function ClientsPageContent() {
   const [clientToDelete, setClientToDelete] = React.useState<Client | null>(
     null
   );
+  const [isReportModalOpen, setIsReportModalOpen] = React.useState(false);
+  const [isReportDisplayModalOpen, setIsReportDisplayModalOpen] = React.useState(false);
+  const [clientForReport, setClientForReport] = React.useState<Client | null>(null);
 
   const filteredClients = React.useMemo(() => {
     const normalizedSearchTerm = normalizeString(searchTerm);
@@ -164,6 +170,95 @@ export default function ClientsPageContent() {
       const expirationDate = add(parseISO(test.creationDate), { [test.durationUnit]: test.durationValue });
       return isFuture(expirationDate);
     });
+  };
+
+  const handleOpenReportModal = (client: Client) => {
+    setClientForReport(client);
+    setIsReportModalOpen(true);
+  };
+
+  const handleGenerateReport = (selectedConfigs: SelectedReportsState) => {
+    setIsReportModalOpen(false);
+    if (!clientForReport) return;
+
+    const reportClients = [clientForReport];
+    const generatedReports: GeneratedReportData[] = [];
+
+    (Object.keys(selectedConfigs) as ReportKey[]).forEach(reportKey => {
+      const config = selectedConfigs[reportKey];
+      if (!config || !config.fields) return;
+
+      const reportMeta = reportConfig[reportKey];
+      
+      const selectedFields = (Object.keys(config.fields) as FieldKey<typeof reportKey>[]).filter(
+        fieldKey => config.fields?.[fieldKey as FieldKey<typeof reportKey>]
+      );
+      
+      if (selectedFields.length === 0) return;
+
+      let headers = selectedFields.map(fieldKey => t(reportMeta.fields[fieldKey as keyof typeof reportMeta.fields]));
+      let rows: (string | undefined)[][] = [];
+      
+      switch (reportKey) {
+          case 'clientList':
+              rows = reportClients.map(client =>
+                  selectedFields.map(field => {
+                      switch (field) {
+                          case 'fullName': return client.name;
+                          case 'clientId': return client.id || t('noId');
+                          case 'status': return t(client.status.toLowerCase());
+                          case 'registeredDate': return client.registeredDate ? format(new Date(client.registeredDate), 'dd/MM/yyyy') : '';
+                          case 'contact': return client.phones.map(p => p.number).join(', ');
+                          case 'numberOfTests': return String(client.tests?.length || 0);
+                          default: return '';
+                      }
+                  })
+              );
+              break;
+          case 'expiredSubscriptions':
+              const expiredClients = reportClients.filter(c => c.status === 'Expired');
+              rows = expiredClients.map(client =>
+                  selectedFields.map(field => {
+                      const lastPlan = client.plans && client.plans.length > 0 ? client.plans[client.plans.length - 1] : null;
+                      switch (field) {
+                          case 'fullName': return client.name;
+                          case 'lastPlan': return lastPlan?.plan.name || 'N/A';
+                          case 'expirationDate': return client.expirationDate ? format(new Date(client.expirationDate), 'dd/MM/yyyy') : 'N/A';
+                          case 'contact': return client.phones.map(p => p.number).join(', ');
+                          default: return '';
+                      }
+                  })
+              );
+              break;
+          case 'activeTests':
+               const allTests = reportClients.flatMap(client =>
+                  (client.tests || []).map(test => ({ client, test }))
+              );
+              rows = allTests.map(({ client, test }) =>
+                  selectedFields.map(field => {
+                      switch (field) {
+                          case 'clientName': return client.name;
+                          case 'testPackage': return test.package;
+                          case 'startTime': return format(new Date(test.creationDate), 'dd/MM/yyyy HH:mm');
+                          case 'endTime':
+                              const expiration = add(new Date(test.creationDate), { [test.durationUnit]: test.durationValue });
+                              return format(expiration, 'dd/MM/yyyy HH:mm');
+                          default: return '';
+                      }
+                  })
+              );
+              break;
+      }
+      
+      generatedReports.push({ title: t(reportMeta.label as any), headers, rows });
+    });
+    
+    if (typeof window !== 'undefined') {
+        sessionStorage.setItem('generatedReportData', JSON.stringify(generatedReports));
+    }
+
+    setIsReportDisplayModalOpen(true);
+    setClientForReport(null);
   };
 
   return (
@@ -298,6 +393,10 @@ export default function ClientsPageContent() {
                             <FilePenLine className="mr-2 h-4 w-4" />
                             {t('edit')}
                           </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleOpenReportModal(client)}>
+                            <FileText className="mr-2 h-4 w-4" />
+                            {t('report')}
+                          </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => { setClientToDelete(client); setIsDeleteAlertOpen(true); }}
                             className="text-destructive focus:text-destructive"
@@ -364,6 +463,17 @@ export default function ClientsPageContent() {
       </AlertDialog>
 
       <TestModal isOpen={isTestModalOpen} onClose={() => setIsTestModalOpen(false)} />
+
+      <ReportModal 
+        isOpen={isReportModalOpen} 
+        onClose={() => setIsReportModalOpen(false)}
+        onGenerate={handleGenerateReport}
+        clientContext={clientForReport}
+      />
+      <ReportDisplayModal
+        isOpen={isReportDisplayModalOpen}
+        onClose={() => setIsReportDisplayModalOpen(false)}
+      />
     </>
   );
 }

@@ -430,6 +430,7 @@
     "reports": "Reports",
     "reportsDescription": "Export data and insights about your clients and servers.",
     "generateReport": "Generate Report",
+    "generateClientReport": "Report for: {clientName}",
     "selectReports": "Select Reports",
     "selectReportsDescription": "Select the reports you want to generate.",
     "report_clientList": "General Client Report",
@@ -462,5 +463,6 @@
     "report_leastUsedServer": "Least Used Server",
     "report_statistic": "Statistic",
     "report_item": "Item",
-    "report_usage": "Usage"
+    "report_usage": "Usage",
+    "report": "Report"
 }
