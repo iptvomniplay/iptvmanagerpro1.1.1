@@ -459,5 +459,7 @@
     "report": "Report",
     "report_panelUsage": "Panel Usage",
     "report_subServerUsage": "Sub-Server Usage",
-    "report_usagePercentage": "Usage %"
+    "report_usagePercentage": "Usage %",
+    "clientReports": "Client Reports",
+    "statisticsReports": "Statistics Reports"
 }

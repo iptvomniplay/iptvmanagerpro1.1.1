@@ -24,6 +24,7 @@ export const reportConfig = {
   clientList: {
     label: 'report_clientList',
     type: 'fields',
+    category: 'client',
     fields: {
       fullName: 'fullName',
       clientId: 'clientID',
@@ -36,6 +37,7 @@ export const reportConfig = {
   expiredSubscriptions: {
     label: 'report_expiredSubscriptions',
     type: 'fields',
+    category: 'client',
     fields: {
       fullName: 'fullName',
       lastPlan: 'lastPlan',
@@ -46,6 +48,7 @@ export const reportConfig = {
   activeTests: {
     label: 'report_activeTests',
     type: 'fields',
+    category: 'client',
     fields: {
       clientName: 'clientName',
       testPackage: 'testPackage',
@@ -56,11 +59,13 @@ export const reportConfig = {
   panelUsage: {
     label: 'report_panelUsage',
     type: 'statistic',
+    category: 'statistic',
     globalOnly: true,
   },
   subServerUsage: {
     label: 'report_subServerUsage',
     type: 'statistic',
+    category: 'statistic',
     globalOnly: true,
   },
 } as const;
@@ -187,14 +192,18 @@ export function ReportModal({ isOpen, onClose, onGenerate, initialClientContext 
     onGenerate(fullReportState, clientContext);
   };
   
-  const isAnyReportSelected = Object.values(selectedReports).some(report => report?.all);
+  const isAnyReportSelected = Object.values(selectedReports).some(report => report?.all || Object.values(report?.fields || {}).some(Boolean));
 
-  const reportEntries = Object.entries(reportConfig).filter(([key]) => {
-    if (clientContext) {
-      return !reportConfig[key as ReportKey].globalOnly;
+  const reportGroups = Object.entries(reportConfig).reduce((acc, [key, config]) => {
+    const category = config.category || 'general';
+    if (!acc[category]) {
+      acc[category] = [];
     }
-    return true;
-  });
+    if (!clientContext || !config.globalOnly) {
+      acc[category].push([key, config]);
+    }
+    return acc;
+  }, {} as Record<string, [string, typeof reportConfig[ReportKey]][]>);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -236,69 +245,77 @@ export function ReportModal({ isOpen, onClose, onGenerate, initialClientContext 
               <span className="absolute left-1/2 -translate-x-1/2 -top-3 bg-background px-2 text-muted-foreground text-sm">{t('or')}</span>
           </div>
 
-          <div className="space-y-4">
-              {reportEntries.map(([key, config]) => {
-                const reportKey = key as ReportKey;
-                const isStatisticReport = config.type === 'statistic';
-                
-                if (isStatisticReport) {
-                  return (
-                     <div key={reportKey} className="flex items-center space-x-3 p-4 rounded-lg border">
-                        <Checkbox
-                          id={`${reportKey}-all`}
-                          checked={selectedReports[reportKey]?.all || false}
-                          onCheckedChange={(checked) => handleSelectAll(reportKey, checked as boolean)}
-                        />
-                        <Label htmlFor={`${reportKey}-all`} className="text-lg font-semibold cursor-pointer">
-                          {t(config.label)}
-                        </Label>
-                      </div>
-                  )
-                }
-
-                return (
-                  <Collapsible
-                    key={reportKey}
-                    open={openCollapsibles[reportKey]}
-                    onOpenChange={(isOpen) => setOpenCollapsibles(prev => ({ ...prev, [reportKey]: isOpen }))}
-                    className="border rounded-lg"
-                  >
-                    <CollapsibleTrigger className="flex items-center justify-between w-full p-4 font-semibold text-lg hover:bg-accent transition-colors">
-                      <span>{t(config.label)}</span>
-                      <ChevronDown className={`h-5 w-5 transition-transform ${openCollapsibles[reportKey] ? 'rotate-180' : ''}`} />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="p-4 pt-0">
-                      <div className="pt-4 border-t space-y-3">
-                        <div className="flex items-center space-x-3 p-2 rounded-md bg-muted/50">
-                          <Checkbox
-                            id={`${reportKey}-all`}
-                            checked={selectedReports[reportKey]?.all || false}
-                            onCheckedChange={(checked) => handleSelectAll(reportKey, checked as boolean)}
-                          />
-                          <Label htmlFor={`${reportKey}-all`} className="text-base font-bold cursor-pointer">
-                            {t('selectAllFields')}
-                          </Label>
-                        </div>
-                        <Separator />
-                        <div className="grid grid-cols-2 gap-3">
-                          {Object.entries(config.fields).map(([fieldKey, fieldLabel]) => (
-                            <div key={fieldKey} className="flex items-center space-x-3 p-2 rounded-md">
-                              <Checkbox
-                                id={`${reportKey}-${fieldKey}`}
-                                checked={(selectedReports[reportKey] as any)?.fields?.[fieldKey] || false}
-                                onCheckedChange={(checked) => handleFieldChange(reportKey, fieldKey, checked as boolean)}
-                              />
-                              <Label htmlFor={`${reportKey}-${fieldKey}`} className="text-base font-normal cursor-pointer">
-                                {t(fieldLabel as any)}
-                              </Label>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
-                );
-              })}
+          <div className="space-y-6">
+              {reportGroups.client && (
+                <div className="space-y-4">
+                    <h3 className="text-xl font-semibold">{t('clientReports')}</h3>
+                    {reportGroups.client.map(([key, config]) => {
+                        const reportKey = key as ReportKey;
+                        return (
+                            <Collapsible
+                                key={reportKey}
+                                open={openCollapsibles[reportKey]}
+                                onOpenChange={(isOpen) => setOpenCollapsibles(prev => ({ ...prev, [reportKey]: isOpen }))}
+                                className="border rounded-lg"
+                            >
+                                <CollapsibleTrigger className="flex items-center justify-between w-full p-4 font-semibold text-lg hover:bg-accent transition-colors">
+                                <span>{t(config.label)}</span>
+                                <ChevronDown className={`h-5 w-5 transition-transform ${openCollapsibles[reportKey] ? 'rotate-180' : ''}`} />
+                                </CollapsibleTrigger>
+                                <CollapsibleContent className="p-4 pt-0">
+                                <div className="pt-4 border-t space-y-3">
+                                    <div className="flex items-center space-x-3 p-2 rounded-md bg-muted/50">
+                                    <Checkbox
+                                        id={`${reportKey}-all`}
+                                        checked={selectedReports[reportKey]?.all || false}
+                                        onCheckedChange={(checked) => handleSelectAll(reportKey, checked as boolean)}
+                                    />
+                                    <Label htmlFor={`${reportKey}-all`} className="text-base font-bold cursor-pointer">
+                                        {t('selectAllFields')}
+                                    </Label>
+                                    </div>
+                                    <Separator />
+                                    <div className="grid grid-cols-2 gap-3">
+                                    {Object.entries(config.fields).map(([fieldKey, fieldLabel]) => (
+                                        <div key={fieldKey} className="flex items-center space-x-3 p-2 rounded-md">
+                                        <Checkbox
+                                            id={`${reportKey}-${fieldKey}`}
+                                            checked={(selectedReports[reportKey] as any)?.fields?.[fieldKey] || false}
+                                            onCheckedChange={(checked) => handleFieldChange(reportKey, fieldKey, checked as boolean)}
+                                        />
+                                        <Label htmlFor={`${reportKey}-${fieldKey}`} className="text-base font-normal cursor-pointer">
+                                            {t(fieldLabel as any)}
+                                        </Label>
+                                        </div>
+                                    ))}
+                                    </div>
+                                </div>
+                                </CollapsibleContent>
+                            </Collapsible>
+                        );
+                    })}
+                </div>
+              )}
+              {reportGroups.statistic && (
+                 <div className="space-y-4">
+                    <h3 className="text-xl font-semibold">{t('statisticsReports')}</h3>
+                    {reportGroups.statistic.map(([key, config]) => {
+                       const reportKey = key as ReportKey;
+                       return (
+                         <div key={reportKey} className="flex items-center space-x-3 p-4 rounded-lg border">
+                            <Checkbox
+                              id={`${reportKey}-all`}
+                              checked={selectedReports[reportKey]?.all || false}
+                              onCheckedChange={(checked) => handleSelectAll(reportKey, checked as boolean)}
+                            />
+                            <Label htmlFor={`${reportKey}-all`} className="text-lg font-semibold cursor-pointer">
+                              {t(config.label)}
+                            </Label>
+                          </div>
+                       );
+                    })}
+                 </div>
+              )}
           </div>
         </div>
         <DialogFooter>
@@ -313,5 +330,3 @@ export function ReportModal({ isOpen, onClose, onGenerate, initialClientContext 
     </Dialog>
   );
 }
-
-

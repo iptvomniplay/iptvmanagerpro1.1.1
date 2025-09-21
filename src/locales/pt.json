@@ -459,5 +459,7 @@
     "report": "Relatório",
     "report_panelUsage": "Uso de Painéis",
     "report_subServerUsage": "Uso de Servidores",
-    "report_usagePercentage": "% de Uso"
+    "report_usagePercentage": "% de Uso",
+    "clientReports": "Relatórios do Cliente",
+    "statisticsReports": "Relatórios de Estatísticas"
 }
