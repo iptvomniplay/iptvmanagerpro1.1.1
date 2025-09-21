@@ -42,7 +42,7 @@ const ReportContent = () => {
                 const reportMeta = reportConfig[reportKey];
                 
                 const selectedFields = (Object.keys(config.fields) as FieldKey<typeof reportKey>[]).filter(
-                    fieldKey => config.fields?.[fieldKey]
+                    fieldKey => config.fields?.[fieldKey as FieldKey<typeof reportKey>]
                 );
 
                 if (selectedFields.length === 0) return;
