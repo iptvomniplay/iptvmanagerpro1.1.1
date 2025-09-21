@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import type { Application, Client } from '@/lib/types';
+import type { Application, Client, Test } from '@/lib/types';
 import { useLanguage } from '@/hooks/use-language';
 import {
   Card,
@@ -31,6 +31,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { add, isFuture, parseISO } from 'date-fns';
 
 export default function SubscriptionPage() {
   const { t } = useLanguage();
@@ -117,10 +118,24 @@ export default function SubscriptionPage() {
         return;
     }
     
+    let updatedTests: Test[] | undefined = selectedClient.tests;
+
+    if (selectedClient.status === 'Test') {
+        updatedTests = selectedClient.tests?.map(test => {
+            const expirationDate = add(parseISO(test.creationDate), { [test.durationUnit]: test.durationValue });
+            if (isFuture(expirationDate)) {
+                // Encerra o teste zerando sua duração
+                return { ...test, durationValue: 0, durationUnit: 'hours' as 'hours' };
+            }
+            return test;
+        });
+    }
+
     const clientToUpdate: Client = {
       ...selectedClient!,
       status: 'Active',
       id: manualId || selectedClient!.id,
+      tests: updatedTests,
     };
 
     updateClient(clientToUpdate);
