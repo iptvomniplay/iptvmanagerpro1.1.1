@@ -163,52 +163,36 @@ export default function Dashboard() {
               </CardDescription>
             </div>
           </CardHeader>
-          <CardContent className="grid gap-8 p-8 sm:grid-cols-2">
-            <div className="group relative">
-              {clientImage && (
-                <Image
-                  src={clientImage.imageUrl}
-                  alt={t('dashboardClientsDesc')}
-                  width={600}
-                  height={400}
-                  data-ai-hint={clientImage.imageHint}
-                  className="rounded-lg object-cover transition-transform group-hover:scale-105"
-                />
-              )}
-              <div className="absolute inset-0 rounded-lg bg-black/50" />
-              <div className="absolute bottom-6 left-6">
-                <h3 className="text-2xl font-bold text-white">{t('clients')}</h3>
-                <p className="text-base text-white/90">{t('viewAndManageClients')}</p>
-                <Button asChild className="mt-3">
-                  <Link href="/clients">
-                    {t('goToClients')} <ArrowRight />
-                  </Link>
-                </Button>
-              </div>
-            </div>
+          <CardContent className="grid gap-6 p-6 sm:grid-cols-2">
+             <Card className="group flex flex-col justify-between hover:bg-muted/50 transition-colors">
+                <CardHeader>
+                  <Users className="h-10 w-10 text-primary mb-4" />
+                  <CardTitle>{t('clients')}</CardTitle>
+                  <CardDescription>{t('viewAndManageClients')}</CardDescription>
+                </CardHeader>
+                <CardFooter>
+                  <Button asChild className="mt-auto">
+                    <Link href="/clients">
+                      {t('goToClients')} <ArrowRight />
+                    </Link>
+                  </Button>
+                </CardFooter>
+              </Card>
 
-            <div className="group relative">
-              {serverImage && (
-                <Image
-                  src={serverImage.imageUrl}
-                  alt={t('dashboardServersDesc')}
-                  width={600}
-                  height={400}
-                  data-ai-hint={serverImage.imageHint}
-                  className="rounded-lg object-cover transition-transform group-hover:scale-105"
-                />
-              )}
-              <div className="absolute inset-0 rounded-lg bg-black/50" />
-              <div className="absolute bottom-6 left-6">
-                <h3 className="text-2xl font-bold text-white">{t('servers')}</h3>
-                <p className="text-base text-white/90">{t('monitorServerStatus')}</p>
-                 <Button asChild className="mt-3">
-                  <Link href="/servers">
-                    {t('goToServers')} <ArrowRight />
-                  </Link>
-                </Button>
-              </div>
-            </div>
+              <Card className="group flex flex-col justify-between hover:bg-muted/50 transition-colors">
+                <CardHeader>
+                  <Server className="h-10 w-10 text-primary mb-4" />
+                  <CardTitle>{t('servers')}</CardTitle>
+                  <CardDescription>{t('monitorServerStatus')}</CardDescription>
+                </CardHeader>
+                <CardFooter>
+                  <Button asChild className="mt-auto">
+                    <Link href="/servers">
+                      {t('goToServers')} <ArrowRight />
+                    </Link>
+                  </Button>
+                </CardFooter>
+              </Card>
           </CardContent>
         </Card>
       </div>
