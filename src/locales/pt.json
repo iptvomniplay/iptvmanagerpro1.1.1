@@ -506,6 +506,8 @@
     "copyText": "Copiar Texto",
     "textCopied": "Texto Copiado!",
     "textCopiedSuccess": "O conteúdo da nota foi copiado para a área de transferência.",
-    "deleteNoteWarning": "Tem certeza de que deseja excluir esta anotação? Esta ação não pode ser desfeita."
+    "deleteNoteWarning": "Tem certeza de que deseja excluir esta anotação? Esta ação não pode ser desfeita.",
+    "cashFlow": "Fluxo de Caixa",
+    "cashFlowDescription": "Acompanhe todas as suas receitas e despesas."
 }
 
