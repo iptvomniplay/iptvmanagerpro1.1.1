@@ -27,22 +27,13 @@ import { EntryModal } from './components/entry-modal';
 
 export default function FinancialPage() {
   const { t, language } = useLanguage();
-  const { clients, cashFlow, addCashFlowEntry, isDataLoaded } = useData();
-  const [allEntries, setAllEntries] = React.useState<CashFlowEntry[]>([]);
+  const { cashFlow, addCashFlowEntry } = useData();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [modalType, setModalType] = React.useState<'income' | 'expense'>('income');
-  
-  // Combina entradas automáticas e manuais
-  React.useEffect(() => {
-    if (isDataLoaded) {
-      // Ordena o cashFlow para garantir que as entradas mais recentes sejam verificadas primeiro
-      const sortedCashFlow = [...cashFlow].sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime());
 
-      // Junta as entradas automáticas com as manuais já existentes e ordena por data
-      const combined = [...sortedCashFlow].sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime());
-      setAllEntries(combined);
-    }
-  }, [clients, cashFlow, isDataLoaded, t]);
+  const allEntries = React.useMemo(() => {
+    return [...cashFlow].sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime());
+  }, [cashFlow]);
 
   const totalRevenue = React.useMemo(() => {
     return allEntries.filter(e => e.type === 'income').reduce((sum, entry) => sum + entry.amount, 0);

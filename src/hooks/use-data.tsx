@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import type { Client, Server, Test, SelectedPlan, Transaction, TransactionType, CashFlowEntry } from '@/lib/types';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { clients as initialClients, servers as initialServers } from '@/lib/data';
 
 interface DataContextType {
@@ -31,33 +31,53 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
-    // This effect runs only on the client side and loads data from localStorage.
     try {
       const storedClients = localStorage.getItem('clients');
-      if (storedClients) {
-        setClients(JSON.parse(storedClients));
-      } else {
-         const clientsWithTempId = initialClients.map(c => ({...c, _tempId: c._tempId || `temp_${Date.now()}_${Math.random()}`}));
-         setClients(clientsWithTempId);
-      }
+      const loadedClients = storedClients ? JSON.parse(storedClients) : initialClients.map(c => ({...c, _tempId: c._tempId || `temp_${Date.now()}_${Math.random()}`}));
+      setClients(loadedClients);
 
       const storedServers = localStorage.getItem('servers');
-      if (storedServers) {
-        setServers(JSON.parse(storedServers));
-      } else {
-        setServers(initialServers);
-      }
+      const loadedServers = storedServers ? JSON.parse(storedServers) : initialServers;
+      setServers(loadedServers);
 
       const storedCashFlow = localStorage.getItem('cashFlow');
-      if (storedCashFlow) {
-        setCashFlow(JSON.parse(storedCashFlow));
-      } else {
-        setCashFlow([]);
+      let loadedCashFlow = storedCashFlow ? JSON.parse(storedCashFlow) : [];
+
+      // Retroactively create cash flow entries for existing active clients
+      const newCashFlowEntries: CashFlowEntry[] = [];
+      loadedClients.forEach((client: Client) => {
+        if (client.status === 'Active' && client.plans && client.plans.length > 0) {
+          const alreadyHasEntry = loadedCashFlow.some((entry: CashFlowEntry) => 
+            entry.clientId === client._tempId && entry.description?.includes('Assinatura inicial')
+          );
+
+          if (!alreadyHasEntry) {
+            const totalAmount = client.plans.reduce((sum, plan) => sum + (plan.isCourtesy ? 0 : plan.planValue), 0);
+            if (totalAmount > 0) {
+              const incomeEntry: CashFlowEntry = {
+                id: `cf_${Date.now()}_${Math.random()}`,
+                date: client.activationDate || client.registeredDate,
+                type: 'income',
+                amount: totalAmount,
+                description: `Assinatura inicial - ${client.name}`,
+                clientId: client._tempId,
+                clientName: client.name,
+              };
+              newCashFlowEntries.push(incomeEntry);
+            }
+          }
+        }
+      });
+      
+      if (newCashFlowEntries.length > 0) {
+        loadedCashFlow = [...newCashFlowEntries, ...loadedCashFlow];
+        localStorage.setItem('cashFlow', JSON.stringify(loadedCashFlow));
       }
+
+      setCashFlow(loadedCashFlow);
 
     } catch (error) {
       console.error('Failed to load data from localStorage', error);
-      // Set initial data if localStorage fails
       const clientsWithTempId = initialClients.map(c => ({...c, _tempId: c._tempId || `temp_${Date.now()}_${Math.random()}`}));
       setClients(clientsWithTempId);
       setServers(initialServers);
