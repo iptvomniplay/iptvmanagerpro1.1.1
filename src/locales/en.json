@@ -419,11 +419,11 @@
     "7days": "7 days",
     "15days": "15 days",
     "activeTests": "Active Tests",
-    "expiredTests": "Expired Tests",
     "expiringToday": "Expiring today",
     "expiredClients": "Expired",
     "inactiveClients": "Inactive",
     "settingsSaved": "Settings saved successfully!",
     "expirationWarningDescription": "Define the number of days in advance to be warned about expiring subscriptions.",
-    "expiringInNextXDays": "Expiring in the next {days} days"
+    "expiringInNextXDays": "Expiring in the next {days} days",
+    "expiringInNextDay": "Expiring in the next day"
 }

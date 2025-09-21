@@ -419,11 +419,11 @@
     "7days": "7 dias",
     "15days": "15 dias",
     "activeTests": "Testes Ativos",
-    "expiredTests": "Testes Expirados",
     "expiringToday": "Expirando hoje",
     "expiredClients": "Expirados",
     "inactiveClients": "Inativos",
     "settingsSaved": "Configurações salvas com sucesso!",
     "expirationWarningDescription": "Defina com quantos dias de antecedência deseja ser avisado sobre as assinaturas que estão expirando.",
-    "expiringInNextXDays": "Expirando nos próximos {days} dias"
+    "expiringInNextXDays": "Expirando nos próximos {days} dias",
+    "expiringInNextDay": "Expirando no próximo dia"
 }

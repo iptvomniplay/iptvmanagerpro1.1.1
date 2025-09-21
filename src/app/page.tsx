@@ -178,7 +178,12 @@ export default function Dashboard() {
           <CardContent className="space-y-2 text-sm">
              <div className="flex items-center gap-2">
               <CalendarClock className="h-4 w-4 text-amber-500" />
-              <span>{t('expiringInNextXDays', {days: expirationWarningDays})}: <strong>{expiringInPeriod}</strong></span>
+              <span>
+                {expirationWarningDays === 1
+                  ? `${t('expiringInNextDay')}: `
+                  : t('expiringInNextXDays', { days: expirationWarningDays }) + ': '}
+                <strong>{expiringInPeriod}</strong>
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <CalendarX className="h-4 w-4 text-orange-600" />
@@ -224,6 +229,11 @@ export default function Dashboard() {
                 {t('configureServersMessage')}
               </CardDescription>
             </CardHeader>
+            <CardFooter>
+              <Button asChild>
+                <Link href="/servers">{t('goToServers')}</Link>
+              </Button>
+            </CardFooter>
           </Card>
         </div>
 
