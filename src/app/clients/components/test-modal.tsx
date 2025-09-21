@@ -32,7 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Search, User, Server as ServerIcon, Info, ChevronDown, ChevronRight, X } from 'lucide-react';
+import { Search, User, Server as ServerIcon, Info, ChevronDown, ChevronRight, X, UserRound, Phone } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { normalizeString, cn } from '@/lib/utils';
@@ -212,9 +212,22 @@ export function TestModal({ isOpen, onClose }: TestModalProps) {
                                     className="flex items-center justify-between p-3 rounded-md hover:bg-accent cursor-pointer"
                                     onClick={() => handleSelectClient(client)}
                                   >
-                                    <div>
-                                      <p className="font-semibold">{client.name}</p>
-                                      <p className="text-sm text-muted-foreground">{client.phones[0]?.number}</p>
+                                    <div className="flex flex-col gap-1">
+                                        <p className="font-semibold">{client.name}</p>
+                                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                                            {client.nickname && (
+                                                <div className="flex items-center gap-1.5">
+                                                    <UserRound className="h-3 w-3" />
+                                                    <span>{client.nickname}</span>
+                                                </div>
+                                            )}
+                                            {client.phones.length > 0 && (
+                                            <div className="flex items-center gap-1.5">
+                                                <Phone className="h-3 w-3" />
+                                                <span>{client.phones[0].number}</span>
+                                            </div>
+                                            )}
+                                        </div>
                                     </div>
                                     <Button variant="outline" size="sm">{t('selectClient')}</Button>
                                   </div>
