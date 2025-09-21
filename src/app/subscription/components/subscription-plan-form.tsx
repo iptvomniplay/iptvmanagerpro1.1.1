@@ -399,7 +399,10 @@ export function SubscriptionPlanForm({ selectedClient, onPlanChange, onSelectCli
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
           <DialogContent className="sm:max-w-lg">
               <DialogHeader>
-                  <DialogTitle>{editingPlanIndex !== null ? t('editPlan') : t('addPlan')}</DialogTitle>
+                  <DialogTitle>
+                    {editingPlanIndex !== null ? t('editPlan') : t('addPlan')}
+                    {selectedClient && `: ${selectedClient.name}`}
+                  </DialogTitle>
                   <DialogDescription>
                       {editingPlanIndex !== null ? t('editPlanDescription') : t('addPlanDescription')}
                   </DialogDescription>
