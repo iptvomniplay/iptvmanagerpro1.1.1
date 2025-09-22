@@ -15,15 +15,6 @@ export default function StockPage() {
   const { servers, addTransactionToServer } = useData();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [selectedServer, setSelectedServer] = React.useState<Server | null>(null);
-  const [glowColors, setGlowColors] = React.useState<Record<string, string>>({});
-
-  React.useEffect(() => {
-    const newGlowColors: Record<string, string> = {};
-    servers.forEach(server => {
-      newGlowColors[server.id] = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
-    });
-    setGlowColors(newGlowColors);
-  }, [servers]);
 
   const handleOpenModal = (server: Server) => {
     setSelectedServer(server);
@@ -59,7 +50,7 @@ export default function StockPage() {
                     key={server.id}
                     onClick={() => handleOpenModal(server)}
                     className="cursor-pointer hover:border-primary/50 transition-all"
-                    style={{ boxShadow: `0 0 23px 0px ${glowColors[server.id] || 'transparent'}` }}
+                    style={{ boxShadow: '0 0 23px 0px rgba(255,255,255,0.6)' }}
                 >
                     <CardHeader className="flex flex-row items-center justify-between p-4 pb-2">
                         <CardTitle className="text-base">{server.name}</CardTitle>

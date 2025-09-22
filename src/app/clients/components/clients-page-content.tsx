@@ -81,12 +81,6 @@ export type ClientFormValues = Omit<Client, 'id' | 'registeredDate'>;
 const ClientCard = ({ client, onSelect, ...props }: { client: Client, onSelect: (client: Client) => void, [key: string]: any }) => {
     const { t } = useLanguage();
     const { servers, updateClient } = useData();
-    const [glowColor, setGlowColor] = React.useState('transparent');
-
-    React.useEffect(() => {
-        const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
-        setGlowColor(randomColor);
-    }, []);
 
     const hasPendingApps = (client: Client): boolean => {
         if (client.status !== 'Active' || !client.plans || client.plans.length === 0) {
@@ -134,7 +128,7 @@ const ClientCard = ({ client, onSelect, ...props }: { client: Client, onSelect: 
             key={client._tempId}
             onClick={() => onSelect(client)}
             className="cursor-pointer hover:border-primary/50 transition-all"
-            style={{ boxShadow: `0 0 23px 0px ${glowColor}` }}
+            style={{ boxShadow: '0 0 23px 0px rgba(255,255,255,0.6)' }}
             {...props}
         >
             <CardHeader className="flex flex-row items-center justify-between p-3 pb-2">
