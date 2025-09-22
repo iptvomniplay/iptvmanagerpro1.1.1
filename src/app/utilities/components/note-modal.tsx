@@ -154,17 +154,21 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
   const handleRgbChange = (channel: 'r' | 'g' | 'b', value: string) => {
     const numValue = Math.max(0, Math.min(255, parseInt(value) || 0));
     const newRgb = { ...rgb, [channel]: numValue };
+    setRgb(newRgb);
     const newHex = rgbToHex(newRgb.r, newRgb.g, newRgb.b);
-    updateAllColorStates(newHex);
+    setSelectedColor(newHex);
+    setHsl(rgbToHsl(newRgb.r, newRgb.g, newRgb.b));
   };
 
   const handleHslChange = (channel: 'h' | 's' | 'l', value: string) => {
     const max = channel === 'h' ? 360 : 100;
     const numValue = Math.max(0, Math.min(max, parseInt(value) || 0));
     const newHsl = { ...hsl, [channel]: numValue };
+    setHsl(newHsl);
     const newRgb = hslToRgb(newHsl.h, newHsl.s, newHsl.l);
+    setRgb(newRgb);
     const newHex = rgbToHex(newRgb.r, newRgb.g, newRgb.b);
-    updateAllColorStates(newHex);
+    setSelectedColor(newHex);
   };
   
   const handleColorSwatchClick = (color: string) => {
