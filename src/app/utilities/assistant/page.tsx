@@ -52,32 +52,14 @@ export default function AssistantPage() {
         body: JSON.stringify({ history: [...messages, userMessage] }),
       });
 
-      if (!response.body) {
-        throw new Error('No response body');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
       }
+
+      const data = await response.json();
       
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let done = false;
-      let fullResponse = '';
-
-      setMessages(prev => [...prev, { role: 'model', content: '' }]);
-
-      while (!done) {
-        const { value, done: readerDone } = await reader.read();
-        done = readerDone;
-        const chunk = decoder.decode(value, { stream: true });
-        fullResponse += chunk;
-        
-        setMessages(prev => {
-          const newMessages = [...prev];
-          const lastMessage = newMessages[newMessages.length - 1];
-          if (lastMessage.role === 'model') {
-            lastMessage.content = fullResponse;
-          }
-          return newMessages;
-        });
-      }
+      const modelMessage: Message = { role: 'model', content: data.message };
+      setMessages(prev => [...prev, modelMessage]);
 
     } catch (error) {
       console.error('Error fetching chat response:', error);
