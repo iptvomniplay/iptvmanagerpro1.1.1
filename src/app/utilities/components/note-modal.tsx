@@ -16,6 +16,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { useLanguage } from '@/hooks/use-language';
 import type { Note } from '@/lib/types';
 import { ColorPickerModal } from './color-picker-modal';
+import { Copy } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface NoteModalProps {
   isOpen: boolean;
@@ -26,6 +28,7 @@ interface NoteModalProps {
 
 export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
   const { t } = useLanguage();
+  const { toast } = useToast();
   const [title, setTitle] = React.useState('');
   const [content, setContent] = React.useState('');
   const [selectedColor, setSelectedColor] = React.useState('#fef08a');
@@ -51,6 +54,14 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
     setSelectedColor(newColor);
     setIsColorPickerOpen(false);
   }
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(content);
+    toast({
+      title: t('textCopied'),
+      description: t('textCopiedSuccess'),
+    });
+  };
 
   return (
     <>
@@ -99,11 +110,17 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
               </div>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={onClose}>
-              {t('cancel')}
+          <DialogFooter className="justify-between">
+            <Button variant="ghost" onClick={handleCopy} disabled={!content}>
+              <Copy className="mr-2 h-4 w-4" />
+              {t('copyText')}
             </Button>
-            <Button onClick={handleSave}>{t('saveNote')}</Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={onClose}>
+                {t('cancel')}
+              </Button>
+              <Button onClick={handleSave}>{t('saveNote')}</Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
