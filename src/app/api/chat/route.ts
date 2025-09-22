@@ -9,7 +9,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'History is required' }, { status: 400 });
     }
 
-    const response = await assistantFlow(body);
+    // Pass only the history array to the flow
+    const response = await assistantFlow({ history: body.history });
 
     return NextResponse.json({ message: response });
   } catch (error) {
