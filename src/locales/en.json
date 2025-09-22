@@ -544,5 +544,18 @@
     "favoriteColors": "Favorite Colors",
     "editFavoritesDescription": "Click on a color to remove it from your favorites.",
     "selectColor": "Select Color",
-    "selectColorDescription": "Choose a color for your note."
+    "selectColorDescription": "Choose a color for your note.",
+    "backupAndRestore": "Backup & Restore",
+    "backupAndRestoreDescription": "Export your data for backup or import it to restore.",
+    "exportBackup": "Export Backup",
+    "importBackup": "Import Backup",
+    "importBackupWarningTitle": "Import Backup?",
+    "importBackupWarningDescription": "This action will overwrite all current data in the application. This cannot be undone. Are you sure you want to continue?",
+    "confirm": "Confirm",
+    "backupExportedSuccess": "Backup Exported!",
+    "backupExportedSuccessDescription": "Your data has been successfully exported.",
+    "backupImportedSuccess": "Backup Imported!",
+    "backupImportedSuccessDescription": "Your data has been successfully restored.",
+    "backupImportFailed": "Import Failed",
+    "backupImportFailedDescription": "The selected file is invalid or corrupted. Please try again with a valid backup file."
 }

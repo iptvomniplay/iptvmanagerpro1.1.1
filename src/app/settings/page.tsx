@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/use-language';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { useDashboardSettings, DashboardPeriod } from '@/hooks/use-dashboard-settings';
@@ -25,15 +25,28 @@ import { ReportDisplayModal, GeneratedReportData } from './components/report-dis
 import { useData } from '@/hooks/use-data';
 import { add, format, isFuture, parseISO } from 'date-fns';
 import type { Client } from '@/lib/types';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+
 
 export default function SettingsPage() {
   const { language, setLanguage, t } = useLanguage();
   const { theme, setTheme } = useTheme();
-  const { clients, servers } = useData();
+  const { clients, servers, exportData, importData } = useData();
 
   const [mounted, setMounted] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [isReportDisplayModalOpen, setIsReportDisplayModalOpen] = useState(false);
+  const [isImportAlertOpen, setIsImportAlertOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const { newSubscriptionsPeriod, setNewSubscriptionsPeriod, expirationWarningDays, setExpirationWarningDays } = useDashboardSettings();
 
@@ -56,6 +69,26 @@ export default function SettingsPage() {
     }
     setExpirationWarningDays(value);
   }
+  
+  const handleImportClick = () => {
+    if (fileInputRef.current) {
+        fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+        setIsImportAlertOpen(true);
+    }
+  };
+
+  const handleConfirmImport = () => {
+    if (fileInputRef.current && fileInputRef.current.files && fileInputRef.current.files.length > 0) {
+        const file = fileInputRef.current.files[0];
+        importData(file);
+    }
+    setIsImportAlertOpen(false);
+  };
   
   const handleGenerateReport = (selectedConfigs: SelectedReportsState, clientContext?: Client | null) => {
     setIsReportModalOpen(false);
@@ -423,6 +456,26 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
 
+           <Card>
+            <CardHeader className="p-8">
+              <CardTitle className="text-2xl">{t('backupAndRestore')}</CardTitle>
+              <CardDescription className="text-lg">
+                {t('backupAndRestoreDescription')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 p-8 pt-0">
+                <Button onClick={exportData} className="w-full">{t('exportBackup')}</Button>
+                <Button onClick={handleImportClick} variant="outline" className="w-full">{t('importBackup')}</Button>
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
+                    accept=".json,.txt"
+                    onChange={handleFileChange}
+                />
+            </CardContent>
+          </Card>
+
         </div>
       </div>
     </div>
@@ -435,6 +488,20 @@ export default function SettingsPage() {
         isOpen={isReportDisplayModalOpen}
         onClose={() => setIsReportDisplayModalOpen(false)}
     />
+     <AlertDialog open={isImportAlertOpen} onOpenChange={setIsImportAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('importBackupWarningTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('importBackupWarningDescription')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmImport}>{t('confirm')}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

@@ -544,5 +544,18 @@
     "favoriteColors": "Cores Favoritas",
     "editFavoritesDescription": "Clique em uma cor para removê-la dos seus favoritos.",
     "selectColor": "Selecionar Cor",
-    "selectColorDescription": "Escolha uma cor para sua anotação."
+    "selectColorDescription": "Escolha uma cor para sua anotação.",
+    "backupAndRestore": "Backup e Restauração",
+    "backupAndRestoreDescription": "Exporte seus dados para backup ou importe para restaurar.",
+    "exportBackup": "Exportar Backup",
+    "importBackup": "Importar Backup",
+    "importBackupWarningTitle": "Importar Backup?",
+    "importBackupWarningDescription": "Esta ação irá sobrescrever todos os dados atuais na aplicação. Esta ação não pode ser desfeita. Tem certeza que deseja continuar?",
+    "confirm": "Confirmar",
+    "backupExportedSuccess": "Backup Exportado!",
+    "backupExportedSuccessDescription": "Seus dados foram exportados com sucesso.",
+    "backupImportedSuccess": "Backup Importado!",
+    "backupImportedSuccessDescription": "Seus dados foram restaurados com sucesso.",
+    "backupImportFailed": "Falha na Importação",
+    "backupImportFailedDescription": "O arquivo selecionado é inválido ou está corrompido. Tente novamente com um arquivo de backup válido."
 }

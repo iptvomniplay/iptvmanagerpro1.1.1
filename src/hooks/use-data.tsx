@@ -29,6 +29,8 @@ interface DataContextType {
   updateNote: (note: Note) => void;
   deleteNote: (noteId: string) => void;
   setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
+  exportData: () => void;
+  importData: (file: File) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -484,6 +486,65 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const deleteNote = useCallback((noteId: string) => {
     setNotes(prev => prev.filter(n => n.id !== noteId));
   }, []);
+  
+  const exportData = useCallback(() => {
+    const dataToExport = {
+      clients,
+      servers,
+      cashFlow,
+      notes,
+    };
+    const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const date = format(new Date(), 'yyyy-MM-dd');
+    link.download = `iptv-manager-pro-backup-${date}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast({
+        title: t('backupExportedSuccess'),
+        description: t('backupExportedSuccessDescription'),
+    })
+  }, [clients, servers, cashFlow, notes, t, toast]);
+
+  const importData = useCallback((file: File) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const result = event.target?.result;
+        if (typeof result !== 'string') {
+          throw new Error('File could not be read');
+        }
+        const importedData = JSON.parse(result);
+        
+        // Basic validation
+        if (Array.isArray(importedData.clients) && Array.isArray(importedData.servers) && Array.isArray(importedData.cashFlow) && Array.isArray(importedData.notes)) {
+          setClients(importedData.clients);
+          setServers(importedData.servers);
+          setCashFlow(importedData.cashFlow);
+          setNotes(importedData.notes);
+          toast({
+              title: t('backupImportedSuccess'),
+              description: t('backupImportedSuccessDescription'),
+          });
+        } else {
+          throw new Error('Invalid backup file format');
+        }
+      } catch (error) {
+        console.error('Failed to import data:', error);
+        toast({
+            variant: "destructive",
+            title: t('backupImportFailed'),
+            description: t('backupImportFailedDescription'),
+        });
+      }
+    };
+    reader.readAsText(file);
+  }, [t, toast]);
+
 
   const value = {
     clients,
@@ -507,6 +568,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     updateNote,
     deleteNote,
     setNotes,
+    exportData,
+    importData,
   };
   
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
