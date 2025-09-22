@@ -206,7 +206,6 @@ export default function FinancialPage() {
                               </Badge>
                             </TableCell>
                             <TableCell className="text-right">
-                              {!isAutomated && (
                                 <DropdownMenu>
                                   <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" className="h-8 w-8 p-0">
@@ -228,7 +227,6 @@ export default function FinancialPage() {
                                     </DropdownMenuItem>
                                   </DropdownMenuContent>
                                 </DropdownMenu>
-                              )}
                             </TableCell>
                           </TableRow>
                         )})
