@@ -104,9 +104,6 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
                   onClick={() => setIsColorPickerOpen(true)}
                   aria-label={t('selectColor')}
                 />
-                 <Button variant="outline" onClick={() => setIsColorPickerOpen(true)}>
-                  {t('selectColor')}
-                </Button>
               </div>
             </div>
           </div>
