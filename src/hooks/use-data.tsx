@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
@@ -329,9 +330,6 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [servers]);
 
   const deleteServer = useCallback((serverId: string) => {
-    const serverBeingDeleted = servers.find(s => s.id === serverId);
-    if (!serverBeingDeleted) return;
-
     const clientsUsingServer = clients.filter(client => 
         client.plans?.some(plan => plan.panel.id === serverId)
     );
@@ -413,8 +411,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           };
           
           let updatedTransactions = [newTransaction, ...(s.transactions || [])];
-
-          // Garante que o ajuste seja direto, sem duplicações
+          
           const newCreditStock = s.creditStock + newTransaction.credits;
 
           return { ...s, transactions: updatedTransactions, creditStock: newCreditStock };
