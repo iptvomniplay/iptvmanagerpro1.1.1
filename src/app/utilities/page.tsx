@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -119,10 +120,13 @@ export default function UtilitiesPage() {
                     <Card 
                         key={note.id} 
                         className={cn(
-                            "flex flex-col justify-between cursor-pointer transition-transform hover:scale-105 overflow-hidden",
-                            "border-b-4"
+                            "flex flex-col justify-between cursor-pointer transition-all hover:scale-105 overflow-hidden",
+                            "border-b-8"
                         )}
-                        style={{ borderColor: note.color }}
+                        style={{ 
+                            borderColor: note.color,
+                            boxShadow: `0 6px 20px -8px ${note.color}`
+                        }}
                         onClick={() => handleOpenView(note)}
                     >
                         <CardContent className="p-4">
