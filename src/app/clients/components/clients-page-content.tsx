@@ -78,6 +78,170 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export type ClientFormValues = Omit<Client, 'id' | 'registeredDate'>;
 
+const ClientCard = ({ client, onSelect, ...props }: { client: Client, onSelect: (client: Client) => void, [key: string]: any }) => {
+    const { t } = useLanguage();
+    const { servers, updateClient } = useData();
+    const [glowColor, setGlowColor] = React.useState('transparent');
+
+    React.useEffect(() => {
+        const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
+        setGlowColor(randomColor);
+    }, []);
+
+    const hasPendingApps = (client: Client): boolean => {
+        if (client.status !== 'Active' || !client.plans || client.plans.length === 0) {
+            return false;
+        }
+        const totalScreens = client.plans.reduce((sum, plan) => sum + plan.screens, 0);
+        const configuredApps = client.applications?.length || 0;
+        return configuredApps < totalScreens;
+    };
+
+    const hasOrphanedPlan = (client: Client): boolean => {
+        if (!client.plans || client.plans.length === 0) {
+            return false;
+        }
+        const serverIds = servers.map(s => s.id);
+        return client.plans.some(plan => !serverIds.includes(plan.panel.id));
+    };
+
+    const hasActiveTest = (client: Client): boolean => {
+        if (!client.tests || client.tests.length === 0) {
+            return false;
+        }
+        return client.tests.some(test => {
+            const expirationDate = add(parseISO(test.creationDate), { [test.durationUnit]: test.durationValue });
+            return isFuture(expirationDate);
+        });
+    };
+    
+    const getStatusVariant = (status: Client['status']) => {
+        switch (status) {
+            case 'Active': return 'success';
+            case 'Inactive': return 'inactive';
+            case 'Expired': return 'destructive';
+            case 'Test': return 'warning';
+            default: return 'outline';
+        }
+    };
+
+    const latestTest = client.status === 'Test' && client.tests && client.tests.length > 0
+        ? [...client.tests].sort((a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime())[0]
+        : null;
+
+    return (
+        <Card 
+            key={client._tempId}
+            onClick={() => onSelect(client)}
+            className="cursor-pointer hover:border-primary/50 transition-all"
+            style={{ boxShadow: `0 0 23px 0px ${glowColor}` }}
+            {...props}
+        >
+            <CardHeader className="flex flex-row items-start justify-between pb-4">
+                <div className="flex items-center gap-3">
+                    <CardTitle className="text-lg">{client.name}</CardTitle>
+                    {hasOrphanedPlan(client) && (
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={(e) => e.stopPropagation()}>
+                                        <AlertTriangle className="h-5 w-5" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent><p>{t('clientWithInvalidPlan')}</p></TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    )}
+                    {hasActiveTest(client) && (
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-yellow-500 hover:text-yellow-500 hover:bg-yellow-500/10" onClick={(e) => e.stopPropagation()}>
+                                        <TestTube className="h-5 w-5" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent><p>{t('clientWithActiveTest')}</p></TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    )}
+                    {hasPendingApps(client) && (
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-yellow-500 hover:text-yellow-500 hover:bg-yellow-500/10" onClick={(e) => e.stopPropagation()}>
+                                        <AlertTriangle className="h-5 w-5" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent><p>{t('pendingAppsWarning')}</p></TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    )}
+                </div>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0" onClick={(e) => e.stopPropagation()}>
+                            <span className="sr-only">{t('openMenu')}</span>
+                            <MoreHorizontal className="h-5 w-5" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); props.onEdit(client) }}>
+                            <FilePenLine className="mr-2 h-4 w-4" />
+                            {t('edit')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); props.onGenerateReport(client) }}>
+                            <FileText className="mr-2 h-4 w-4" />
+                            {t('report')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); props.onDelete(client) }} className="text-destructive focus:text-destructive">
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            {t('delete')}
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </CardHeader>
+            <CardContent className="grid grid-cols-3 gap-4 text-sm">
+                <div>
+                    <p className="text-muted-foreground font-semibold">{t('clientStatus')}</p>
+                    <Badge variant={getStatusVariant(client.status)} className="mt-1">
+                        {t(client.status.toLowerCase() as any)}
+                    </Badge>
+                </div>
+                <div>
+                    <p className="text-muted-foreground font-semibold">{t('clientID')}</p>
+                    <p className="font-medium">{client.id || t('noId')}</p>
+                </div>
+                <div>
+                    <p className="text-muted-foreground font-semibold">{t('expiresIn')}</p>
+                    <div className="mt-1" onClick={(e) => e.stopPropagation()}>
+                        {client.status === 'Active' && client.plans && client.plans.length > 0 ? (
+                            <ClientExpiration
+                                key={`${client._tempId}-plan`}
+                                clientId={client._tempId}
+                                planStartDate={client.registeredDate}
+                                planPeriod={client.plans[0].planPeriod}
+                                onExpire={() => updateClient({ ...client, status: 'Expired' })}
+                            />
+                        ) : client.status === 'Test' && latestTest ? (
+                            <ClientExpiration
+                                key={`${client._tempId}-test`}
+                                clientId={client._tempId}
+                                testCreationDate={latestTest.creationDate}
+                                testDurationValue={latestTest.durationValue}
+                                testDurationUnit={latestTest.durationUnit}
+                                onExpire={() => updateClient({ ...client, status: 'Expired' })}
+                            />
+                        ) : (
+                            <span className="text-muted-foreground">-</span>
+                        )}
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
+
 export default function ClientsPageContent() {
   const { t } = useLanguage();
   const { clients, servers, deleteClient, updateClient } = useData();
@@ -138,48 +302,6 @@ export default function ClientsPageContent() {
     }
     setIsDeleteAlertOpen(false);
     setClientToDelete(null);
-  };
-
-  const getStatusVariant = (status: Client['status']) => {
-    switch (status) {
-      case 'Active':
-        return 'success';
-      case 'Inactive':
-        return 'inactive';
-      case 'Expired':
-        return 'destructive';
-      case 'Test':
-        return 'warning';
-      default:
-        return 'outline';
-    }
-  };
-  
-  const hasPendingApps = (client: Client): boolean => {
-    if (client.status !== 'Active' || !client.plans || client.plans.length === 0) {
-      return false;
-    }
-    const totalScreens = client.plans.reduce((sum, plan) => sum + plan.screens, 0);
-    const configuredApps = client.applications?.length || 0;
-    return configuredApps < totalScreens;
-  };
-
-  const hasOrphanedPlan = (client: Client): boolean => {
-    if (!client.plans || client.plans.length === 0) {
-      return false;
-    }
-    const serverIds = servers.map(s => s.id);
-    return client.plans.some(plan => !serverIds.includes(plan.panel.id));
-  };
-  
-  const hasActiveTest = (client: Client): boolean => {
-    if (!client.tests || client.tests.length === 0) {
-      return false;
-    }
-    return client.tests.some(test => {
-      const expirationDate = add(parseISO(test.creationDate), { [test.durationUnit]: test.durationValue });
-      return isFuture(expirationDate);
-    });
   };
 
   const handleOpenReportModal = (client: Client) => {
@@ -362,118 +484,16 @@ export default function ClientsPageContent() {
 
       <div className="space-y-4 mt-6">
         {filteredClients.length > 0 ? (
-          filteredClients.map((client) => {
-            const latestTest = client.status === 'Test' && client.tests && client.tests.length > 0 
-              ? [...client.tests].sort((a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime())[0] 
-              : null;
-            
-            const clientHasActiveTest = client.status === 'Active' && hasActiveTest(client);
-
-            return (
-              <Card key={client._tempId} onClick={() => handleViewDetails(client)} className="cursor-pointer hover:border-primary/50 transition-all">
-                <CardHeader className="flex flex-row items-start justify-between pb-4">
-                  <div className="flex items-center gap-3">
-                    <CardTitle className="text-lg">{client.name}</CardTitle>
-                    {hasOrphanedPlan(client) && (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={(e) => e.stopPropagation()}>
-                                <AlertTriangle className="h-5 w-5" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent><p>{t('clientWithInvalidPlan')}</p></TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-                    {clientHasActiveTest && (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-7 w-7 text-yellow-500 hover:text-yellow-500 hover:bg-yellow-500/10" onClick={(e) => e.stopPropagation()}>
-                                <TestTube className="h-5 w-5" />
-                              </Button>
-                          </TooltipTrigger>
-                          <TooltipContent><p>{t('clientWithActiveTest')}</p></TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-                    {hasPendingApps(client) && (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-yellow-500 hover:text-yellow-500 hover:bg-yellow-500/10" onClick={(e) => e.stopPropagation()}>
-                                <AlertTriangle className="h-5 w-5" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent><p>{t('pendingAppsWarning')}</p></TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-                  </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0" onClick={(e) => e.stopPropagation()}>
-                        <span className="sr-only">{t('openMenu')}</span>
-                        <MoreHorizontal className="h-5 w-5" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={(e) => {e.stopPropagation(); handleEditOpen(client)}}>
-                        <FilePenLine className="mr-2 h-4 w-4" />
-                        {t('edit')}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={(e) => {e.stopPropagation(); handleOpenReportModal(client)}}>
-                        <FileText className="mr-2 h-4 w-4" />
-                        {t('report')}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={(e) => {e.stopPropagation(); handleDeleteRequest(client)}} className="text-destructive focus:text-destructive">
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        {t('delete')}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </CardHeader>
-                <CardContent className="grid grid-cols-3 gap-4 text-sm">
-                  <div>
-                    <p className="text-muted-foreground font-semibold">{t('clientStatus')}</p>
-                    <Badge variant={getStatusVariant(client.status)} className="mt-1">
-                      {t(client.status.toLowerCase() as any)}
-                    </Badge>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground font-semibold">{t('clientID')}</p>
-                    <p className="font-medium">{client.id || t('noId')}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground font-semibold">{t('expiresIn')}</p>
-                    <div className="mt-1" onClick={(e) => e.stopPropagation()}>
-                        {client.status === 'Active' && client.plans && client.plans.length > 0 ? (
-                            <ClientExpiration
-                                key={`${client._tempId}-plan`}
-                                clientId={client._tempId}
-                                planStartDate={client.registeredDate} 
-                                planPeriod={client.plans[0].planPeriod}
-                                onExpire={() => updateClient({...client, status: 'Expired'})}
-                            />
-                        ) : client.status === 'Test' && latestTest ? (
-                            <ClientExpiration
-                                key={`${client._tempId}-test`}
-                                clientId={client._tempId}
-                                testCreationDate={latestTest.creationDate}
-                                testDurationValue={latestTest.durationValue}
-                                testDurationUnit={latestTest.durationUnit}
-                                onExpire={() => updateClient({...client, status: 'Expired'})}
-                            />
-                        ) : (
-                          <span className="text-muted-foreground">-</span>
-                        )}
-                      </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )
-          })
+          filteredClients.map((client) => (
+            <ClientCard
+                key={client._tempId}
+                client={client}
+                onSelect={handleViewDetails}
+                onEdit={handleEditOpen}
+                onDelete={handleDeleteRequest}
+                onGenerateReport={handleOpenReportModal}
+            />
+          ))
         ) : (
           <div className="text-center py-20">
             <h3 className="text-xl font-semibold">{t('noClientsFound')}</h3>
@@ -537,4 +557,5 @@ export default function ClientsPageContent() {
     </>
   );
 }
+
 
