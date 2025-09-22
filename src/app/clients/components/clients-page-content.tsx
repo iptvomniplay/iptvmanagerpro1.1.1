@@ -380,10 +380,13 @@ export default function ClientsPageContent() {
                 const clientHasActiveTest = client.status === 'Active' && hasActiveTest(client);
 
                 return (
-                  <TableRow key={client._tempId} onClick={() => handleViewDetails(client)} className="cursor-pointer">
+                  <TableRow key={client._tempId} className="even:bg-muted/50 hover:bg-muted">
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <Button variant="link" className="p-0 h-auto font-semibold text-base text-primary">
+                        <Button 
+                            onClick={() => handleViewDetails(client)} 
+                            className="p-2 h-auto font-semibold text-base justify-start"
+                        >
                           {client.name}
                         </Button>
                         
