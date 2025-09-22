@@ -51,30 +51,33 @@ const ServerRatingDisplay = ({ server }: { server: Server }) => {
   const partialStar = averageRating - fullStars;
 
   const colors = ["#ef4444", "#f97316", "#eab308", "#84cc16", "#22c55e"];
-  const starColor = colors[fullStars >= 1 ? fullStars - 1 : 0];
+  const starColor = colors[fullStars >= 1 ? Math.min(fullStars - 1, 4) : 0];
 
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger>
-          <div className="flex items-center">
-            {[...Array(5)].map((_, i) => {
-              const starValue = i + 1;
-              if (starValue <= fullStars) {
-                return <Star key={i} className="h-5 w-5" fill={starColor} stroke={starColor} />;
-              }
-              if (starValue === fullStars + 1 && partialStar > 0) {
-                 return (
-                    <div key={i} className="relative h-5 w-5">
-                      <Star className="h-5 w-5 text-muted" fill="currentColor" />
-                      <div className="absolute top-0 left-0 h-full overflow-hidden" style={{ width: `${partialStar * 100}%` }}>
-                        <Star className="h-5 w-5" fill={starColor} stroke={starColor} />
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-base">{averageRating.toFixed(2)}</span>
+            <div className="flex items-center">
+              {[...Array(5)].map((_, i) => {
+                const starValue = i + 1;
+                if (starValue <= fullStars) {
+                  return <Star key={i} className="h-5 w-5" fill={starColor} stroke={starColor} />;
+                }
+                if (starValue === fullStars + 1 && partialStar > 0) {
+                  return (
+                      <div key={i} className="relative h-5 w-5">
+                        <Star className="h-5 w-5 text-muted" fill="currentColor" />
+                        <div className="absolute top-0 left-0 h-full overflow-hidden" style={{ width: `${partialStar * 100}%` }}>
+                          <Star className="h-5 w-5" fill={starColor} stroke={starColor} />
+                        </div>
                       </div>
-                    </div>
-                  );
-              }
-              return <Star key={i} className="h-5 w-5 text-muted" fill="currentColor" />;
-            })}
+                    );
+                }
+                return <Star key={i} className="h-5 w-5 text-muted" fill="currentColor" />;
+              })}
+            </div>
           </div>
         </TooltipTrigger>
         <TooltipContent>
