@@ -68,7 +68,7 @@ export default function SidebarNav() {
                     <Link href={link.href}>
                       <link.icon className="h-9 w-9" />
                       <span>{link.label}</span>
-                      {link.badge !== undefined && <div className="ml-auto bg-primary text-primary-foreground rounded-full px-3 py-1 text-sm">{link.badge}</div>}
+                      {link.badge !== undefined && link.badge > 0 && <div className="ml-auto bg-primary text-primary-foreground rounded-full px-3 py-1 text-sm">{link.badge}</div>}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
