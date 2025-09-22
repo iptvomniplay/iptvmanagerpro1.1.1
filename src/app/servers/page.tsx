@@ -225,10 +225,6 @@ export default function ServersPage() {
                      </div>
                   </CardContent>
                   <CardFooter className="flex justify-end gap-2">
-                      <Button variant="outline" size="icon" onClick={() => handleOpenDetails(server)}>
-                          <Eye />
-                          <span className="sr-only">{t('details')}</span>
-                      </Button>
                       <Button variant="outline" size="icon" onClick={() => handleOpenTransactionModal(server)}>
                           <Settings />
                           <span className="sr-only">{t('manage')}</span>
@@ -240,6 +236,9 @@ export default function ServersPage() {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                           <DropdownMenuItem onClick={() => handleOpenDetails(server)}>
+                                {t('details')}
+                            </DropdownMenuItem>
                            <DropdownMenuItem onClick={() => handleEdit(server)}>
                                 {t('edit')}
                             </DropdownMenuItem>
