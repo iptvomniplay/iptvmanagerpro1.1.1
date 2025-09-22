@@ -49,7 +49,7 @@ const StarRating: React.FC<StarRatingProps> = ({ rating, onRatingChange }) => {
             type="button"
             key={ratingValue}
             className="focus:outline-none"
-            onClick={() => onRatingChange(ratingValue)}
+            onClick={(e) => { e.stopPropagation(); onRatingChange(ratingValue); }}
             onMouseEnter={() => setHover(ratingValue)}
             onMouseLeave={() => setHover(0)}
           >
@@ -111,10 +111,14 @@ const PasswordDisplay = ({ password }: { password?: string }) => {
     )
 }
 
-export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }: ServerDetailsModalProps) {
+export function ServerDetailsModal({ isOpen, onClose, server: initialServer, onEdit, onDelete }: ServerDetailsModalProps) {
   const { t } = useLanguage();
-  const { updateServer } = useData();
+  const { servers, updateServer } = useData();
   const router = useRouter();
+
+  // Find the most up-to-date server data from the global context
+  const server = servers.find(s => s.id === initialServer?.id) || initialServer;
+
   const [observations, setObservations] = React.useState(server?.observations || '');
 
   React.useEffect(() => {
