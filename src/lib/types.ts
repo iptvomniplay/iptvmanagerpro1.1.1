@@ -115,12 +115,6 @@ export type Server = {
   transactions?: Transaction[];
 };
 
-export type Note = {
-  id: string;
-  content: string;
-  color: string;
-};
-
 export type CashFlowEntry = {
   id: string;
   date: string;
