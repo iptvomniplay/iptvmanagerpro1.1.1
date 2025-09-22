@@ -26,7 +26,7 @@ interface ConfirmationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  serverData: Partial<Server>;
+  serverData: Partial<Server> & { initialCredits?: number; initialPurchaseValue?: number };
 }
 
 const DetailItem = ({ label, value, isCurrency = false }: { label: string; value?: string | number | null; isCurrency?: boolean }) => {
@@ -126,7 +126,12 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, serverData }: Co
                 <DetailItem label={t('dueDate')} value={serverData.dueDate} />
               </>
             )}
-             <DetailItem label={t('creditBalance')} value={serverData.creditStock} />
+             {serverData.initialCredits && serverData.initialPurchaseValue !== undefined && (
+              <>
+                <DetailItem label={t('initialCredits')} value={serverData.initialCredits} />
+                <DetailItem label={t('initialPurchaseValue')} value={serverData.initialPurchaseValue} isCurrency />
+              </>
+            )}
           </div>
           
           {serverData.observations && (

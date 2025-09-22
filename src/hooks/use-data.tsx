@@ -16,7 +16,7 @@ interface DataContextType {
   addClient: (clientData: Omit<Client, 'registeredDate' | 'plans' | '_tempId'>) => void;
   updateClient: (clientData: Client, options?: { skipCashFlow?: boolean }) => void;
   deleteClient: (clientId: string) => void;
-  addServer: (serverData: Omit<Server, 'id' | 'status'>) => void;
+  addServer: (serverData: Omit<Server, 'id' | 'status' | 'creditStock' | 'transactions'> & { initialCredits?: number; initialPurchaseValue?: number }) => void;
   updateServer: (serverData: Server) => void;
   deleteServer: (serverId: string) => void;
   addTestToClient: (clientId: string, testData: Omit<Test, 'creationDate'>) => void;
@@ -63,22 +63,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const newCashFlowEntries: CashFlowEntry[] = [];
 
       loadedServers = loadedServers.map(server => {
-        if (server.creditStock < 0) {
-            server.creditStock = 0;
-        }
         let serverTransactions = server.transactions || [];
-        if (server.paymentType === 'prepaid' && server.creditStock > 0 && serverTransactions.length === 0) {
-            const initialPurchase: Transaction = {
-                id: `trans_${Date.now()}_${Math.random()}`,
-                type: 'purchase',
-                date: new Date().toISOString(),
-                credits: server.creditStock,
-                totalValue: 0, 
-                unitValue: 0,
-                description: 'Carga inicial de créditos (Valor desconhecido)'
-            };
-            serverTransactions = [initialPurchase];
-        }
 
         serverTransactions.forEach(transaction => {
             if (transaction.type === 'purchase' && transaction.totalValue > 0) {
@@ -109,10 +94,13 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             });
           }
         }
+        
+        const newCreditStock = serverTransactions.reduce((acc, trans) => acc + trans.credits, 0);
 
         return {
             ...server,
-            transactions: serverTransactions
+            transactions: serverTransactions,
+            creditStock: newCreditStock < 0 ? 0 : newCreditStock
         };
       });
       setServers(loadedServers);
@@ -345,15 +333,44 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
   }, []);
 
-  const addServer = useCallback((serverData: Omit<Server, 'id' | 'status'>) => {
+  const addServer = useCallback((serverData: Omit<Server, 'id' | 'status' | 'creditStock' | 'transactions'> & { initialCredits?: number; initialPurchaseValue?: number }) => {
     const newServerId = `S${(Math.random() * 100).toFixed(0).padStart(2, '0')}`;
+    let initialTransactions: Transaction[] = [];
+    let creditStock = 0;
+    
+    if (serverData.initialCredits && serverData.initialPurchaseValue !== undefined) {
+      const unitValue = serverData.initialCredits > 0 ? serverData.initialPurchaseValue / serverData.initialCredits : 0;
+      const initialPurchase: Transaction = {
+        id: `trans_${Date.now()}_${Math.random()}`,
+        date: new Date().toISOString(),
+        type: 'purchase',
+        credits: serverData.initialCredits,
+        totalValue: serverData.initialPurchaseValue,
+        unitValue: unitValue,
+        description: t('initialPurchase'),
+      };
+      initialTransactions.push(initialPurchase);
+      creditStock = serverData.initialCredits;
+
+      if (serverData.initialPurchaseValue > 0) {
+        addCashFlowEntry({
+          type: 'expense',
+          amount: serverData.initialPurchaseValue,
+          description: `Compra de créditos: ${serverData.name}`,
+          sourceTransactionId: initialPurchase.id
+        });
+      }
+    }
+
+
     setServers(prevServers => {
         const newServer: Server = {
         ...serverData,
         id: newServerId,
         status: 'Online',
         subServers: serverData.subServers || [],
-        transactions: [],
+        transactions: initialTransactions,
+        creditStock: creditStock
         };
         const updatedServers = [newServer, ...prevServers];
         return updatedServers;
@@ -368,7 +385,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
     }
 
-  }, [addCashFlowEntry]);
+  }, [addCashFlowEntry, t]);
 
   const updateServer = useCallback((serverData: Server) => {
     const oldServer = servers.find(s => s.id === serverData.id);

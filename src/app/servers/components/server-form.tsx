@@ -85,8 +85,9 @@ const createFormSchema = (t: (key: any) => string) =>
       paymentType: z.enum(['prepaid', 'postpaid'], { required_error: t('paymentMethodRequired') }),
       panelValue: z.number().optional(),
       dueDate: z.coerce.number().optional(),
-      hasInitialStock: z.boolean().default(false).optional(),
-      creditStock: z.coerce.number({invalid_type_error: t('creditStockIsRequired')}).optional(),
+      hasInitialPurchase: z.boolean().default(false).optional(),
+      initialCredits: z.coerce.number().optional(),
+      initialPurchaseValue: z.number().optional(),
       subServers: z.array(createSubServerSchema(t)).optional(),
       observations: z.string().optional(),
     })
@@ -111,15 +112,21 @@ const createFormSchema = (t: (key: any) => string) =>
           });
         }
       }
-      if (
-        data.hasInitialStock &&
-        (data.creditStock === undefined || data.creditStock <= 0)
-      ) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: t('creditStockIsRequired'),
-          path: ['creditStock'],
-        });
+      if (data.hasInitialPurchase) {
+          if (!data.initialCredits || data.initialCredits <= 0) {
+              ctx.addIssue({
+                  code: z.ZodIssueCode.custom,
+                  message: t('creditStockIsRequired'),
+                  path: ['initialCredits'],
+              });
+          }
+          if (data.initialPurchaseValue === undefined || data.initialPurchaseValue < 0) {
+              ctx.addIssue({
+                  code: z.ZodIssueCode.custom,
+                  message: t('totalPurchaseValueRequired'),
+                  path: ['initialPurchaseValue'],
+              });
+          }
       }
     });
 
@@ -143,13 +150,6 @@ const initialSubServerValues: Omit<SubServerFormValues, 'status'> = {
 };
 
 const getInitialValues = (server: Server | null, language: string): ServerFormValues => {
-    const formatCurrency = (value?: number) => {
-    if (value === undefined) return '';
-    const currency = language === 'pt-BR' ? 'BRL' : 'USD';
-    const locale = language === 'pt-BR' ? 'pt-BR' : 'en-US';
-    return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(value);
-  }
-  
   return {
   name: server?.name || '',
   url: server?.url || '',
@@ -161,8 +161,9 @@ const getInitialValues = (server: Server | null, language: string): ServerFormVa
   paymentType: server?.paymentType || undefined,
   panelValue: server?.panelValue,
   dueDate: server?.dueDate || undefined,
-  hasInitialStock: !!server?.creditStock && server.creditStock > 0,
-  creditStock: server?.creditStock,
+  hasInitialPurchase: !!server?.transactions?.some(t => t.type === 'purchase'),
+  initialCredits: server?.transactions?.find(t => t.type === 'purchase')?.credits,
+  initialPurchaseValue: server?.transactions?.find(t => t.type === 'purchase')?.totalValue,
   subServers: server?.subServers ? server.subServers.map(s => ({...s, plans: s.plans.map(p => typeof p === 'string' ? p : p.name)})) : [],
   observations: server?.observations || '',
 }};
@@ -184,6 +185,8 @@ export function ServerForm({ server }: ServerFormProps) {
   const [subServerFormState, setSubServerFormState] = React.useState<Omit<SubServerFormValues, 'status'>>(initialSubServerValues);
   const [currentPlan, setCurrentPlan] = React.useState<PlanFormValues>(initialPlanValues);
   const [panelValueDisplay, setPanelValueDisplay] = React.useState('');
+  const [initialPurchaseValueDisplay, setInitialPurchaseValueDisplay] = React.useState('');
+
 
   const [isPhoneModalOpen, setIsPhoneModalOpen] = React.useState(false);
   
@@ -212,7 +215,7 @@ export function ServerForm({ server }: ServerFormProps) {
 
   const { control, watch, setValue, reset, formState: { errors }, trigger } = form;
   const paymentType = watch('paymentType');
-  const hasInitialStock = watch('hasInitialStock');
+  const hasInitialPurchase = watch('hasInitialPurchase');
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -232,17 +235,15 @@ export function ServerForm({ server }: ServerFormProps) {
         const currency = language === 'pt-BR' ? 'BRL' : 'USD';
         setPanelValueDisplay(new Intl.NumberFormat(locale, { style: 'currency', currency }).format(server.panelValue));
     }
-  }, [server, language])
-
-  React.useEffect(() => {
-    if (hasInitialStock) {
-        if (form.getValues('creditStock') === undefined) {
-             setValue('creditStock', undefined);
+    if (server?.transactions?.some(t => t.type === 'purchase')) {
+        const purchase = server.transactions.find(t => t.type === 'purchase');
+        if (purchase) {
+            const locale = language === 'pt-BR' ? 'pt-BR' : 'en-US';
+            const currency = language === 'pt-BR' ? 'BRL' : 'USD';
+            setInitialPurchaseValueDisplay(new Intl.NumberFormat(locale, { style: 'currency', currency }).format(purchase.totalValue));
         }
-    } else {
-        setValue('creditStock', undefined);
     }
-  }, [hasInitialStock, setValue, form]);
+  }, [server, language]);
   
   React.useEffect(() => {
     if (server?.paymentType || isPaymentTypeVisible) {
@@ -330,12 +331,17 @@ export function ServerForm({ server }: ServerFormProps) {
     }));
   };
 
-  const handleCurrencyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCurrencyChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: 'panelValue' | 'initialPurchaseValue') => {
     let value = e.target.value.replace(/\D/g, '');
     if (!value) {
-      setPanelValueDisplay('');
-      setValue('panelValue', 0);
-      return;
+        if (fieldName === 'panelValue') {
+            setPanelValueDisplay('');
+            setValue('panelValue', 0);
+        } else {
+            setInitialPurchaseValueDisplay('');
+            setValue('initialPurchaseValue', 0);
+        }
+        return;
     }
     const numericValue = parseInt(value, 10) / 100;
     
@@ -343,9 +349,15 @@ export function ServerForm({ server }: ServerFormProps) {
     const currency = language === 'pt-BR' ? 'BRL' : 'USD';
     const formatter = new Intl.NumberFormat(locale, { style: 'currency', currency });
     
-    setPanelValueDisplay(formatter.format(numericValue));
-    setValue('panelValue', numericValue);
-    trigger('panelValue');
+    if (fieldName === 'panelValue') {
+        setPanelValueDisplay(formatter.format(numericValue));
+        setValue('panelValue', numericValue);
+        trigger('panelValue');
+    } else {
+        setInitialPurchaseValueDisplay(formatter.format(numericValue));
+        setValue('initialPurchaseValue', numericValue);
+        trigger('initialPurchaseValue');
+    }
   };
   
   const processSubServerForValidation = () => {
@@ -452,8 +464,6 @@ export function ServerForm({ server }: ServerFormProps) {
   const handleConfirmSave = () => {
     if (!serverDataToConfirm) return;
     
-    const creditStock = serverDataToConfirm.hasInitialStock ? (serverDataToConfirm.creditStock || 0) : 0;
-    
     const processedSubServers: SubServer[] = (serverDataToConfirm.subServers || []).map(s => ({
         ...s,
         plans: s.plans.map(p => ({name: p}))
@@ -461,7 +471,6 @@ export function ServerForm({ server }: ServerFormProps) {
 
     const processedData = {
       ...serverDataToConfirm,
-      creditStock: creditStock,
       subServers: processedSubServers,
     };
     
@@ -475,11 +484,7 @@ export function ServerForm({ server }: ServerFormProps) {
       };
       updateServer(serverData);
     } else {
-        const serverData: Omit<Server, 'id' | 'status'> = {
-            ...processedData,
-            subServers: processedData.subServers || [],
-        };
-        addServer(serverData);
+        addServer(processedData);
     }
     setIsConfirmationModalOpen(false);
     setIsSuccessModalOpen(true);
@@ -498,6 +503,7 @@ export function ServerForm({ server }: ServerFormProps) {
         setSubServerFormState(initialSubServerValues);
         setCurrentPlan(initialPlanValues);
         setPanelValueDisplay('');
+        setInitialPurchaseValueDisplay('');
         remove();
         setIsPaymentTypeVisible(false);
         setIsObservationsVisible(false);
@@ -562,7 +568,7 @@ export function ServerForm({ server }: ServerFormProps) {
     setMainFormErrorFields([]);
   };
 
-  const handleHasInitialStockClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleHasInitialPurchaseClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!paymentType) {
         e.preventDefault();
         toast({
@@ -817,7 +823,7 @@ export function ServerForm({ server }: ServerFormProps) {
                           {...field}
                           autoComplete="off"
                           value={panelValueDisplay}
-                          onChange={handleCurrencyChange}
+                          onChange={(e) => handleCurrencyChange(e, 'panelValue')}
                           placeholder={
                             language === 'pt-BR' ? t('currencyPlaceholderBRL') : t('currencyPlaceholderUSD')
                           }
@@ -865,11 +871,11 @@ export function ServerForm({ server }: ServerFormProps) {
               <>
                 <FormField
                   control={control}
-                  name="hasInitialStock"
+                  name="hasInitialPurchase"
                   render={({ field }) => (
                     <FormItem 
                       className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow-sm md:w-1/2"
-                      onClick={(e: React.MouseEvent<HTMLDivElement>) => handleHasInitialStockClick(e as unknown as React.MouseEvent<HTMLButtonElement>)}
+                      onClick={(e: React.MouseEvent<HTMLDivElement>) => handleHasInitialPurchaseClick(e as unknown as React.MouseEvent<HTMLButtonElement>)}
                     >
                       <FormControl>
                         <Checkbox
@@ -879,7 +885,7 @@ export function ServerForm({ server }: ServerFormProps) {
                               field.onChange(checked);
                             }
                           }}
-                          disabled={!paymentType}
+                          disabled={!paymentType || !!server}
                         />
                       </FormControl>
                       <div className="space-y-1 leading-none">
@@ -889,20 +895,20 @@ export function ServerForm({ server }: ServerFormProps) {
                   )}
                 />
 
-                {hasInitialStock && (
-                  <div className="md:w-1/2">
+                {hasInitialPurchase && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:w-1/2">
                     <FormField
                       control={control}
-                      name="creditStock"
+                      name="initialCredits"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('panelCreditStock')}</FormLabel>
+                          <FormLabel>{t('quantityOfCredits')}</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
                               autoComplete="off"
                               {...field}
-                              disabled={!hasInitialStock}
+                              disabled={!hasInitialPurchase || !!server}
                               value={field.value ?? ''}
                               onChange={(e) =>
                                 field.onChange(
@@ -914,9 +920,28 @@ export function ServerForm({ server }: ServerFormProps) {
                               placeholder={t('creditStockPlaceholder')}
                             />
                           </FormControl>
-                          <FormDescription>
-                            {t('panelCreditStockDescription')}
-                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={control}
+                      name="initialPurchaseValue"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('totalPurchaseValue')}</FormLabel>
+                          <FormControl>
+                             <Input
+                              {...field}
+                              autoComplete="off"
+                              value={initialPurchaseValueDisplay}
+                              onChange={(e) => handleCurrencyChange(e, 'initialPurchaseValue')}
+                              disabled={!hasInitialPurchase || !!server}
+                              placeholder={
+                                language === 'pt-BR' ? t('currencyPlaceholderBRL') : t('currencyPlaceholderUSD')
+                              }
+                            />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
