@@ -9,6 +9,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import { Home, Users, Server, Settings, Tv2, Package, Wrench, Landmark } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -19,6 +20,11 @@ export default function SidebarNav() {
   const pathname = usePathname();
   const { t } = useLanguage();
   const { clients } = useData();
+  const { setOpenMobile } = useSidebar();
+
+  const handleLinkClick = () => {
+    setOpenMobile(false);
+  };
 
   const links = [
     { href: '/', label: t('home'), icon: Home },
@@ -43,7 +49,7 @@ export default function SidebarNav() {
             className="h-20 w-20 rounded-lg"
             asChild
           >
-            <Link href="/">
+            <Link href="/" onClick={handleLinkClick}>
               <Tv2 className="h-12 w-12 text-primary" />
               <span className="sr-only">IPTV Manager Pro</span>
             </Link>
@@ -64,6 +70,7 @@ export default function SidebarNav() {
                     isActive={pathname.startsWith(link.href) && (link.href !== '/' || pathname === '/')}
                     tooltip={{ children: link.label }}
                     className="h-20"
+                    onClick={handleLinkClick}
                   >
                     <Link href={link.href}>
                       <link.icon className="h-9 w-9" />
@@ -85,6 +92,7 @@ export default function SidebarNav() {
                     isActive={pathname === link.href}
                     tooltip={{ children: link.label }}
                     className="h-20"
+                    onClick={handleLinkClick}
                   >
                     <Link href={link.href}>
                       <link.icon className="h-9 w-9" />
