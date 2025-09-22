@@ -102,10 +102,10 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
     setFavoriteColors(colors);
   };
   
-  const updateColorState = (hex: string) => {
+  const updateAllColorStatesFromHex = (hex: string) => {
     const validHex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hex);
     if (!validHex) return;
-
+    
     setSelectedColor(hex);
     const newRgb = hexToRgb(hex);
     setRgb(newRgb);
@@ -117,7 +117,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
     if (isOpen) {
       setContent(note?.content || '');
       const initialColor = note?.color || favoriteColors[0] || defaultPalette[0];
-      updateColorState(initialColor);
+      updateAllColorStatesFromHex(initialColor);
       setIsEditingPalette(false);
     }
   }, [isOpen, note, favoriteColors]);
@@ -144,9 +144,9 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
   
   const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newHex = e.target.value;
-    setSelectedColor(newHex);
+    setSelectedColor(newHex); // Update immediately for responsiveness
     if (/^#([A-Fa-f0-9]{6})$/.test(newHex)) {
-      updateColorState(newHex);
+      updateAllColorStatesFromHex(newHex);
     }
   };
 
@@ -174,7 +174,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
       handleRemoveFavorite(color);
       return;
     }
-    updateColorState(color);
+    updateAllColorStatesFromHex(color);
   }
 
   return (
