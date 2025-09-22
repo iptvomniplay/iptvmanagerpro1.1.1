@@ -49,6 +49,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const newCashFlowEntries: CashFlowEntry[] = [];
 
       loadedServers = loadedServers.map(server => {
+        if (server.creditStock < 0) {
+            server.creditStock = 0;
+        }
         let serverTransactions = server.transactions || [];
         if (server.paymentType === 'prepaid' && server.creditStock > 0 && serverTransactions.length === 0) {
             const initialPurchase: Transaction = {
@@ -448,3 +451,5 @@ export const useData = (): DataContextType => {
   }
   return context;
 };
+
+    
