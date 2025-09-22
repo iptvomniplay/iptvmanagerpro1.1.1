@@ -37,13 +37,27 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
-import { DollarSign, ArrowDownUp, ArrowUp, ArrowDown, Landmark, MoreHorizontal, Edit, Trash2, Eye, EyeOff } from 'lucide-react';
+import { DollarSign, ArrowDownUp, ArrowUp, ArrowDown, Landmark, MoreHorizontal, Edit, Trash2, Eye, EyeOff, ChevronDown, ChevronsUpDown } from 'lucide-react';
 import { format, parseISO, isWithinInterval, startOfDay, endOfDay, startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { EntryModal } from './components/entry-modal';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useDashboardSettings } from '@/hooks/use-dashboard-settings';
 import { cn } from '@/lib/utils';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+
+
+type CardVisibilityState = {
+  revenue: boolean;
+  expense: boolean;
+  balance: boolean;
+  profit: boolean;
+  transactions: boolean;
+};
 
 export default function FinancialPage() {
   const { t, language } = useLanguage();
@@ -58,6 +72,30 @@ export default function FinancialPage() {
 
   const [isFinancialDataVisible, setIsFinancialDataVisible] = React.useState(false);
   const [visibleEntries, setVisibleEntries] = React.useState<Set<string>>(new Set());
+
+  const [cardVisibility, setCardVisibility] = React.useState<CardVisibilityState>({
+    revenue: false,
+    expense: false,
+    balance: false,
+    profit: false,
+    transactions: false,
+  });
+
+  const [openCards, setOpenCards] = React.useState({
+    revenue: true,
+    expense: true,
+    balance: true,
+    profit: true,
+    transactions: true,
+  });
+
+  const toggleCardVisibility = (card: keyof CardVisibilityState) => {
+    setCardVisibility(prev => ({ ...prev, [card]: !prev[card] }));
+  };
+
+  const toggleCardOpen = (card: keyof typeof openCards) => {
+    setOpenCards(prev => ({...prev, [card]: !prev[card]}));
+  }
 
   const allEntries = React.useMemo(() => {
     return [...cashFlow].sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime());
@@ -178,53 +216,122 @@ export default function FinancialPage() {
         </div>
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t('totalRevenue')}</CardTitle>
-              <ArrowUp className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-500">{formatCurrency(totalRevenue, isFinancialDataVisible)}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t('totalExpense')}</CardTitle>
-              <ArrowDown className="h-4 w-4 text-red-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-500">{formatCurrency(totalExpenses, isFinancialDataVisible)}</div>
-            </CardContent>
-          </Card>
-           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t('netBalance')}</CardTitle>
-              <Landmark className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(netBalance, isFinancialDataVisible)}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Lucro</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(netBalance, isFinancialDataVisible)}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t('transactions')}</CardTitle>
-              <ArrowDownUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {isFinancialDataVisible ? filteredEntries.length : '•••••'}
-              </div>
-            </CardContent>
-          </Card>
+            <Collapsible open={openCards.revenue} onOpenChange={() => toggleCardOpen('revenue')}>
+              <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">{t('totalRevenue')}</CardTitle>
+                    <div className="flex items-center">
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); toggleCardVisibility('revenue'); }}>
+                            {isFinancialDataVisible || cardVisibility.revenue ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
+                        </Button>
+                        <CollapsibleTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <ChevronsUpDown className="h-4 w-4"/>
+                            </Button>
+                        </CollapsibleTrigger>
+                    </div>
+                  </CardHeader>
+                  <CollapsibleContent>
+                    <CardContent>
+                      <div className="text-2xl font-bold text-green-500">{formatCurrency(totalRevenue, isFinancialDataVisible || cardVisibility.revenue)}</div>
+                    </CardContent>
+                  </CollapsibleContent>
+              </Card>
+            </Collapsible>
+            
+            <Collapsible open={openCards.expense} onOpenChange={() => toggleCardOpen('expense')}>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">{t('totalExpense')}</CardTitle>
+                   <div className="flex items-center">
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); toggleCardVisibility('expense'); }}>
+                            {isFinancialDataVisible || cardVisibility.expense ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
+                        </Button>
+                        <CollapsibleTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <ChevronsUpDown className="h-4 w-4"/>
+                            </Button>
+                        </CollapsibleTrigger>
+                    </div>
+                </CardHeader>
+                <CollapsibleContent>
+                    <CardContent>
+                      <div className="text-2xl font-bold text-red-500">{formatCurrency(totalExpenses, isFinancialDataVisible || cardVisibility.expense)}</div>
+                    </CardContent>
+                </CollapsibleContent>
+              </Card>
+            </Collapsible>
+            
+            <Collapsible open={openCards.balance} onOpenChange={() => toggleCardOpen('balance')}>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">{t('netBalance')}</CardTitle>
+                   <div className="flex items-center">
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); toggleCardVisibility('balance'); }}>
+                            {isFinancialDataVisible || cardVisibility.balance ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
+                        </Button>
+                        <CollapsibleTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <ChevronsUpDown className="h-4 w-4"/>
+                            </Button>
+                        </CollapsibleTrigger>
+                    </div>
+                </CardHeader>
+                <CollapsibleContent>
+                    <CardContent>
+                      <div className={cn("text-2xl font-bold", netBalance >= 0 ? "text-foreground" : "text-destructive")}>{formatCurrency(netBalance, isFinancialDataVisible || cardVisibility.balance)}</div>
+                    </CardContent>
+                </CollapsibleContent>
+              </Card>
+            </Collapsible>
+
+             <Collapsible open={openCards.profit} onOpenChange={() => toggleCardOpen('profit')}>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Lucro</CardTitle>
+                        <div className="flex items-center">
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); toggleCardVisibility('profit'); }}>
+                                {isFinancialDataVisible || cardVisibility.profit ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
+                            </Button>
+                            <CollapsibleTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                    <ChevronsUpDown className="h-4 w-4"/>
+                                </Button>
+                            </CollapsibleTrigger>
+                        </div>
+                    </CardHeader>
+                    <CollapsibleContent>
+                        <CardContent>
+                        <div className={cn("text-2xl font-bold", netBalance >= 0 ? "text-green-500" : "text-destructive")}>{formatCurrency(netBalance, isFinancialDataVisible || cardVisibility.profit)}</div>
+                        </CardContent>
+                    </CollapsibleContent>
+                </Card>
+            </Collapsible>
+
+            <Collapsible open={openCards.transactions} onOpenChange={() => toggleCardOpen('transactions')}>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">{t('transactions')}</CardTitle>
+                  <div className="flex items-center">
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); toggleCardVisibility('transactions'); }}>
+                            {isFinancialDataVisible || cardVisibility.transactions ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
+                        </Button>
+                        <CollapsibleTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <ChevronsUpDown className="h-4 w-4"/>
+                            </Button>
+                        </CollapsibleTrigger>
+                    </div>
+                </CardHeader>
+                <CollapsibleContent>
+                    <CardContent>
+                      <div className="text-2xl font-bold">
+                        {isFinancialDataVisible || cardVisibility.transactions ? filteredEntries.length : '•••••'}
+                      </div>
+                    </CardContent>
+                </CollapsibleContent>
+              </Card>
+            </Collapsible>
         </div>
 
         <Card>
