@@ -102,21 +102,23 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
           <div className="space-y-4">
             <p className="text-sm font-medium text-muted-foreground">{t('cardColor')}:</p>
             <div className="flex items-center gap-4">
-                <div className="relative h-10 w-10 shrink-0">
-                    <Input 
-                        type="color"
+                <div className="flex-1 flex items-center border border-input rounded-md h-11 overflow-hidden">
+                    <div className="relative h-full aspect-square">
+                        <Input 
+                            type="color"
+                            value={selectedColor}
+                            onChange={(e) => setSelectedColor(e.target.value)}
+                            className="absolute inset-0 h-full w-full p-0 border-none cursor-pointer"
+                        />
+                    </div>
+                    <Input
+                        type="text"
                         value={selectedColor}
                         onChange={(e) => setSelectedColor(e.target.value)}
-                        className="h-full w-full p-0 border-none cursor-pointer"
+                        className="h-full text-base border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                 </div>
-                <Input
-                    type="text"
-                    value={selectedColor}
-                    onChange={(e) => setSelectedColor(e.target.value)}
-                    className="h-10 text-base"
-                />
-                <Button size="icon" className="h-10 w-10 shrink-0" onClick={handleAddFavorite} aria-label="Adicionar cor aos favoritos">
+                <Button size="icon" className="h-11 w-11 shrink-0" onClick={handleAddFavorite} aria-label={t('add')}>
                     <Plus />
                 </Button>
             </div>
