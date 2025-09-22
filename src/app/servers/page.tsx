@@ -6,7 +6,7 @@ import type { Server } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { PlusCircle, Search, ChevronDown, Server as ServerIcon, Settings, Users, Star, MoreVertical } from 'lucide-react';
+import { PlusCircle, Search, ChevronDown, Server as ServerIcon, Settings, Users, Star, MoreVertical, Eye, EyeOff } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
 import { useData } from '@/hooks/use-data';
@@ -99,6 +99,7 @@ export default function ServersPage() {
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = React.useState(false);
   const [isTransactionModalOpen, setIsTransactionModalOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [isClientCountVisible, setIsClientCountVisible] = React.useState(false);
 
   const filteredServers = servers.filter((server) => {
     const normalizedSearchTerm = normalizeString(searchTerm);
@@ -224,9 +225,14 @@ export default function ServersPage() {
                       </DropdownMenu>
                   </CardHeader>
                   <CardContent className="flex-1 space-y-4">
-                     <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                       <Users className="h-5 w-5" />
-                       <span className="font-semibold">{clientCount} {t('clients')}</span>
+                     <div className="flex items-center justify-between text-sm text-muted-foreground">
+                       <div className="flex items-center gap-3">
+                         <Users className="h-5 w-5" />
+                         <span className="font-semibold">{isClientCountVisible ? clientCount : '•••'} {t('clients')}</span>
+                       </div>
+                       <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsClientCountVisible(prev => !prev)}>
+                        {isClientCountVisible ? <EyeOff className="h-5 w-5"/> : <Eye className="h-5 w-5"/>}
+                       </Button>
                      </div>
                      <div className="flex items-center gap-3">
                         <Star className="h-5 w-5 text-muted-foreground"/>
@@ -291,3 +297,4 @@ export default function ServersPage() {
     </>
   );
 }
+
