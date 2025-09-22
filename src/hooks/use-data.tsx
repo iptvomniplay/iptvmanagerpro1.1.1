@@ -16,7 +16,7 @@ interface DataContextType {
   addClient: (clientData: Omit<Client, 'registeredDate' | 'plans' | '_tempId'>) => void;
   updateClient: (clientData: Client, options?: { skipCashFlow?: boolean }) => void;
   deleteClient: (clientId: string) => void;
-  addServer: (serverData: Omit<Server, 'id' | 'status' | 'creditStock' | 'transactions'> & { initialCredits?: number; initialPurchaseValue?: number }) => void;
+  addServer: (serverData: Server) => void;
   updateServer: (serverData: Server) => void;
   deleteServer: (serverId: string) => void;
   addTestToClient: (clientId: string, testData: Omit<Test, 'creationDate'>) => void;
@@ -333,12 +333,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
   }, []);
 
-  const addServer = useCallback((serverData: Omit<Server, 'id' | 'status' | 'creditStock' | 'transactions'> & { initialCredits?: number; initialPurchaseValue?: number }) => {
+  const addServer = useCallback((serverData: Server & { hasInitialPurchase?: boolean; initialCredits?: number; initialPurchaseValue?: number }) => {
     const newServerId = `S${(Math.random() * 100).toFixed(0).padStart(2, '0')}`;
     let initialTransactions: Transaction[] = [];
     let creditStock = 0;
     
-    if (serverData.initialCredits && serverData.initialPurchaseValue !== undefined) {
+    if (serverData.hasInitialPurchase && serverData.initialCredits && serverData.initialPurchaseValue !== undefined) {
       const unitValue = serverData.initialCredits > 0 ? serverData.initialPurchaseValue / serverData.initialCredits : 0;
       const initialPurchase: Transaction = {
         id: `trans_${Date.now()}_${Math.random()}`,

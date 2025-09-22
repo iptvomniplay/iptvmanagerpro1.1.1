@@ -21,12 +21,13 @@ import {
 } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronRight, ChevronsUpDown, Eye, EyeOff } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import type { ServerFormValues } from './server-form';
 
 interface ConfirmationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  serverData: Partial<Server> & { initialCredits?: number; initialPurchaseValue?: number };
+  serverData: ServerFormValues;
 }
 
 const DetailItem = ({ label, value, isCurrency = false }: { label: string; value?: string | number | null; isCurrency?: boolean }) => {
@@ -126,7 +127,7 @@ export function ConfirmationModal({ isOpen, onClose, onConfirm, serverData }: Co
                 <DetailItem label={t('dueDate')} value={serverData.dueDate} />
               </>
             )}
-             {serverData.initialCredits && serverData.initialPurchaseValue !== undefined && (
+             {serverData.hasInitialPurchase && serverData.initialCredits && serverData.initialPurchaseValue !== undefined && (
               <>
                 <DetailItem label={t('initialCredits')} value={serverData.initialCredits} />
                 <DetailItem label={t('initialPurchaseValue')} value={serverData.initialPurchaseValue} isCurrency />

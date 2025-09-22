@@ -134,7 +134,7 @@ interface ServerFormProps {
   server: Server | null;
 }
 
-type ServerFormValues = z.infer<ReturnType<typeof createFormSchema>>;
+export type ServerFormValues = z.infer<ReturnType<typeof createFormSchema>>;
 type SubServerFormValues = z.infer<ReturnType<typeof createSubServerSchema>>;
 type PlanFormValues = z.infer<ReturnType<typeof createPlanSchema>>;
 
@@ -150,23 +150,25 @@ const initialSubServerValues: Omit<SubServerFormValues, 'status'> = {
 };
 
 const getInitialValues = (server: Server | null, language: string): ServerFormValues => {
+  const initialPurchase = server?.transactions?.find(t => t.type === 'purchase');
   return {
-  name: server?.name || '',
-  url: server?.url || '',
-  login: server?.login || '',
-  password: server?.password || '',
-  responsibleName: server?.responsibleName || '',
-  nickname: server?.nickname || '',
-  phones: server?.phones || [],
-  paymentType: server?.paymentType || undefined,
-  panelValue: server?.panelValue,
-  dueDate: server?.dueDate || undefined,
-  hasInitialPurchase: !!server?.transactions?.some(t => t.type === 'purchase'),
-  initialCredits: server?.transactions?.find(t => t.type === 'purchase')?.credits,
-  initialPurchaseValue: server?.transactions?.find(t => t.type === 'purchase')?.totalValue,
-  subServers: server?.subServers ? server.subServers.map(s => ({...s, plans: s.plans.map(p => typeof p === 'string' ? p : p.name)})) : [],
-  observations: server?.observations || '',
-}};
+    name: server?.name || '',
+    url: server?.url || '',
+    login: server?.login || '',
+    password: server?.password || '',
+    responsibleName: server?.responsibleName || '',
+    nickname: server?.nickname || '',
+    phones: server?.phones || [],
+    paymentType: server?.paymentType || undefined,
+    panelValue: server?.panelValue,
+    dueDate: server?.dueDate || undefined,
+    hasInitialPurchase: !!initialPurchase,
+    initialCredits: initialPurchase?.credits,
+    initialPurchaseValue: initialPurchase?.totalValue,
+    subServers: server?.subServers ? server.subServers.map(s => ({...s, plans: s.plans.map(p => typeof p === 'string' ? p : p.name)})) : [],
+    observations: server?.observations || '',
+  }
+};
 
 
 export function ServerForm({ server }: ServerFormProps) {
@@ -235,13 +237,11 @@ export function ServerForm({ server }: ServerFormProps) {
         const currency = language === 'pt-BR' ? 'BRL' : 'USD';
         setPanelValueDisplay(new Intl.NumberFormat(locale, { style: 'currency', currency }).format(server.panelValue));
     }
-    if (server?.transactions?.some(t => t.type === 'purchase')) {
-        const purchase = server.transactions.find(t => t.type === 'purchase');
-        if (purchase) {
-            const locale = language === 'pt-BR' ? 'pt-BR' : 'en-US';
-            const currency = language === 'pt-BR' ? 'BRL' : 'USD';
-            setInitialPurchaseValueDisplay(new Intl.NumberFormat(locale, { style: 'currency', currency }).format(purchase.totalValue));
-        }
+    const initialPurchase = server?.transactions?.find(t => t.type === 'purchase');
+    if (initialPurchase) {
+        const locale = language === 'pt-BR' ? 'pt-BR' : 'en-US';
+        const currency = language === 'pt-BR' ? 'BRL' : 'USD';
+        setInitialPurchaseValueDisplay(new Intl.NumberFormat(locale, { style: 'currency', currency }).format(initialPurchase.totalValue));
     }
   }, [server, language]);
   
@@ -469,20 +469,18 @@ export function ServerForm({ server }: ServerFormProps) {
         plans: s.plans.map(p => ({name: p}))
     }));
 
-    const processedData = {
+    const processedData: Server = {
+      ...server,
       ...serverDataToConfirm,
+      id: server?.id || '',
+      status: server?.status || 'Online',
+      creditStock: server?.creditStock || 0,
       subServers: processedSubServers,
+      transactions: server?.transactions || [],
     };
     
     if (server) {
-      const serverData: Server = {
-          ...server,
-          ...processedData,
-          id: server.id,
-          status: server.status,
-          subServers: processedData.subServers || [],
-      };
-      updateServer(serverData);
+      updateServer(processedData);
     } else {
         addServer(processedData);
     }
