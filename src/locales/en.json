@@ -544,5 +544,9 @@
     "virtualAssistantChatDescription": "Start a conversation with the virtual assistant.",
     "askSomething": "Ask something...",
     "send": "Send",
-    "errorProcessingRequest": "Sorry, there was an error processing your request. Please try again."
+    "errorProcessingRequest": "Sorry, there was an error processing your request. Please try again.",
+    "assistantAccess": "Assistant Access",
+    "assistantPasswordPrompt": "Enter the password to continue.",
+    "enter": "Enter",
+    "incorrectPassword": "Incorrect password. Try again."
 }

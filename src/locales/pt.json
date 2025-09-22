@@ -544,5 +544,9 @@
     "virtualAssistantChatDescription": "Inicie uma conversa com o assistente virtual.",
     "askSomething": "Pergunte algo...",
     "send": "Enviar",
-    "errorProcessingRequest": "Desculpe, ocorreu um erro ao processar sua solicitação. Por favor, tente novamente."
+    "errorProcessingRequest": "Desculpe, ocorreu um erro ao processar sua solicitação. Por favor, tente novamente.",
+    "assistantAccess": "Acesso ao Assistente",
+    "assistantPasswordPrompt": "Digite a senha para continuar.",
+    "enter": "Entrar",
+    "incorrectPassword": "Senha incorreta. Tente novamente."
 }

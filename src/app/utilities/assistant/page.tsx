@@ -43,7 +43,7 @@ export default function AssistantPage() {
         setIsAuthenticated(true);
         setError('');
     } else {
-        setError('Senha incorreta. Tente novamente.');
+        setError(t('incorrectPassword'));
     }
   }
 
@@ -94,9 +94,9 @@ export default function AssistantPage() {
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-2xl">
                         <KeyRound className="h-7 w-7"/>
-                        Acesso ao Assistente
+                        {t('assistantAccess')}
                     </CardTitle>
-                    <CardDescription>Digite a senha para continuar.</CardDescription>
+                    <CardDescription>{t('assistantPasswordPrompt')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleLogin} className="space-y-4">
@@ -104,12 +104,12 @@ export default function AssistantPage() {
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Senha"
+                            placeholder={t('password')}
                             autoComplete="off"
                         />
                          {error && <p className="text-sm text-destructive">{error}</p>}
                         <Button type="submit" className="w-full">
-                            Entrar
+                            {t('enter')}
                         </Button>
                     </form>
                 </CardContent>
