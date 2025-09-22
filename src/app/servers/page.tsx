@@ -6,7 +6,7 @@ import type { Server } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { PlusCircle, Search, ChevronDown, Server as ServerIcon, Settings, Users, Star } from 'lucide-react';
+import { PlusCircle, Search, ChevronDown, Server as ServerIcon, Settings, Users, Star, MoreVertical } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
 import { useData } from '@/hooks/use-data';
@@ -24,12 +24,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { ServerDetailsModal } from './components/server-details-modal';
 import { DeleteServerAlert } from './components/delete-server-alert';
 import { Input } from '@/components/ui/input';
 import { normalizeString, cn } from '@/lib/utils';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { TransactionModal } from '../stock/components/transaction-modal';
 import type { Transaction } from '@/lib/types';
 import {
@@ -100,7 +99,6 @@ export default function ServersPage() {
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = React.useState(false);
   const [isTransactionModalOpen, setIsTransactionModalOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
-  const [isListOpen, setIsListOpen] = React.useState(true);
 
   const filteredServers = servers.filter((server) => {
     const normalizedSearchTerm = normalizeString(searchTerm);
@@ -128,20 +126,17 @@ export default function ServersPage() {
     }
   };
 
-  const handleRowClick = (server: Server) => {
+  const handleOpenDetails = (server: Server) => {
     setSelectedServer(server);
     setIsDetailsModalOpen(true);
   };
   
-  const handleEdit = () => {
-    if (selectedServer) {
-      setIsDetailsModalOpen(false);
-      router.push(`/servers/${selectedServer.id}/edit`);
-    }
+  const handleEdit = (server: Server) => {
+      router.push(`/servers/${server.id}/edit`);
   };
   
-  const handleDeleteRequest = () => {
-    setIsDetailsModalOpen(false);
+  const handleDeleteRequest = (server: Server) => {
+    setSelectedServer(server);
     setIsDeleteAlertOpen(true);
   };
   
@@ -153,20 +148,21 @@ export default function ServersPage() {
     setSelectedServer(null);
   };
   
-  const handleStatusChange = (server: Server, status: Server['status']) => {
-    updateServer({ ...server, status });
-  };
-  
   const handleAddTransaction = (transaction: Omit<Transaction, 'id' | 'date'>) => {
     if (!selectedServer) return;
     addTransactionToServer(selectedServer.id, transaction);
   };
+  
+  const handleOpenTransactionModal = (server: Server) => {
+    setSelectedServer(server);
+    setIsTransactionModalOpen(true);
+  }
 
   return (
     <>
       <div className="space-y-8">
         <div className="space-y-4">
-          <div className="rounded-xl border bg-card text-card-foreground p-6 shadow-sm flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">
                 {t('serverManagement')}
@@ -175,149 +171,86 @@ export default function ServersPage() {
                 {t('serverManagementDescription')}
               </p>
             </div>
-            <Button onClick={() => router.push('/servers/new')}>
+             <Button onClick={() => router.push('/servers/new')}>
               <PlusCircle className="mr-2 h-5 w-5" />
               {t('addPanel')}
             </Button>
           </div>
+          <div className="relative w-full max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder={t('searchPanelPlaceholder')}
+                className="pl-10 h-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                autoComplete="off"
+              />
+          </div>
         </div>
 
-        <Collapsible open={isListOpen} onOpenChange={setIsListOpen} asChild>
-          <Card>
-            <CardHeader className="p-4 border-b">
-              <div className="flex items-center justify-between gap-4">
-                <CollapsibleTrigger asChild>
-                    <div className="flex items-center gap-4 cursor-pointer">
-                      <h3 className="text-lg font-semibold">
-                        {t('registeredServersList')} ({filteredServers.length})
-                      </h3>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 data-[state=open]:rotate-180">
-                          <ChevronDown className="h-5 w-5 transition-transform" />
+        {filteredServers.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {filteredServers.map((server) => {
+              const clientCount = clients.filter(client => 
+                  client.plans?.some(plan => plan.panel.id === server.id)
+              ).length;
+              return (
+                <Card key={server.id} className="flex flex-col">
+                  <CardHeader className="flex flex-row items-start justify-between">
+                      <div>
+                        <CardTitle className="text-lg">{server.name}</CardTitle>
+                        <Badge variant={getStatusVariant(server.status)} className="mt-2 text-sm">
+                           {t(server.status.toLowerCase().replace(' ', '') as any)}
+                        </Badge>
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                           <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <MoreVertical className="h-5 w-5"/>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                           <DropdownMenuItem onClick={() => handleEdit(server)}>
+                                {t('edit')}
+                            </DropdownMenuItem>
+                             <DropdownMenuItem onClick={() => handleDeleteRequest(server)} className="text-destructive focus:text-destructive">
+                                {t('delete')}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                  </CardHeader>
+                  <CardContent className="flex-1 space-y-4">
+                     <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                       <Users className="h-5 w-5" />
+                       <span className="font-semibold">{clientCount} {t('clients')}</span>
+                     </div>
+                     <div className="flex items-center gap-3">
+                        <Star className="h-5 w-5 text-muted-foreground"/>
+                        <ServerRatingDisplay server={server} />
+                     </div>
+                  </CardContent>
+                  <CardFooter className="flex gap-2">
+                      <Button variant="outline" className="flex-1" onClick={() => handleOpenTransactionModal(server)}>
+                          {t('manage')}
                       </Button>
-                    </div>
-                </CollapsibleTrigger>
-                <div className="relative w-full max-w-md">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                  <Input
-                    type="search"
-                    placeholder={t('searchPanelPlaceholder')}
-                    className="pl-10 h-10"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-              </div>
-            </CardHeader>
-            <CollapsibleContent asChild>
-              <CardContent className="p-0">
-                <div className="rounded-b-xl overflow-hidden">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>{t('serverName')}</TableHead>
-                          <TableHead>{t('status')}</TableHead>
-                          <TableHead>{t('clients')}</TableHead>
-                          <TableHead>{t('reputation')}</TableHead>
-                          <TableHead className="w-[180px] text-right">{t('actions')}</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredServers.length > 0 ? (
-                          filteredServers.map((server) => {
-                             const clientCount = clients.filter(client => 
-                                client.plans?.some(plan => plan.panel.id === server.id)
-                            ).length;
-                            return (
-                                <TableRow key={server.id}>
-                                  <TableCell className="font-medium p-4">
-                                     <Button variant="outline" className="h-auto font-semibold" onClick={() => handleRowClick(server)}>
-                                        {server.name}
-                                     </Button>
-                                  </TableCell>
-                                  <TableCell>
-                                    <DropdownMenu>
-                                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                        <Badge variant={getStatusVariant(server.status)} className="cursor-pointer text-base py-1 px-3">
-                                            {t(server.status.toLowerCase().replace(' ', '') as any)}
-                                        </Badge>
-                                      </DropdownMenuTrigger>
-                                      <DropdownMenuContent align="end">
-                                        <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Online')}>{t('online')}</DropdownMenuItem>
-                                        <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Offline')}>{t('offline')}</DropdownMenuItem>
-                                        <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Suspended')}>{t('suspended')}</DropdownMenuItem>
-                                        <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Maintenance')}>{t('maintenance')}</DropdownMenuItem>
-                                      </DropdownMenuContent>
-                                    </DropdownMenu>
-                                  </TableCell>
-                                   <TableCell>
-                                    <div className="flex items-center gap-2">
-                                      <Users className="h-5 w-5 text-muted-foreground" />
-                                      <span className="font-semibold">{clientCount}</span>
-                                    </div>
-                                  </TableCell>
-                                  <TableCell onClick={(e) => { e.stopPropagation(); handleRowClick(server); }}>
-                                    <div className="cursor-pointer">
-                                        <ServerRatingDisplay server={server} />
-                                    </div>
-                                  </TableCell>
-                                  <TableCell className="text-right p-4" onClick={(e) => e.stopPropagation()}>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="outline" size="sm">
-                                                {t('actions')}
-                                                <ChevronDown className="ml-2 h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem onClick={() => handleRowClick(server)}>
-                                                {t('details')}
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => {
-                                                setSelectedServer(server);
-                                                setIsTransactionModalOpen(true);
-                                            }}>
-                                                <Settings className="mr-2 h-4 w-4" />
-                                                {t('manage')}
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => {
-                                                setSelectedServer(server);
-                                                handleEdit();
-                                            }}>
-                                                {t('edit')}
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => {
-                                                setSelectedServer(server);
-                                                handleDeleteRequest();
-                                            }} className="text-destructive focus:text-destructive">
-                                                {t('delete')}
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                  </TableCell>
-                                </TableRow>
-                            )
-                          })
-                        ) : (
-                          <TableRow>
-                            <TableCell colSpan={5} className="p-0">
-                               <div className="flex flex-col items-center justify-center gap-3 text-center h-48">
-                                <ServerIcon className="w-12 h-12 text-muted-foreground/60" />
-                                <h3 className="text-xl font-semibold">{t('noServersFound')}</h3>
-                                <p className="text-muted-foreground max-w-xs">
-                                  {t('noServersFoundMessage')}
-                                </p>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
-                </div>
-              </CardContent>
-            </CollapsibleContent>
-          </Card>
-        </Collapsible>
+                      <Button className="flex-1" onClick={() => handleOpenDetails(server)}>
+                          {t('details')}
+                      </Button>
+                  </CardFooter>
+                </Card>
+              )
+            })}
+          </div>
+        ) : (
+            <div className="flex flex-col items-center justify-center gap-3 text-center py-20 border-2 border-dashed rounded-xl">
+              <ServerIcon className="w-16 h-16 text-muted-foreground/60" />
+              <h3 className="text-2xl font-semibold">{t('noServersFound')}</h3>
+              <p className="text-muted-foreground max-w-sm">
+                {t('noServersFoundMessage')}
+              </p>
+            </div>
+        )}
       </div>
 
        {selectedServer && (
@@ -325,8 +258,8 @@ export default function ServersPage() {
           isOpen={isDetailsModalOpen}
           onClose={() => setIsDetailsModalOpen(false)}
           server={selectedServer}
-          onEdit={handleEdit}
-          onDelete={handleDeleteRequest}
+          onEdit={() => handleEdit(selectedServer)}
+          onDelete={() => handleDeleteRequest(selectedServer)}
         />
       )}
       
@@ -342,7 +275,10 @@ export default function ServersPage() {
       {selectedServer && (
         <TransactionModal
           isOpen={isTransactionModalOpen}
-          onClose={() => setIsTransactionModalOpen(false)}
+          onClose={() => {
+            setIsTransactionModalOpen(false);
+            setSelectedServer(null);
+          }}
           server={selectedServer}
           onAddTransaction={handleAddTransaction}
         />
