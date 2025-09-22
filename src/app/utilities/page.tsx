@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -37,7 +38,7 @@ export default function UtilitiesPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-end text-sm font-semibold text-primary transition-all duration-300 group-hover:gap-2">
-                  <span>{t('access')}</span>
+                  <span>PROJETO EXECUTADO</span>
                   <ChevronRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
               </div>
             </CardContent>
