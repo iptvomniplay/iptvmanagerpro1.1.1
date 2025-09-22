@@ -249,7 +249,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
                    {isEditingPalette ? (
                      <>
                        <Check className="mr-2 h-4 w-4" />
-                       {t('done')}
+                       {t('ok')}
                      </>
                    ) : (
                      <>
@@ -266,19 +266,19 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
                           type="button"
                           className={cn(
                               'h-11 w-11 rounded-full border-2 transition-all',
-                              !isEditingPalette && selectedColor === color ? 'ring-2 ring-ring ring-offset-2' : 'border-transparent',
-                              isEditingPalette && 'cursor-default'
+                              !isEditingPalette && selectedColor === color ? 'ring-2 ring-ring ring-offset-2' : 'border-transparent'
                           )}
                           style={{ backgroundColor: color }}
                           onClick={() => handleColorSwatchClick(color)}
                           aria-label={`Select color ${color}`}
                       >
-                       {isEditingPalette ? (
-                          <div className="h-full w-full bg-black/30 flex items-center justify-center rounded-full">
+                       {isEditingPalette && (
+                          <div className="absolute inset-0 h-full w-full bg-black/30 flex items-center justify-center rounded-full">
                               <Trash2 className="h-5 w-5 text-white" />
                           </div>
-                        ) : (
-                          selectedColor === color && <Check className="h-5 w-5 mx-auto my-auto text-white" />
+                        )}
+                        {!isEditingPalette && selectedColor === color && (
+                          <Check className="h-5 w-5 mx-auto my-auto text-white" />
                         )}
                       </button>
                       {isEditingPalette && (
