@@ -13,7 +13,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { Switch } from '@/components/ui/switch';
-import { ChevronDown, PlusCircle, BookText, ChevronsUpDown } from 'lucide-react';
+import { ChevronDown, PlusCircle, BookText, ChevronsUpDown, Eye, EyeOff } from 'lucide-react';
 import { BirthdateInput } from '@/components/ui/birthdate-input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PhoneInputModal } from '@/components/ui/phone-input-modal';
@@ -44,6 +44,8 @@ const initialAppState: Omit<Application, 'planId' | 'screenNumber'> = {
   keyId: '',
   licenseType: 'Free',
   licenseDueDate: '',
+  activationCost: 0,
+  chargedAmount: 0,
   device: '',
   location: '',
   activationLocation: '',
@@ -72,6 +74,65 @@ const getAppStatus = (app: Application): 'Active' | 'Expired' => {
     }
   }
   return 'Active';
+};
+
+const CurrencyInputWithVisibility: React.FC<{
+  id: string;
+  label: string;
+  value: number | undefined;
+  onChange: (value: number) => void;
+  language: string;
+}> = ({ id, label, value, onChange, language }) => {
+  const [displayValue, setDisplayValue] = React.useState('');
+  const [isVisible, setIsVisible] = React.useState(false);
+  
+  const formatCurrency = (val: number) => {
+    const locale = language === 'pt-BR' ? 'pt-BR' : 'en-US';
+    const currency = language === 'pt-BR' ? 'BRL' : 'USD';
+    return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(val);
+  };
+  
+  React.useEffect(() => {
+    setDisplayValue(value !== undefined ? formatCurrency(value) : '');
+  }, [value, language]);
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let rawValue = e.target.value.replace(/\D/g, '');
+    if (!rawValue) {
+      setDisplayValue('');
+      onChange(0);
+      return;
+    }
+    const numericValue = parseInt(rawValue, 10) / 100;
+    setDisplayValue(formatCurrency(numericValue));
+    onChange(numericValue);
+  };
+
+  return (
+    <div className="space-y-2">
+      <Label htmlFor={id}>{label}</Label>
+      <div className="relative">
+        <Input
+          id={id}
+          type={isVisible ? 'text' : 'password'}
+          value={isVisible ? displayValue : '••••••'}
+          onChange={handleInputChange}
+          onFocus={() => setIsVisible(true)}
+          className="pr-12"
+          autoComplete="off"
+        />
+        <Button
+          type="button"
+          size="icon"
+          variant="ghost"
+          className="absolute right-1 top-1/2 -translate-y-1/2 h-9 w-10 text-muted-foreground"
+          onClick={(e) => { e.preventDefault(); setIsVisible(!isVisible); }}
+        >
+          {isVisible ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+        </Button>
+      </div>
+    </div>
+  );
 };
 
 
@@ -140,6 +201,16 @@ export function ApplicationsForm({
       )
     );
   };
+  
+  const handleCurrencyValueChange = (value: number, slotKey: string, field: 'activationCost' | 'chargedAmount') => {
+    setAppSlots(prevSlots =>
+      prevSlots.map(slot =>
+        `${slot.planId}-${slot.screenNumber}` === slotKey
+          ? { ...slot, data: { ...slot.data, [field]: value } }
+          : slot
+      )
+    );
+  };
 
   const handleCheckboxChange = (
     checked: boolean,
@@ -179,6 +250,8 @@ export function ApplicationsForm({
           const updatedData = { ...slot.data, licenseType: newLicenseType };
            if (newLicenseType === 'Free') {
             updatedData.licenseDueDate = '';
+            updatedData.activationCost = 0;
+            updatedData.chargedAmount = 0;
           }
           return { ...slot, data: updatedData };
         }
@@ -422,6 +495,22 @@ export function ApplicationsForm({
                                     autoComplete="off"
                                   />
                                 </div>
+                                
+                                <CurrencyInputWithVisibility
+                                  id={`activation-cost-${slotKey}`}
+                                  label={t('activationCost')}
+                                  value={slot.data.activationCost}
+                                  onChange={(value) => handleCurrencyValueChange(value, slotKey, 'activationCost')}
+                                  language={language}
+                                />
+                                <CurrencyInputWithVisibility
+                                  id={`charged-amount-${slotKey}`}
+                                  label={t('chargedAmount')}
+                                  value={slot.data.chargedAmount}
+                                  onChange={(value) => handleCurrencyValueChange(value, slotKey, 'chargedAmount')}
+                                  language={language}
+                                />
+                                
                                 <div className="space-y-2 col-span-1 md:col-span-2">
                                   <div className="flex items-center space-x-2">
                                       <Checkbox 

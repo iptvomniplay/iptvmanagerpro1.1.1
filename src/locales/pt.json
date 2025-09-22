@@ -573,5 +573,7 @@
     "Mensal": "Mensal",
     "Anual": "Anual",
     "financialSettingsDescription": "Configure a visualização padrão para seus dados financeiros.",
-    "period": "Período"
+    "period": "Período",
+    "activationCost": "Valor de Custo da Ativação",
+    "chargedAmount": "Valor Cobrado do Cliente"
 }

@@ -63,7 +63,7 @@
     "online": "Online",
     "offline": "Offline",
     "suspended": "Suspended",
-    "maintenance": "Maintenance",
+    "maintenance": "In Maintenance",
     "connections": "Connections",
     "cpuLoad": "CPU Load (%)",
     "configure": "Configure",
@@ -573,5 +573,7 @@
     "Mensal": "Monthly",
     "Anual": "Yearly",
     "financialSettingsDescription": "Configure the default view for your financial data.",
-    "period": "Period"
+    "period": "Period",
+    "activationCost": "Activation Cost Value",
+    "chargedAmount": "Amount Charged to Customer"
 }

@@ -22,6 +22,8 @@ export type Application = {
   keyId: string;
   licenseType: 'Free' | 'Anual';
   licenseDueDate?: string;
+  activationCost?: number;
+  chargedAmount?: number;
   device: string;
   location: string;
   activationLocation?: string;
@@ -133,6 +135,7 @@ export type CashFlowEntry = {
   clientName?: string; // Opcional, para exibição
   sourceTransactionId?: string; // Vincula a uma transação de estoque
   sourceServerId?: string; // Vincula a um servidor (para custos de painel)
+  sourceApplicationId?: string; // Vincula a uma ativação de aplicativo
 };
 
 export type Note = {

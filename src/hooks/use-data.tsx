@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
-import type { Client, Server, Test, SelectedPlan, Transaction, TransactionType, CashFlowEntry, Note } from '@/lib/types';
+import type { Client, Server, Test, SelectedPlan, Transaction, TransactionType, CashFlowEntry, Note, Application } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
 import { clients as initialClients, servers as initialServers } from '@/lib/data';
 import { useToast } from './use-toast';
@@ -213,6 +213,45 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const updateClient = useCallback((clientData: Client, options?: { skipCashFlow?: boolean }) => {
     const previousClientState = clients.find(c => c._tempId === clientData._tempId);
+
+    const handleAppActivationCashFlow = (oldApps: Application[], newApps: Application[]) => {
+      newApps.forEach(newApp => {
+        const oldApp = oldApps.find(
+          old => old.planId === newApp.planId && old.screenNumber === newApp.screenNumber
+        );
+
+        if (!oldApp && !newApp.isPreExisting && newApp.licenseType === 'Anual') {
+          const sourceAppId = `${newApp.planId}-${newApp.screenNumber}`;
+          
+          if (newApp.chargedAmount && newApp.chargedAmount > 0) {
+            addCashFlowEntry({
+              type: 'income',
+              amount: newApp.chargedAmount,
+              description: `Receita de ativação: ${newApp.name} para ${clientData.name}`,
+              clientId: clientData._tempId,
+              clientName: clientData.name,
+              sourceApplicationId: sourceAppId,
+            });
+          }
+          if (newApp.activationCost && newApp.activationCost > 0) {
+            addCashFlowEntry({
+              type: 'expense',
+              amount: newApp.activationCost,
+              description: `Custo de ativação: ${newApp.name} para ${clientData.name}`,
+              clientId: clientData._tempId,
+              clientName: clientData.name,
+              sourceApplicationId: sourceAppId,
+            });
+          }
+        }
+      });
+    };
+    
+    if (previousClientState?.applications && clientData.applications) {
+      handleAppActivationCashFlow(previousClientState.applications, clientData.applications);
+    }
+
+
     if (!options?.skipCashFlow && clientData.status === 'Active' && previousClientState?.status !== 'Active' && clientData.plans) {
         const totalAmount = clientData.plans.reduce((sum, plan) => sum + (plan.isCourtesy ? 0 : plan.planValue), 0);
         if (totalAmount > 0) {
