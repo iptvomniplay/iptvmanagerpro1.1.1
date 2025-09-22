@@ -541,5 +541,8 @@
     "cannotEditEntryType": "O tipo de lançamentos automatizados não pode ser alterado.",
     "showValues": "Mostrar Valores",
     "hideValues": "Ocultar Valores",
-    "favoriteColors": "Cores Favoritas"
+    "favoriteColors": "Cores Favoritas",
+    "editFavoritesDescription": "Clique em uma cor para removê-la dos seus favoritos.",
+    "selectColor": "Selecionar Cor",
+    "selectColorDescription": "Escolha uma cor para sua anotação."
 }

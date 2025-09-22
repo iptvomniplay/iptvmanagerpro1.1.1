@@ -541,5 +541,8 @@
     "cannotEditEntryType": "The type of automated entries cannot be changed.",
     "showValues": "Show Values",
     "hideValues": "Hide Values",
-    "favoriteColors": "Favorite Colors"
+    "favoriteColors": "Favorite Colors",
+    "editFavoritesDescription": "Click on a color to remove it from your favorites.",
+    "selectColor": "Select Color",
+    "selectColorDescription": "Choose a color for your note."
 }
