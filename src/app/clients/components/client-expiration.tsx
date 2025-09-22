@@ -152,6 +152,7 @@ export function ClientExpiration({
       <PopoverTrigger asChild>
         <button className={cn(
           "h-6 w-6 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+          "border-2 border-background/50 shadow-sm",
           badgeVariant === 'success' && 'bg-green-500',
           badgeVariant === 'warning' && 'bg-yellow-500',
           badgeVariant === 'destructive' && 'bg-destructive'
