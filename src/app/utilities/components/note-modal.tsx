@@ -80,11 +80,68 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
   const [favoriteColors, setFavoriteColors] = React.useState<string[]>([]);
   const [colorMode, setColorMode] = React.useState<'hex' | 'rgb' | 'hsl'>('hex');
   const [isEditingPalette, setIsEditingPalette] = React.useState(false);
-  
+
+  // States for inputs
+  const [hexInput, setHexInput] = React.useState('#fde047');
   const [rgb, setRgb] = React.useState({ r: 253, g: 224, b: 71 });
   const [hsl, setHsl] = React.useState({ h: 54, s: 97, l: 64 });
-  const [hexInput, setHexInput] = React.useState('#fde047');
+  
+  const updateAllColorStates = React.useCallback((source: 'hex' | 'rgb' | 'hsl', value: any) => {
+    let newHex = selectedColor;
+    let newRgb = rgb;
+    let newHsl = hsl;
 
+    if (source === 'hex') {
+      const validHex = /^#([A-Fa-f0-9]{6})$/i.test(value);
+      if (validHex) {
+        newHex = value;
+        newRgb = hexToRgb(newHex);
+        newHsl = rgbToHsl(newRgb.r, newRgb.g, newRgb.b);
+      } else {
+        setHexInput(value);
+        return;
+      }
+    } else if (source === 'rgb') {
+      newRgb = value;
+      newHex = rgbToHex(newRgb.r, newRgb.g, newRgb.b);
+      newHsl = rgbToHsl(newRgb.r, newRgb.g, newRgb.b);
+    } else if (source === 'hsl') {
+      newHsl = value;
+      newRgb = hslToRgb(newHsl.h, newHsl.s, newHsl.l);
+      newHex = rgbToHex(newRgb.r, newRgb.g, newRgb.b);
+    }
+
+    setSelectedColor(newHex);
+    setHexInput(newHex);
+    setRgb(newRgb);
+    setHsl(newHsl);
+  }, [selectedColor, rgb, hsl]);
+  
+  const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    updateAllColorStates('hex', e.target.value);
+  };
+  
+  const handleRgbChange = (channel: 'r' | 'g' | 'b', value: string) => {
+    const numValue = Math.max(0, Math.min(255, parseInt(value) || 0));
+    const newRgb = { ...rgb, [channel]: numValue };
+    updateAllColorStates('rgb', newRgb);
+  };
+
+  const handleHslChange = (channel: 'h' | 's' | 'l', value: string) => {
+    const max = channel === 'h' ? 360 : 100;
+    const numValue = Math.max(0, Math.min(max, parseInt(value) || 0));
+    const newHsl = { ...hsl, [channel]: numValue };
+    updateAllColorStates('hsl', newHsl);
+  };
+  
+  const handleColorSwatchClick = (color: string) => {
+    if (isEditingPalette) {
+      handleRemoveFavorite(color);
+      return;
+    }
+    updateAllColorStates('hex', color);
+  };
+  
   React.useEffect(() => {
     try {
       const savedFavorites = localStorage.getItem('notepad_favorite_colors');
@@ -98,26 +155,12 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
       setFavoriteColors(defaultPalette);
     }
   }, []);
-  
-  const updateAllColorStates = React.useCallback((newColor: string) => {
-    const validHex = /^#([A-Fa-f0-9]{6})$/i.test(newColor);
-    if (!validHex) return;
-    
-    const newRgb = hexToRgb(newColor);
-    const newHsl = rgbToHsl(newRgb.r, newRgb.g, newRgb.b);
-
-    setSelectedColor(newColor);
-    setHexInput(newColor);
-    setRgb(newRgb);
-    setHsl(newHsl);
-  }, []);
-
 
   React.useEffect(() => {
     if (isOpen) {
       setContent(note?.content || '');
       const initialColor = note?.color || favoriteColors[0] || defaultPalette[0];
-      updateAllColorStates(initialColor);
+      updateAllColorStates('hex', initialColor);
       setIsEditingPalette(false);
     }
   }, [isOpen, note, favoriteColors, updateAllColorStates]);
@@ -147,39 +190,6 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
     saveFavoritesToStorage(newFavorites);
   };
   
-  const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newHex = e.target.value;
-    setHexInput(newHex);
-    if (/^#([A-Fa-f0-9]{6})$/.test(newHex)) {
-      updateAllColorStates(newHex);
-    }
-  };
-
-  const handleRgbChange = (channel: 'r' | 'g' | 'b', value: string) => {
-    const numValue = Math.max(0, Math.min(255, parseInt(value) || 0));
-    const newRgb = { ...rgb, [channel]: numValue };
-    setRgb(newRgb);
-    const newHex = rgbToHex(newRgb.r, newRgb.g, newRgb.b);
-    updateAllColorStates(newHex);
-  };
-
-  const handleHslChange = (channel: 'h' | 's' | 'l', value: string) => {
-    const max = channel === 'h' ? 360 : 100;
-    const numValue = Math.max(0, Math.min(max, parseInt(value) || 0));
-    const newHsl = { ...hsl, [channel]: numValue };
-    setHsl(newHsl);
-    const newRgb = hslToRgb(newHsl.h, newHsl.s, newHsl.l);
-    const newHex = rgbToHex(newRgb.r, newRgb.g, newRgb.b);
-    updateAllColorStates(newHex);
-  };
-  
-  const handleColorSwatchClick = (color: string) => {
-    if (isEditingPalette) {
-      handleRemoveFavorite(color);
-      return;
-    }
-    updateAllColorStates(color);
-  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
