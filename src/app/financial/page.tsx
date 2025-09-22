@@ -430,9 +430,3 @@ export default function FinancialPage() {
     </>
   );
 }
-
-    
-
-    
-
-    

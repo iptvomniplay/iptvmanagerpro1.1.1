@@ -198,7 +198,7 @@ export default function ServersPage() {
               return (
                 <Card 
                     key={server.id} 
-                    className="flex flex-col"
+                    className="flex flex-col [box-shadow:0_0_23px_0px_rgba(255,255,255,0.6)]"
                 >
                   <CardHeader className="flex flex-row items-start justify-between">
                       <div>
