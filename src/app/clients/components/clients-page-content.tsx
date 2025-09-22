@@ -114,8 +114,9 @@ export default function ClientsPageContent() {
     setIsDetailsModalOpen(true);
   };
   
-  const handleEditOpen = () => {
-    setIsDetailsModalOpen(false);
+  const handleEditOpen = (client: Client) => {
+    setSelectedClient(client);
+    setIsDetailsModalOpen(false); // Close details modal if open
     setIsFormOpen(true);
   };
 
@@ -124,11 +125,9 @@ export default function ClientsPageContent() {
     setIsFormOpen(false);
   };
 
-  const handleDeleteRequest = () => {
-    if (selectedClient) {
-      setClientToDelete(selectedClient);
-    }
-    setIsDetailsModalOpen(false);
+  const handleDeleteRequest = (client: Client) => {
+    setClientToDelete(client);
+    setIsDetailsModalOpen(false); // Close details modal if open
     setIsDeleteAlertOpen(true);
   };
 
@@ -381,18 +380,18 @@ export default function ClientsPageContent() {
                 const clientHasActiveTest = client.status === 'Active' && hasActiveTest(client);
 
                 return (
-                  <TableRow key={client._tempId}>
+                  <TableRow key={client._tempId} onClick={() => handleViewDetails(client)} className="cursor-pointer">
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Button variant="outline" className="h-auto font-semibold" onClick={() => handleViewDetails(client)}>
+                      <div className="flex items-center gap-3">
+                        <Button variant="link" className="p-0 h-auto font-semibold text-base text-primary">
                           {client.name}
                         </Button>
                         
                         {hasOrphanedPlan(client) && (
                           <Popover>
                             <PopoverTrigger asChild>
-                               <Button variant="outline" size="icon" className="h-9 w-9 text-destructive hover:text-destructive hover:bg-destructive/10">
-                                  <AlertTriangle className="h-6 w-6" />
+                               <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={(e) => e.stopPropagation()}>
+                                  <AlertTriangle className="h-5 w-5" />
                                </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto max-w-xs">
@@ -405,8 +404,8 @@ export default function ClientsPageContent() {
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                 <Button variant="outline" size="icon" className="h-9 w-9 text-yellow-500 hover:text-yellow-500 hover:bg-yellow-500/10">
-                                    <TestTube className="h-6 w-6" />
+                                 <Button variant="ghost" size="icon" className="h-8 w-8 text-yellow-500 hover:text-yellow-500 hover:bg-yellow-500/10" onClick={(e) => e.stopPropagation()}>
+                                    <TestTube className="h-5 w-5" />
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>
@@ -419,8 +418,8 @@ export default function ClientsPageContent() {
                         {hasPendingApps(client) && (
                            <Popover>
                             <PopoverTrigger asChild>
-                               <Button variant="outline" size="icon" className="h-9 w-9 text-yellow-500 hover:text-yellow-500 hover:bg-yellow-500/10">
-                                  <AlertTriangle className="h-6 w-6" />
+                               <Button variant="ghost" size="icon" className="h-8 w-8 text-yellow-500 hover:text-yellow-500 hover:bg-yellow-500/10" onClick={(e) => e.stopPropagation()}>
+                                  <AlertTriangle className="h-5 w-5" />
                                </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto max-w-xs">
@@ -460,7 +459,7 @@ export default function ClientsPageContent() {
                     <TableCell className="font-medium">
                       {client.id || t('noId')}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="h-9 w-9 p-0">
@@ -469,7 +468,7 @@ export default function ClientsPageContent() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => { setSelectedClient(client); handleEditOpen(); }}>
+                          <DropdownMenuItem onClick={() => handleEditOpen(client)}>
                             <FilePenLine className="mr-2 h-4 w-4" />
                             {t('edit')}
                           </DropdownMenuItem>
@@ -478,7 +477,7 @@ export default function ClientsPageContent() {
                             {t('report')}
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() => { setClientToDelete(client); setIsDeleteAlertOpen(true); }}
+                            onClick={() => handleDeleteRequest(client)}
                             className="text-destructive focus:text-destructive"
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
@@ -506,8 +505,8 @@ export default function ClientsPageContent() {
           isOpen={isDetailsModalOpen}
           onClose={() => setIsDetailsModalOpen(false)}
           client={selectedClient}
-          onEdit={handleEditOpen}
-          onDelete={handleDeleteRequest}
+          onEdit={() => handleEditOpen(selectedClient)}
+          onDelete={() => handleDeleteRequest(selectedClient)}
         />
       )}
 
