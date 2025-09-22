@@ -149,7 +149,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
                       className="min-h-[250px] sm:min-h-[150px]"
                     />
                   </div>
-                  <div className="space-y-2">
+                   <div className="space-y-2">
                     <Label>{t('cardColor')}</Label>
                     <div className="flex items-center gap-4">
                       <button
@@ -161,6 +161,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
                       />
                     </div>
                   </div>
+                   <Button onClick={handleSave} className="w-full">{t('saveNote')}</Button>
                 </div>
             </ScrollArea>
           </div>
@@ -179,7 +180,6 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
               <Button variant="outline" onClick={onClose}>
                 {t('cancel')}
               </Button>
-              <Button onClick={handleSave}>{t('saveNote')}</Button>
             </div>
           </DialogFooter>
         </DialogContent>
