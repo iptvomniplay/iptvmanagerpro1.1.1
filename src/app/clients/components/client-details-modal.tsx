@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/use-language';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, FilePenLine, TestTube } from 'lucide-react';
+import { Trash2, FilePenLine, TestTube, AlertTriangle } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Collapsible,
@@ -84,12 +84,17 @@ const getGenericStatusVariant = (status: Server['status'] | SubServer['status'])
 
 const PlanDetails = ({ plan, client }: { plan: SelectedPlan, client: Client }) => {
     const { t } = useLanguage();
+    const { servers } = useData();
+
     const periodOptions: { value: SelectedPlan['planPeriod']; label: string }[] = [
         { value: '30d', label: t('30days') }, { value: '3m', label: t('3months') },
         { value: '6m', label: t('6months') }, { value: '1y', label: t('1year') },
     ];
     
+    const isOrphaned = !servers.some(s => s.id === plan.panel.id);
+
     const getPlanStatus = (plan: SelectedPlan, client: Client): PlanStatus => {
+        if (isOrphaned) return 'Blocked';
         const planId = `${plan.panel.id}-${plan.server.name}-${plan.plan.name}`;
         const configuredAppsForPlan = client.applications?.filter(
           app => app.planId === planId
@@ -120,19 +125,25 @@ const PlanDetails = ({ plan, client }: { plan: SelectedPlan, client: Client }) =
 
     return (
         <div className="space-y-4">
+            {isOrphaned && (
+                <div className="p-3 bg-destructive/10 text-destructive rounded-lg border border-destructive/50 flex items-center gap-3">
+                    <AlertTriangle className="h-5 w-5" />
+                    <p className="font-semibold">{t('panelOrServerDeleted')}</p>
+                </div>
+            )}
              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">{t('panel')}</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <p className="text-lg">{plan.panel.name}</p>
-                    <Badge variant={getGenericStatusVariant(plan.panel.status)}>{t(plan.panel.status.toLowerCase() as any)}</Badge>
+                    <p className="text-lg">{isOrphaned ? t('panelDeleted') : plan.panel.name}</p>
+                    {!isOrphaned && <Badge variant={getGenericStatusVariant(plan.panel.status)}>{t(plan.panel.status.toLowerCase() as any)}</Badge>}
                   </div>
                 </div>
                  <div>
                   <p className="text-sm font-medium text-muted-foreground">{t('servers')}</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <p className="text-lg">{plan.server.name}</p>
-                    <Badge variant={getGenericStatusVariant(plan.server.status)}>{t(plan.server.status.toLowerCase() as any)}</Badge>
+                    <p className="text-lg">{isOrphaned ? t('serverDeleted') : plan.server.name}</p>
+                    {!isOrphaned && <Badge variant={getGenericStatusVariant(plan.server.status)}>{t(plan.server.status.toLowerCase() as any)}</Badge>}
                   </div>
                 </div>
                 <DetailItem label={t('plans')} value={plan.plan.name} />

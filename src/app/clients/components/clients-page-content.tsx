@@ -163,6 +163,14 @@ export default function ClientsPageContent() {
     const configuredApps = client.applications?.length || 0;
     return configuredApps < totalScreens;
   };
+
+  const hasOrphanedPlan = (client: Client): boolean => {
+    if (!client.plans || client.plans.length === 0) {
+      return false;
+    }
+    const serverIds = servers.map(s => s.id);
+    return client.plans.some(plan => !serverIds.includes(plan.panel.id));
+  };
   
   const hasActiveTest = (client: Client): boolean => {
     if (!client.tests || client.tests.length === 0) {
@@ -380,6 +388,19 @@ export default function ClientsPageContent() {
                           {client.name}
                         </Button>
                         
+                        {hasOrphanedPlan(client) && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                 <AlertTriangle className="h-6 w-6 text-destructive animate-flash-destructive" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{t('clientWithInvalidPlan')}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+
                         {clientHasActiveTest && (
                           <TooltipProvider>
                             <Tooltip>

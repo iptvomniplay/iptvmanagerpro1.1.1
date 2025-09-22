@@ -342,7 +342,7 @@
     "clientIdAlreadySaved": "Este ID de Cliente já foi salvo.",
     "managePendingScreens": "Gerenciar Telas Pendentes",
     "allAppsConfigured": "Todos os aplicativos para os planos contratados já foram configurados.",
-    "pendingScreensWarning": "Existem {count} telas pendentes para serem configuradas. Vá para a aba 'Planos da Assinatura' para gerenciar.",
+    "pendingAppsWarning": "Existem {count} telas pendentes para serem configuradas. Vá para a aba 'Planos da Assinatura' para gerenciar.",
     "attentionClientHasSubscription": "Atenção! Este cliente já possui uma assinatura ativa.",
     "planDetailsTitle": "Detalhes do Plano",
     "planDetailsDescription": "Aqui estão os detalhes do plano de assinatura selecionado.",
@@ -527,5 +527,12 @@
     "fieldRequired": "Campo obrigatório",
     "valueMustBePositive": "O valor deve ser positivo.",
     "initialSubscription": "Assinatura inicial",
-    "all": "Todos"
+    "all": "Todos",
+    "negativeStockError": "Operação não permitida. O estoque de créditos não pode ser negativo.",
+    "deleteServerWarningTitle": "Painel em Uso",
+    "deleteServerWarningDescription": "Este painel não pode ser excluído pois está em uso por {count} cliente(s). O sistema irá agora marcar os planos afetados como inválidos, por favor, atualize-os.",
+    "clientWithInvalidPlan": "Cliente com plano inválido. O painel ou servidor foi excluído.",
+    "panelOrServerDeleted": "O painel ou servidor associado a este plano foi excluído.",
+    "panelDeleted": "PAINEL EXCLUÍDO",
+    "serverDeleted": "SERVIDOR EXCLUÍDO"
 }

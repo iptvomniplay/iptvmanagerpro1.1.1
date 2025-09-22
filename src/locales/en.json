@@ -527,5 +527,12 @@
     "fieldRequired": "Field required",
     "valueMustBePositive": "Value must be positive.",
     "initialSubscription": "Initial subscription",
-    "all": "All"
+    "all": "All",
+    "negativeStockError": "Operation not allowed. The credit stock cannot be negative.",
+    "deleteServerWarningTitle": "Panel in Use",
+    "deleteServerWarningDescription": "This panel cannot be deleted because it is being used by {count} client(s). The system will now mark the affected plans as invalid, please update them.",
+    "clientWithInvalidPlan": "Client with invalid plan. Panel or server has been deleted.",
+    "panelOrServerDeleted": "Panel or server associated with this plan has been deleted.",
+    "panelDeleted": "DELETED PANEL",
+    "serverDeleted": "DELETED SERVER"
 }

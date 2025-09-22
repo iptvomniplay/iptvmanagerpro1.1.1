@@ -329,11 +329,26 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [servers]);
 
   const deleteServer = useCallback((serverId: string) => {
+    const serverBeingDeleted = servers.find(s => s.id === serverId);
+    if (!serverBeingDeleted) return;
+
+    const clientsUsingServer = clients.filter(client => 
+        client.plans?.some(plan => plan.panel.id === serverId)
+    );
+
+    if (clientsUsingServer.length > 0) {
+        toast({
+            variant: "destructive",
+            title: t('deleteServerWarningTitle'),
+            description: t('deleteServerWarningDescription', { count: clientsUsingServer.length }),
+        });
+    }
+
     setServers(prevServers => {
       const updatedServers = prevServers.filter(s => s.id !== serverId);
       return updatedServers;
     });
-  }, []);
+  }, [servers, clients, t, toast]);
 
   const addTestToClient = useCallback((clientId: string, testData: Omit<Test, 'creationDate'>) => {
     const newTest: Test = {
@@ -371,18 +386,17 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const addTransactionToServer = useCallback((serverId: string, transactionData: Omit<Transaction, 'id' | 'date'>) => {
-    let serverName = '';
     const server = servers.find(s => s.id === serverId);
     if (!server) return;
 
-    serverName = server.name;
+    const serverName = server.name;
     const currentStock = server.creditStock;
 
     if (currentStock + transactionData.credits < 0) {
       toast({
           variant: "destructive",
           title: t('validationError'),
-          description: 'Operação não permitida. O estoque de créditos não pode ser negativo.',
+          description: t('negativeStockError'),
       });
       return;
     }
@@ -397,8 +411,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             id: newTransactionId,
             date: new Date().toISOString(),
           };
-          const updatedTransactions = [newTransaction, ...(s.transactions || [])];
-          const newCreditStock = updatedTransactions.reduce((acc, trans) => acc + trans.credits, 0);
+          
+          let updatedTransactions = [newTransaction, ...(s.transactions || [])];
+
+          // Garante que o ajuste seja direto, sem duplicações
+          const newCreditStock = s.creditStock + newTransaction.credits;
 
           return { ...s, transactions: updatedTransactions, creditStock: newCreditStock };
         }
@@ -451,5 +468,3 @@ export const useData = (): DataContextType => {
   }
   return context;
 };
-
-    
