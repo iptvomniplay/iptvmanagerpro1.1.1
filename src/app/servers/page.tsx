@@ -6,7 +6,7 @@ import type { Server } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { PlusCircle, Search, ChevronDown, Server as ServerIcon, Settings, Users } from 'lucide-react';
+import { PlusCircle, Search, ChevronDown, Server as ServerIcon, Settings, Users, Star } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
 import { useData } from '@/hooks/use-data';
@@ -28,10 +28,62 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { ServerDetailsModal } from './components/server-details-modal';
 import { DeleteServerAlert } from './components/delete-server-alert';
 import { Input } from '@/components/ui/input';
-import { normalizeString } from '@/lib/utils';
+import { normalizeString, cn } from '@/lib/utils';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { TransactionModal } from '../stock/components/transaction-modal';
 import type { Transaction } from '@/lib/types';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+
+const ServerRatingDisplay = ({ server }: { server: Server }) => {
+  const { ratings } = server;
+  if (!ratings) {
+    return <div className="text-muted-foreground">-</div>;
+  }
+
+  const { content = 0, support = 0, stability = 0, value = 0 } = ratings;
+  const averageRating = (content + support + stability + value) / 4;
+  const fullStars = Math.floor(averageRating);
+  const partialStar = averageRating - fullStars;
+
+  const colors = ["#ef4444", "#f97316", "#eab308", "#84cc16", "#22c55e"];
+  const starColor = colors[fullStars >= 1 ? fullStars - 1 : 0];
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>
+          <div className="flex items-center">
+            {[...Array(5)].map((_, i) => {
+              const starValue = i + 1;
+              if (starValue <= fullStars) {
+                return <Star key={i} className="h-5 w-5" fill={starColor} stroke={starColor} />;
+              }
+              if (starValue === fullStars + 1 && partialStar > 0) {
+                 return (
+                    <div key={i} className="relative h-5 w-5">
+                      <Star className="h-5 w-5 text-muted" fill="currentColor" />
+                      <div className="absolute top-0 left-0 h-full overflow-hidden" style={{ width: `${partialStar * 100}%` }}>
+                        <Star className="h-5 w-5" fill={starColor} stroke={starColor} />
+                      </div>
+                    </div>
+                  );
+              }
+              return <Star key={i} className="h-5 w-5 text-muted" fill="currentColor" />;
+            })}
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Média: {averageRating.toFixed(2)}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
 
 
 export default function ServersPage() {
@@ -162,6 +214,7 @@ export default function ServersPage() {
                           <TableHead>{t('serverName')}</TableHead>
                           <TableHead>{t('status')}</TableHead>
                           <TableHead>{t('clients')}</TableHead>
+                          <TableHead>{t('reputation')}</TableHead>
                           <TableHead className="w-[180px] text-right">{t('actions')}</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -203,6 +256,9 @@ export default function ServersPage() {
                                       <span className="font-semibold">{clientCount}</span>
                                     </div>
                                   </TableCell>
+                                  <TableCell>
+                                    <ServerRatingDisplay server={server} />
+                                  </TableCell>
                                   <TableCell className="text-right p-4">
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
@@ -242,7 +298,7 @@ export default function ServersPage() {
                           })
                         ) : (
                           <TableRow>
-                            <TableCell colSpan={4} className="p-0">
+                            <TableCell colSpan={5} className="p-0">
                                <div className="flex flex-col items-center justify-center gap-3 text-center h-48">
                                 <ServerIcon className="w-12 h-12 text-muted-foreground/60" />
                                 <h3 className="text-xl font-semibold">{t('noServersFound')}</h3>
