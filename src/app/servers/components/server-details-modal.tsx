@@ -49,7 +49,7 @@ const StarRating: React.FC<StarRatingProps> = ({ rating, onRatingChange }) => {
                 <button
                     key={star}
                     type="button"
-                    onClick={() => onRatingChange(star)}
+                    onClick={(e) => { e.stopPropagation(); onRatingChange(star); }}
                     className="focus:outline-none"
                 >
                     <Star
@@ -187,10 +187,10 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
   };
   
   const ratingFields: { key: keyof ServerRating, label: string }[] = [
-    { key: 'content', label: 'Conteúdo' },
-    { key: 'support', label: 'Suporte' },
-    { key: 'stability', label: 'Estabilidade' },
-    { key: 'value', label: 'Valor' },
+    { key: 'content', label: t('Conteúdo') },
+    { key: 'support', label: t('Suporte') },
+    { key: 'stability', label: t('Estabilidade') },
+    { key: 'value', label: t('Valor') },
   ];
 
   return (
@@ -274,7 +274,7 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
               <CollapsibleTrigger className="flex items-center justify-between w-full font-semibold text-xl text-primary">
                   <div className="flex items-center gap-2">
                       <Star className="h-5 w-5" />
-                      <h3>Avaliações</h3>
+                      <h3>{t('Avaliações')}</h3>
                   </div>
                   <ChevronsUpDown className="h-5 w-5" />
               </CollapsibleTrigger>

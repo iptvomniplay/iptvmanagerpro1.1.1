@@ -561,5 +561,10 @@
     "printNotesDescription": "View and print your selected notes.",
     "selectNotesToPrint": "Select which notes you want to print.",
     "title": "Title",
-    "message": "Message"
+    "message": "Message",
+    "Avaliações": "Ratings",
+    "Conteúdo": "Content",
+    "Suporte": "Support",
+    "Estabilidade": "Stability",
+    "Valor": "Value"
 }

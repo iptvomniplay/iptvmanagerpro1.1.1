@@ -561,5 +561,10 @@
     "printNotesDescription": "Visualize e imprima suas anotações selecionadas.",
     "selectNotesToPrint": "Selecione quais anotações você deseja imprimir.",
     "title": "Título",
-    "message": "Mensagem"
+    "message": "Mensagem",
+    "Avaliações": "Avaliações",
+    "Conteúdo": "Conteúdo",
+    "Suporte": "Suporte",
+    "Estabilidade": "Estabilidade",
+    "Valor": "Valor"
 }
