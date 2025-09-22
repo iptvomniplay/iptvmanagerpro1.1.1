@@ -11,6 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 
 interface ClientExpirationProps {
   clientId: string;
@@ -149,8 +150,13 @@ export function ClientExpiration({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button>
-          <Badge variant={badgeVariant} className="h-6 w-6 p-0" />
+        <button className={cn(
+          "h-6 w-6 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+          badgeVariant === 'success' && 'bg-green-500',
+          badgeVariant === 'warning' && 'bg-yellow-500',
+          badgeVariant === 'destructive' && 'bg-destructive'
+        )}>
+          <span className="sr-only">{t('expiresIn')}</span>
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-56">

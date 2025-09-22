@@ -391,8 +391,10 @@ export default function ClientsPageContent() {
                         {hasOrphanedPlan(client) && (
                           <TooltipProvider>
                             <Tooltip>
-                              <TooltipTrigger>
-                                 <AlertTriangle className="h-6 w-6 text-destructive animate-flash-destructive" />
+                              <TooltipTrigger asChild>
+                                 <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10">
+                                    <AlertTriangle className="h-6 w-6" />
+                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>
                                 <p>{t('clientWithInvalidPlan')}</p>
@@ -404,11 +406,10 @@ export default function ClientsPageContent() {
                         {clientHasActiveTest && (
                           <TooltipProvider>
                             <Tooltip>
-                              <TooltipTrigger>
-                                 <Badge variant="warning" className="text-base">
-                                    <TestTube className="h-4 w-4 mr-1" />
-                                    {t('test')}
-                                </Badge>
+                              <TooltipTrigger asChild>
+                                 <Button variant="ghost" size="icon" className="h-8 w-8 text-yellow-500 hover:text-yellow-500 hover:bg-yellow-500/10">
+                                    <TestTube className="h-5 w-5" />
+                                </Button>
                               </TooltipTrigger>
                               <TooltipContent>
                                 <p>{t('clientWithActiveTest')}</p>
@@ -418,9 +419,11 @@ export default function ClientsPageContent() {
                         )}
 
                         {hasPendingApps(client) && (
-                          <Popover>
-                            <PopoverTrigger>
-                              <AlertTriangle className="h-6 w-6 text-yellow-500" />
+                           <Popover>
+                            <PopoverTrigger asChild>
+                               <Button variant="ghost" size="icon" className="h-8 w-8 text-yellow-500 hover:text-yellow-500 hover:bg-yellow-500/10">
+                                  <AlertTriangle className="h-6 w-6" />
+                               </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto max-w-xs">
                               <p>{t('pendingAppsWarning')}</p>
