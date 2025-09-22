@@ -196,7 +196,11 @@ export default function ServersPage() {
                   client.plans?.some(plan => plan.panel.id === server.id)
               ).length;
               return (
-                <Card key={server.id} className="flex flex-col">
+                <Card 
+                    key={server.id} 
+                    className="flex flex-col cursor-pointer"
+                    onClick={() => handleOpenDetails(server)}
+                >
                   <CardHeader className="flex flex-row items-start justify-between">
                       <div>
                         <CardTitle className="text-lg">{server.name}</CardTitle>
@@ -206,11 +210,11 @@ export default function ServersPage() {
                       </div>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                           <Button variant="ghost" size="icon" className="h-8 w-8">
+                           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
                                 <MoreVertical className="h-5 w-5"/>
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
                            <DropdownMenuItem onClick={() => handleEdit(server)}>
                                 {t('edit')}
                             </DropdownMenuItem>
@@ -231,11 +235,8 @@ export default function ServersPage() {
                      </div>
                   </CardContent>
                   <CardFooter className="flex gap-2">
-                      <Button variant="outline" onClick={() => handleOpenTransactionModal(server)}>
+                      <Button variant="outline" className="flex-1" onClick={(e) => { e.stopPropagation(); handleOpenTransactionModal(server); }}>
                           {t('manage')}
-                      </Button>
-                      <Button onClick={() => handleOpenDetails(server)}>
-                          {t('details')}
                       </Button>
                   </CardFooter>
                 </Card>
