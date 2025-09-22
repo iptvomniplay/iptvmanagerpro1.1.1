@@ -234,9 +234,10 @@ export default function ServersPage() {
                         <ServerRatingDisplay server={server} />
                      </div>
                   </CardContent>
-                  <CardFooter className="flex gap-2">
-                      <Button variant="outline" className="flex-1" onClick={(e) => { e.stopPropagation(); handleOpenTransactionModal(server); }}>
-                          {t('manage')}
+                  <CardFooter className="flex justify-end">
+                      <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); handleOpenTransactionModal(server); }}>
+                          <Settings />
+                          <span className="sr-only">{t('manage')}</span>
                       </Button>
                   </CardFooter>
                 </Card>
