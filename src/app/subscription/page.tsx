@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -270,7 +271,7 @@ export default function SubscriptionPage() {
       </div>
 
       <div className="mt-auto flex justify-end items-center gap-4 pt-8">
-        <Button variant="outline" onClick={() => router.push('/')}>{t('back')}</Button>
+        <Button variant="outline" onClick={() => router.push('/clients')}>{t('back')}</Button>
         {selectedClient && (
             <>
                 <Button variant="outline" onClick={handleCancel}>{t('cancel')}</Button>
