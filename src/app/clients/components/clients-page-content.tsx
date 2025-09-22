@@ -200,7 +200,7 @@ const ClientCard = ({ client, onSelect, ...props }: { client: Client, onSelect: 
                     </DropdownMenuContent>
                 </DropdownMenu>
             </CardHeader>
-            <CardContent className="grid grid-cols-3 gap-4 text-sm p-0 px-4 pb-4">
+            <CardContent className="grid grid-cols-3 gap-4 text-sm p-4 pt-0">
                 <div>
                     <p className="text-muted-foreground font-semibold">{t('clientStatus')}</p>
                     <Badge variant={getStatusVariant(client.status)} className="mt-1">
@@ -558,6 +558,4 @@ export default function ClientsPageContent() {
   );
 }
 
-
-
-
+    
