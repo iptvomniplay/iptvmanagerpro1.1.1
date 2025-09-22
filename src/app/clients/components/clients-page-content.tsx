@@ -73,6 +73,7 @@ import {
 import { add, isFuture, parseISO, format } from 'date-fns';
 import { ReportModal, SelectedReportsState, reportConfig, ReportKey } from '@/app/settings/components/report-modal';
 import { ReportDisplayModal, GeneratedReportData } from '@/app/settings/components/report-display-modal';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 
 export type ClientFormValues = Omit<Client, 'id' | 'registeredDate'>;
@@ -359,87 +360,94 @@ export default function ClientsPageContent() {
         </div>
       </div>
 
-      <div className="rounded-xl border shadow-sm">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{t('name')}</TableHead>
-              <TableHead>{t('clientStatus')}</TableHead>
-              <TableHead>{t('expiresIn')}</TableHead>
-              <TableHead>{t('clientID')}</TableHead>
-              <TableHead className="text-right">{t('actions')}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredClients.length > 0 ? (
-              filteredClients.map((client) => {
-                const latestTest = client.status === 'Test' && client.tests && client.tests.length > 0 
-                  ? [...client.tests].sort((a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime())[0] 
-                  : null;
-                
-                const clientHasActiveTest = client.status === 'Active' && hasActiveTest(client);
+      <div className="space-y-4 mt-6">
+        {filteredClients.length > 0 ? (
+          filteredClients.map((client) => {
+            const latestTest = client.status === 'Test' && client.tests && client.tests.length > 0 
+              ? [...client.tests].sort((a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime())[0] 
+              : null;
+            
+            const clientHasActiveTest = client.status === 'Active' && hasActiveTest(client);
 
-                return (
-                  <TableRow key={client._tempId} className="even:bg-muted/50 hover:bg-muted">
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Button 
-                            variant="link"
-                            onClick={() => handleViewDetails(client)} 
-                            className="p-0 h-auto font-semibold text-base justify-start text-primary"
-                        >
-                          {client.name}
-                        </Button>
-                        
-                        {hasOrphanedPlan(client) && (
-                          <Popover>
-                            <PopoverTrigger asChild>
-                               <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={(e) => e.stopPropagation()}>
-                                  <AlertTriangle className="h-5 w-5" />
-                               </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto max-w-xs">
-                              <p>{t('clientWithInvalidPlan')}</p>
-                            </PopoverContent>
-                          </Popover>
-                        )}
-
-                        {clientHasActiveTest && (
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                 <Button variant="ghost" size="icon" className="h-8 w-8 text-yellow-500 hover:text-yellow-500 hover:bg-yellow-500/10" onClick={(e) => e.stopPropagation()}>
-                                    <TestTube className="h-5 w-5" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>{t('clientWithActiveTest')}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        )}
-
-                        {hasPendingApps(client) && (
-                           <Popover>
-                            <PopoverTrigger asChild>
-                               <Button variant="ghost" size="icon" className="h-8 w-8 text-yellow-500 hover:text-yellow-500 hover:bg-yellow-500/10" onClick={(e) => e.stopPropagation()}>
-                                  <AlertTriangle className="h-5 w-5" />
-                               </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto max-w-xs">
-                              <p>{t('pendingAppsWarning')}</p>
-                            </PopoverContent>
-                          </Popover>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={getStatusVariant(client.status)}>
-                        {t(client.status.toLowerCase() as any)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div onClick={(e) => e.stopPropagation()}>
+            return (
+              <Card key={client._tempId} onClick={() => handleViewDetails(client)} className="cursor-pointer hover:border-primary/50 transition-all">
+                <CardHeader className="flex flex-row items-start justify-between pb-4">
+                  <div className="flex items-center gap-3">
+                    <CardTitle className="text-lg">{client.name}</CardTitle>
+                    {hasOrphanedPlan(client) && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={(e) => e.stopPropagation()}>
+                                <AlertTriangle className="h-5 w-5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent><p>{t('clientWithInvalidPlan')}</p></TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                    {clientHasActiveTest && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-7 w-7 text-yellow-500 hover:text-yellow-500 hover:bg-yellow-500/10" onClick={(e) => e.stopPropagation()}>
+                                <TestTube className="h-5 w-5" />
+                              </Button>
+                          </TooltipTrigger>
+                          <TooltipContent><p>{t('clientWithActiveTest')}</p></TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                    {hasPendingApps(client) && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-yellow-500 hover:text-yellow-500 hover:bg-yellow-500/10" onClick={(e) => e.stopPropagation()}>
+                                <AlertTriangle className="h-5 w-5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent><p>{t('pendingAppsWarning')}</p></TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0" onClick={(e) => e.stopPropagation()}>
+                        <span className="sr-only">{t('openMenu')}</span>
+                        <MoreHorizontal className="h-5 w-5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={(e) => {e.stopPropagation(); handleEditOpen(client)}}>
+                        <FilePenLine className="mr-2 h-4 w-4" />
+                        {t('edit')}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={(e) => {e.stopPropagation(); handleOpenReportModal(client)}}>
+                        <FileText className="mr-2 h-4 w-4" />
+                        {t('report')}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={(e) => {e.stopPropagation(); handleDeleteRequest(client)}} className="text-destructive focus:text-destructive">
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        {t('delete')}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </CardHeader>
+                <CardContent className="grid grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <p className="text-muted-foreground font-semibold">{t('clientStatus')}</p>
+                    <Badge variant={getStatusVariant(client.status)} className="mt-1">
+                      {t(client.status.toLowerCase() as any)}
+                    </Badge>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground font-semibold">{t('clientID')}</p>
+                    <p className="font-medium">{client.id || t('noId')}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground font-semibold">{t('expiresIn')}</p>
+                    <div className="mt-1" onClick={(e) => e.stopPropagation()}>
                         {client.status === 'Active' && client.plans && client.plans.length > 0 ? (
                             <ClientExpiration
                                 key={`${client._tempId}-plan`}
@@ -457,51 +465,20 @@ export default function ClientsPageContent() {
                                 testDurationUnit={latestTest.durationUnit}
                                 onExpire={() => updateClient({...client, status: 'Expired'})}
                             />
-                        ) : null}
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
                       </div>
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {client.id || t('noId')}
-                    </TableCell>
-                    <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-9 w-9 p-0">
-                            <span className="sr-only">{t('openMenu')}</span>
-                            <MoreHorizontal className="h-5 w-5" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => handleEditOpen(client)}>
-                            <FilePenLine className="mr-2 h-4 w-4" />
-                            {t('edit')}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleOpenReportModal(client)}>
-                            <FileText className="mr-2 h-4 w-4" />
-                            {t('report')}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleDeleteRequest(client)}
-                            className="text-destructive focus:text-destructive"
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            {t('delete')}
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                )
-              })
-            ) : (
-              <TableRow>
-                <TableCell colSpan={5} className="h-28 text-center text-lg">
-                  {t('noClientsFound')}
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })
+        ) : (
+          <div className="text-center py-20">
+            <h3 className="text-xl font-semibold">{t('noClientsFound')}</h3>
+          </div>
+        )}
       </div>
 
       {selectedClient && (
@@ -560,3 +537,4 @@ export default function ClientsPageContent() {
     </>
   );
 }
+
