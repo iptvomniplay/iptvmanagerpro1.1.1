@@ -14,7 +14,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { useLanguage } from '@/hooks/use-language';
 import type { Note } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { Check } from 'lucide-react';
+import { Check, Plus, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+
+const defaultPalette = [
+  '#fde047', '#60a5fa', '#4ade80', '#f87171', '#c084fc', '#9ca3af',
+];
 
 interface NoteModalProps {
   isOpen: boolean;
@@ -23,26 +28,38 @@ interface NoteModalProps {
   note: Note | null;
 }
 
-const colorPalette = [
-  '#fde047', // yellow-400
-  '#60a5fa', // blue-400
-  '#4ade80', // green-400
-  '#f87171', // red-400
-  '#c084fc', // purple-400
-  '#9ca3af', // gray-400
-];
-
 export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
   const { t } = useLanguage();
   const [content, setContent] = React.useState('');
-  const [selectedColor, setSelectedColor] = React.useState(colorPalette[0]);
+  const [selectedColor, setSelectedColor] = React.useState(defaultPalette[0]);
+  const [favoriteColors, setFavoriteColors] = React.useState<string[]>([]);
+
+  React.useEffect(() => {
+    try {
+      const savedFavorites = localStorage.getItem('notepad_favorite_colors');
+      if (savedFavorites) {
+        setFavoriteColors(JSON.parse(savedFavorites));
+      } else {
+        setFavoriteColors(defaultPalette);
+      }
+    } catch (error) {
+      console.error("Failed to load favorite colors from localStorage", error);
+      setFavoriteColors(defaultPalette);
+    }
+  }, []);
+
+  const saveFavoritesToStorage = (colors: string[]) => {
+    localStorage.setItem('notepad_favorite_colors', JSON.stringify(colors));
+    setFavoriteColors(colors);
+  };
+
 
   React.useEffect(() => {
     if (isOpen) {
       setContent(note?.content || '');
-      setSelectedColor(note?.color || colorPalette[0]);
+      setSelectedColor(note?.color || favoriteColors[0] || defaultPalette[0]);
     }
-  }, [isOpen, note]);
+  }, [isOpen, note, favoriteColors]);
 
   const handleSave = () => {
     onSave({
@@ -50,6 +67,19 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
       content,
       color: selectedColor,
     });
+  };
+
+  const handleAddFavorite = () => {
+    if (selectedColor && !favoriteColors.includes(selectedColor)) {
+      const newFavorites = [...favoriteColors, selectedColor];
+      saveFavoritesToStorage(newFavorites);
+    }
+  };
+
+  const handleRemoveFavorite = (colorToRemove: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newFavorites = favoriteColors.filter(color => color !== colorToRemove);
+    saveFavoritesToStorage(newFavorites);
   };
 
   return (
@@ -61,7 +91,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
             {note ? t('editNoteDescription') : t('createNoteDescription')}
           </DialogDescription>
         </DialogHeader>
-        <div className="py-4 space-y-4">
+        <div className="py-4 space-y-6">
           <Textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
@@ -69,23 +99,50 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
             className="min-h-[200px] text-base"
             autoFocus
           />
-          <div className="flex items-center gap-2">
+          <div className="space-y-4">
             <p className="text-sm font-medium text-muted-foreground">{t('cardColor')}:</p>
-            <div className="flex gap-2">
-              {colorPalette.map((color) => (
-                <button
-                  key={color}
-                  type="button"
-                  className={cn(
-                    'h-8 w-8 rounded-full border-2 transition-all',
-                    selectedColor === color ? 'ring-2 ring-ring ring-offset-2' : 'border-transparent'
-                  )}
-                  style={{ backgroundColor: color }}
-                  onClick={() => setSelectedColor(color)}
-                  aria-label={`Select color ${color}`}
-                >
-                  {selectedColor === color && <Check className="h-5 w-5 mx-auto my-auto text-white" />}
-                </button>
+            <div className="flex items-center gap-4">
+                <div className="relative h-10 w-10 shrink-0">
+                    <Input 
+                        type="color"
+                        value={selectedColor}
+                        onChange={(e) => setSelectedColor(e.target.value)}
+                        className="h-full w-full p-0 border-none cursor-pointer"
+                    />
+                </div>
+                <Input
+                    type="text"
+                    value={selectedColor}
+                    onChange={(e) => setSelectedColor(e.target.value)}
+                    className="h-10 text-base"
+                />
+                <Button size="icon" className="h-10 w-10 shrink-0" onClick={handleAddFavorite} aria-label="Adicionar cor aos favoritos">
+                    <Plus />
+                </Button>
+            </div>
+            <div className="flex flex-wrap gap-2 pt-2 border-t mt-4">
+              {favoriteColors.map((color) => (
+                <div key={color} className="relative group">
+                    <button
+                        type="button"
+                        className={cn(
+                            'h-9 w-9 rounded-full border-2 transition-all',
+                            selectedColor === color ? 'ring-2 ring-ring ring-offset-2' : 'border-transparent'
+                        )}
+                        style={{ backgroundColor: color }}
+                        onClick={() => setSelectedColor(color)}
+                        aria-label={`Select color ${color}`}
+                    >
+                    {selectedColor === color && <Check className="h-5 w-5 mx-auto my-auto text-white" />}
+                    </button>
+                    <button 
+                        onClick={(e) => handleRemoveFavorite(color, e)} 
+                        className="absolute -top-2 -right-2 h-5 w-5 bg-muted rounded-full flex items-center justify-center border border-destructive/50 text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-label={`Remover cor ${color}`}
+                    >
+                        <X className="h-3 w-3"/>
+                    </button>
+                </div>
               ))}
             </div>
           </div>
