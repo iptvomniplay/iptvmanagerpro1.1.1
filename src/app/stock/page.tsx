@@ -4,18 +4,10 @@ import * as React from 'react';
 import { useLanguage } from '@/hooks/use-language';
 import { useData } from '@/hooks/use-data';
 import type { Server, Transaction } from '@/lib/types';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Settings } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { TransactionModal } from './components/transaction-modal';
 
 export default function StockPage() {
@@ -23,6 +15,15 @@ export default function StockPage() {
   const { servers, addTransactionToServer } = useData();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [selectedServer, setSelectedServer] = React.useState<Server | null>(null);
+  const [glowColors, setGlowColors] = React.useState<Record<string, string>>({});
+
+  React.useEffect(() => {
+    const newGlowColors: Record<string, string> = {};
+    servers.forEach(server => {
+      newGlowColors[server.id] = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
+    });
+    setGlowColors(newGlowColors);
+  }, [servers]);
 
   const handleOpenModal = (server: Server) => {
     setSelectedServer(server);
@@ -52,38 +53,37 @@ export default function StockPage() {
             <CardTitle>{t('creditBalance')}</CardTitle>
             <CardDescription>{t('creditBalanceDescription')}</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="rounded-xl border shadow-sm">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{t('serverName')}</TableHead>
-                    <TableHead>{t('paymentMethod')}</TableHead>
-                    <TableHead>{t('creditBalance')}</TableHead>
-                    <TableHead className="text-right">{t('actions')}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {servers.map((server) => (
-                    <TableRow key={server.id}>
-                      <TableCell className="font-medium">{server.name}</TableCell>
-                      <TableCell>
-                        <Badge variant={server.paymentType === 'prepaid' ? 'default' : 'info'}>
-                          {t(server.paymentType as any)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{server.creditStock || 0}</TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="outline" onClick={() => handleOpenModal(server)}>
+          <CardContent className="space-y-4">
+            {servers.map((server) => (
+                <Card 
+                    key={server.id}
+                    onClick={() => handleOpenModal(server)}
+                    className="cursor-pointer hover:border-primary/50 transition-all"
+                    style={{ boxShadow: `0 0 23px 0px ${glowColors[server.id] || 'transparent'}` }}
+                >
+                    <CardHeader className="flex flex-row items-center justify-between p-4 pb-2">
+                        <CardTitle className="text-base">{server.name}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="grid grid-cols-2 gap-4 p-4 pt-0 text-sm">
+                        <div>
+                            <p className="text-muted-foreground font-semibold text-xs">{t('paymentMethod')}</p>
+                             <Badge variant={server.paymentType === 'prepaid' ? 'default' : 'info'} className="mt-1 text-xs">
+                                {t(server.paymentType as any)}
+                            </Badge>
+                        </div>
+                        <div>
+                            <p className="text-muted-foreground font-semibold text-xs">{t('creditBalance')}</p>
+                            <p className="font-medium text-base">{server.creditStock || 0}</p>
+                        </div>
+                    </CardContent>
+                     <CardFooter className="p-4 pt-0">
+                        <Button variant="outline" onClick={(e) => { e.stopPropagation(); handleOpenModal(server); }} className="w-full">
                             <Settings className="mr-2 h-4 w-4" />
                             {t('manage')}
-                          </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                        </Button>
+                    </CardFooter>
+                </Card>
+            ))}
           </CardContent>
         </Card>
       </div>
