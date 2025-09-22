@@ -126,60 +126,62 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
               {note ? t('editNoteDescription') : t('createNoteDescription')}
             </DialogDescription>
           </DialogHeader>
-          <ScrollArea className="flex-1 -mx-6 px-6">
-            <div className="space-y-6 pt-4 pb-6">
-              <div className="space-y-2">
-                <Label htmlFor="note-title">{t('title')}</Label>
-                <Input
-                  id="note-title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder={t('namePlaceholder')}
-                  autoComplete="off"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="note-content">{t('message')}</Label>
-                <Textarea
-                  id="note-content"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  placeholder={t('notepadPlaceholder')}
-                  className="min-h-[250px] sm:min-h-[150px]"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>{t('cardColor')}</Label>
-                <div className="flex items-center gap-4">
-                  <button
-                    type="button"
-                    className="h-12 w-12 rounded-full border-2 cursor-pointer transition-transform hover:scale-110"
-                    style={{ backgroundColor: selectedColor }}
-                    onClick={() => setIsColorPickerOpen(true)}
-                    aria-label={t('selectColor')}
+          <div className="flex-1 flex flex-col min-h-0">
+            <ScrollArea className="flex-1 -mx-6 px-6">
+              <div className="space-y-6 pt-4 pb-6">
+                <div className="space-y-2">
+                  <Label htmlFor="note-title">{t('title')}</Label>
+                  <Input
+                    id="note-title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder={t('namePlaceholder')}
+                    autoComplete="off"
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="note-content">{t('message')}</Label>
+                  <Textarea
+                    id="note-content"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    placeholder={t('notepadPlaceholder')}
+                    className="min-h-[250px] sm:min-h-[150px]"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('cardColor')}</Label>
+                  <div className="flex items-center gap-4">
+                    <button
+                      type="button"
+                      className="h-12 w-12 rounded-full border-2 cursor-pointer transition-transform hover:scale-110"
+                      style={{ backgroundColor: selectedColor }}
+                      onClick={() => setIsColorPickerOpen(true)}
+                      aria-label={t('selectColor')}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-          </ScrollArea>
-          <DialogFooter className="justify-between !mt-auto border-t -mx-6 px-6 pt-4">
-             <div className="flex gap-2">
-                <Button variant="ghost" onClick={handleCopy} disabled={!content}>
-                  <Copy className="mr-2 h-4 w-4" />
-                  {t('copyText')}
+            </ScrollArea>
+            <DialogFooter className="justify-between mt-auto border-t -mx-6 px-6 pt-4">
+               <div className="flex gap-2">
+                  <Button variant="ghost" onClick={handleCopy} disabled={!content}>
+                    <Copy className="mr-2 h-4 w-4" />
+                    {t('copyText')}
+                  </Button>
+                   <Button variant="ghost" onClick={handlePrint} disabled={!content}>
+                    <Printer className="mr-2 h-4 w-4" />
+                    {t('print')}
+                  </Button>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={onClose}>
+                  {t('cancel')}
                 </Button>
-                 <Button variant="ghost" onClick={handlePrint} disabled={!content}>
-                  <Printer className="mr-2 h-4 w-4" />
-                  {t('print')}
-                </Button>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={onClose}>
-                {t('cancel')}
-              </Button>
-              <Button onClick={handleSave}>{t('saveNote')}</Button>
-            </div>
-          </DialogFooter>
+                <Button onClick={handleSave}>{t('saveNote')}</Button>
+              </div>
+            </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
       <ColorPickerModal 
