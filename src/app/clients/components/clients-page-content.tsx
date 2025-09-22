@@ -137,15 +137,15 @@ const ClientCard = ({ client, onSelect, ...props }: { client: Client, onSelect: 
             style={{ boxShadow: `0 0 23px 0px ${glowColor}` }}
             {...props}
         >
-            <CardHeader className="flex flex-row items-start justify-between p-4 pb-2">
-                <div className="flex items-center gap-3">
-                    <CardTitle className="text-lg">{client.name}</CardTitle>
+            <CardHeader className="flex flex-row items-start justify-between p-3 pb-2">
+                <div className="flex items-center gap-2">
+                    <CardTitle className="text-base">{client.name}</CardTitle>
                     {hasOrphanedPlan(client) && (
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={(e) => e.stopPropagation()}>
-                                        <AlertTriangle className="h-5 w-5" />
+                                    <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={(e) => e.stopPropagation()}>
+                                        <AlertTriangle className="h-4 w-4" />
                                     </Button>
                                 </TooltipTrigger>
                                 <TooltipContent><p>{t('clientWithInvalidPlan')}</p></TooltipContent>
@@ -156,8 +156,8 @@ const ClientCard = ({ client, onSelect, ...props }: { client: Client, onSelect: 
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-yellow-500 hover:text-yellow-500 hover:bg-yellow-500/10" onClick={(e) => e.stopPropagation()}>
-                                        <TestTube className="h-5 w-5" />
+                                    <Button variant="ghost" size="icon" className="h-6 w-6 text-yellow-500 hover:text-yellow-500 hover:bg-yellow-500/10" onClick={(e) => e.stopPropagation()}>
+                                        <TestTube className="h-4 w-4" />
                                     </Button>
                                 </TooltipTrigger>
                                 <TooltipContent><p>{t('clientWithActiveTest')}</p></TooltipContent>
@@ -168,8 +168,8 @@ const ClientCard = ({ client, onSelect, ...props }: { client: Client, onSelect: 
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-yellow-500 hover:text-yellow-500 hover:bg-yellow-500/10" onClick={(e) => e.stopPropagation()}>
-                                        <AlertTriangle className="h-5 w-5" />
+                                    <Button variant="ghost" size="icon" className="h-6 w-6 text-yellow-500 hover:text-yellow-500 hover:bg-yellow-500/10" onClick={(e) => e.stopPropagation()}>
+                                        <AlertTriangle className="h-4 w-4" />
                                     </Button>
                                 </TooltipTrigger>
                                 <TooltipContent><p>{t('pendingAppsWarning')}</p></TooltipContent>
@@ -179,9 +179,9 @@ const ClientCard = ({ client, onSelect, ...props }: { client: Client, onSelect: 
                 </div>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0" onClick={(e) => e.stopPropagation()}>
+                        <Button variant="ghost" className="h-7 w-7 p-0" onClick={(e) => e.stopPropagation()}>
                             <span className="sr-only">{t('openMenu')}</span>
-                            <MoreHorizontal className="h-5 w-5" />
+                            <MoreHorizontal className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
@@ -200,10 +200,10 @@ const ClientCard = ({ client, onSelect, ...props }: { client: Client, onSelect: 
                     </DropdownMenuContent>
                 </DropdownMenu>
             </CardHeader>
-            <CardContent className="grid grid-cols-3 gap-4 text-sm p-4 pt-0">
+            <CardContent className="grid grid-cols-3 gap-4 text-xs p-3 pt-0">
                 <div>
                     <p className="text-muted-foreground font-semibold">{t('clientStatus')}</p>
-                    <Badge variant={getStatusVariant(client.status)} className="mt-1">
+                    <Badge variant={getStatusVariant(client.status)} className="mt-1 text-xs">
                         {t(client.status.toLowerCase() as any)}
                     </Badge>
                 </div>
