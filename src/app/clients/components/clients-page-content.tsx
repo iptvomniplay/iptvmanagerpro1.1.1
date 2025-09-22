@@ -137,7 +137,7 @@ const ClientCard = ({ client, onSelect, ...props }: { client: Client, onSelect: 
             style={{ boxShadow: `0 0 23px 0px ${glowColor}` }}
             {...props}
         >
-            <CardHeader className="flex flex-row items-start justify-between p-6 pb-2">
+            <CardHeader className="flex flex-row items-start justify-between p-4 pb-2">
                 <div className="flex items-center gap-3">
                     <CardTitle className="text-lg">{client.name}</CardTitle>
                     {hasOrphanedPlan(client) && (
@@ -200,7 +200,7 @@ const ClientCard = ({ client, onSelect, ...props }: { client: Client, onSelect: 
                     </DropdownMenuContent>
                 </DropdownMenu>
             </CardHeader>
-            <CardContent className="grid grid-cols-3 gap-4 text-sm p-0 px-6 pb-4">
+            <CardContent className="grid grid-cols-3 gap-4 text-sm p-0 px-4 pb-4">
                 <div>
                     <p className="text-muted-foreground font-semibold">{t('clientStatus')}</p>
                     <Badge variant={getStatusVariant(client.status)} className="mt-1">
@@ -557,6 +557,7 @@ export default function ClientsPageContent() {
     </>
   );
 }
+
 
 
 
