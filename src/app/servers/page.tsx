@@ -231,10 +231,10 @@ export default function ServersPage() {
                      </div>
                   </CardContent>
                   <CardFooter className="flex gap-2">
-                      <Button variant="outline" className="flex-1" onClick={() => handleOpenTransactionModal(server)}>
+                      <Button variant="outline" onClick={() => handleOpenTransactionModal(server)}>
                           {t('manage')}
                       </Button>
-                      <Button className="flex-1" onClick={() => handleOpenDetails(server)}>
+                      <Button onClick={() => handleOpenDetails(server)}>
                           {t('details')}
                       </Button>
                   </CardFooter>
