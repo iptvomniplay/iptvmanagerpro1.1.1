@@ -39,7 +39,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-const ServerRatingDisplay = ({ server, onClick }: { server: Server, onClick: () => void }) => {
+const ServerRatingDisplay = ({ server }: { server: Server }) => {
   const { t } = useLanguage();
   const { ratings } = server;
   if (!ratings) {
@@ -58,7 +58,7 @@ const ServerRatingDisplay = ({ server, onClick }: { server: Server, onClick: () 
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <button onClick={onClick} className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <div className="flex items-center">
               {[...Array(5)].map((_, i) => {
                 const starValue = i + 1;
@@ -79,7 +79,7 @@ const ServerRatingDisplay = ({ server, onClick }: { server: Server, onClick: () 
               })}
             </div>
             <span className="font-bold text-base">{averageRating.toFixed(2)}</span>
-          </button>
+          </div>
         </TooltipTrigger>
         <TooltipContent>
           <p>{t('average')}: {averageRating.toFixed(2)}</p>
@@ -255,7 +255,7 @@ export default function ServersPage() {
                                     </div>
                                   </TableCell>
                                   <TableCell onClick={(e) => e.stopPropagation()}>
-                                    <ServerRatingDisplay server={server} onClick={() => handleRowClick(server)} />
+                                    <ServerRatingDisplay server={server} />
                                   </TableCell>
                                   <TableCell className="text-right p-4" onClick={(e) => e.stopPropagation()}>
                                     <DropdownMenu>
