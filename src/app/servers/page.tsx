@@ -201,28 +201,13 @@ export default function ServersPage() {
                     key={server.id} 
                     className="flex flex-col [box-shadow:0_0_23px_0px_rgba(255,255,255,0.6)]"
                 >
-                  <CardHeader className="flex flex-row items-start justify-between">
-                      <div>
+                  <CardHeader>
+                      <div className="flex items-start justify-between">
                         <CardTitle className="text-lg">{server.name}</CardTitle>
-                        <Badge variant={getStatusVariant(server.status)} className="mt-2 text-sm">
-                           {t(server.status.toLowerCase().replace(' ', '') as any)}
-                        </Badge>
                       </div>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
-                                <MoreVertical className="h-5 w-5"/>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-                           <DropdownMenuItem onClick={() => handleEdit(server)}>
-                                {t('edit')}
-                            </DropdownMenuItem>
-                             <DropdownMenuItem onClick={() => handleDeleteRequest(server)} className="text-destructive focus:text-destructive">
-                                {t('delete')}
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <Badge variant={getStatusVariant(server.status)} className="mt-2 text-sm w-fit">
+                         {t(server.status.toLowerCase().replace(' ', '') as any)}
+                      </Badge>
                   </CardHeader>
                   <CardContent className="flex-1 space-y-4">
                      <div className="flex items-center justify-between text-sm text-muted-foreground">
@@ -241,13 +226,28 @@ export default function ServersPage() {
                   </CardContent>
                   <CardFooter className="flex justify-end gap-2">
                       <Button variant="outline" size="icon" onClick={() => handleOpenDetails(server)}>
-                          <MoreVertical />
+                          <Eye />
                           <span className="sr-only">{t('details')}</span>
                       </Button>
                       <Button variant="outline" size="icon" onClick={() => handleOpenTransactionModal(server)}>
                           <Settings />
                           <span className="sr-only">{t('manage')}</span>
                       </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                           <Button variant="outline" size="icon">
+                                <MoreVertical className="h-5 w-5"/>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                           <DropdownMenuItem onClick={() => handleEdit(server)}>
+                                {t('edit')}
+                            </DropdownMenuItem>
+                             <DropdownMenuItem onClick={() => handleDeleteRequest(server)} className="text-destructive focus:text-destructive">
+                                {t('delete')}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                   </CardFooter>
                 </Card>
               )
