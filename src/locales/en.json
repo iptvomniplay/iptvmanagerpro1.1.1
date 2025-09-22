@@ -571,5 +571,7 @@
     "average": "Average",
     "Diário": "Daily",
     "Mensal": "Monthly",
-    "Anual": "Yearly"
+    "Anual": "Yearly",
+    "financialSettingsDescription": "Configure a visualização padrão para seus dados financeiros.",
+    "period": "Period"
 }

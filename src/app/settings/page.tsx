@@ -19,7 +19,7 @@ import { useTheme } from 'next-themes';
 import { useEffect, useState, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
-import { useDashboardSettings, DashboardPeriod } from '@/hooks/use-dashboard-settings';
+import { useDashboardSettings, DashboardPeriod, FinancialPeriodFilter, FinancialTypeFilter } from '@/hooks/use-dashboard-settings';
 import { ReportModal, SelectedReportsState, reportConfig, ReportKey } from './components/report-modal';
 import { ReportDisplayModal, GeneratedReportData } from './components/report-display-modal';
 import { useData } from '@/hooks/use-data';
@@ -48,7 +48,12 @@ export default function SettingsPage() {
   const [isImportAlertOpen, setIsImportAlertOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  const { newSubscriptionsPeriod, setNewSubscriptionsPeriod, expirationWarningDays, setExpirationWarningDays } = useDashboardSettings();
+  const { 
+    newSubscriptionsPeriod, setNewSubscriptionsPeriod, 
+    expirationWarningDays, setExpirationWarningDays,
+    financialPeriodFilter, setFinancialPeriodFilter,
+    financialTypeFilter, setFinancialTypeFilter
+  } = useDashboardSettings();
 
   useEffect(() => {
     setMounted(true);
@@ -236,6 +241,19 @@ export default function SettingsPage() {
     { value: 'last_30_days', label: t('last30Days') },
     { value: 'this_year', label: t('thisYear') },
   ];
+
+  const financialPeriodOptions: { value: FinancialPeriodFilter; label: string }[] = [
+    { value: 'daily', label: t('Diário') },
+    { value: 'monthly', label: t('Mensal') },
+    { value: 'yearly', label: t('Anual') },
+  ];
+  
+  const financialTypeOptions: { value: FinancialTypeFilter; label: string }[] = [
+      { value: 'all', label: t('all') },
+      { value: 'income', label: t('income') },
+      { value: 'expense', label: t('expense') },
+  ];
+
 
   if (!mounted) {
     return null;
@@ -440,6 +458,48 @@ export default function SettingsPage() {
                     <span className="text-muted-foreground">{t('days')}</span>
                  </div>
                  <p className="text-sm text-muted-foreground">{t('expirationWarningDescription')}</p>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="p-8">
+              <CardTitle className="text-2xl">{t('financial')}</CardTitle>
+              <CardDescription className="text-lg">
+                {t('financialSettingsDescription')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-8 p-8 pt-0">
+               <div className="space-y-4">
+                <Label className="text-lg">{t('period')}</Label>
+                 <RadioGroup
+                    value={financialPeriodFilter}
+                    onValueChange={(value) => setFinancialPeriodFilter(value as FinancialPeriodFilter)}
+                    className="space-y-2"
+                  >
+                  {financialPeriodOptions.map(option => (
+                     <div className="flex items-center space-x-2" key={option.value}>
+                       <RadioGroupItem value={option.value} id={`financial-period-${option.value}`} />
+                       <Label htmlFor={`financial-period-${option.value}`} className="text-base font-normal cursor-pointer">{option.label}</Label>
+                     </div>
+                  ))}
+                 </RadioGroup>
+              </div>
+              <Separator/>
+              <div className="space-y-4">
+                <Label className="text-lg">{t('type')}</Label>
+                 <RadioGroup
+                    value={financialTypeFilter}
+                    onValueChange={(value) => setFinancialTypeFilter(value as FinancialTypeFilter)}
+                    className="space-y-2"
+                  >
+                  {financialTypeOptions.map(option => (
+                     <div className="flex items-center space-x-2" key={option.value}>
+                       <RadioGroupItem value={option.value} id={`financial-type-${option.value}`} />
+                       <Label htmlFor={`financial-type-${option.value}`} className="text-base font-normal cursor-pointer">{option.label}</Label>
+                     </div>
+                  ))}
+                 </RadioGroup>
               </div>
             </CardContent>
           </Card>
