@@ -26,15 +26,17 @@ const defaultPalette = [
 // Funções de conversão de cor
 const hexToRgb = (hex: string) => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result ? {
+  if (!result) return { r: 0, g: 0, b: 0 };
+  return {
     r: parseInt(result[1], 16),
     g: parseInt(result[2], 16),
     b: parseInt(result[3], 16),
-  } : { r: 0, g: 0, b: 0 };
+  };
 };
 
 const rgbToHex = (r: number, g: number, b: number) => {
-  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toLowerCase();
+  const toHex = (c: number) => `0${c.toString(16)}`.slice(-2);
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 };
 
 const rgbToHsl = (r: number, g: number, b: number) => {
@@ -64,7 +66,6 @@ const hslToRgb = (h: number, s: number, l: number) => {
     return { r: Math.round(255 * f(0)), g: Math.round(255 * f(8)), b: Math.round(255 * f(4)) };
 };
 
-
 interface NoteModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -82,6 +83,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
   
   const [rgb, setRgb] = React.useState({ r: 253, g: 224, b: 71 });
   const [hsl, setHsl] = React.useState({ h: 54, s: 97, l: 64 });
+  const [hexInput, setHexInput] = React.useState('#fde047');
 
   React.useEffect(() => {
     try {
@@ -97,17 +99,19 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
     }
   }, []);
   
-  const updateAllColorStates = (hex: string) => {
-    const validHex = /^#([A-Fa-f0-9]{6})$/i.test(hex);
+  const updateAllColorStates = React.useCallback((newColor: string) => {
+    const validHex = /^#([A-Fa-f0-9]{6})$/i.test(newColor);
     if (!validHex) return;
     
-    const newRgb = hexToRgb(hex);
+    const newRgb = hexToRgb(newColor);
     const newHsl = rgbToHsl(newRgb.r, newRgb.g, newRgb.b);
 
-    setSelectedColor(hex);
+    setSelectedColor(newColor);
+    setHexInput(newColor);
     setRgb(newRgb);
     setHsl(newHsl);
-  };
+  }, []);
+
 
   React.useEffect(() => {
     if (isOpen) {
@@ -116,7 +120,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
       updateAllColorStates(initialColor);
       setIsEditingPalette(false);
     }
-  }, [isOpen, note, favoriteColors]);
+  }, [isOpen, note, favoriteColors, updateAllColorStates]);
 
   const saveFavoritesToStorage = (colors: string[]) => {
     localStorage.setItem('notepad_favorite_colors', JSON.stringify(colors));
@@ -145,7 +149,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
   
   const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newHex = e.target.value;
-    setSelectedColor(newHex); // Update immediately for responsiveness
+    setHexInput(newHex);
     if (/^#([A-Fa-f0-9]{6})$/.test(newHex)) {
       updateAllColorStates(newHex);
     }
@@ -156,8 +160,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
     const newRgb = { ...rgb, [channel]: numValue };
     setRgb(newRgb);
     const newHex = rgbToHex(newRgb.r, newRgb.g, newRgb.b);
-    setSelectedColor(newHex);
-    setHsl(rgbToHsl(newRgb.r, newRgb.g, newRgb.b));
+    updateAllColorStates(newHex);
   };
 
   const handleHslChange = (channel: 'h' | 's' | 'l', value: string) => {
@@ -166,9 +169,8 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
     const newHsl = { ...hsl, [channel]: numValue };
     setHsl(newHsl);
     const newRgb = hslToRgb(newHsl.h, newHsl.s, newHsl.l);
-    setRgb(newRgb);
     const newHex = rgbToHex(newRgb.r, newRgb.g, newRgb.b);
-    setSelectedColor(newHex);
+    updateAllColorStates(newHex);
   };
   
   const handleColorSwatchClick = (color: string) => {
@@ -221,7 +223,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
                   </RadioGroup>
                   
                   {colorMode === 'hex' && (
-                    <Input type="text" value={selectedColor} onChange={handleHexChange} className="font-mono" />
+                    <Input type="text" value={hexInput} onChange={handleHexChange} className="font-mono" />
                   )}
                   {colorMode === 'rgb' && (
                     <div className="grid grid-cols-3 gap-2">
