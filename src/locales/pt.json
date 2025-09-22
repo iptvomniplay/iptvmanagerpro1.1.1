@@ -559,5 +559,6 @@
     "backupImportFailed": "Falha na Importação",
     "backupImportFailedDescription": "O arquivo selecionado é inválido ou está corrompido. Tente novamente com um arquivo de backup válido.",
     "printNotes": "Imprimir Anotações",
-    "printNotesDescription": "Visualize e imprima todas as suas anotações."
+    "printNotesDescription": "Visualize e imprima suas anotações selecionadas.",
+    "selectNotesToPrint": "Selecione quais anotações você deseja imprimir."
 }

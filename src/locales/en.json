@@ -559,5 +559,6 @@
     "backupImportFailed": "Import Failed",
     "backupImportFailedDescription": "The selected file is invalid or corrupted. Please try again with a valid backup file.",
     "printNotes": "Print Notes",
-    "printNotesDescription": "View and print all your notes."
+    "printNotesDescription": "View and print your selected notes.",
+    "selectNotesToPrint": "Select which notes you want to print."
 }
