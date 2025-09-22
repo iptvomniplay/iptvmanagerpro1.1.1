@@ -3,13 +3,13 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
-    const { history } = await req.json();
+    const body = await req.json();
 
-    if (!history) {
+    if (!body.history) {
       return NextResponse.json({ error: 'History is required' }, { status: 400 });
     }
 
-    const response = await assistantFlow({ history });
+    const response = await assistantFlow(body);
 
     return NextResponse.json({ message: response });
   } catch (error) {
