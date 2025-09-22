@@ -43,6 +43,7 @@ import { Button } from '@/components/ui/button';
 import { EntryModal } from './components/entry-modal';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useDashboardSettings } from '@/hooks/use-dashboard-settings';
+import { cn } from '@/lib/utils';
 
 export default function FinancialPage() {
   const { t, language } = useLanguage();
@@ -56,6 +57,7 @@ export default function FinancialPage() {
   const [entryToDelete, setEntryToDelete] = React.useState<CashFlowEntry | null>(null);
 
   const [isFinancialDataVisible, setIsFinancialDataVisible] = React.useState(false);
+  const [visibleEntries, setVisibleEntries] = React.useState<Set<string>>(new Set());
 
   const allEntries = React.useMemo(() => {
     return [...cashFlow].sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime());
@@ -131,11 +133,23 @@ export default function FinancialPage() {
     }
   };
   
-  const formatCurrency = (value: number) => {
-    if (!isFinancialDataVisible) return '•••••';
+  const formatCurrency = (value: number, isVisible: boolean) => {
+    if (!isVisible) return '•••••';
     const locale = language === 'pt-BR' ? 'pt-BR' : 'en-US';
     const currency = language === 'pt-BR' ? 'BRL' : 'USD';
     return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(value);
+  };
+
+  const toggleEntryVisibility = (entryId: string) => {
+    setVisibleEntries(prev => {
+        const newSet = new Set(prev);
+        if (newSet.has(entryId)) {
+            newSet.delete(entryId);
+        } else {
+            newSet.add(entryId);
+        }
+        return newSet;
+    });
   };
 
   return (
@@ -170,7 +184,7 @@ export default function FinancialPage() {
               <ArrowUp className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-500">{formatCurrency(totalRevenue)}</div>
+              <div className="text-2xl font-bold text-green-500">{formatCurrency(totalRevenue, isFinancialDataVisible)}</div>
             </CardContent>
           </Card>
           <Card>
@@ -179,7 +193,7 @@ export default function FinancialPage() {
               <ArrowDown className="h-4 w-4 text-red-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-500">{formatCurrency(totalExpenses)}</div>
+              <div className="text-2xl font-bold text-red-500">{formatCurrency(totalExpenses, isFinancialDataVisible)}</div>
             </CardContent>
           </Card>
            <Card>
@@ -188,7 +202,7 @@ export default function FinancialPage() {
               <Landmark className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(netBalance)}</div>
+              <div className="text-2xl font-bold">{formatCurrency(netBalance, isFinancialDataVisible)}</div>
             </CardContent>
           </Card>
           <Card>
@@ -224,37 +238,43 @@ export default function FinancialPage() {
                   {filteredEntries.length > 0 ? (
                     filteredEntries.map((entry) => {
                       const isAutomated = entry.sourceServerId || entry.sourceTransactionId;
+                      const isEntryVisible = isFinancialDataVisible || visibleEntries.has(entry.id);
                       return (
                       <TableRow key={entry.id}>
                         <TableCell>{format(parseISO(entry.date), 'dd/MM/yyyy')}</TableCell>
                         <TableCell className="font-medium">{entry.description}</TableCell>
                         <TableCell className="text-right">
                           <Badge variant={entry.type === 'income' ? 'success' : 'destructive'}>
-                            {entry.type === 'expense' && isFinancialDataVisible && '- '}{formatCurrency(entry.amount)}
+                            {entry.type === 'expense' && isEntryVisible && '- '}{formatCurrency(entry.amount, isEntryVisible)}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                  <span className="sr-only">{t('openMenu')}</span>
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handleOpenModal(entry)}>
-                                  <Edit className="mr-2 h-4 w-4" />
-                                  {t('edit')}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => handleDeleteRequest(entry)}
-                                  className="text-destructive focus:text-destructive"
-                                >
-                                  <Trash2 className="mr-2 h-4 w-4" />
-                                  {t('delete')}
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                            <div className="flex justify-end items-center gap-1">
+                               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toggleEntryVisibility(entry.id)}>
+                                {isEntryVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                               </Button>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                      <span className="sr-only">{t('openMenu')}</span>
+                                      <MoreHorizontal className="h-4 w-4" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => handleOpenModal(entry)}>
+                                      <Edit className="mr-2 h-4 w-4" />
+                                      {t('edit')}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                      onClick={() => handleDeleteRequest(entry)}
+                                      className="text-destructive focus:text-destructive"
+                                    >
+                                      <Trash2 className="mr-2 h-4 w-4" />
+                                      {t('delete')}
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
                         </TableCell>
                       </TableRow>
                     )})
@@ -294,3 +314,5 @@ export default function FinancialPage() {
     </>
   );
 }
+
+    
