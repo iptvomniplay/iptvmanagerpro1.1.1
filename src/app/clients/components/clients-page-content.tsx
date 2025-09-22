@@ -384,8 +384,9 @@ export default function ClientsPageContent() {
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Button 
+                            variant="link"
                             onClick={() => handleViewDetails(client)} 
-                            className="p-2 h-auto font-semibold text-base justify-start"
+                            className="p-0 h-auto font-semibold text-base justify-start text-primary"
                         >
                           {client.name}
                         </Button>
