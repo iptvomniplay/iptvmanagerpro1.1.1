@@ -4,6 +4,8 @@ import React, { createContext, useContext, useState, useCallback, ReactNode, use
 import type { Client, Server, Test, SelectedPlan, Transaction, TransactionType, CashFlowEntry } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
 import { clients as initialClients, servers as initialServers } from '@/lib/data';
+import { useToast } from './use-toast';
+import { useLanguage } from './use-language';
 
 interface DataContextType {
   clients: Client[];
@@ -29,6 +31,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [servers, setServers] = useState<Server[]>([]);
   const [cashFlow, setCashFlow] = useState<CashFlowEntry[]>([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const { toast } = useToast();
+  const { t } = useLanguage();
 
   useEffect(() => {
     try {
@@ -365,12 +369,27 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const addTransactionToServer = useCallback((serverId: string, transactionData: Omit<Transaction, 'id' | 'date'>) => {
     let serverName = '';
+    let currentStock = 0;
+    const server = servers.find(s => s.id === serverId);
+    if (server) {
+      serverName = server.name;
+      currentStock = server.creditStock;
+    }
+
+    if (currentStock + transactionData.credits < 0) {
+        toast({
+            variant: "destructive",
+            title: t('validationError'),
+            description: 'Operação não permitida. O estoque de créditos não pode ser negativo.',
+        });
+        return;
+    }
+
     const newTransactionId = `trans_${Date.now()}_${Math.random()}`;
 
     setServers(prevServers => {
       const updatedServers = prevServers.map(server => {
         if (server.id === serverId) {
-          serverName = server.name;
           const newTransaction: Transaction = {
             ...transactionData,
             id: newTransactionId,
@@ -401,7 +420,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         sourceTransactionId: newTransactionId,
       });
     }
-  }, [addCashFlowEntry]);
+  }, [addCashFlowEntry, servers, t, toast]);
 
   const value = {
     clients,
@@ -430,3 +449,5 @@ export const useData = (): DataContextType => {
   }
   return context;
 };
+
+    
