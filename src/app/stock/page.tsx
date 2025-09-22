@@ -6,15 +6,27 @@ import { useData } from '@/hooks/use-data';
 import type { Server, Transaction } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Settings } from 'lucide-react';
+import { Settings, MoreVertical, FilePenLine, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { TransactionModal } from './components/transaction-modal';
+import { useRouter } from 'next/navigation';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { DeleteServerAlert } from '../servers/components/delete-server-alert';
+
 
 export default function StockPage() {
   const { t } = useLanguage();
-  const { servers, addTransactionToServer } = useData();
+  const { servers, addTransactionToServer, deleteServer } = useData();
+  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [selectedServer, setSelectedServer] = React.useState<Server | null>(null);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = React.useState(false);
+  const [serverToDelete, setServerToDelete] = React.useState<Server | null>(null);
 
   const handleOpenModal = (server: Server) => {
     setSelectedServer(server);
@@ -29,6 +41,23 @@ export default function StockPage() {
   const handleAddTransaction = (transaction: Omit<Transaction, 'id' | 'date'>) => {
     if (!selectedServer) return;
     addTransactionToServer(selectedServer.id, transaction);
+  };
+
+  const handleEdit = (server: Server) => {
+    router.push(`/servers/${server.id}/edit`);
+  };
+  
+  const handleDeleteRequest = (server: Server) => {
+    setServerToDelete(server);
+    setIsDeleteAlertOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (serverToDelete) {
+      deleteServer(serverToDelete.id);
+    }
+    setIsDeleteAlertOpen(false);
+    setServerToDelete(null);
   };
 
 
@@ -53,9 +82,27 @@ export default function StockPage() {
                 >
                     <CardHeader className="flex flex-row items-center justify-between p-4 pb-2">
                         <CardTitle className="text-base">{server.name}</CardTitle>
-                        <Button variant="ghost" size="icon" onClick={() => handleOpenModal(server)}>
-                            <Settings className="h-8 w-8" />
-                        </Button>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                    <MoreVertical className="h-5 w-5"/>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => handleOpenModal(server)}>
+                                    <Settings className="mr-2 h-4 w-4" />
+                                    {t('stockManagement')}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleEdit(server)}>
+                                    <FilePenLine className="mr-2 h-4 w-4" />
+                                    {t('edit')}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleDeleteRequest(server)} className="text-destructive focus:text-destructive">
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    {t('delete')}
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </CardHeader>
                     <CardContent className="grid grid-cols-2 gap-4 p-4 pt-0 text-sm">
                         <div>
@@ -81,6 +128,14 @@ export default function StockPage() {
           onClose={handleCloseModal}
           server={selectedServer}
           onAddTransaction={handleAddTransaction}
+        />
+      )}
+       {serverToDelete && (
+        <DeleteServerAlert
+          isOpen={isDeleteAlertOpen}
+          onClose={() => setIsDeleteAlertOpen(false)}
+          onConfirm={confirmDelete}
+          serverName={serverToDelete.name}
         />
       )}
     </>
