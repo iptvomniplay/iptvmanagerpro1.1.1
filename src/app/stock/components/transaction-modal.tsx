@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -31,6 +32,7 @@ import { format, parseISO } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { CreditPurchaseModal } from './credit-purchase-modal';
 import { ManualAdjustmentModal } from './manual-adjustment-modal';
+import { useData } from '@/hooks/use-data';
 
 
 interface TransactionModalProps {
@@ -40,12 +42,15 @@ interface TransactionModalProps {
   onAddTransaction: (transaction: Omit<Transaction, 'id' | 'date'>) => void;
 }
 
-export function TransactionModal({ isOpen, onClose, server, onAddTransaction }: TransactionModalProps) {
+export function TransactionModal({ isOpen, onClose, server: initialServer, onAddTransaction }: TransactionModalProps) {
   const { t, language } = useLanguage();
+  const { servers } = useData();
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = React.useState(false);
   const [isAdjustmentModalOpen, setIsAdjustmentModalOpen] = React.useState(false);
   const [isReversalAlertOpen, setIsReversalAlertOpen] = React.useState(false);
   const [transactionToReverse, setTransactionToReverse] = React.useState<Transaction | null>(null);
+
+  const server = servers.find(s => s.id === initialServer.id) || initialServer;
 
   const transactions = [...(server.transactions || [])].sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime());
 
