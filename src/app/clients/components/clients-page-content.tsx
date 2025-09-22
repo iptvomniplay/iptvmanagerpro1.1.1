@@ -137,7 +137,7 @@ const ClientCard = ({ client, onSelect, ...props }: { client: Client, onSelect: 
             style={{ boxShadow: `0 0 23px 0px ${glowColor}` }}
             {...props}
         >
-            <CardHeader className="flex flex-row items-start justify-between p-3 pb-2">
+            <CardHeader className="flex flex-row items-center justify-between p-3 pb-2">
                 <div className="flex items-center gap-2">
                     <CardTitle className="text-base">{client.name}</CardTitle>
                     {hasOrphanedPlan(client) && (
@@ -200,19 +200,19 @@ const ClientCard = ({ client, onSelect, ...props }: { client: Client, onSelect: 
                     </DropdownMenuContent>
                 </DropdownMenu>
             </CardHeader>
-            <CardContent className="grid grid-cols-3 gap-4 text-xs p-3 pt-0">
-                <div>
-                    <p className="text-muted-foreground font-semibold">{t('clientStatus')}</p>
+            <CardContent className="grid grid-cols-3 gap-2 text-xs p-3 pt-0">
+                 <div>
+                    <p className="text-muted-foreground font-semibold text-xs">{t('clientStatus')}</p>
                     <Badge variant={getStatusVariant(client.status)} className="mt-1 text-xs">
                         {t(client.status.toLowerCase() as any)}
                     </Badge>
                 </div>
-                <div>
-                    <p className="text-muted-foreground font-semibold">{t('clientID')}</p>
-                    <p className="font-medium">{client.id || t('noId')}</p>
+                 <div>
+                    <p className="text-muted-foreground font-semibold text-xs">{t('clientID')}</p>
+                    <p className="font-medium text-xs">{client.id || t('noId')}</p>
                 </div>
-                <div>
-                    <p className="text-muted-foreground font-semibold">{t('expiresIn')}</p>
+                 <div>
+                    <p className="text-muted-foreground font-semibold text-xs">{t('expiresIn')}</p>
                     <div className="mt-1" onClick={(e) => e.stopPropagation()}>
                         {client.status === 'Active' && client.plans && client.plans.length > 0 ? (
                             <ClientExpiration
