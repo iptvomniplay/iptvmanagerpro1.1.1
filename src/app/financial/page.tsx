@@ -38,7 +38,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { DollarSign, ArrowDownUp, ArrowUp, ArrowDown, Landmark, MoreHorizontal, Edit, Trash2, Eye, EyeOff } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, isWithinInterval, startOfDay, endOfDay, startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { EntryModal } from './components/entry-modal';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -53,27 +53,50 @@ export default function FinancialPage() {
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = React.useState(false);
   const [entryToDelete, setEntryToDelete] = React.useState<CashFlowEntry | null>(null);
 
-  const [filter, setFilter] = React.useState<'all' | 'income' | 'expense'>('all');
+  const [periodFilter, setPeriodFilter] = React.useState<'daily' | 'monthly' | 'yearly'>('daily');
+  const [typeFilter, setTypeFilter] = React.useState<'all' | 'income' | 'expense'>('all');
   const [isFinancialDataVisible, setIsFinancialDataVisible] = React.useState(false);
 
   const allEntries = React.useMemo(() => {
     return [...cashFlow].sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime());
   }, [cashFlow]);
+  
+  const entriesForPeriod = React.useMemo(() => {
+    const now = new Date();
+    let interval: Interval;
+
+    switch (periodFilter) {
+      case 'daily':
+        interval = { start: startOfDay(now), end: endOfDay(now) };
+        break;
+      case 'monthly':
+        interval = { start: startOfMonth(now), end: endOfMonth(now) };
+        break;
+      case 'yearly':
+        interval = { start: startOfYear(now), end: endOfYear(now) };
+        break;
+      default:
+        interval = { start: new Date(0), end: now }; // Should not happen
+    }
+
+    return allEntries.filter(entry => isWithinInterval(parseISO(entry.date), interval));
+  }, [allEntries, periodFilter]);
+
 
   const filteredEntries = React.useMemo(() => {
-    if (filter === 'all') {
-      return allEntries;
+    if (typeFilter === 'all') {
+      return entriesForPeriod;
     }
-    return allEntries.filter(entry => entry.type === filter);
-  }, [allEntries, filter]);
+    return entriesForPeriod.filter(entry => entry.type === typeFilter);
+  }, [entriesForPeriod, typeFilter]);
 
   const totalRevenue = React.useMemo(() => {
-    return allEntries.filter(e => e.type === 'income').reduce((sum, entry) => sum + entry.amount, 0);
-  }, [allEntries]);
+    return entriesForPeriod.filter(e => e.type === 'income').reduce((sum, entry) => sum + entry.amount, 0);
+  }, [entriesForPeriod]);
 
   const totalExpenses = React.useMemo(() => {
-    return allEntries.filter(e => e.type === 'expense').reduce((sum, entry) => sum + entry.amount, 0);
-  }, [allEntries]);
+    return entriesForPeriod.filter(e => e.type === 'expense').reduce((sum, entry) => sum + entry.amount, 0);
+  }, [entriesForPeriod]);
   
   const netBalance = totalRevenue - totalExpenses;
 
@@ -176,7 +199,7 @@ export default function FinancialPage() {
               <ArrowDownUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{allEntries.length}</div>
+              <div className="text-2xl font-bold">{filteredEntries.length}</div>
             </CardContent>
           </Card>
         </div>
@@ -187,7 +210,14 @@ export default function FinancialPage() {
             <CardDescription>{t('cashFlowEntriesDescription')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs value={filter} onValueChange={(value) => setFilter(value as any)} className="w-full">
+             <Tabs value={periodFilter} onValueChange={(value) => setPeriodFilter(value as any)} className="w-full mb-4">
+                <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="daily">{t('Diário')}</TabsTrigger>
+                    <TabsTrigger value="monthly">{t('Mensal')}</TabsTrigger>
+                    <TabsTrigger value="yearly">{t('Anual')}</TabsTrigger>
+                </TabsList>
+            </Tabs>
+            <Tabs value={typeFilter} onValueChange={(value) => setTypeFilter(value as any)} className="w-full">
                 <TabsList className="grid w-full grid-cols-3 mb-4">
                     <TabsTrigger value="all">{t('all')}</TabsTrigger>
                     <TabsTrigger value="income">{t('income')}</TabsTrigger>

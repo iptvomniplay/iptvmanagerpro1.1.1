@@ -568,5 +568,8 @@
     "Estabilidade": "Stability",
     "Valor": "Value",
     "reputation": "Reputation",
-    "average": "Average"
+    "average": "Average",
+    "Diário": "Daily",
+    "Mensal": "Monthly",
+    "Anual": "Yearly"
 }
