@@ -6,7 +6,7 @@ import type { Server } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { PlusCircle, Search, ChevronDown, Server as ServerIcon, Settings, Users, Star, MoreVertical, Eye, EyeOff } from 'lucide-react';
+import { PlusCircle, Search, ChevronDown, Server as ServerIcon, Settings, Users, Star, MoreVertical, Eye, EyeOff, FilePenLine, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
 import { useData } from '@/hooks/use-data';
@@ -19,11 +19,13 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { ServerDetailsModal } from './components/server-details-modal';
 import { DeleteServerAlert } from './components/delete-server-alert';
@@ -100,6 +102,8 @@ export default function ServersPage() {
   const [isTransactionModalOpen, setIsTransactionModalOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [isClientCountVisible, setIsClientCountVisible] = React.useState(false);
+  const [isActionModalOpen, setIsActionModalOpen] = React.useState(false);
+  const [serverForAction, setServerForAction] = React.useState<Server | null>(null);
 
   const filteredServers = servers.filter((server) => {
     const normalizedSearchTerm = normalizeString(searchTerm);
@@ -157,6 +161,11 @@ export default function ServersPage() {
   const handleOpenTransactionModal = (server: Server) => {
     setSelectedServer(server);
     setIsTransactionModalOpen(true);
+  }
+  
+  const handleOpenActionModal = (server: Server) => {
+    setServerForAction(server);
+    setIsActionModalOpen(true);
   }
 
   return (
@@ -229,24 +238,9 @@ export default function ServersPage() {
                           <Settings />
                           <span className="sr-only">{t('manage')}</span>
                       </Button>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                           <Button variant="outline" size="icon">
-                                <MoreVertical className="h-5 w-5"/>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-                           <DropdownMenuItem onClick={() => handleOpenDetails(server)}>
-                                {t('details')}
-                            </DropdownMenuItem>
-                           <DropdownMenuItem onClick={() => handleEdit(server)}>
-                                {t('edit')}
-                            </DropdownMenuItem>
-                             <DropdownMenuItem onClick={() => handleDeleteRequest(server)} className="text-destructive focus:text-destructive">
-                                {t('delete')}
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <Button variant="outline" size="icon" onClick={() => handleOpenActionModal(server)}>
+                          <MoreVertical className="h-5 w-5"/>
+                      </Button>
                   </CardFooter>
                 </Card>
               )
@@ -292,6 +286,30 @@ export default function ServersPage() {
           server={selectedServer}
           onAddTransaction={handleAddTransaction}
         />
+      )}
+      
+      {serverForAction && (
+        <Dialog open={isActionModalOpen} onOpenChange={setIsActionModalOpen}>
+            <DialogContent className="sm:max-w-xs">
+                <DialogHeader>
+                    <DialogTitle>{t('actions')} para {serverForAction.name}</DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-col gap-2 py-4">
+                    <Button variant="outline" onClick={() => { handleOpenDetails(serverForAction); setIsActionModalOpen(false); }}>
+                        <Eye className="mr-2 h-4 w-4" />
+                        {t('details')}
+                    </Button>
+                    <Button variant="outline" onClick={() => { handleEdit(serverForAction); setIsActionModalOpen(false); }}>
+                        <FilePenLine className="mr-2 h-4 w-4" />
+                        {t('edit')}
+                    </Button>
+                    <Button variant="destructive" onClick={() => { handleDeleteRequest(serverForAction); setIsActionModalOpen(false); }}>
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        {t('delete')}
+                    </Button>
+                </div>
+            </DialogContent>
+        </Dialog>
       )}
     </>
   );
