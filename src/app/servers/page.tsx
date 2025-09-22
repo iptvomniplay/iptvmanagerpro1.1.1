@@ -229,9 +229,11 @@ export default function ServersPage() {
                                 client.plans?.some(plan => plan.panel.id === server.id)
                             ).length;
                             return (
-                                <TableRow key={server.id} onClick={() => handleRowClick(server)} className="cursor-pointer">
+                                <TableRow key={server.id}>
                                   <TableCell className="font-medium p-4">
-                                    {server.name}
+                                     <Button variant="outline" className="h-auto font-semibold" onClick={() => handleRowClick(server)}>
+                                        {server.name}
+                                     </Button>
                                   </TableCell>
                                   <TableCell>
                                     <DropdownMenu>
@@ -254,8 +256,10 @@ export default function ServersPage() {
                                       <span className="font-semibold">{clientCount}</span>
                                     </div>
                                   </TableCell>
-                                  <TableCell onClick={(e) => e.stopPropagation()}>
-                                    <ServerRatingDisplay server={server} />
+                                  <TableCell onClick={(e) => { e.stopPropagation(); handleRowClick(server); }}>
+                                    <div className="cursor-pointer">
+                                        <ServerRatingDisplay server={server} />
+                                    </div>
                                   </TableCell>
                                   <TableCell className="text-right p-4" onClick={(e) => e.stopPropagation()}>
                                     <DropdownMenu>
