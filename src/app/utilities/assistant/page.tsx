@@ -5,7 +5,7 @@ import { useLanguage } from '@/hooks/use-language';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Bot, Send, User } from 'lucide-react';
+import { Bot, Send, User, KeyRound } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
@@ -16,8 +16,13 @@ interface Message {
   content: string;
 }
 
+const ASSISTANT_PASSWORD = "pro"; // Senha de acesso
+
 export default function AssistantPage() {
   const { t } = useLanguage();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -31,6 +36,16 @@ export default function AssistantPage() {
       });
     }
   }, [messages]);
+  
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password === ASSISTANT_PASSWORD) {
+        setIsAuthenticated(true);
+        setError('');
+    } else {
+        setError('Senha incorreta. Tente novamente.');
+    }
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
@@ -71,6 +86,37 @@ export default function AssistantPage() {
       setIsLoading(false);
     }
   };
+
+  if (!isAuthenticated) {
+    return (
+        <div className="flex items-center justify-center h-[70vh]">
+            <Card className="w-full max-w-md">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-2xl">
+                        <KeyRound className="h-7 w-7"/>
+                        Acesso ao Assistente
+                    </CardTitle>
+                    <CardDescription>Digite a senha para continuar.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleLogin} className="space-y-4">
+                        <Input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Senha"
+                            autoComplete="off"
+                        />
+                         {error && <p className="text-sm text-destructive">{error}</p>}
+                        <Button type="submit" className="w-full">
+                            Entrar
+                        </Button>
+                    </form>
+                </CardContent>
+            </Card>
+        </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-[85vh]">
