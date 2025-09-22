@@ -21,6 +21,7 @@ import {
   TabsTrigger,
 } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
+import { HexColorPicker } from 'react-colorful';
 
 
 // Color Conversion Utilities
@@ -184,12 +185,7 @@ export function ColorPickerModal({ isOpen, onClose, onSave, initialColor }: Colo
           <DialogDescription>{t('selectColorDescription')}</DialogDescription>
         </DialogHeader>
         <div className="space-y-6 py-4">
-            <div className="flex justify-center">
-                <div
-                    className="h-24 w-24 rounded-full border-4"
-                    style={{ backgroundColor: selectedColor }}
-                />
-            </div>
+           <HexColorPicker color={selectedColor} onChange={updateColor} className="!w-full" />
             
             <Tabs defaultValue="hex" className="w-full">
                 <TabsList className="grid w-full grid-cols-3">
