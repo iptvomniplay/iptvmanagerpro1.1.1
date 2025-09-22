@@ -82,11 +82,11 @@ export default function FinancialPage() {
   });
 
   const [openCards, setOpenCards] = React.useState({
-    revenue: true,
-    expense: true,
-    balance: true,
-    profit: true,
-    transactions: true,
+    revenue: false,
+    expense: false,
+    balance: false,
+    profit: false,
+    transactions: false,
   });
 
   const toggleCardVisibility = (card: keyof CardVisibilityState) => {
