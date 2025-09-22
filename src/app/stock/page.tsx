@@ -48,12 +48,14 @@ export default function StockPage() {
             {servers.map((server) => (
                 <Card 
                     key={server.id}
-                    onClick={() => handleOpenModal(server)}
                     className="cursor-pointer hover:border-primary/50 transition-all"
                     style={{ boxShadow: '0 0 23px 0px rgba(255,255,255,0.6)' }}
                 >
                     <CardHeader className="flex flex-row items-center justify-between p-4 pb-2">
                         <CardTitle className="text-base">{server.name}</CardTitle>
+                        <Button variant="ghost" size="icon" onClick={() => handleOpenModal(server)}>
+                            <Settings className="h-5 w-5" />
+                        </Button>
                     </CardHeader>
                     <CardContent className="grid grid-cols-2 gap-4 p-4 pt-0 text-sm">
                         <div>
@@ -67,12 +69,6 @@ export default function StockPage() {
                             <p className="font-medium text-base">{server.creditStock || 0}</p>
                         </div>
                     </CardContent>
-                     <CardFooter className="p-4 pt-0">
-                        <Button variant="outline" onClick={(e) => { e.stopPropagation(); handleOpenModal(server); }} className="w-full">
-                            <Settings className="mr-2 h-4 w-4" />
-                            {t('manage')}
-                        </Button>
-                    </CardFooter>
                 </Card>
             ))}
           </CardContent>
