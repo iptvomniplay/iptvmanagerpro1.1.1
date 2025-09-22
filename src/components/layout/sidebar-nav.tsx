@@ -13,14 +13,16 @@ import {
 import { Home, Users, Server, Settings, Tv2, Package, Wrench, Landmark } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useLanguage } from '@/hooks/use-language';
+import { useData } from '@/hooks/use-data';
 
 export default function SidebarNav() {
   const pathname = usePathname();
   const { t } = useLanguage();
+  const { clients } = useData();
 
   const links = [
     { href: '/', label: t('home'), icon: Home },
-    { href: '/clients', label: t('clients'), icon: Users },
+    { href: '/clients', label: t('clients'), icon: Users, badge: clients.length },
     { href: '/servers', label: t('servers'), icon: Server },
     { href: '/stock', label: t('stock'), icon: Package },
     { href: '/financial', label: t('financial'), icon: Landmark },
@@ -59,13 +61,14 @@ export default function SidebarNav() {
                   <SidebarMenuButton
                     asChild
                     size="lg"
-                    isActive={pathname === link.href}
+                    isActive={pathname.startsWith(link.href) && (link.href !== '/' || pathname === '/')}
                     tooltip={{ children: link.label }}
                     className="h-20"
                   >
                     <Link href={link.href}>
                       <link.icon className="h-9 w-9" />
                       <span>{link.label}</span>
+                      {link.badge !== undefined && <div className="ml-auto bg-primary text-primary-foreground rounded-full px-3 py-1 text-sm">{link.badge}</div>}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

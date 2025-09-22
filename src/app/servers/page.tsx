@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -5,7 +6,7 @@ import type { Server } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { PlusCircle, Search, ChevronDown, Server as ServerIcon, Settings } from 'lucide-react';
+import { PlusCircle, Search, ChevronDown, Server as ServerIcon, Settings, Users } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
 import { useData } from '@/hooks/use-data';
@@ -36,7 +37,7 @@ import type { Transaction } from '@/lib/types';
 export default function ServersPage() {
   const { t } = useLanguage();
   const router = useRouter();
-  const { servers, updateServer, deleteServer, addTransactionToServer } = useData();
+  const { servers, clients, updateServer, deleteServer, addTransactionToServer } = useData();
 
   const [selectedServer, setSelectedServer] = React.useState<Server | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = React.useState(false);
@@ -160,76 +161,88 @@ export default function ServersPage() {
                         <TableRow>
                           <TableHead>{t('serverName')}</TableHead>
                           <TableHead>{t('status')}</TableHead>
+                          <TableHead>{t('clients')}</TableHead>
                           <TableHead className="w-[180px] text-right">{t('actions')}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {filteredServers.length > 0 ? (
-                          filteredServers.map((server) => (
-                            <TableRow key={server.id}>
-                              <TableCell className="font-medium p-4">
-                                <Button
-                                  variant="outline"
-                                  className="h-auto font-semibold"
-                                  onClick={() => handleRowClick(server)}
-                                >
-                                  {server.name}
-                                </Button>
-                              </TableCell>
-                              <TableCell>
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                    <Badge variant={getStatusVariant(server.status)} className="cursor-pointer text-base py-1 px-3">
-                                        {t(server.status.toLowerCase().replace(' ', '') as any)}
-                                    </Badge>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Online')}>{t('online')}</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Offline')}>{t('offline')}</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Suspended')}>{t('suspended')}</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Maintenance')}>{t('maintenance')}</DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              </TableCell>
-                              <TableCell className="text-right p-4">
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" size="sm">
-                                            {t('actions')}
-                                            <ChevronDown className="ml-2 h-4 w-4" />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                        <DropdownMenuItem onClick={() => handleRowClick(server)}>
-                                            {t('details')}
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => {
-                                            setSelectedServer(server);
-                                            setIsTransactionModalOpen(true);
-                                        }}>
-                                            <Settings className="mr-2 h-4 w-4" />
-                                            {t('manage')}
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => {
-                                            setSelectedServer(server);
-                                            handleEdit();
-                                        }}>
-                                            {t('edit')}
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => {
-                                            setSelectedServer(server);
-                                            handleDeleteRequest();
-                                        }} className="text-destructive focus:text-destructive">
-                                            {t('delete')}
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                              </TableCell>
-                            </TableRow>
-                          ))
+                          filteredServers.map((server) => {
+                             const clientCount = clients.filter(client => 
+                                client.plans?.some(plan => plan.panel.id === server.id)
+                            ).length;
+                            return (
+                                <TableRow key={server.id}>
+                                  <TableCell className="font-medium p-4">
+                                    <Button
+                                      variant="outline"
+                                      className="h-auto font-semibold"
+                                      onClick={() => handleRowClick(server)}
+                                    >
+                                      {server.name}
+                                    </Button>
+                                  </TableCell>
+                                  <TableCell>
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                        <Badge variant={getStatusVariant(server.status)} className="cursor-pointer text-base py-1 px-3">
+                                            {t(server.status.toLowerCase().replace(' ', '') as any)}
+                                        </Badge>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent align="end">
+                                        <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Online')}>{t('online')}</DropdownMenuItem>
+                                        <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Offline')}>{t('offline')}</DropdownMenuItem>
+                                        <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Suspended')}>{t('suspended')}</DropdownMenuItem>
+                                        <DropdownMenuItem onSelect={() => handleStatusChange(server, 'Maintenance')}>{t('maintenance')}</DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  </TableCell>
+                                   <TableCell>
+                                    <div className="flex items-center gap-2">
+                                      <Users className="h-5 w-5 text-muted-foreground" />
+                                      <span className="font-semibold">{clientCount}</span>
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className="text-right p-4">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="outline" size="sm">
+                                                {t('actions')}
+                                                <ChevronDown className="ml-2 h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem onClick={() => handleRowClick(server)}>
+                                                {t('details')}
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => {
+                                                setSelectedServer(server);
+                                                setIsTransactionModalOpen(true);
+                                            }}>
+                                                <Settings className="mr-2 h-4 w-4" />
+                                                {t('manage')}
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => {
+                                                setSelectedServer(server);
+                                                handleEdit();
+                                            }}>
+                                                {t('edit')}
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => {
+                                                setSelectedServer(server);
+                                                handleDeleteRequest();
+                                            }} className="text-destructive focus:text-destructive">
+                                                {t('delete')}
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  </TableCell>
+                                </TableRow>
+                            )
+                          })
                         ) : (
                           <TableRow>
-                            <TableCell colSpan={3} className="p-0">
+                            <TableCell colSpan={4} className="p-0">
                                <div className="flex flex-col items-center justify-center gap-3 text-center h-48">
                                 <ServerIcon className="w-12 h-12 text-muted-foreground/60" />
                                 <h3 className="text-xl font-semibold">{t('noServersFound')}</h3>
