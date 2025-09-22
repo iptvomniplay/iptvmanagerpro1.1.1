@@ -154,12 +154,12 @@ export default function ServersPage() {
   };
   
   const handleAddTransaction = (transaction: Omit<Transaction, 'id' | 'date'>) => {
-    if (!selectedServer) return;
-    addTransactionToServer(selectedServer.id, transaction);
+    if (!serverForAction) return;
+    addTransactionToServer(serverForAction.id, transaction);
   };
   
   const handleOpenTransactionModal = (server: Server) => {
-    setSelectedServer(server);
+    setServerForAction(server);
     setIsTransactionModalOpen(true);
   }
   
@@ -234,10 +234,6 @@ export default function ServersPage() {
                      </div>
                   </CardContent>
                   <CardFooter className="flex justify-end gap-2">
-                      <Button variant="outline" size="icon" onClick={() => handleOpenTransactionModal(server)}>
-                          <Settings />
-                          <span className="sr-only">{t('manage')}</span>
-                      </Button>
                       <Button variant="outline" size="icon" onClick={() => handleOpenActionModal(server)}>
                           <MoreVertical className="h-5 w-5"/>
                       </Button>
@@ -276,14 +272,14 @@ export default function ServersPage() {
         />
       )}
 
-      {selectedServer && (
+      {serverForAction && (
         <TransactionModal
           isOpen={isTransactionModalOpen}
           onClose={() => {
             setIsTransactionModalOpen(false);
-            setSelectedServer(null);
+            setServerForAction(null);
           }}
-          server={selectedServer}
+          server={serverForAction}
           onAddTransaction={handleAddTransaction}
         />
       )}
@@ -298,6 +294,10 @@ export default function ServersPage() {
                     <Button variant="outline" onClick={() => { handleOpenDetails(serverForAction); setIsActionModalOpen(false); }}>
                         <Eye className="mr-2 h-4 w-4" />
                         {t('details')}
+                    </Button>
+                     <Button variant="outline" onClick={() => { handleOpenTransactionModal(serverForAction); setIsActionModalOpen(false); }}>
+                        <Settings className="mr-2 h-4 w-4" />
+                        {t('stockManagement')}
                     </Button>
                     <Button variant="outline" onClick={() => { handleEdit(serverForAction); setIsActionModalOpen(false); }}>
                         <FilePenLine className="mr-2 h-4 w-4" />
@@ -314,4 +314,6 @@ export default function ServersPage() {
     </>
   );
 }
+    
+
     
