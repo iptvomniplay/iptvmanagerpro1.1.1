@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useLanguage } from '@/hooks/use-language';
 import type { Note } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { Check, Plus, X, Trash2, Pencil } from 'lucide-react';
+import { Check, Plus, Trash2, Pencil } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
@@ -259,13 +259,13 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
                    )}
                  </Button>
                </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-3">
                 {favoriteColors.map((color) => (
                   <div key={color} className="relative group">
                       <button
                           type="button"
                           className={cn(
-                              'h-9 w-9 rounded-full border-2 transition-all',
+                              'h-11 w-11 rounded-full border-2 transition-all',
                               !isEditingPalette && selectedColor === color ? 'ring-2 ring-ring ring-offset-2' : 'border-transparent',
                               isEditingPalette && 'cursor-default'
                           )}
@@ -274,7 +274,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
                           aria-label={`Select color ${color}`}
                       >
                        {isEditingPalette ? (
-                          <div className="h-full w-full bg-black/30 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="h-full w-full bg-black/30 flex items-center justify-center rounded-full">
                               <Trash2 className="h-5 w-5 text-white" />
                           </div>
                         ) : (
