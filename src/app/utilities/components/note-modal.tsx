@@ -137,8 +137,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
     }
   };
 
-  const handleRemoveFavorite = (colorToRemove: string, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleRemoveFavorite = (colorToRemove: string) => {
     const newFavorites = favoriteColors.filter(color => color !== colorToRemove);
     saveFavoritesToStorage(newFavorites);
   };
@@ -170,7 +169,10 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
   };
   
   const handleColorSwatchClick = (color: string) => {
-    if (isEditingPalette) return;
+    if (isEditingPalette) {
+      handleRemoveFavorite(color);
+      return;
+    }
     updateColorState(color);
   }
 
@@ -249,7 +251,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
                    {isEditingPalette ? (
                      <>
                        <Check className="mr-2 h-4 w-4" />
-                       {t('ok')}
+                       {t('save')}
                      </>
                    ) : (
                      <>
@@ -261,34 +263,26 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
                </div>
               <div className="flex flex-wrap gap-3">
                 {favoriteColors.map((color) => (
-                  <div key={color} className="relative group">
-                      <button
-                          type="button"
-                          className={cn(
-                              'h-11 w-11 rounded-full border-2 transition-all',
-                              !isEditingPalette && selectedColor === color ? 'ring-2 ring-ring ring-offset-2' : 'border-transparent'
-                          )}
-                          style={{ backgroundColor: color }}
-                          onClick={() => handleColorSwatchClick(color)}
-                          aria-label={`Select color ${color}`}
-                      >
-                       {isEditingPalette && (
-                          <div className="absolute inset-0 h-full w-full bg-black/30 flex items-center justify-center rounded-full">
-                              <Trash2 className="h-5 w-5 text-white" />
-                          </div>
-                        )}
-                        {!isEditingPalette && selectedColor === color && (
-                          <Check className="h-5 w-5 mx-auto my-auto text-white" />
-                        )}
-                      </button>
-                      {isEditingPalette && (
-                         <button 
-                            onClick={(e) => handleRemoveFavorite(color, e)} 
-                            className="absolute inset-0 h-full w-full bg-transparent flex items-center justify-center"
-                            aria-label={`Remover cor ${color}`}
-                        />
+                  <button
+                      key={color}
+                      type="button"
+                      className={cn(
+                          'h-12 w-12 rounded-full border-2 transition-all relative group',
+                          !isEditingPalette && selectedColor === color ? 'ring-2 ring-ring ring-offset-2' : 'border-transparent'
                       )}
-                  </div>
+                      style={{ backgroundColor: color }}
+                      onClick={() => handleColorSwatchClick(color)}
+                      aria-label={`Select color ${color}`}
+                  >
+                   {isEditingPalette && (
+                      <div className="absolute inset-0 h-full w-full bg-black/50 flex items-center justify-center rounded-full opacity-100 group-hover:opacity-100 transition-opacity">
+                          <Trash2 className="h-6 w-6 text-white" />
+                      </div>
+                    )}
+                    {!isEditingPalette && selectedColor === color && (
+                      <Check className="h-6 w-6 mx-auto my-auto text-white" />
+                    )}
+                  </button>
                 ))}
               </div>
             </div>
