@@ -54,14 +54,14 @@ body {
     --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 12%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 50%;
-    --muted-foreground: 0 0% 69%;
+    --muted: 73 5% 63%; /* Cinza #a3a59c */
+    --muted-foreground: 0 0% 80%; /* Ajustado para contraste com o novo muted */
     --accent: 0 0% 12%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 63% 48%; /* Vermelho #c52e2e */
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 24%;
-    --input: 0 0% 24%;
+    --border: 73 5% 43%; /* Versão mais escura do cinza para bordas */
+    --input: 73 5% 43%; /* Versão mais escura do cinza para inputs */
     --ring: 228 62% 45%; /* Azul #2c48b6 */
     --chart-1: 70 65% 42%; /* Verde #aac929 */
     --chart-2: 45 98% 50%;
