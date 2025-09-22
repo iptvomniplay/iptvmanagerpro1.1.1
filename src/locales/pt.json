@@ -540,5 +540,6 @@
     "deleteEntryWarning": "Tem certeza de que deseja excluir este lançamento? Esta ação não pode ser desfeita.",
     "cannotEditEntryType": "O tipo de lançamentos automatizados não pode ser alterado.",
     "showValues": "Mostrar Valores",
-    "hideValues": "Ocultar Valores"
+    "hideValues": "Ocultar Valores",
+    "favoriteColors": "Cores Favoritas"
 }
