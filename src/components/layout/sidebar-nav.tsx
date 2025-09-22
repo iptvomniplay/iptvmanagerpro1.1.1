@@ -22,10 +22,6 @@ export default function SidebarNav() {
   const { clients } = useData();
   const { setOpenMobile } = useSidebar();
 
-  const handleLinkClick = () => {
-    setOpenMobile(false);
-  };
-
   const links = [
     { href: '/', label: t('home'), icon: Home },
     { href: '/clients', label: t('clients'), icon: Users, badge: clients.length },
@@ -49,7 +45,7 @@ export default function SidebarNav() {
             className="h-20 w-20 rounded-lg"
             asChild
           >
-            <Link href="/" onClick={handleLinkClick}>
+            <Link href="/" onClick={() => setOpenMobile(false)}>
               <Tv2 className="h-12 w-12 text-primary" />
               <span className="sr-only">IPTV Manager Pro</span>
             </Link>
@@ -70,9 +66,8 @@ export default function SidebarNav() {
                     isActive={pathname.startsWith(link.href) && (link.href !== '/' || pathname === '/')}
                     tooltip={{ children: link.label }}
                     className="h-20"
-                    onClick={handleLinkClick}
                   >
-                    <Link href={link.href}>
+                    <Link href={link.href} onClick={() => setOpenMobile(false)}>
                       <link.icon className="h-9 w-9" />
                       <span>{link.label}</span>
                       {link.badge !== undefined && link.badge > 0 && <div className="ml-auto bg-primary text-primary-foreground rounded-full px-3 py-1 text-sm">{link.badge}</div>}
@@ -92,9 +87,8 @@ export default function SidebarNav() {
                     isActive={pathname === link.href}
                     tooltip={{ children: link.label }}
                     className="h-20"
-                    onClick={handleLinkClick}
                   >
-                    <Link href={link.href}>
+                    <Link href={link.href} onClick={() => setOpenMobile(false)}>
                       <link.icon className="h-9 w-9" />
                       <span>{link.label}</span>
                     </Link>
