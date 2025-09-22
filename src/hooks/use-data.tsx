@@ -369,38 +369,37 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const addTransactionToServer = useCallback((serverId: string, transactionData: Omit<Transaction, 'id' | 'date'>) => {
     let serverName = '';
-    let currentStock = 0;
     const server = servers.find(s => s.id === serverId);
-    if (server) {
-      serverName = server.name;
-      currentStock = server.creditStock;
-    }
+    if (!server) return;
+
+    serverName = server.name;
+    const currentStock = server.creditStock;
 
     if (currentStock + transactionData.credits < 0) {
-        toast({
-            variant: "destructive",
-            title: t('validationError'),
-            description: 'Operação não permitida. O estoque de créditos não pode ser negativo.',
-        });
-        return;
+      toast({
+          variant: "destructive",
+          title: t('validationError'),
+          description: 'Operação não permitida. O estoque de créditos não pode ser negativo.',
+      });
+      return;
     }
 
     const newTransactionId = `trans_${Date.now()}_${Math.random()}`;
 
     setServers(prevServers => {
-      const updatedServers = prevServers.map(server => {
-        if (server.id === serverId) {
+      const updatedServers = prevServers.map(s => {
+        if (s.id === serverId) {
           const newTransaction: Transaction = {
             ...transactionData,
             id: newTransactionId,
             date: new Date().toISOString(),
           };
-          const updatedTransactions = [newTransaction, ...(server.transactions || [])];
+          const updatedTransactions = [newTransaction, ...(s.transactions || [])];
           const newCreditStock = updatedTransactions.reduce((acc, trans) => acc + trans.credits, 0);
 
-          return { ...server, transactions: updatedTransactions, creditStock: newCreditStock };
+          return { ...s, transactions: updatedTransactions, creditStock: newCreditStock };
         }
-        return server;
+        return s;
       });
       return updatedServers;
     });
@@ -449,5 +448,3 @@ export const useData = (): DataContextType => {
   }
   return context;
 };
-
-    
