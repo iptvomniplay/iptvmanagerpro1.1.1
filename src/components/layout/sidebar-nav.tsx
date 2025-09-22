@@ -19,7 +19,6 @@ import { useData } from '@/hooks/use-data';
 export default function SidebarNav() {
   const pathname = usePathname();
   const { t } = useLanguage();
-  const { clients } = useData();
   const { isMobile, setOpen, setOpenMobile } = useSidebar();
 
   const handleLinkClick = () => {
@@ -32,7 +31,7 @@ export default function SidebarNav() {
 
   const links = [
     { href: '/', label: t('home'), icon: Home },
-    { href: '/clients', label: t('clients'), icon: Users, badge: clients.length > 0 ? clients.length : undefined },
+    { href: '/clients', label: t('clients'), icon: Users },
     { href: '/servers', label: t('servers'), icon: Server },
     { href: '/stock', label: t('stock'), icon: Package },
     { href: '/financial', label: t('financial'), icon: Landmark },
@@ -78,7 +77,6 @@ export default function SidebarNav() {
                     <Link href={link.href} onClick={handleLinkClick}>
                       <link.icon className="h-9 w-9" />
                       <span>{link.label}</span>
-                      {link.badge !== undefined && <div className="ml-auto bg-primary text-primary-foreground rounded-full px-3 py-1 text-sm">{link.badge}</div>}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
