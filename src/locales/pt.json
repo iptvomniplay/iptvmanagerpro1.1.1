@@ -538,5 +538,11 @@
     "editEntry": "Editar Lançamento",
     "editEntryDescription": "Modifique os detalhes do lançamento financeiro selecionado.",
     "deleteEntryWarning": "Tem certeza de que deseja excluir este lançamento? Esta ação não pode ser desfeita.",
-    "cannotEditEntryType": "O tipo de lançamentos automatizados não pode ser alterado."
+    "cannotEditEntryType": "O tipo de lançamentos automatizados não pode ser alterado.",
+    "virtualAssistant": "Assistente Virtual",
+    "virtualAssistantDescription": "Faça perguntas e obtenha ajuda com as funcionalidades do sistema.",
+    "virtualAssistantChatDescription": "Inicie uma conversa com o assistente virtual.",
+    "askSomething": "Pergunte algo...",
+    "send": "Enviar",
+    "errorProcessingRequest": "Desculpe, ocorreu um erro ao processar sua solicitação. Por favor, tente novamente."
 }

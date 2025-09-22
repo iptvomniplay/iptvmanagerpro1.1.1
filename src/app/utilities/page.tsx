@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -11,7 +10,7 @@ import {
   CardContent,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { StickyNote, ChevronRight } from 'lucide-react';
+import { StickyNote, ChevronRight, Bot } from 'lucide-react';
 import Link from 'next/link';
 
 export default function UtilitiesPage() {
@@ -35,6 +34,20 @@ export default function UtilitiesPage() {
                 </div>
                 <CardTitle className="text-2xl">{t('notepad')}</CardTitle>
                 <CardDescription className="text-base">{t('notepadDescription')}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/utilities/assistant" className="group">
+          <Card className="cursor-pointer transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-primary/20 hover:shadow-lg h-full flex flex-col">
+            <CardHeader className="flex-1">
+                <div className="mb-4">
+                  <Bot className="h-12 w-12 text-primary" />
+                </div>
+                <CardTitle className="text-2xl">{t('virtualAssistant')}</CardTitle>
+                <CardDescription className="text-base">{t('virtualAssistantDescription')}</CardDescription>
             </CardHeader>
             <CardContent>
               
