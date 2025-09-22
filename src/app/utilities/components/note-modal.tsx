@@ -96,31 +96,32 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
       setFavoriteColors(defaultPalette);
     }
   }, []);
-
-  const saveFavoritesToStorage = (colors: string[]) => {
-    localStorage.setItem('notepad_favorite_colors', JSON.stringify(colors));
-    setFavoriteColors(colors);
-  };
   
-  const updateAllColorStatesFromHex = (hex: string) => {
-    const validHex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hex);
+  const updateAllColorStates = (hex: string) => {
+    const validHex = /^#([A-Fa-f0-9]{6})$/i.test(hex);
     if (!validHex) return;
     
-    setSelectedColor(hex);
     const newRgb = hexToRgb(hex);
-    setRgb(newRgb);
-    setHsl(rgbToHsl(newRgb.r, newRgb.g, newRgb.b));
-  };
+    const newHsl = rgbToHsl(newRgb.r, newRgb.g, newRgb.b);
 
+    setSelectedColor(hex);
+    setRgb(newRgb);
+    setHsl(newHsl);
+  };
 
   React.useEffect(() => {
     if (isOpen) {
       setContent(note?.content || '');
       const initialColor = note?.color || favoriteColors[0] || defaultPalette[0];
-      updateAllColorStatesFromHex(initialColor);
+      updateAllColorStates(initialColor);
       setIsEditingPalette(false);
     }
   }, [isOpen, note, favoriteColors]);
+
+  const saveFavoritesToStorage = (colors: string[]) => {
+    localStorage.setItem('notepad_favorite_colors', JSON.stringify(colors));
+    setFavoriteColors(colors);
+  };
 
   const handleSave = () => {
     onSave({
@@ -146,27 +147,24 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
     const newHex = e.target.value;
     setSelectedColor(newHex); // Update immediately for responsiveness
     if (/^#([A-Fa-f0-9]{6})$/.test(newHex)) {
-      updateAllColorStatesFromHex(newHex);
+      updateAllColorStates(newHex);
     }
   };
 
   const handleRgbChange = (channel: 'r' | 'g' | 'b', value: string) => {
     const numValue = Math.max(0, Math.min(255, parseInt(value) || 0));
     const newRgb = { ...rgb, [channel]: numValue };
-    setRgb(newRgb);
     const newHex = rgbToHex(newRgb.r, newRgb.g, newRgb.b);
-    setSelectedColor(newHex);
-    setHsl(rgbToHsl(newRgb.r, newRgb.g, newRgb.b));
+    updateAllColorStates(newHex);
   };
 
   const handleHslChange = (channel: 'h' | 's' | 'l', value: string) => {
     const max = channel === 'h' ? 360 : 100;
     const numValue = Math.max(0, Math.min(max, parseInt(value) || 0));
     const newHsl = { ...hsl, [channel]: numValue };
-    setHsl(newHsl);
     const newRgb = hslToRgb(newHsl.h, newHsl.s, newHsl.l);
-    setRgb(newRgb);
-    setSelectedColor(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
+    const newHex = rgbToHex(newRgb.r, newRgb.g, newRgb.b);
+    updateAllColorStates(newHex);
   };
   
   const handleColorSwatchClick = (color: string) => {
@@ -174,7 +172,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
       handleRemoveFavorite(color);
       return;
     }
-    updateAllColorStatesFromHex(color);
+    updateAllColorStates(color);
   }
 
   return (
