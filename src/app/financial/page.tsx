@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -36,7 +37,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
-import { DollarSign, ArrowDownUp, ArrowUp, ArrowDown, Landmark, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
+import { DollarSign, ArrowDownUp, ArrowUp, ArrowDown, Landmark, MoreHorizontal, Edit, Trash2, Eye, EyeOff } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { EntryModal } from './components/entry-modal';
@@ -53,6 +54,7 @@ export default function FinancialPage() {
   const [entryToDelete, setEntryToDelete] = React.useState<CashFlowEntry | null>(null);
 
   const [filter, setFilter] = React.useState<'all' | 'income' | 'expense'>('all');
+  const [isFinancialDataVisible, setIsFinancialDataVisible] = React.useState(false);
 
   const allEntries = React.useMemo(() => {
     return [...cashFlow].sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime());
@@ -109,6 +111,7 @@ export default function FinancialPage() {
   };
   
   const formatCurrency = (value: number) => {
+    if (!isFinancialDataVisible) return '•••••';
     const locale = language === 'pt-BR' ? 'pt-BR' : 'en-US';
     const currency = language === 'pt-BR' ? 'BRL' : 'USD';
     return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(value);
@@ -128,6 +131,14 @@ export default function FinancialPage() {
             <Button size="lg" onClick={() => handleOpenModal()}>
                 <ArrowUp className="mr-2 h-5 w-5" />
                 {t('addIncome')}
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => setIsFinancialDataVisible(prev => !prev)}
+            >
+              {isFinancialDataVisible ? <EyeOff className="mr-2 h-5 w-5" /> : <Eye className="mr-2 h-5 w-5" />}
+              {isFinancialDataVisible ? t('hideValues') : t('showValues')}
             </Button>
         </div>
         
@@ -202,7 +213,7 @@ export default function FinancialPage() {
                             <TableCell className="font-medium">{entry.description}</TableCell>
                             <TableCell className="text-right">
                               <Badge variant={entry.type === 'income' ? 'success' : 'destructive'}>
-                                {entry.type === 'expense' && '- '}{formatCurrency(entry.amount)}
+                                {entry.type === 'expense' && isFinancialDataVisible && '- '}{formatCurrency(entry.amount)}
                               </Badge>
                             </TableCell>
                             <TableCell className="text-right">
