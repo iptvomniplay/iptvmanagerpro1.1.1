@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useData } from '@/hooks/use-data';
 import { useLanguage } from '@/hooks/use-language';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Star, Trash2 } from 'lucide-react';
+import { PlusCircle, Star, Trash2, Printer } from 'lucide-react';
 import { NoteModal } from '../components/note-modal';
 import { NoteCard } from '../components/note-card';
 import type { Note } from '@/lib/types';
@@ -18,6 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { NotePrintModal } from '../components/note-print-modal';
 
 export default function NotepadPage() {
   const { t } = useLanguage();
@@ -25,6 +26,7 @@ export default function NotepadPage() {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [editingNote, setEditingNote] = React.useState<Note | null>(null);
   const [noteToDelete, setNoteToDelete] = React.useState<Note | null>(null);
+  const [isPrintModalOpen, setIsPrintModalOpen] = React.useState(false);
 
   const handleOpenModal = (note: Note | null = null) => {
     setEditingNote(note);
@@ -74,10 +76,16 @@ export default function NotepadPage() {
               {t('notepadDescription')}
             </p>
           </div>
-          <Button onClick={() => handleOpenModal()} size="lg">
-            <PlusCircle className="mr-2 h-5 w-5" />
-            {t('createNote')}
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={() => setIsPrintModalOpen(true)} variant="outline" size="lg" disabled={notes.length === 0}>
+                <Printer className="mr-2 h-5 w-5" />
+                {t('printNotes')}
+            </Button>
+            <Button onClick={() => handleOpenModal()} size="lg">
+              <PlusCircle className="mr-2 h-5 w-5" />
+              {t('createNote')}
+            </Button>
+          </div>
         </div>
 
         {sortedNotes.length > 0 ? (
@@ -105,6 +113,12 @@ export default function NotepadPage() {
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveNote}
         note={editingNote}
+      />
+      
+      <NotePrintModal 
+        isOpen={isPrintModalOpen}
+        onClose={() => setIsPrintModalOpen(false)}
+        notes={sortedNotes}
       />
       
       <AlertDialog open={!!noteToDelete} onOpenChange={(isOpen) => !isOpen && setNoteToDelete(null)}>

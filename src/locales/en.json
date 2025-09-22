@@ -557,5 +557,7 @@
     "backupImportedSuccess": "Backup Imported!",
     "backupImportedSuccessDescription": "Your data has been successfully restored.",
     "backupImportFailed": "Import Failed",
-    "backupImportFailedDescription": "The selected file is invalid or corrupted. Please try again with a valid backup file."
+    "backupImportFailedDescription": "The selected file is invalid or corrupted. Please try again with a valid backup file.",
+    "printNotes": "Print Notes",
+    "printNotesDescription": "View and print all your notes."
 }
