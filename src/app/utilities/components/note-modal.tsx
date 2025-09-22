@@ -101,26 +101,33 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
           />
           <div className="space-y-4">
             <p className="text-sm font-medium text-muted-foreground">{t('cardColor')}:</p>
-            <div className="flex items-center gap-4">
-                <div className="flex-1 flex items-center border border-input rounded-md h-11 overflow-hidden">
-                    <div className="relative h-full aspect-square">
-                        <Input 
-                            type="color"
+            <div className="space-y-3">
+                <div className="flex items-center gap-4">
+                    <div className="flex-1 flex items-center border border-input rounded-md h-11 overflow-hidden">
+                        <div className="relative h-full aspect-square">
+                            <Input 
+                                type="color"
+                                value={selectedColor}
+                                onChange={(e) => setSelectedColor(e.target.value)}
+                                className="absolute inset-0 h-full w-full p-0 border-none cursor-pointer"
+                                aria-label="Color picker"
+                            />
+                        </div>
+                        <Input
+                            type="text"
                             value={selectedColor}
                             onChange={(e) => setSelectedColor(e.target.value)}
-                            className="absolute inset-0 h-full w-full p-0 border-none cursor-pointer"
+                            className="h-full text-base border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                            aria-label="Hex color value"
                         />
                     </div>
-                    <Input
-                        type="text"
-                        value={selectedColor}
-                        onChange={(e) => setSelectedColor(e.target.value)}
-                        className="h-full text-base border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-                    />
+                    <Button size="icon" className="h-11 w-11 shrink-0" onClick={handleAddFavorite} aria-label={t('add')}>
+                        <Plus />
+                    </Button>
                 </div>
-                <Button size="icon" className="h-11 w-11 shrink-0" onClick={handleAddFavorite} aria-label={t('add')}>
-                    <Plus />
-                </Button>
+                 <p className="text-xs text-muted-foreground px-1">
+                    Clique no quadrado de cor para abrir o seletor e ver os valores RGB/HSL.
+                </p>
             </div>
             <div className="flex flex-wrap gap-2 pt-2 border-t mt-4">
               {favoriteColors.map((color) => (
