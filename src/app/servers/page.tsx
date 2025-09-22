@@ -58,7 +58,6 @@ const ServerRatingDisplay = ({ server }: { server: Server }) => {
       <Tooltip>
         <TooltipTrigger>
           <div className="flex items-center gap-2">
-            <span className="font-bold text-base">{averageRating.toFixed(2)}</span>
             <div className="flex items-center">
               {[...Array(5)].map((_, i) => {
                 const starValue = i + 1;
@@ -78,6 +77,7 @@ const ServerRatingDisplay = ({ server }: { server: Server }) => {
                 return <Star key={i} className="h-5 w-5 text-muted" fill="currentColor" />;
               })}
             </div>
+            <span className="font-bold text-base">{averageRating.toFixed(2)}</span>
           </div>
         </TooltipTrigger>
         <TooltipContent>
