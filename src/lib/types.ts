@@ -96,6 +96,13 @@ export type Transaction = {
   description?: string;
 };
 
+export type ServerRating = {
+  content: number;
+  support: number;
+  stability: number;
+  value: number;
+};
+
 export type Server = {
   id: string;
   name: string;
@@ -113,6 +120,7 @@ export type Server = {
   subServers?: SubServer[];
   observations?: string;
   transactions?: Transaction[];
+  ratings?: ServerRating;
 };
 
 export type CashFlowEntry = {

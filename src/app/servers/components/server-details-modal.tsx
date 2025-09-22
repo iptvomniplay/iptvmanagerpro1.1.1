@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import type { Server, SubServer } from '@/lib/types';
+import type { Server, SubServer, ServerRating } from '@/lib/types';
 import {
   Dialog,
   DialogContent,
@@ -20,7 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Trash2, FilePenLine, ChevronRight, ChevronsUpDown, Eye, EyeOff, BookText, Calendar, Settings } from 'lucide-react';
+import { Trash2, FilePenLine, ChevronRight, ChevronsUpDown, Eye, EyeOff, BookText, Calendar, Settings, Star, Smile } from 'lucide-react';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { useData } from '@/hooks/use-data';
 import { Input } from '@/components/ui/input';
@@ -28,6 +28,43 @@ import { Textarea } from '@/components/ui/textarea';
 import { format, set, isBefore } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+
+interface StarRatingProps {
+  rating: number;
+  onRatingChange: (rating: number) => void;
+}
+
+const StarRating: React.FC<StarRatingProps> = ({ rating, onRatingChange }) => {
+  const [hover, setHover] = React.useState(0);
+  const colors = ["#ef4444", "#f97316", "#eab308", "#84cc16", "#22c55e"];
+
+  return (
+    <div className="flex">
+      {[...Array(5)].map((_, index) => {
+        const ratingValue = index + 1;
+        const color = colors[ratingValue - 1];
+
+        return (
+          <button
+            type="button"
+            key={ratingValue}
+            className="focus:outline-none"
+            onClick={() => onRatingChange(ratingValue)}
+            onMouseEnter={() => setHover(ratingValue)}
+            onMouseLeave={() => setHover(0)}
+          >
+            <Star
+              className="h-7 w-7 transition-colors"
+              fill={(ratingValue <= (hover || rating)) ? color : 'hsl(var(--muted))'}
+              stroke={(ratingValue <= (hover || rating)) ? color : 'hsl(var(--foreground))'}
+            />
+          </button>
+        );
+      })}
+    </div>
+  );
+};
+
 
 interface ServerDetailsModalProps {
   isOpen: boolean;
@@ -138,6 +175,18 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
 
     return format(nextDueDate, 'dd/MM/yyyy');
   };
+
+  const handleRatingChange = (category: keyof ServerRating, rating: number) => {
+    const newRatings: ServerRating = {
+      content: 0,
+      support: 0,
+      stability: 0,
+      value: 0,
+      ...server?.ratings,
+      [category]: rating
+    };
+    updateServer({ ...server, ratings: newRatings });
+  };
   
 
   return (
@@ -148,7 +197,7 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
           <DialogDescription>{t('panelDetails')}</DialogDescription>
         </DialogHeader>
 
-        <div className="max-h-[60vh] overflow-y-auto space-y-6 p-4">
+        <div className="max-h-[70vh] overflow-y-auto space-y-6 p-4">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
             <div className="col-span-2 md:col-span-3">
               <DetailItem label={t('panelUrl')} value={server.url} />
@@ -215,6 +264,36 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
                 </div>
             )}
            </div>
+
+           <Separator />
+           <Collapsible>
+             <CollapsibleTrigger className="flex items-center justify-between w-full font-semibold text-xl text-primary">
+               <div className="flex items-center gap-2">
+                 <Smile className="h-5 w-5" />
+                 <h3>{t('Avaliações')}</h3>
+               </div>
+               <ChevronsUpDown className="h-5 w-5" />
+             </CollapsibleTrigger>
+             <CollapsibleContent className="space-y-4 pt-4">
+                <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
+                    <span className="text-base font-semibold">{t('Conteúdo')}</span>
+                    <StarRating rating={server.ratings?.content || 0} onRatingChange={(rating) => handleRatingChange('content', rating)} />
+                </div>
+                 <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
+                    <span className="text-base font-semibold">{t('Suporte')}</span>
+                    <StarRating rating={server.ratings?.support || 0} onRatingChange={(rating) => handleRatingChange('support', rating)} />
+                </div>
+                 <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
+                    <span className="text-base font-semibold">{t('Estabilidade')}</span>
+                    <StarRating rating={server.ratings?.stability || 0} onRatingChange={(rating) => handleRatingChange('stability', rating)} />
+                </div>
+                 <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
+                    <span className="text-base font-semibold">{t('Valor')}</span>
+                    <StarRating rating={server.ratings?.value || 0} onRatingChange={(rating) => handleRatingChange('value', rating)} />
+                </div>
+             </CollapsibleContent>
+           </Collapsible>
+
 
           {server.subServers && server.subServers.length > 0 && (
             <>
