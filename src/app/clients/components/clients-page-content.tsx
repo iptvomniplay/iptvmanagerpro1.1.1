@@ -380,7 +380,7 @@ export default function ClientsPageContent() {
                 const clientHasActiveTest = client.status === 'Active' && hasActiveTest(client);
 
                 return (
-                  <TableRow key={client._tempId} className="even:bg-muted/50 hover:bg-muted">
+                  <TableRow key={client._tempId} className="hover:bg-muted">
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Button 
