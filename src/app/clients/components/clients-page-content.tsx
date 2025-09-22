@@ -389,18 +389,16 @@ export default function ClientsPageContent() {
                         </Button>
                         
                         {hasOrphanedPlan(client) && (
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                 <Button variant="outline" size="icon" className="h-9 w-9 text-destructive hover:text-destructive hover:bg-destructive/10">
-                                    <AlertTriangle className="h-5 w-5" />
-                                 </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>{t('clientWithInvalidPlan')}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                               <Button variant="outline" size="icon" className="h-9 w-9 text-destructive hover:text-destructive hover:bg-destructive/10">
+                                  <AlertTriangle className="h-6 w-6" />
+                               </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto max-w-xs">
+                              <p>{t('clientWithInvalidPlan')}</p>
+                            </PopoverContent>
+                          </Popover>
                         )}
 
                         {clientHasActiveTest && (
@@ -408,7 +406,7 @@ export default function ClientsPageContent() {
                             <Tooltip>
                               <TooltipTrigger asChild>
                                  <Button variant="outline" size="icon" className="h-9 w-9 text-yellow-500 hover:text-yellow-500 hover:bg-yellow-500/10">
-                                    <TestTube className="h-5 w-5" />
+                                    <TestTube className="h-6 w-6" />
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>
@@ -422,7 +420,7 @@ export default function ClientsPageContent() {
                            <Popover>
                             <PopoverTrigger asChild>
                                <Button variant="outline" size="icon" className="h-9 w-9 text-yellow-500 hover:text-yellow-500 hover:bg-yellow-500/10">
-                                  <AlertTriangle className="h-5 w-5" />
+                                  <AlertTriangle className="h-6 w-6" />
                                </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto max-w-xs">
