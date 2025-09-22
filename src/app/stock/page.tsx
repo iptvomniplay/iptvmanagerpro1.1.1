@@ -84,7 +84,7 @@ export default function StockPage() {
                         <CardTitle className="text-base">{server.name}</CardTitle>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon">
+                                <Button variant="outline" size="sm">
                                     <MoreVertical className="h-5 w-5"/>
                                 </Button>
                             </DropdownMenuTrigger>
