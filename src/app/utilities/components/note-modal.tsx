@@ -86,10 +86,12 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
             <div className="space-y-2">
               <Label>{t('cardColor')}</Label>
               <div className="flex items-center gap-4">
-                <div
-                  className="h-12 w-12 rounded-md border-2 cursor-pointer"
+                <button
+                  type="button"
+                  className="h-12 w-12 rounded-full border-2 cursor-pointer transition-transform hover:scale-110"
                   style={{ backgroundColor: selectedColor }}
                   onClick={() => setIsColorPickerOpen(true)}
+                  aria-label={t('selectColor')}
                 />
                  <Button variant="outline" onClick={() => setIsColorPickerOpen(true)}>
                   {t('selectColor')}

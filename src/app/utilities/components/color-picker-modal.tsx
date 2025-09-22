@@ -113,20 +113,21 @@ export function ColorPickerModal({ isOpen, onClose, onSave, initialColor }: Colo
     }
   }, []);
 
+  const updateColor = (hex: string) => {
+    const newRgb = hexToRgb(hex);
+    if(newRgb) {
+        setSelectedColor(hex);
+        setRgb(newRgb);
+        setHsl(rgbToHsl(newRgb.r, newRgb.g, newRgb.b));
+    }
+  }
+
   React.useEffect(() => {
     if (isOpen) {
-      setSelectedColor(initialColor);
+      updateColor(initialColor);
     }
   }, [isOpen, initialColor]);
   
-  React.useEffect(() => {
-    const rgbVal = hexToRgb(selectedColor);
-    if(rgbVal) {
-        setRgb(rgbVal);
-        setHsl(rgbToHsl(rgbVal.r, rgbVal.g, rgbVal.b));
-    }
-  }, [selectedColor]);
-
   React.useEffect(() => {
     localStorage.setItem('favoriteColors', JSON.stringify(favoriteColors));
   }, [favoriteColors]);
@@ -136,22 +137,23 @@ export function ColorPickerModal({ isOpen, onClose, onSave, initialColor }: Colo
     if (!hex.startsWith('#')) {
       hex = '#' + hex;
     }
+    setSelectedColor(hex); // Update input field immediately
     if (/^#[0-9A-F]{6}$/i.test(hex)) {
-      setSelectedColor(hex);
+      updateColor(hex);
     }
   };
 
   const handleRgbChange = (component: 'r' | 'g' | 'b', value: number) => {
     const newRgb = { ...rgb, [component]: value };
-    setRgb(newRgb);
-    setSelectedColor(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
+    const newHex = rgbToHex(newRgb.r, newRgb.g, newRgb.b);
+    updateColor(newHex);
   };
   
   const handleHslChange = (component: 'h' | 's' | 'l', value: number) => {
     const newHsl = { ...hsl, [component]: value };
-    setHsl(newHsl);
     const newRgb = hslToRgb(newHsl.h, newHsl.s, newHsl.l);
-    setSelectedColor(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
+    const newHex = rgbToHex(newRgb.r, newRgb.g, newRgb.b);
+    updateColor(newHex);
   };
   
   const handleAddFavorite = () => {
@@ -170,7 +172,7 @@ export function ColorPickerModal({ isOpen, onClose, onSave, initialColor }: Colo
     if (isEditingFavorites) {
       handleRemoveFavorite(color);
     } else {
-      setSelectedColor(color);
+      updateColor(color);
     }
   };
 
@@ -262,24 +264,25 @@ export function ColorPickerModal({ isOpen, onClose, onSave, initialColor }: Colo
                         {isEditingFavorites ? t('save') : t('edit')}
                     </Button>
                 </div>
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-3">
                     {favoriteColors.map((color) => (
                         <div key={color} className="relative group">
                             <button
                                 type="button"
-                                className="h-8 w-8 rounded-full border"
+                                className="h-10 w-10 rounded-full border-2 transition-transform hover:scale-110"
                                 style={{ backgroundColor: color }}
                                 onClick={() => handleColorSwatchClick(color)}
+                                aria-label={t('selectColor') + ' ' + color}
                             />
                             {isEditingFavorites && (
-                                <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <Trash2 className="h-4 w-4 text-white" />
+                                <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onClick={() => handleRemoveFavorite(color)}>
+                                    <Trash2 className="h-5 w-5 text-white" />
                                 </div>
                             )}
                         </div>
                     ))}
-                    <Button type="button" size="icon" variant="outline" className="h-8 w-8 rounded-full" onClick={handleAddFavorite}>
-                        <Plus className="h-4 w-4" />
+                    <Button type="button" size="icon" variant="outline" className="h-10 w-10 rounded-full" onClick={handleAddFavorite}>
+                        <Plus className="h-5 w-5" />
                     </Button>
                 </div>
                 {isEditingFavorites && <p className="text-xs text-muted-foreground">{t('editFavoritesDescription')}</p>}
