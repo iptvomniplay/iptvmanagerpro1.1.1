@@ -37,10 +37,7 @@ export default function UtilitiesPage() {
                 <CardDescription className="text-base">{t('notepadDescription')}</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-end text-sm font-semibold text-primary transition-all duration-300 group-hover:gap-2">
-                  <span>{t('access')}</span>
-                  <ChevronRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-              </div>
+              
             </CardContent>
           </Card>
         </Link>
