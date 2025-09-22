@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import type { Server, SubServer, ServerRating } from '@/lib/types';
+import type { Server, SubServer } from '@/lib/types';
 import {
   Dialog,
   DialogContent,
@@ -20,7 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Trash2, FilePenLine, ChevronRight, ChevronsUpDown, Eye, EyeOff, BookText, Calendar, Settings, Star } from 'lucide-react';
+import { Trash2, FilePenLine, ChevronRight, ChevronsUpDown, Eye, EyeOff, BookText, Calendar, Settings } from 'lucide-react';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { useData } from '@/hooks/use-data';
 import { Input } from '@/components/ui/input';
@@ -28,43 +28,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { format, set, isBefore } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-
-interface StarRatingProps {
-  rating: number;
-  onRatingChange: (newRating: number) => void;
-}
-
-const StarRating: React.FC<StarRatingProps> = ({ rating, onRatingChange }) => {
-    const starColors = [
-        '#ef4444', // red-500
-        '#f97316', // orange-500
-        '#eab308', // yellow-500
-        '#84cc16', // lime-500
-        '#22c55e', // green-500
-    ];
-
-    return (
-        <div className="flex items-center gap-1">
-            {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                    key={star}
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); onRatingChange(star); }}
-                    className="focus:outline-none"
-                >
-                    <Star
-                        className={cn(
-                            "h-7 w-7 transition-all",
-                            star <= rating ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600'
-                        )}
-                        style={{ fill: star <= rating ? starColors[rating - 1] : 'transparent' }}
-                    />
-                </button>
-            ))}
-        </div>
-    );
-};
-
 
 interface ServerDetailsModalProps {
   isOpen: boolean;
@@ -116,14 +79,10 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
   const { updateServer } = useData();
   const router = useRouter();
   const [observations, setObservations] = React.useState(server?.observations || '');
-  const [ratings, setRatings] = React.useState<ServerRating>(
-    server?.ratings || { content: 0, support: 0, stability: 0, value: 0 }
-  );
 
   React.useEffect(() => {
     if (server) {
       setObservations(server.observations || '');
-      setRatings(server.ratings || { content: 0, support: 0, stability: 0, value: 0 });
     }
   }, [server]);
 
@@ -138,12 +97,6 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
     if (server && server.observations !== observations) {
       updateServer({ ...server, observations });
     }
-  };
-
-  const handleRatingChange = (field: keyof ServerRating, value: number) => {
-    const newRatings = { ...ratings, [field]: value };
-    setRatings(newRatings);
-    updateServer({ ...server, ratings: newRatings });
   };
 
 
@@ -186,12 +139,6 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
     return format(nextDueDate, 'dd/MM/yyyy');
   };
   
-  const ratingFields: { key: keyof ServerRating, label: string }[] = [
-    { key: 'content', label: t('Conteúdo') },
-    { key: 'support', label: t('Suporte') },
-    { key: 'stability', label: t('Estabilidade') },
-    { key: 'value', label: t('Valor') },
-  ];
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -268,26 +215,6 @@ export function ServerDetailsModal({ isOpen, onClose, server, onEdit, onDelete }
                 </div>
             )}
            </div>
-
-           <Separator />
-            <Collapsible defaultOpen>
-              <CollapsibleTrigger className="flex items-center justify-between w-full font-semibold text-xl text-primary">
-                  <div className="flex items-center gap-2">
-                      <Star className="h-5 w-5" />
-                      <h3>{t('Avaliações')}</h3>
-                  </div>
-                  <ChevronsUpDown className="h-5 w-5" />
-              </CollapsibleTrigger>
-              <CollapsibleContent className="space-y-4 pt-4">
-                  {ratingFields.map(({ key, label }) => (
-                      <div key={key} className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border">
-                          <span className="text-base font-semibold">{label}</span>
-                          <StarRating rating={ratings[key] || 0} onRatingChange={(newRating) => handleRatingChange(key, newRating)} />
-                      </div>
-                  ))}
-              </CollapsibleContent>
-            </Collapsible>
-
 
           {server.subServers && server.subServers.length > 0 && (
             <>
