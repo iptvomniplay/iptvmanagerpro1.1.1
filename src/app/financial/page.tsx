@@ -217,7 +217,7 @@ export default function FinancialPage() {
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
             <Collapsible open={openCards.revenue} onOpenChange={() => toggleCardOpen('revenue')}>
-              <Card className="[box-shadow:0_0_23px_0px_rgba(255,255,255,0.6)]">
+              <Card className="[box-shadow:0_0_23px_0px_rgba(255,255,255,0.6)] h-full flex flex-col">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">{t('totalRevenue')}</CardTitle>
                     <div className="flex items-center">
@@ -240,7 +240,7 @@ export default function FinancialPage() {
             </Collapsible>
             
             <Collapsible open={openCards.expense} onOpenChange={() => toggleCardOpen('expense')}>
-              <Card className="[box-shadow:0_0_23px_0px_rgba(255,255,255,0.6)]">
+              <Card className="[box-shadow:0_0_23px_0px_rgba(255,255,255,0.6)] h-full flex flex-col">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">{t('totalExpense')}</CardTitle>
                    <div className="flex items-center">
@@ -263,7 +263,7 @@ export default function FinancialPage() {
             </Collapsible>
             
             <Collapsible open={openCards.balance} onOpenChange={() => toggleCardOpen('balance')}>
-              <Card className="[box-shadow:0_0_23px_0px_rgba(255,255,255,0.6)]">
+              <Card className="[box-shadow:0_0_23px_0px_rgba(255,255,255,0.6)] h-full flex flex-col">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">{t('netBalance')}</CardTitle>
                    <div className="flex items-center">
@@ -286,7 +286,7 @@ export default function FinancialPage() {
             </Collapsible>
 
              <Collapsible open={openCards.profit} onOpenChange={() => toggleCardOpen('profit')}>
-                <Card className="[box-shadow:0_0_23px_0px_rgba(255,255,255,0.6)]">
+                <Card className="[box-shadow:0_0_23px_0px_rgba(255,255,255,0.6)] h-full flex flex-col">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Lucro</CardTitle>
                         <div className="flex items-center">
@@ -309,7 +309,7 @@ export default function FinancialPage() {
             </Collapsible>
 
             <Collapsible open={openCards.transactions} onOpenChange={() => toggleCardOpen('transactions')}>
-              <Card className="[box-shadow:0_0_23px_0px_rgba(255,255,255,0.6)]">
+              <Card className="[box-shadow:0_0_23px_0px_rgba(255,255,255,0.6)] h-full flex flex-col">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">{t('transactions')}</CardTitle>
                   <div className="flex items-center">
@@ -430,6 +430,8 @@ export default function FinancialPage() {
     </>
   );
 }
+
+    
 
     
 
