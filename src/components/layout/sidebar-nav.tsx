@@ -20,11 +20,17 @@ export default function SidebarNav() {
   const pathname = usePathname();
   const { t } = useLanguage();
   const { clients } = useData();
-  const { setOpenMobile } = useSidebar();
+  const { isMobile, setOpenMobile } = useSidebar();
+
+  const handleLinkClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
 
   const links = [
     { href: '/', label: t('home'), icon: Home },
-    { href: '/clients', label: t('clients'), icon: Users, badge: clients.length },
+    { href: '/clients', label: t('clients'), icon: Users, badge: clients.length > 0 ? clients.length : undefined },
     { href: '/servers', label: t('servers'), icon: Server },
     { href: '/stock', label: t('stock'), icon: Package },
     { href: '/financial', label: t('financial'), icon: Landmark },
@@ -45,7 +51,7 @@ export default function SidebarNav() {
             className="h-20 w-20 rounded-lg"
             asChild
           >
-            <Link href="/" onClick={() => setOpenMobile(false)}>
+            <Link href="/" onClick={handleLinkClick}>
               <Tv2 className="h-12 w-12 text-primary" />
               <span className="sr-only">IPTV Manager Pro</span>
             </Link>
@@ -67,10 +73,10 @@ export default function SidebarNav() {
                     tooltip={{ children: link.label }}
                     className="h-20"
                   >
-                    <Link href={link.href} onClick={() => setOpenMobile(false)}>
+                    <Link href={link.href} onClick={handleLinkClick}>
                       <link.icon className="h-9 w-9" />
                       <span>{link.label}</span>
-                      {link.badge !== undefined && link.badge > 0 && <div className="ml-auto bg-primary text-primary-foreground rounded-full px-3 py-1 text-sm">{link.badge}</div>}
+                      {link.badge !== undefined && <div className="ml-auto bg-primary text-primary-foreground rounded-full px-3 py-1 text-sm">{link.badge}</div>}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -88,7 +94,7 @@ export default function SidebarNav() {
                     tooltip={{ children: link.label }}
                     className="h-20"
                   >
-                    <Link href={link.href} onClick={() => setOpenMobile(false)}>
+                    <Link href={link.href} onClick={handleLinkClick}>
                       <link.icon className="h-9 w-9" />
                       <span>{link.label}</span>
                     </Link>
