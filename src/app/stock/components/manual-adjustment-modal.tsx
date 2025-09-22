@@ -54,9 +54,9 @@ export function ManualAdjustmentModal({ isOpen, onClose, onConfirm }: ManualAdju
 
   const handleConfirmClick = () => {
     const numericQuantity = Number(quantity);
-    const numericValue = parseFloat(totalValue.replace(/[^0-9,.-]+/g, "").replace(',', '.')) / 100 || 0;
+    const numericValue = parseFloat(totalValue.replace(/[^0-9,.-]+/g, "").replace(',', '.')) || 0;
     
-    if (description.trim()) {
+    if (description.trim() && (numericQuantity !== 0 || numericValue !== 0)) {
       const finalQuantity = adjustmentType === 'add' ? numericQuantity : -numericQuantity;
       onConfirm(finalQuantity, description, numericValue);
     }
@@ -71,7 +71,8 @@ export function ManualAdjustmentModal({ isOpen, onClose, onConfirm }: ManualAdju
     }
   }, [isOpen]);
 
-  const isFormValid = description.trim() !== '' && (Number(quantity) !== 0 || totalValue.replace(/[^0-9]/g, '') !== '');
+  const isFormValid = description.trim() !== '' && (Number(quantity) !== 0 || (parseFloat(totalValue.replace(/[^0-9,.-]+/g, "").replace(',', '.')) || 0) !== 0);
+
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
