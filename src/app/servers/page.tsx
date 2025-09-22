@@ -198,8 +198,7 @@ export default function ServersPage() {
               return (
                 <Card 
                     key={server.id} 
-                    className="flex flex-col cursor-pointer"
-                    onClick={() => handleOpenDetails(server)}
+                    className="flex flex-col"
                 >
                   <CardHeader className="flex flex-row items-start justify-between">
                       <div>
@@ -234,8 +233,12 @@ export default function ServersPage() {
                         <ServerRatingDisplay server={server} />
                      </div>
                   </CardContent>
-                  <CardFooter className="flex justify-end">
-                      <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); handleOpenTransactionModal(server); }}>
+                  <CardFooter className="flex justify-end gap-2">
+                      <Button variant="outline" size="icon" onClick={() => handleOpenDetails(server)}>
+                          <MoreVertical />
+                          <span className="sr-only">{t('details')}</span>
+                      </Button>
+                      <Button variant="outline" size="icon" onClick={() => handleOpenTransactionModal(server)}>
                           <Settings />
                           <span className="sr-only">{t('manage')}</span>
                       </Button>
