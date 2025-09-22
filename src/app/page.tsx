@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -133,7 +134,7 @@ export default function Dashboard() {
   return (
     <div className="flex flex-1 flex-col gap-6 md:gap-10">
       <div className="grid gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-5">
-        <Card className="animate-glow">
+        <Card className="shadow-glow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-base font-medium">{t('totalClients')}</CardTitle>
             <Users className="h-5 w-5 text-muted-foreground" />
@@ -142,7 +143,7 @@ export default function Dashboard() {
             <div className="text-3xl font-bold">{totalClients}</div>
           </CardContent>
         </Card>
-        <Card className="animate-glow">
+        <Card className="shadow-glow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-base font-medium">
               {t('serversOnline')}
@@ -158,7 +159,7 @@ export default function Dashboard() {
             </p>
           </CardContent>
         </Card>
-        <Card className="animate-glow">
+        <Card className="shadow-glow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-base font-medium">
               {t('newSubscriptions')}
@@ -172,7 +173,7 @@ export default function Dashboard() {
             </p>
           </CardContent>
         </Card>
-        <Card className="animate-glow">
+        <Card className="shadow-glow">
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-medium">{t('expiringSubscriptions')}</CardTitle>
           </CardHeader>
@@ -200,7 +201,7 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
-         <Card className="animate-glow">
+         <Card className="shadow-glow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-base font-medium">{t('activeTests')}</CardTitle>
             <TestTube className="h-5 w-5 text-green-500" />
