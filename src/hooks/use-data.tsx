@@ -393,6 +393,13 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             description: `Compra de créditos: ${serverName}`,
             sourceTransactionId: newTransactionId,
         });
+    } else if (transactionData.type === 'reversal' && transactionData.totalValue !== 0) {
+      addCashFlowEntry({
+        type: 'income',
+        amount: Math.abs(transactionData.totalValue),
+        description: `Estorno de compra de créditos: ${serverName}`,
+        sourceTransactionId: newTransactionId,
+      });
     }
   }, [addCashFlowEntry]);
 
