@@ -336,8 +336,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     if (clientsUsingServer.length > 0) {
         toast({
-            variant: "destructive",
-            title: t('deleteServerWarningTitle'),
+            title: t('success'),
             description: t('deleteServerWarningDescription', { count: clientsUsingServer.length }),
         });
     }
@@ -346,7 +345,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const updatedServers = prevServers.filter(s => s.id !== serverId);
       return updatedServers;
     });
-  }, [servers, clients, t, toast]);
+  }, [clients, t, toast]);
 
   const addTestToClient = useCallback((clientId: string, testData: Omit<Test, 'creationDate'>) => {
     const newTest: Test = {
@@ -389,8 +388,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const serverName = server.name;
     const currentStock = server.creditStock;
+    const finalQuantity = transactionData.type === 'adjustment' ? transactionData.credits : transactionData.credits;
 
-    if (currentStock + transactionData.credits < 0) {
+    if (currentStock + finalQuantity < 0) {
       toast({
           variant: "destructive",
           title: t('validationError'),
@@ -406,6 +406,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (s.id === serverId) {
           const newTransaction: Transaction = {
             ...transactionData,
+            credits: finalQuantity,
             id: newTransactionId,
             date: new Date().toISOString(),
           };
