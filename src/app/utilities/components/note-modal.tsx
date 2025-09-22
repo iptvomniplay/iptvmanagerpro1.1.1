@@ -155,7 +155,8 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
     const newRgb = { ...rgb, [channel]: numValue };
     setRgb(newRgb);
     const newHex = rgbToHex(newRgb.r, newRgb.g, newRgb.b);
-    updateColorState(newHex);
+    setSelectedColor(newHex);
+    setHsl(rgbToHsl(newRgb.r, newRgb.g, newRgb.b));
   };
 
   const handleHslChange = (channel: 'h' | 's' | 'l', value: string) => {
