@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useLanguage } from '@/hooks/use-language';
 import type { Note } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { Check, Plus, X } from 'lucide-react';
+import { Check, Plus, X, Trash2, Pencil } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
@@ -78,6 +78,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
   const [selectedColor, setSelectedColor] = React.useState('#fde047');
   const [favoriteColors, setFavoriteColors] = React.useState<string[]>([]);
   const [colorMode, setColorMode] = React.useState<'hex' | 'rgb' | 'hsl'>('hex');
+  const [isEditingPalette, setIsEditingPalette] = React.useState(false);
   
   const [rgb, setRgb] = React.useState({ r: 253, g: 224, b: 71 });
   const [hsl, setHsl] = React.useState({ h: 54, s: 97, l: 64 });
@@ -117,6 +118,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
       setContent(note?.content || '');
       const initialColor = note?.color || favoriteColors[0] || defaultPalette[0];
       updateColorState(initialColor);
+      setIsEditingPalette(false);
     }
   }, [isOpen, note, favoriteColors]);
 
@@ -166,6 +168,11 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
     setRgb(newRgb);
     setSelectedColor(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
   };
+  
+  const handleColorSwatchClick = (color: string) => {
+    if (isEditingPalette) return;
+    updateColorState(color);
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -231,30 +238,59 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
                 </Button>
               </div>
             </div>
-            <div className="flex flex-wrap gap-2 pt-2 border-t mt-4">
-              {favoriteColors.map((color) => (
-                <div key={color} className="relative group">
-                    <button
-                        type="button"
-                        className={cn(
-                            'h-9 w-9 rounded-full border-2 transition-all',
-                            selectedColor === color ? 'ring-2 ring-ring ring-offset-2' : 'border-transparent'
+            <div className="space-y-2 pt-2 border-t mt-4">
+               <div className="flex justify-between items-center">
+                 <p className="text-sm font-medium text-muted-foreground">{t('favoriteColors')}</p>
+                 <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsEditingPalette(!isEditingPalette)}
+                 >
+                   {isEditingPalette ? (
+                     <>
+                       <Check className="mr-2 h-4 w-4" />
+                       {t('done')}
+                     </>
+                   ) : (
+                     <>
+                       <Pencil className="mr-2 h-4 w-4" />
+                       {t('edit')}
+                     </>
+                   )}
+                 </Button>
+               </div>
+              <div className="flex flex-wrap gap-2">
+                {favoriteColors.map((color) => (
+                  <div key={color} className="relative group">
+                      <button
+                          type="button"
+                          className={cn(
+                              'h-9 w-9 rounded-full border-2 transition-all',
+                              !isEditingPalette && selectedColor === color ? 'ring-2 ring-ring ring-offset-2' : 'border-transparent',
+                              isEditingPalette && 'cursor-default'
+                          )}
+                          style={{ backgroundColor: color }}
+                          onClick={() => handleColorSwatchClick(color)}
+                          aria-label={`Select color ${color}`}
+                      >
+                       {isEditingPalette ? (
+                          <div className="h-full w-full bg-black/30 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Trash2 className="h-5 w-5 text-white" />
+                          </div>
+                        ) : (
+                          selectedColor === color && <Check className="h-5 w-5 mx-auto my-auto text-white" />
                         )}
-                        style={{ backgroundColor: color }}
-                        onClick={() => updateColorState(color)}
-                        aria-label={`Select color ${color}`}
-                    >
-                    {selectedColor === color && <Check className="h-5 w-5 mx-auto my-auto text-white" />}
-                    </button>
-                    <button 
-                        onClick={(e) => handleRemoveFavorite(color, e)} 
-                        className="absolute -top-2 -right-2 h-5 w-5 bg-muted rounded-full flex items-center justify-center border border-destructive/50 text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
-                        aria-label={`Remover cor ${color}`}
-                    >
-                        <X className="h-3 w-3"/>
-                    </button>
-                </div>
-              ))}
+                      </button>
+                      {isEditingPalette && (
+                         <button 
+                            onClick={(e) => handleRemoveFavorite(color, e)} 
+                            className="absolute inset-0 h-full w-full bg-transparent flex items-center justify-center"
+                            aria-label={`Remover cor ${color}`}
+                        />
+                      )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
