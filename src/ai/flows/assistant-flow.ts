@@ -19,7 +19,7 @@ export async function assistantFlow(
   input: AssistantInput
 ): Promise<string> {
     
-  const history = input.history.map((msg: any) => new Message(msg.role, msg.parts.map((p: any) => new Part(p))));
+  const history = input.history.map((msg: any) => new Message(msg.role, msg.content));
 
   const response = await ai.generate({
     history: history,
