@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -270,7 +271,7 @@ export function ServerDetailsModal({ isOpen, onClose, server: initialServer, onE
            </div>
 
            <Separator />
-           <Collapsible>
+           <Collapsible defaultOpen={true}>
              <CollapsibleTrigger className="flex items-center justify-between w-full font-semibold text-xl text-primary">
                <div className="flex items-center gap-2">
                  <Smile className="h-5 w-5" />

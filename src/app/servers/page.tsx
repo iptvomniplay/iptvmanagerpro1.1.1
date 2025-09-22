@@ -39,7 +39,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-const ServerRatingDisplay = ({ server }: { server: Server }) => {
+const ServerRatingDisplay = ({ server, onClick }: { server: Server, onClick: () => void }) => {
+  const { t } = useLanguage();
   const { ratings } = server;
   if (!ratings) {
     return <div className="text-muted-foreground">-</div>;
@@ -51,13 +52,13 @@ const ServerRatingDisplay = ({ server }: { server: Server }) => {
   const partialStar = averageRating - fullStars;
 
   const colors = ["#ef4444", "#f97316", "#eab308", "#84cc16", "#22c55e"];
-  const starColor = colors[fullStars >= 1 ? Math.min(fullStars - 1, 4) : 0];
+  const starColor = colors[fullStars >= 1 ? Math.min(Math.round(averageRating) - 1, 4) : 0];
 
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger>
-          <div className="flex items-center gap-2">
+        <TooltipTrigger asChild>
+          <button onClick={onClick} className="flex items-center gap-2">
             <div className="flex items-center">
               {[...Array(5)].map((_, i) => {
                 const starValue = i + 1;
@@ -78,10 +79,10 @@ const ServerRatingDisplay = ({ server }: { server: Server }) => {
               })}
             </div>
             <span className="font-bold text-base">{averageRating.toFixed(2)}</span>
-          </div>
+          </button>
         </TooltipTrigger>
         <TooltipContent>
-          <p>Média: {averageRating.toFixed(2)}</p>
+          <p>{t('average')}: {averageRating.toFixed(2)}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
@@ -228,15 +229,9 @@ export default function ServersPage() {
                                 client.plans?.some(plan => plan.panel.id === server.id)
                             ).length;
                             return (
-                                <TableRow key={server.id}>
+                                <TableRow key={server.id} onClick={() => handleRowClick(server)} className="cursor-pointer">
                                   <TableCell className="font-medium p-4">
-                                    <Button
-                                      variant="outline"
-                                      className="h-auto font-semibold"
-                                      onClick={() => handleRowClick(server)}
-                                    >
-                                      {server.name}
-                                    </Button>
+                                    {server.name}
                                   </TableCell>
                                   <TableCell>
                                     <DropdownMenu>
@@ -259,10 +254,10 @@ export default function ServersPage() {
                                       <span className="font-semibold">{clientCount}</span>
                                     </div>
                                   </TableCell>
-                                  <TableCell>
-                                    <ServerRatingDisplay server={server} />
+                                  <TableCell onClick={(e) => e.stopPropagation()}>
+                                    <ServerRatingDisplay server={server} onClick={() => handleRowClick(server)} />
                                   </TableCell>
-                                  <TableCell className="text-right p-4">
+                                  <TableCell className="text-right p-4" onClick={(e) => e.stopPropagation()}>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                             <Button variant="outline" size="sm">
@@ -351,5 +346,3 @@ export default function ServersPage() {
     </>
   );
 }
-
-    
