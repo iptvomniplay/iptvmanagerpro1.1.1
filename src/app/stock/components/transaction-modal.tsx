@@ -131,7 +131,7 @@ export function TransactionModal({ isOpen, onClose, server: initialServer, onAdd
             <DialogDescription>{t('viewAndManageTransactions')}</DialogDescription>
           </DialogHeader>
 
-          <div className="flex justify-between items-center bg-muted p-4 rounded-lg">
+          <div className="flex justify-between items-center p-4 rounded-lg">
              <div className="text-center">
                 <p className="text-sm text-muted-foreground">{t('creditBalance')}</p>
                 <p className="text-3xl font-bold">{server.creditStock}</p>
