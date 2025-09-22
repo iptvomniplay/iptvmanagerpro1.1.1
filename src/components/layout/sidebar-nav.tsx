@@ -20,11 +20,13 @@ export default function SidebarNav() {
   const pathname = usePathname();
   const { t } = useLanguage();
   const { clients } = useData();
-  const { isMobile, setOpenMobile } = useSidebar();
+  const { isMobile, setOpen, setOpenMobile } = useSidebar();
 
   const handleLinkClick = () => {
     if (isMobile) {
       setOpenMobile(false);
+    } else {
+      setOpen(false);
     }
   };
 
