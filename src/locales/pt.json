@@ -476,7 +476,7 @@
     "noTransactionsFound": "Nenhuma transação encontrada.",
     "purchase": "Compra",
     "consumption": "Consumo",
-    "reversal": "Estorno",
+    "reversal": "Estornar",
     "adjustment": "Ajuste",
     "creditPurchaseDescription": "Compra de {quantity} créditos.",
     "reversalOfPurchase": "Estorno da compra {id}",

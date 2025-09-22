@@ -85,7 +85,7 @@ export function TransactionModal({ isOpen, onClose, server, onAddTransaction }: 
     const reversalTransaction: Omit<Transaction, 'id' | 'date'> = {
       type: 'reversal',
       credits: -transactionToReverse.credits,
-      totalValue: -transactionToReverse.totalValue,
+      totalValue: transactionToReverse.totalValue !== 0 ? -transactionToReverse.totalValue : 0,
       unitValue: transactionToReverse.unitValue,
       description: t('reversalOfPurchase', { id: transactionToReverse.id.substring(0, 8)})
     };
@@ -179,7 +179,8 @@ export function TransactionModal({ isOpen, onClose, server, onAddTransaction }: 
                           <TableCell className="text-center">
                             {tx.type === 'purchase' && (
                                <Button variant="destructive" size="sm" onClick={() => handleReversalRequest(tx)}>
-                                  {t('cancel')}
+                                  <RotateCcw className="mr-2 h-4 w-4" />
+                                  {t('reversal')}
                                </Button>
                             )}
                           </TableCell>

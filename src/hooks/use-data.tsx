@@ -397,7 +397,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       addCashFlowEntry({
         type: 'income',
         amount: Math.abs(transactionData.totalValue),
-        description: `Estorno de compra de créditos: ${serverName}`,
+        description: `Estorno da compra de créditos: ${serverName}`,
         sourceTransactionId: newTransactionId,
       });
     }

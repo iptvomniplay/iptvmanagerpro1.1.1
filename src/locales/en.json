@@ -476,7 +476,7 @@
     "noTransactionsFound": "No transactions found.",
     "purchase": "Purchase",
     "consumption": "Consumption",
-    "reversal": "Reversal",
+    "reversal": "Reverse",
     "adjustment": "Adjustment",
     "creditPurchaseDescription": "Purchase of {quantity} credits.",
     "reversalOfPurchase": "Reversal of purchase {id}",
