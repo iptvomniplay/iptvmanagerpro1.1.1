@@ -534,5 +534,9 @@
     "clientWithInvalidPlan": "Cliente com plano inválido. O painel ou servidor foi excluído.",
     "panelOrServerDeleted": "O painel ou servidor associado a este plano foi excluído.",
     "panelDeleted": "PAINEL EXCLUÍDO",
-    "serverDeleted": "SERVIDOR EXCLUÍDO"
+    "serverDeleted": "SERVIDOR EXCLUÍDO",
+    "editEntry": "Editar Lançamento",
+    "editEntryDescription": "Modifique os detalhes do lançamento financeiro selecionado.",
+    "deleteEntryWarning": "Tem certeza de que deseja excluir este lançamento? Esta ação não pode ser desfeita.",
+    "cannotEditEntryType": "O tipo de lançamentos automatizados não pode ser alterado."
 }

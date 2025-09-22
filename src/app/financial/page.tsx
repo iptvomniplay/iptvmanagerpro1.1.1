@@ -19,8 +19,24 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
-import { DollarSign, ArrowDownUp, ArrowUp, ArrowDown, Landmark } from 'lucide-react';
+import { DollarSign, ArrowDownUp, ArrowUp, ArrowDown, Landmark, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { EntryModal } from './components/entry-modal';
@@ -28,9 +44,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function FinancialPage() {
   const { t, language } = useLanguage();
-  const { cashFlow, addCashFlowEntry } = useData();
+  const { cashFlow, addCashFlowEntry, updateCashFlowEntry, deleteCashFlowEntry } = useData();
+  
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [modalType, setModalType] = React.useState<'income' | 'expense'>('income');
+  const [editingEntry, setEditingEntry] = React.useState<CashFlowEntry | null>(null);
+
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = React.useState(false);
+  const [entryToDelete, setEntryToDelete] = React.useState<CashFlowEntry | null>(null);
+
   const [filter, setFilter] = React.useState<'all' | 'income' | 'expense'>('all');
 
   const allEntries = React.useMemo(() => {
@@ -54,14 +75,37 @@ export default function FinancialPage() {
   
   const netBalance = totalRevenue - totalExpenses;
 
-  const handleOpenModal = (type: 'income' | 'expense') => {
-    setModalType(type);
+  const handleOpenModal = (entry: CashFlowEntry | null = null) => {
+    setEditingEntry(entry);
     setIsModalOpen(true);
   };
   
-  const handleSaveEntry = (entry: Omit<CashFlowEntry, 'id' | 'date'>) => {
-    addCashFlowEntry(entry);
+  const handleSaveEntry = (entry: Omit<CashFlowEntry, 'id' | 'date'> & { id?: string }) => {
+    if (entry.id) {
+      // Update existing entry
+      const existingEntry = cashFlow.find(e => e.id === entry.id);
+      if(existingEntry) {
+        updateCashFlowEntry({ ...existingEntry, ...entry });
+      }
+    } else {
+      // Add new entry
+      addCashFlowEntry(entry);
+    }
     setIsModalOpen(false);
+    setEditingEntry(null);
+  };
+
+  const handleDeleteRequest = (entry: CashFlowEntry) => {
+    setEntryToDelete(entry);
+    setIsDeleteAlertOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (entryToDelete) {
+      deleteCashFlowEntry(entryToDelete.id);
+      setIsDeleteAlertOpen(false);
+      setEntryToDelete(null);
+    }
   };
   
   const formatCurrency = (value: number) => {
@@ -81,13 +125,9 @@ export default function FinancialPage() {
         </div>
 
         <div className="flex gap-4">
-            <Button size="lg" onClick={() => handleOpenModal('income')}>
+            <Button size="lg" onClick={() => handleOpenModal()}>
                 <ArrowUp className="mr-2 h-5 w-5" />
                 {t('addIncome')}
-            </Button>
-            <Button size="lg" variant="destructive" onClick={() => handleOpenModal('expense')}>
-                <ArrowDown className="mr-2 h-5 w-5" />
-                {t('addExpense')}
             </Button>
         </div>
         
@@ -149,11 +189,14 @@ export default function FinancialPage() {
                         <TableHead>{t('date')}</TableHead>
                         <TableHead>{t('description')}</TableHead>
                         <TableHead className="text-right">{t('value')}</TableHead>
+                        <TableHead className="text-right">{t('actions')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {filteredEntries.length > 0 ? (
-                        filteredEntries.map((entry) => (
+                        filteredEntries.map((entry) => {
+                          const isAutomated = entry.sourceServerId || entry.sourceTransactionId;
+                          return (
                           <TableRow key={entry.id}>
                             <TableCell>{format(parseISO(entry.date), 'dd/MM/yyyy')}</TableCell>
                             <TableCell className="font-medium">{entry.description}</TableCell>
@@ -162,11 +205,36 @@ export default function FinancialPage() {
                                 {entry.type === 'expense' && '- '}{formatCurrency(entry.amount)}
                               </Badge>
                             </TableCell>
+                            <TableCell className="text-right">
+                              {!isAutomated && (
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                      <span className="sr-only">{t('openMenu')}</span>
+                                      <MoreHorizontal className="h-4 w-4" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => handleOpenModal(entry)}>
+                                      <Edit className="mr-2 h-4 w-4" />
+                                      {t('edit')}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                      onClick={() => handleDeleteRequest(entry)}
+                                      className="text-destructive focus:text-destructive"
+                                    >
+                                      <Trash2 className="mr-2 h-4 w-4" />
+                                      {t('delete')}
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              )}
+                            </TableCell>
                           </TableRow>
-                        ))
+                        )})
                       ) : (
                         <TableRow>
-                          <TableCell colSpan={3} className="h-24 text-center">
+                          <TableCell colSpan={4} className="h-24 text-center">
                             {t('noTransactionsFound')}
                           </TableCell>
                         </TableRow>
@@ -183,8 +251,21 @@ export default function FinancialPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveEntry}
-        type={modalType}
+        entry={editingEntry}
       />
+
+      <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('areYouSure')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('deleteEntryWarning')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm}>{t('delete')}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

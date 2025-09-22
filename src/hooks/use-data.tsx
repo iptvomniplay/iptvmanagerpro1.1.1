@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
@@ -23,6 +24,8 @@ interface DataContextType {
   updateTestInClient: (clientId: string, testCreationDate: string, updatedTest: Partial<Test>) => void;
   addTransactionToServer: (serverId: string, transaction: Omit<Transaction, 'id' | 'date'>) => void;
   addCashFlowEntry: (entry: Omit<CashFlowEntry, 'id' | 'date'>) => void;
+  updateCashFlowEntry: (entry: CashFlowEntry) => void;
+  deleteCashFlowEntry: (entryId: string) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -163,6 +166,22 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const updatedCashFlow = [newEntry, ...prevCashFlow];
       return updatedCashFlow;
     });
+  }, []);
+  
+  const updateCashFlowEntry = useCallback((entryData: CashFlowEntry) => {
+    setCashFlow(prevCashFlow => {
+        const updatedCashFlow = prevCashFlow.map(entry =>
+            entry.id === entryData.id ? { ...entry, ...entryData } : entry
+        );
+        return updatedCashFlow;
+    });
+  }, []);
+
+  const deleteCashFlowEntry = useCallback((entryId: string) => {
+      setCashFlow(prevCashFlow => {
+          const updatedCashFlow = prevCashFlow.filter(entry => entry.id !== entryId);
+          return updatedCashFlow;
+      });
   }, []);
 
   const addClient = useCallback((clientData: Omit<Client, 'registeredDate' | 'plans' | '_tempId'>) => {
@@ -454,6 +473,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     updateTestInClient,
     addTransactionToServer,
     addCashFlowEntry,
+    updateCashFlowEntry,
+    deleteCashFlowEntry,
   };
   
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

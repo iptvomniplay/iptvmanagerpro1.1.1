@@ -342,7 +342,7 @@
     "clientIdAlreadySaved": "This Client ID has already been saved.",
     "managePendingScreens": "Manage Pending Screens",
     "allAppsConfigured": "All applications for the contracted plans have already been configured.",
-    "pendingScreensWarning": "There are {count} pending screens to be configured. Go to the 'Subscription Plans' tab to manage.",
+    "pendingAppsWarning": "There are {count} pending screens to be configured. Go to the 'Subscription Plans' tab to manage.",
     "attentionClientHasSubscription": "Attention! This client already has an active subscription.",
     "planDetailsTitle": "Plan Details",
     "planDetailsDescription": "Here are the details of the selected subscription plan.",
@@ -534,5 +534,9 @@
     "clientWithInvalidPlan": "Client with invalid plan. Panel or server has been deleted.",
     "panelOrServerDeleted": "Panel or server associated with this plan has been deleted.",
     "panelDeleted": "DELETED PANEL",
-    "serverDeleted": "DELETED SERVER"
+    "serverDeleted": "DELETED SERVER",
+    "editEntry": "Edit Entry",
+    "editEntryDescription": "Modify the details of the selected financial entry.",
+    "deleteEntryWarning": "Are you sure you want to delete this entry? This action cannot be undone.",
+    "cannotEditEntryType": "The type of automated entries cannot be changed."
 }
