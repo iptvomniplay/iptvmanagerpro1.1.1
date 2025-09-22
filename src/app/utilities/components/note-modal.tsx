@@ -86,21 +86,21 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
   const [rgb, setRgb] = React.useState({ r: 253, g: 224, b: 71 });
   const [hsl, setHsl] = React.useState({ h: 54, s: 97, l: 64 });
   
-  const updateAllColorStates = React.useCallback((colorSource: { hex?: string; rgb?: {r:number, g:number, b:number}; hsl?: {h:number, s:number, l:number} }) => {
+  const updateAllColorStates = React.useCallback((source: { hex?: string; rgb?: {r:number, g:number, b:number}; hsl?: {h:number, s:number, l:number} }) => {
     let newHex = selectedColor;
     let newRgb = { r: 0, g: 0, b: 0 };
     let newHsl = { h: 0, s: 0, l: 0 };
 
-    if (colorSource.hex && /^#([A-Fa-f0-9]{6})$/i.test(colorSource.hex)) {
-        newHex = colorSource.hex;
+    if (source.hex && /^#([A-Fa-f0-9]{6})$/i.test(source.hex)) {
+        newHex = source.hex;
         newRgb = hexToRgb(newHex);
         newHsl = rgbToHsl(newRgb.r, newRgb.g, newRgb.b);
-    } else if (colorSource.rgb) {
-        newRgb = colorSource.rgb;
+    } else if (source.rgb) {
+        newRgb = source.rgb;
         newHex = rgbToHex(newRgb.r, newRgb.g, newRgb.b);
         newHsl = rgbToHsl(newRgb.r, newRgb.g, newRgb.b);
-    } else if (colorSource.hsl) {
-        newHsl = colorSource.hsl;
+    } else if (source.hsl) {
+        newHsl = source.hsl;
         newRgb = hslToRgb(newHsl.h, newHsl.s, newHsl.l);
         newHex = rgbToHex(newRgb.r, newRgb.g, newRgb.b);
     }
@@ -109,7 +109,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
     setHexInput(newHex);
     setRgb(newRgb);
     setHsl(newHsl);
-  }, []);
+  }, [selectedColor]);
 
   const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newHex = e.target.value;
@@ -153,7 +153,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
       updateAllColorStates({ hex: initialColor });
       setIsEditingPalette(false);
     }
-  }, [isOpen, note, favoriteColors]);
+  }, [isOpen, note, favoriteColors, updateAllColorStates]);
 
   const saveFavoritesToStorage = (colors: string[]) => {
     localStorage.setItem('notepad_favorite_colors', JSON.stringify(colors));
