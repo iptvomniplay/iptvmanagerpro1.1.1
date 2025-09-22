@@ -475,7 +475,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const serverName = server.name;
     const currentStock = server.creditStock;
-    const finalQuantity = transactionData.type === 'adjustment' ? transactionData.credits : transactionData.credits;
+    const finalQuantity = transactionData.credits;
 
     if (currentStock + finalQuantity < 0) {
       toast({
@@ -509,20 +509,13 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       return updatedServers;
     });
 
-    if (transactionData.type === 'purchase' && transactionData.totalValue > 0) {
+    if (transactionData.totalValue !== 0) {
         addCashFlowEntry({
-            type: 'expense',
-            amount: transactionData.totalValue,
-            description: `Compra de créditos: ${serverName}`,
+            type: transactionData.totalValue > 0 ? 'expense' : 'income',
+            amount: Math.abs(transactionData.totalValue),
+            description: `${transactionData.description} - ${serverName}`,
             sourceTransactionId: newTransactionId,
         });
-    } else if (transactionData.type === 'reversal' && transactionData.totalValue !== 0) {
-      addCashFlowEntry({
-        type: 'income',
-        amount: Math.abs(transactionData.totalValue),
-        description: `Estorno da compra de créditos: ${serverName}`,
-        sourceTransactionId: newTransactionId,
-      });
     }
   }, [addCashFlowEntry, servers, t, toast]);
 

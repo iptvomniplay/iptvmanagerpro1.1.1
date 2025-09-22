@@ -19,20 +19,46 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 interface ManualAdjustmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (quantity: number, description: string) => void;
+  onConfirm: (quantity: number, description: string, totalValue: number) => void;
 }
 
 export function ManualAdjustmentModal({ isOpen, onClose, onConfirm }: ManualAdjustmentModalProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [adjustmentType, setAdjustmentType] = React.useState<'add' | 'remove'>('add');
   const [quantity, setQuantity] = React.useState<number | ''>('');
   const [description, setDescription] = React.useState('');
+  const [totalValue, setTotalValue] = React.useState('');
+
+   const formatCurrency = (value: number) => {
+    const locale = language === 'pt-BR' ? 'pt-BR' : 'en-US';
+    const currency = language === 'pt-BR' ? 'BRL' : 'USD';
+    return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(value);
+  };
+
+  const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/[^0-9-]/g, '');
+    if (!value || value === '-') {
+      setTotalValue(value);
+      return;
+    }
+    const isNegative = value.startsWith('-');
+    const numericPart = value.replace(/-/g, '');
+    if (!numericPart) {
+      setTotalValue(isNegative ? '-' : '');
+      return;
+    }
+    const numericValue = parseInt(numericPart, 10) / 100;
+    setTotalValue((isNegative ? '-' : '') + formatCurrency(numericValue));
+  };
+
 
   const handleConfirmClick = () => {
     const numericQuantity = Number(quantity);
-    if (numericQuantity > 0 && description) {
+    const numericValue = parseFloat(totalValue.replace(/[^0-9,.-]+/g, "").replace(',', '.')) / 100 || 0;
+    
+    if (description.trim()) {
       const finalQuantity = adjustmentType === 'add' ? numericQuantity : -numericQuantity;
-      onConfirm(finalQuantity, description);
+      onConfirm(finalQuantity, description, numericValue);
     }
   };
   
@@ -41,10 +67,11 @@ export function ManualAdjustmentModal({ isOpen, onClose, onConfirm }: ManualAdju
       setQuantity('');
       setDescription('');
       setAdjustmentType('add');
+      setTotalValue('');
     }
   }, [isOpen]);
 
-  const isFormValid = Number(quantity) > 0 && description.trim() !== '';
+  const isFormValid = description.trim() !== '' && (Number(quantity) !== 0 || totalValue.replace(/[^0-9]/g, '') !== '');
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -84,6 +111,18 @@ export function ManualAdjustmentModal({ isOpen, onClose, onConfirm }: ManualAdju
               placeholder="Ex: 10"
               autoComplete="off"
             />
+             <p className="text-xs text-muted-foreground">{t('adjustmentQuantityDescription')}</p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="totalValue">{t('Valor do Ajuste (R$)')}</Label>
+            <Input
+              id="totalValue"
+              value={totalValue}
+              onChange={handleValueChange}
+              placeholder={formatCurrency(0)}
+              autoComplete="off"
+            />
+             <p className="text-xs text-muted-foreground">{t('adjustmentValueDescription')}</p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="description">{t('description')}</Label>

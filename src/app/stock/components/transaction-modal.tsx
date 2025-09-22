@@ -67,11 +67,11 @@ export function TransactionModal({ isOpen, onClose, server: initialServer, onAdd
     setIsPurchaseModalOpen(false);
   };
   
-  const handleAdjustmentConfirm = (quantity: number, description: string) => {
+  const handleAdjustmentConfirm = (quantity: number, description: string, totalValue: number) => {
     const transaction: Omit<Transaction, 'id' | 'date'> = {
       type: 'adjustment',
       credits: quantity,
-      totalValue: 0,
+      totalValue: totalValue,
       unitValue: 0,
       description: description,
     };
