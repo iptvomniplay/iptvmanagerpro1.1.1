@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -271,7 +272,7 @@ export function ColorPickerModal({ isOpen, onClose, onSave, initialColor }: Colo
                                 aria-label={t('selectColor') + ' ' + color}
                             />
                             {isEditingFavorites && (
-                                <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onClick={() => handleRemoveFavorite(color)}>
+                                <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-full cursor-pointer" onClick={() => handleRemoveFavorite(color)}>
                                     <Trash2 className="h-5 w-5 text-white" />
                                 </div>
                             )}
