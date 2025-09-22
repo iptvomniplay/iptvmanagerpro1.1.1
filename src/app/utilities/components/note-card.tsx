@@ -32,7 +32,10 @@ export function NoteCard({ note, onEdit, onDelete, onToggleFavorite }: NoteCardP
   };
 
   return (
-    <Card style={{ backgroundColor: note.color, border: `2px solid ${note.color}` }} className="flex flex-col">
+    <Card 
+        style={{ '--note-color': note.color } as React.CSSProperties}
+        className="flex flex-col h-72 shadow-[0_0_15px_-3px_var(--note-color)] transition-shadow duration-300 hover:shadow-[0_0_25px_-5px_var(--note-color)]"
+    >
       <CardHeader className="flex flex-row items-start justify-between pb-2">
         <CardTitle className="text-lg font-bold break-words">{note.title}</CardTitle>
         <div className="flex items-center gap-1">
