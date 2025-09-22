@@ -150,7 +150,7 @@ export function TransactionModal({ isOpen, onClose, server: initialServer, onAdd
           
           <ScrollArea className="flex-1 border rounded-lg">
              <Table>
-                <TableHeader className="sticky top-0 bg-muted/80 backdrop-blur-sm">
+                <TableHeader className="sticky top-0 bg-background/80 backdrop-blur-sm">
                   <TableRow>
                     <TableHead>{t('date')}</TableHead>
                     <TableHead>{t('type')}</TableHead>
