@@ -1,9 +1,7 @@
-
-
 'use client';
 
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
-import type { Client, Server, Test, SelectedPlan, Transaction, TransactionType, CashFlowEntry } from '@/lib/types';
+import type { Client, Server, Test, SelectedPlan, Transaction, TransactionType, CashFlowEntry, Note } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
 import { clients as initialClients, servers as initialServers } from '@/lib/data';
 import { useToast } from './use-toast';
@@ -13,6 +11,7 @@ interface DataContextType {
   clients: Client[];
   servers: Server[];
   cashFlow: CashFlowEntry[];
+  notes: Note[];
   isDataLoaded: boolean;
   addClient: (clientData: Omit<Client, 'registeredDate' | 'plans' | '_tempId'>) => void;
   updateClient: (clientData: Client, options?: { skipCashFlow?: boolean }) => void;
@@ -26,6 +25,10 @@ interface DataContextType {
   addCashFlowEntry: (entry: Omit<CashFlowEntry, 'id' | 'date'>) => void;
   updateCashFlowEntry: (entry: CashFlowEntry) => void;
   deleteCashFlowEntry: (entryId: string) => void;
+  addNote: (note: Omit<Note, 'id' | 'createdAt'>) => void;
+  updateNote: (note: Note) => void;
+  deleteNote: (noteId: string) => void;
+  setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -34,6 +37,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [clients, setClients] = useState<Client[]>([]);
   const [servers, setServers] = useState<Server[]>([]);
   const [cashFlow, setCashFlow] = useState<CashFlowEntry[]>([]);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -49,6 +53,10 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       const storedCashFlow = localStorage.getItem('cashFlow');
       let loadedCashFlow: CashFlowEntry[] = storedCashFlow ? JSON.parse(storedCashFlow) : [];
+
+      const storedNotes = localStorage.getItem('notes');
+      const loadedNotes = storedNotes ? JSON.parse(storedNotes) : [];
+      setNotes(loadedNotes);
 
       const newCashFlowEntries: CashFlowEntry[] = [];
 
@@ -143,6 +151,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setClients(clientsWithTempId);
       setServers(initialServers);
       setCashFlow([]);
+      setNotes([]);
     } finally {
         setIsDataLoaded(true);
     }
@@ -153,8 +162,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       localStorage.setItem('clients', JSON.stringify(clients));
       localStorage.setItem('servers', JSON.stringify(servers));
       localStorage.setItem('cashFlow', JSON.stringify(cashFlow));
+      localStorage.setItem('notes', JSON.stringify(notes));
     }
-  }, [clients, servers, cashFlow, isDataLoaded]);
+  }, [clients, servers, cashFlow, notes, isDataLoaded]);
   
   const addCashFlowEntry = useCallback((entryData: Omit<CashFlowEntry, 'id' | 'date'>) => {
     setCashFlow(prevCashFlow => {
@@ -458,10 +468,28 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [addCashFlowEntry, servers, t, toast]);
 
+  const addNote = useCallback((noteData: Omit<Note, 'id' | 'createdAt'>) => {
+    const newNote: Note = {
+      ...noteData,
+      id: `note_${Date.now()}_${Math.random()}`,
+      createdAt: new Date().toISOString(),
+    };
+    setNotes(prev => [newNote, ...prev]);
+  }, []);
+
+  const updateNote = useCallback((noteData: Note) => {
+    setNotes(prev => prev.map(n => n.id === noteData.id ? noteData : n));
+  }, []);
+
+  const deleteNote = useCallback((noteId: string) => {
+    setNotes(prev => prev.filter(n => n.id !== noteId));
+  }, []);
+
   const value = {
     clients,
     servers,
     cashFlow,
+    notes,
     isDataLoaded,
     addClient,
     updateClient,
@@ -475,6 +503,10 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     addCashFlowEntry,
     updateCashFlowEntry,
     deleteCashFlowEntry,
+    addNote,
+    updateNote,
+    deleteNote,
+    setNotes,
   };
   
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

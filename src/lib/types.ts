@@ -126,3 +126,12 @@ export type CashFlowEntry = {
   sourceTransactionId?: string; // Vincula a uma transação de estoque
   sourceServerId?: string; // Vincula a um servidor (para custos de painel)
 };
+
+export type Note = {
+  id: string;
+  title: string;
+  content: string;
+  color: string;
+  createdAt: string;
+  favorite: boolean;
+};
