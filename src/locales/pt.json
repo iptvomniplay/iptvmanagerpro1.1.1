@@ -271,8 +271,7 @@
     "clickInsertToAddPhone": "Clique em 'Inserir' para adicionar o número à lista antes de salvar.",
     "registeredPanel": "Painel Cadastrado",
     "registeredServers": "Servidor(es) Cadastrado(s)",
-    "observations": "Observações",
-    "observationsPlaceholder": "Digite aqui qualquer anotação...",
+    "observations": "Mensagem",
     "subscription": "Assinatura",
     "addSubscription": "Adicionar Assinatura",
     "subscriptionManagement": "Gerenciamento de Assinaturas",
@@ -560,5 +559,7 @@
     "backupImportFailedDescription": "O arquivo selecionado é inválido ou está corrompido. Tente novamente com um arquivo de backup válido.",
     "printNotes": "Imprimir Anotações",
     "printNotesDescription": "Visualize e imprima suas anotações selecionadas.",
-    "selectNotesToPrint": "Selecione quais anotações você deseja imprimir."
+    "selectNotesToPrint": "Selecione quais anotações você deseja imprimir.",
+    "title": "Título",
+    "message": "Mensagem"
 }

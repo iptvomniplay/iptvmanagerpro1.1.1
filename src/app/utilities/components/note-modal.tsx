@@ -129,7 +129,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
           <ScrollArea className="flex-1 -mx-6 px-6">
             <div className="space-y-6 pt-4 pb-6">
               <div className="space-y-2">
-                <Label htmlFor="note-title">{t('name')}</Label>
+                <Label htmlFor="note-title">{t('title')}</Label>
                 <Input
                   id="note-title"
                   value={title}
@@ -139,7 +139,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="note-content">{t('observations')}</Label>
+                <Label htmlFor="note-content">{t('message')}</Label>
                 <Textarea
                   id="note-content"
                   value={content}

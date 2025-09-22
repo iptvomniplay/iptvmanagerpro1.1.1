@@ -271,8 +271,7 @@
     "clickInsertToAddPhone": "Click 'Insert' to add the number to the list before saving.",
     "registeredPanel": "Registered Panel",
     "registeredServers": "Registered Server(s)",
-    "observations": "Observations",
-    "observationsPlaceholder": "Enter any notes here...",
+    "observations": "Message",
     "subscription": "Subscription",
     "addSubscription": "Add Subscription",
     "subscriptionManagement": "Subscription Management",
@@ -560,5 +559,7 @@
     "backupImportFailedDescription": "The selected file is invalid or corrupted. Please try again with a valid backup file.",
     "printNotes": "Print Notes",
     "printNotesDescription": "View and print your selected notes.",
-    "selectNotesToPrint": "Select which notes you want to print."
+    "selectNotesToPrint": "Select which notes you want to print.",
+    "title": "Title",
+    "message": "Message"
 }
