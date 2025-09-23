@@ -2,15 +2,38 @@
 # https://firebase.google.com/docs/app-hosting/configure
 # For more information on how to build and serve your app, see
 # https://firebase.google.com/docs/app-hosting/deploy-nextjs
-
-# The name of the framework used by your app.
-# This field is required for all backends.
-#
-# Must be one of: "nextjs", "angular"
-framework: nextjs
-
 runConfig:
   cpu: 1
-  # Increase this value if you'd like to automatically spin up
-  # more instances in response to increased traffic.
   maxInstances: 1
+  minInstances: 0
+  concurrency: 100
+  ingress: all
+  vpcConnector: null
+  vpcConnectorEgress: all-traffic
+framework: nextjs
+gcpProject: studio-6237275854-f92e7
+repository: null
+backendId: studio-6237275854-f92e7-nextjs-backend
+location: us-central1
+labels: {}
+env: []
+secrets: {}
+discovery:
+  buildSystem: next
+  runCommand: npm run start
+  buildpackVersion: null
+  buildpack: null
+  baseDir: /
+  publicDir: public
+  npmrc: false
+  ci:
+    git:
+      provider: GITHUB
+      repositoryUri: ""
+      rootDirectory: /
+      branch: ""
+    pushedBy: null
+    commit: ""
+    tag: ""
+    pr: ""
+  version: ""
