@@ -14,11 +14,9 @@ import {
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/hooks/use-language';
-import { useAuth } from '@/hooks/use-auth';
 
 export default function Header() {
   const { t } = useLanguage();
-  const { user, signOut } = useAuth();
 
   return (
     <header className={cn("sticky top-0 z-10 flex h-auto items-center gap-4 border-b px-6 py-6 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-8", "bg-background ")}>
@@ -39,14 +37,12 @@ export default function Header() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>{user?.email || t('myAccount')}</DropdownMenuLabel>
+            <DropdownMenuLabel>{t('myAccount')}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link href="/settings">{t('settings')}</Link>
             </DropdownMenuItem>
             <DropdownMenuItem>{t('support')}</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={signOut}>{t('logout')}</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

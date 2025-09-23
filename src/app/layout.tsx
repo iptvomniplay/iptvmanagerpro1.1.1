@@ -7,7 +7,6 @@ import { LanguageProvider } from '@/hooks/use-language';
 import { ThemeProvider } from '@/components/theme-provider';
 import ClientOnly from '@/components/client-only';
 import { DashboardSettingsProvider } from '@/hooks/use-dashboard-settings';
-import { AuthProvider } from '@/hooks/use-auth';
 import { DataProvider } from '@/hooks/use-data';
 
 export const metadata: Metadata = {
@@ -44,11 +43,9 @@ export default function RootLayout({
           <LanguageProvider>
             <DashboardSettingsProvider>
               <ClientOnly>
-                <AuthProvider>
-                  <DataProvider>
-                    <AppLayout>{children}</AppLayout>
-                  </DataProvider>
-                </AuthProvider>
+                <DataProvider>
+                  <AppLayout>{children}</AppLayout>
+                </DataProvider>
               </ClientOnly>
             </DashboardSettingsProvider>
           </LanguageProvider>
