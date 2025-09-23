@@ -581,5 +581,6 @@
     "financialSettingsDescription": "Configure the default view for your financial data.",
     "period": "Period",
     "activationCost": "Activation Cost Value",
-    "chargedAmount": "Amount Charged to Customer"
+    "chargedAmount": "Amount Charged to Customer",
+    "signInWithGoogle": "Sign In with Google"
 }

@@ -581,5 +581,6 @@
     "financialSettingsDescription": "Configure a visualização padrão para seus dados financeiros.",
     "period": "Período",
     "activationCost": "Valor de Custo da Ativação",
-    "chargedAmount": "Valor Cobrado do Cliente"
+    "chargedAmount": "Valor Cobrado do Cliente",
+    "signInWithGoogle": "Entrar com Google"
 }
