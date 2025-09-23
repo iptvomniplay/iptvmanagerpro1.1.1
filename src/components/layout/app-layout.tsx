@@ -22,17 +22,15 @@ const UnprotectedLayout = ({ children }: { children: ReactNode }) => {
 
 const ProtectedLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <DataProvider>
-      <SidebarProvider>
-        <Sidebar>
-          <SidebarNav />
-        </Sidebar>
-        <SidebarInset>
-          <Header />
-          <main className="flex-1 p-6 md:p-8 lg:p-10 bg-background">{children}</main>
-        </SidebarInset>
-      </SidebarProvider>
-    </DataProvider>
+    <SidebarProvider>
+      <Sidebar>
+        <SidebarNav />
+      </Sidebar>
+      <SidebarInset>
+        <Header />
+        <main className="flex-1 p-6 md:p-8 lg:p-10 bg-background">{children}</main>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
 
@@ -65,5 +63,11 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     return <UnprotectedLayout>{children}</UnprotectedLayout>;
   }
 
-  return <ProtectedLayout>{children}</ProtectedLayout>;
+  return (
+    <DataProvider>
+      <ProtectedLayout>
+        {children}
+      </ProtectedLayout>
+    </DataProvider>
+  );
 }
