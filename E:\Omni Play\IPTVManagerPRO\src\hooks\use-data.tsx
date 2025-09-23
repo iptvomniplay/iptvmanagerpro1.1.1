@@ -321,7 +321,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     reader.readAsText(file);
   }, [getCollections, user, t, toast]);
 
-  const value = {
+  const value: DataContextType = {
     clients, servers, cashFlow, notes, isDataLoaded, isAuthenticated, user,
     signIn, signOut: signOutUser, addClient, updateClient, deleteClient, addServer, updateServer,
     deleteServer, addTestToClient, updateTestInClient, addTransactionToServer,

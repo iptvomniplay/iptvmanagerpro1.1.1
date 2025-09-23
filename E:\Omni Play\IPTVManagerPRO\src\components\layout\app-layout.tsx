@@ -10,12 +10,29 @@ import {
 import SidebarNav from './sidebar-nav';
 import Header from './header';
 import { useData } from '@/hooks/use-data';
+import { usePathname } from 'next/navigation';
+import LoginPage from '@/app/login/page';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
-  const { isAuthenticated } = useData();
+  const { isAuthenticated, isDataLoaded } = useData();
+  const pathname = usePathname();
 
+  if (!isDataLoaded) {
+    // Você pode mostrar um spinner de carregamento aqui
+    return <div className="flex h-screen w-screen items-center justify-center">Carregando...</div>;
+  }
+
+  if (!isAuthenticated && pathname !== '/login') {
+    return <LoginPage />;
+  }
+  
+  if (isAuthenticated && pathname === '/login') {
+    // Redireciona se já estiver autenticado e na página de login
+    return null; 
+  }
+  
   if (!isAuthenticated) {
-    return <>{children}</>;
+     return <>{children}</>;
   }
 
   return (
