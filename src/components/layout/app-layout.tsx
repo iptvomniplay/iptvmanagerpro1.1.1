@@ -13,6 +13,7 @@ import Header from './header';
 import { DataProvider } from '@/hooks/use-data';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
+import { Tv2 } from 'lucide-react';
 
 const UnprotectedLayout = ({ children }: { children: ReactNode }) => {
   return <main className="flex-1 bg-background">{children}</main>;
