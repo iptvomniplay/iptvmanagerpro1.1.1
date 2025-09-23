@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/sidebar';
 import SidebarNav from './sidebar-nav';
 import Header from './header';
-import { DataProvider } from '@/hooks/use-data';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import { Tv2 } from 'lucide-react';
@@ -64,10 +63,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <DataProvider>
-      <ProtectedLayout>
-        {children}
-      </ProtectedLayout>
-    </DataProvider>
+    <ProtectedLayout>
+      {children}
+    </ProtectedLayout>
   );
 }
