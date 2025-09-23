@@ -6,7 +6,7 @@ Este guia mostra os passos para publicar (fazer o deploy) da sua aplicação na 
 
 Antes de começar, você precisa ter duas coisas instaladas no seu computador:
 
-1.  **Node.js:** Essencial para rodar o ambiente de desenvolvimento e as ferramentas. Se não tiver, baixe e instale a partir do [site oficial do Node.js](https://nodejs.org/).
+1.  **Node.js:** Essencial para rodar o ambiente de desenvolvimento e as ferramentas. Se não tiver, baixe e instale a partir do [site oficial do Node.js](https://nodejs.org/). **Escolha a versão LTS**, que é a mais estável.
 2.  **Firebase CLI:** A ferramenta de linha de comando do Firebase para gerenciar e publicar seus projetos.
 
 ---
@@ -22,7 +22,7 @@ Se você nunca instalou a ferramenta antes, execute o seguinte comando. (Se já 
 ```bash
 npm install -g firebase-tools
 ```
-Este comando instala a ferramenta globalmente no seu sistema.
+Este comando usa o `npm` (que vem com o Node.js) para instalar a ferramenta do Firebase globalmente no seu sistema.
 
 ### Passo 2: Fazer Login na sua Conta Google
 
