@@ -11,7 +11,7 @@ import {
 import SidebarNav from './sidebar-nav';
 import Header from './header';
 import { DataProvider } from '@/hooks/use-data';
-import { AuthProvider, useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/hooks/use-auth';
 import { Skeleton } from '../ui/skeleton';
 
 const ProtectedLayout = ({ children }: { children: ReactNode }) => {
@@ -27,33 +27,34 @@ const ProtectedLayout = ({ children }: { children: ReactNode }) => {
   }
 
   if (!user) {
+    // Se não há usuário e não estamos na página de login, renderiza o filho (que deve ser a página de login)
     return <>{children}</>;
   }
   
   if (pathname === '/login') {
-    return <>{children}</>;
+     // Se há um usuário e estamos na página de login, o hook de autenticação já deve ter nos redirecionado,
+     // mas como fallback, não renderizamos nada para evitar flash de conteúdo.
+    return null;
   }
 
   return (
-    <SidebarProvider>
-      <Sidebar>
-        <SidebarNav />
-      </Sidebar>
-      <SidebarInset>
-        <Header />
-        <main className="flex-1 p-6 md:p-8 lg:p-10 bg-background">{children}</main>
-      </SidebarInset>
-    </SidebarProvider>
+    <DataProvider>
+        <SidebarProvider>
+          <Sidebar>
+            <SidebarNav />
+          </Sidebar>
+          <SidebarInset>
+            <Header />
+            <main className="flex-1 p-6 md:p-8 lg:p-10 bg-background">{children}</main>
+          </SidebarInset>
+        </SidebarProvider>
+    </DataProvider>
   );
 };
 
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
-    <AuthProvider>
-        <DataProvider>
-            <ProtectedLayout>{children}</ProtectedLayout>
-        </DataProvider>
-    </AuthProvider>
+      <ProtectedLayout>{children}</ProtectedLayout>
   );
 }
