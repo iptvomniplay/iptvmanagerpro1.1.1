@@ -10,8 +10,15 @@ import {
 } from '@/components/ui/sidebar';
 import SidebarNav from './sidebar-nav';
 import Header from './header';
+import { useData } from '@/hooks/use-data';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
+  const { isAuthenticated } = useData();
+
+  if (!isAuthenticated) {
+    return <>{children}</>;
+  }
+
   return (
     <SidebarProvider>
       <Sidebar>
@@ -20,4 +27,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       <SidebarInset>
         <Header />
         <main className="flex-1 p-6 md:p-8 lg:p-10 bg-background">{children}</main>
-      </Sidebar
+      </SidebarInset>
+    </SidebarProvider>
+  );
+}

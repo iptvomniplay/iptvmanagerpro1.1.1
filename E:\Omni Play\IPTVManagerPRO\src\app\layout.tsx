@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import AppLayout from '@/components/layout/app-layout';
@@ -41,11 +42,11 @@ export default function RootLayout({
         >
           <LanguageProvider>
             <DashboardSettingsProvider>
-              <ClientOnly>
                 <DataProvider>
-                  <AppLayout>{children}</AppLayout>
+                  <ClientOnly>
+                    <AppLayout>{children}</AppLayout>
+                  </ClientOnly>
                 </DataProvider>
-              </ClientOnly>
             </DashboardSettingsProvider>
           </LanguageProvider>
           <Toaster />

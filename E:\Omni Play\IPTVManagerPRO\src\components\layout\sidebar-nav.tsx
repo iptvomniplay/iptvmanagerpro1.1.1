@@ -1,3 +1,4 @@
+
 'use client';
 
 import { usePathname } from 'next/navigation';
@@ -11,7 +12,7 @@ import {
   SidebarFooter,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { Home, Users, Server, Settings, Tv2, Package, Wrench, Landmark } from 'lucide-react';
+import { Home, Users, Server, Settings, Tv2, Package, Wrench, Landmark, CreditCard } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useLanguage } from '@/hooks/use-language';
 import { useData } from '@/hooks/use-data';
@@ -24,15 +25,15 @@ export default function SidebarNav() {
   const handleLinkClick = () => {
     if (isMobile) {
       setOpenMobile(false);
-    } else {
-      setOpen(false);
     }
+    // We don't close on desktop to allow quick navigation
   };
 
   const links = [
     { href: '/', label: t('home'), icon: Home },
     { href: '/clients', label: t('clients'), icon: Users },
     { href: '/servers', label: t('servers'), icon: Server },
+    { href: '/subscription', label: t('subscription'), icon: CreditCard },
     { href: '/stock', label: t('stock'), icon: Package },
     { href: '/financial', label: t('financial'), icon: Landmark },
     { href: '/utilities', label: t('utilities'), icon: Wrench },
@@ -70,7 +71,7 @@ export default function SidebarNav() {
                   <SidebarMenuButton
                     asChild
                     size="lg"
-                    isActive={pathname.startsWith(link.href) && (link.href !== '/' || pathname === '/')}
+                    isActive={pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href))}
                     tooltip={{ children: link.label }}
                     className="h-20"
                   >
@@ -103,4 +104,9 @@ export default function SidebarNav() {
               ))}
             </SidebarMenu>
         </div>
-      </SidebarContent
+      </SidebarContent>
+      <SidebarFooter>
+      </SidebarFooter>
+    </>
+  );
+}
