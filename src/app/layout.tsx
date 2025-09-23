@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import AppLayout from '@/components/layout/app-layout';
@@ -6,7 +7,6 @@ import { LanguageProvider } from '@/hooks/use-language';
 import { ThemeProvider } from '@/components/theme-provider';
 import ClientOnly from '@/components/client-only';
 import { DashboardSettingsProvider } from '@/hooks/use-dashboard-settings';
-import { AuthProvider } from '@/hooks/use-auth';
 
 export const metadata: Metadata = {
   title: 'IPTV Manager Pro',
@@ -40,13 +40,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <LanguageProvider>
-           <AuthProvider>
             <DashboardSettingsProvider>
               <ClientOnly>
                 <AppLayout>{children}</AppLayout>
               </ClientOnly>
             </DashboardSettingsProvider>
-           </AuthProvider>
           </LanguageProvider>
           <Toaster />
         </ThemeProvider>
