@@ -166,7 +166,7 @@ export function ClientExpiration({
           <p className="text-center font-semibold">{t('expired')}</p>
         ) : (
           <div className="space-y-2">
-            <span className="text-sm font-medium">{remainingTimeText}</span>
+            <span className="text-sm font-medium">{remainingTimeText || t('loading')}</span>
             <Progress value={progressPercentage} className="h-2" />
           </div>
         )}
