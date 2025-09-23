@@ -1,11 +1,43 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
-import type { Client, Server, Test, SelectedPlan, Transaction, TransactionType, CashFlowEntry, Note, Application } from '@/lib/types';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  ReactNode,
+  useEffect,
+} from 'react';
+import {
+  getFirestore,
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+  deleteDoc,
+  writeBatch,
+} from 'firebase/firestore';
+import type {
+  Client,
+  Server,
+  Test,
+  Transaction,
+  CashFlowEntry,
+  Note,
+  Application,
+} from '@/lib/types';
 import { format, parseISO } from 'date-fns';
-import { clients as initialClients, servers as initialServers } from '@/lib/data';
 import { useToast } from './use-toast';
 import { useLanguage } from './use-language';
+import { app } from '@/lib/firebase'; // Import your Firebase app instance
+
+// Initialize Firestore
+const db = getFirestore(app);
+
+const clientsCol = collection(db, 'clients');
+const serversCol = collection(db, 'servers');
+const cashFlowCol = collection(db, 'cashFlow');
+const notesCol = collection(db, 'notes');
 
 interface DataContextType {
   clients: Client[];
@@ -13,21 +45,21 @@ interface DataContextType {
   cashFlow: CashFlowEntry[];
   notes: Note[];
   isDataLoaded: boolean;
-  addClient: (clientData: Omit<Client, 'registeredDate' | 'plans' | '_tempId'>) => void;
-  updateClient: (clientData: Client, options?: { skipCashFlow?: boolean }) => void;
-  deleteClient: (clientId: string) => void;
-  addServer: (serverData: Server) => void;
-  updateServer: (serverData: Server) => void;
-  deleteServer: (serverId: string) => void;
-  addTestToClient: (clientId: string, testData: Omit<Test, 'creationDate'>) => void;
-  updateTestInClient: (clientId: string, testCreationDate: string, updatedTest: Partial<Test>) => void;
-  addTransactionToServer: (serverId: string, transaction: Omit<Transaction, 'id' | 'date'>) => void;
-  addCashFlowEntry: (entry: Omit<CashFlowEntry, 'id' | 'date'>) => void;
-  updateCashFlowEntry: (entry: CashFlowEntry) => void;
-  deleteCashFlowEntry: (entryId: string) => void;
-  addNote: (note: Omit<Note, 'id' | 'createdAt'>) => void;
-  updateNote: (note: Note) => void;
-  deleteNote: (noteId: string) => void;
+  addClient: (clientData: Omit<Client, 'registeredDate' | 'plans' | '_tempId'>) => Promise<void>;
+  updateClient: (clientData: Client, options?: { skipCashFlow?: boolean }) => Promise<void>;
+  deleteClient: (clientId: string) => Promise<void>;
+  addServer: (serverData: Server) => Promise<void>;
+  updateServer: (serverData: Server) => Promise<void>;
+  deleteServer: (serverId: string) => Promise<void>;
+  addTestToClient: (clientId: string, testData: Omit<Test, 'creationDate'>) => Promise<void>;
+  updateTestInClient: (clientId: string, testCreationDate: string, updatedTest: Partial<Test>) => Promise<void>;
+  addTransactionToServer: (serverId: string, transaction: Omit<Transaction, 'id' | 'date'>) => Promise<void>;
+  addCashFlowEntry: (entry: Omit<CashFlowEntry, 'id' | 'date'>) => Promise<void>;
+  updateCashFlowEntry: (entry: CashFlowEntry) => Promise<void>;
+  deleteCashFlowEntry: (entryId: string) => Promise<void>;
+  addNote: (note: Omit<Note, 'id' | 'createdAt'>) => Promise<void>;
+  updateNote: (note: Note) => Promise<void>;
+  deleteNote: (noteId: string) => Promise<void>;
   setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
   exportData: () => void;
   importData: (file: File) => void;
@@ -35,7 +67,9 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
-export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const DataProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [clients, setClients] = useState<Client[]>([]);
   const [servers, setServers] = useState<Server[]>([]);
   const [cashFlow, setCashFlow] = useState<CashFlowEntry[]>([]);
@@ -44,206 +78,123 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const { toast } = useToast();
   const { t } = useLanguage();
 
-  useEffect(() => {
+  const fetchData = useCallback(async () => {
     try {
-      const storedClients = localStorage.getItem('clients');
-      const loadedClients = storedClients ? JSON.parse(storedClients) : initialClients.map(c => ({...c, _tempId: c._tempId || `temp_${Date.now()}_${Math.random()}`}));
-      setClients(loadedClients);
+      const [
+        clientsSnapshot,
+        serversSnapshot,
+        cashFlowSnapshot,
+        notesSnapshot,
+      ] = await Promise.all([
+        getDocs(clientsCol),
+        getDocs(serversCol),
+        getDocs(cashFlowCol),
+        getDocs(notesCol),
+      ]);
 
-      const storedServers = localStorage.getItem('servers');
-      let loadedServers: Server[] = storedServers ? JSON.parse(storedServers) : initialServers;
-      
-      const storedCashFlow = localStorage.getItem('cashFlow');
-      let loadedCashFlow: CashFlowEntry[] = storedCashFlow ? JSON.parse(storedCashFlow) : [];
+      const clientsData = clientsSnapshot.docs.map(doc => doc.data() as Client);
+      const serversData = serversSnapshot.docs.map(doc => doc.data() as Server);
+      const cashFlowData = cashFlowSnapshot.docs.map(
+        doc => doc.data() as CashFlowEntry
+      );
+      const notesData = notesSnapshot.docs.map(doc => doc.data() as Note);
 
-      const storedNotes = localStorage.getItem('notes');
-      const loadedNotes = storedNotes ? JSON.parse(storedNotes) : [];
-      setNotes(loadedNotes);
-
-      const newCashFlowEntries: CashFlowEntry[] = [];
-
-      loadedServers = loadedServers.map(server => {
-        let serverTransactions = server.transactions || [];
-
-        serverTransactions.forEach(transaction => {
-            if (transaction.type === 'purchase' && transaction.totalValue > 0) {
-                const hasEntry = loadedCashFlow.some(entry => entry.sourceTransactionId === transaction.id);
-                if (!hasEntry) {
-                    newCashFlowEntries.push({
-                        id: `cf_${Date.now()}_${Math.random()}`,
-                        date: transaction.date,
-                        type: 'expense',
-                        amount: transaction.totalValue,
-                        description: `Compra de créditos: ${server.name}`,
-                        sourceTransactionId: transaction.id
-                    });
-                }
-            }
-        });
-        
-        if (server.paymentType === 'postpaid' && server.panelValue && server.panelValue > 0) {
-          const hasEntry = loadedCashFlow.some(entry => entry.sourceServerId === server.id && entry.description.includes('Pagamento do painel'));
-          if(!hasEntry) {
-             newCashFlowEntries.push({
-                id: `cf_${Date.now()}_${Math.random()}`,
-                date: new Date().toISOString(),
-                type: 'expense',
-                amount: server.panelValue,
-                description: `Pagamento do painel: ${server.name}`,
-                sourceServerId: server.id
-            });
-          }
-        }
-        
-        const newCreditStock = serverTransactions.reduce((acc, trans) => acc + trans.credits, 0);
-
-        return {
-            ...server,
-            transactions: serverTransactions,
-            creditStock: newCreditStock < 0 ? 0 : newCreditStock
-        };
-      });
-      setServers(loadedServers);
-
-      loadedClients.forEach((client: Client) => {
-        if (client.status === 'Active' && client.plans && client.plans.length > 0) {
-          const alreadyHasEntry = loadedCashFlow.some((entry: CashFlowEntry) => 
-            entry.clientId === client._tempId && entry.description?.includes('Assinatura inicial')
-          );
-
-          if (!alreadyHasEntry) {
-            const totalAmount = client.plans.reduce((sum, plan) => sum + (plan.isCourtesy ? 0 : plan.planValue), 0);
-            if (totalAmount > 0) {
-              const incomeEntry: CashFlowEntry = {
-                id: `cf_${Date.now()}_${Math.random()}`,
-                date: client.activationDate || client.registeredDate,
-                type: 'income',
-                amount: totalAmount,
-                description: `Assinatura inicial - ${client.name}`,
-                clientId: client._tempId,
-                clientName: client.name,
-              };
-              newCashFlowEntries.push(incomeEntry);
-            }
-          }
-        }
-      });
-      
-      if (newCashFlowEntries.length > 0) {
-        loadedCashFlow = [...newCashFlowEntries, ...loadedCashFlow];
-      }
-
-      setCashFlow(loadedCashFlow);
-
+      setClients(clientsData);
+      setServers(serversData);
+      setCashFlow(cashFlowData);
+      setNotes(notesData);
     } catch (error) {
-      console.error('Failed to load data from localStorage', error);
-      const clientsWithTempId = initialClients.map(c => ({...c, _tempId: c._tempId || `temp_${Date.now()}_${Math.random()}`}));
-      setClients(clientsWithTempId);
-      setServers(initialServers);
-      setCashFlow([]);
-      setNotes([]);
+      console.error('Failed to load data from Firestore', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao carregar dados',
+        description:
+          'Não foi possível buscar os dados da nuvem. Verifique sua conexão.',
+      });
     } finally {
-        setIsDataLoaded(true);
+      setIsDataLoaded(true);
     }
-  }, []);
+  }, [toast]);
 
   useEffect(() => {
-    if (isDataLoaded) {
-      localStorage.setItem('clients', JSON.stringify(clients));
-      localStorage.setItem('servers', JSON.stringify(servers));
-      localStorage.setItem('cashFlow', JSON.stringify(cashFlow));
-      localStorage.setItem('notes', JSON.stringify(notes));
-    }
-  }, [clients, servers, cashFlow, notes, isDataLoaded]);
+    fetchData();
+  }, [fetchData]);
   
-  const addCashFlowEntry = useCallback((entryData: Omit<CashFlowEntry, 'id' | 'date'>) => {
-    setCashFlow(prevCashFlow => {
+  const addCashFlowEntry = useCallback(
+    async (entryData: Omit<CashFlowEntry, 'id' | 'date'>) => {
       const newEntry: CashFlowEntry = {
         ...entryData,
         id: `cf_${Date.now()}_${Math.random()}`,
         date: new Date().toISOString(),
       };
-      const updatedCashFlow = [newEntry, ...prevCashFlow];
-      return updatedCashFlow;
-    });
-  }, []);
+      await setDoc(doc(cashFlowCol, newEntry.id), newEntry);
+      setCashFlow(prev => [newEntry, ...prev]);
+    },
+    []
+  );
   
-  const updateCashFlowEntry = useCallback((entryData: CashFlowEntry) => {
-    setCashFlow(prevCashFlow => {
-        const updatedCashFlow = prevCashFlow.map(entry =>
-            entry.id === entryData.id ? { ...entry, ...entryData } : entry
-        );
-        return updatedCashFlow;
-    });
+  const updateCashFlowEntry = useCallback(async (entryData: CashFlowEntry) => {
+    await setDoc(doc(cashFlowCol, entryData.id), entryData, { merge: true });
+    setCashFlow(prev =>
+      prev.map(entry => (entry.id === entryData.id ? entryData : entry))
+    );
   }, []);
 
-  const deleteCashFlowEntry = useCallback((entryId: string) => {
-      setCashFlow(prevCashFlow => {
-          const updatedCashFlow = prevCashFlow.filter(entry => entry.id !== entryId);
-          return updatedCashFlow;
-      });
+  const deleteCashFlowEntry = useCallback(async (entryId: string) => {
+    await deleteDoc(doc(cashFlowCol, entryId));
+    setCashFlow(prev => prev.filter(entry => entry.id !== entryId));
   }, []);
 
-  const addClient = useCallback((clientData: Omit<Client, 'registeredDate' | 'plans' | '_tempId'>) => {
-    setClients(prevClients => {
-        const newClient: Client = {
-            ...(clientData as Client),
-            _tempId: `temp_${Date.now()}_${Math.random()}`,
-            id: clientData.id || '',
-            registeredDate: format(new Date(), 'yyyy-MM-dd'),
-            birthDate: clientData.birthDate || '',
-            plans: [],
-        };
-        const updatedClients = [newClient, ...prevClients];
-        return updatedClients;
-    });
-  }, []);
 
-  const updateClient = useCallback((clientData: Client, options?: { skipCashFlow?: boolean }) => {
-    const previousClientState = clients.find(c => c._tempId === clientData._tempId);
+  const addClient = useCallback(
+    async (clientData: Omit<Client, 'registeredDate' | 'plans' | '_tempId'>) => {
+      const tempId = `temp_${Date.now()}_${Math.random()}`;
+      const newClient: Client = {
+        ...(clientData as Client),
+        _tempId: tempId,
+        id: clientData.id || tempId, // Use tempId if manual ID is not provided
+        registeredDate: format(new Date(), 'yyyy-MM-dd'),
+        birthDate: clientData.birthDate || '',
+        plans: [],
+      };
+      await setDoc(doc(clientsCol, newClient._tempId), newClient);
+      setClients(prevClients => [newClient, ...prevClients]);
+    },
+    []
+  );
 
-    const handleAppActivationCashFlow = (oldApps: Application[], newApps: Application[]) => {
-      newApps.forEach(newApp => {
-        const oldApp = oldApps.find(
-          old => old.planId === newApp.planId && old.screenNumber === newApp.screenNumber
-        );
+ const updateClient = useCallback(
+    async (clientData: Client, options?: { skipCashFlow?: boolean }) => {
+      const previousClientState = clients.find(c => c._tempId === clientData._tempId);
 
-        if (!oldApp && !newApp.isPreExisting && newApp.licenseType === 'Anual') {
-          const sourceAppId = `${newApp.planId}-${newApp.screenNumber}`;
-          
-          if (newApp.chargedAmount && newApp.chargedAmount > 0) {
-            addCashFlowEntry({
-              type: 'income',
-              amount: newApp.chargedAmount,
-              description: `Receita de ativação: ${newApp.name} para ${clientData.name}`,
-              clientId: clientData._tempId,
-              clientName: clientData.name,
-              sourceApplicationId: sourceAppId,
-            });
-          }
-          if (newApp.activationCost && newApp.activationCost > 0) {
-            addCashFlowEntry({
-              type: 'expense',
-              amount: newApp.activationCost,
-              description: `Custo de ativação: ${newApp.name} para ${clientData.name}`,
-              clientId: clientData._tempId,
-              clientName: clientData.name,
-              sourceApplicationId: sourceAppId,
-            });
-          }
+      await setDoc(doc(clientsCol, clientData._tempId), clientData, { merge: true });
+       setClients(prevClients =>
+        prevClients.map(c => (c._tempId === clientData._tempId ? clientData : c))
+      );
+
+      const handleAppActivationCashFlow = async (oldApps: Application[], newApps: Application[]) => {
+        for (const newApp of newApps) {
+            const oldApp = oldApps.find(old => old.planId === newApp.planId && old.screenNumber === newApp.screenNumber);
+            if (!oldApp && !newApp.isPreExisting && newApp.licenseType === 'Anual') {
+                const sourceAppId = `${newApp.planId}-${newApp.screenNumber}`;
+                if (newApp.chargedAmount && newApp.chargedAmount > 0) {
+                    await addCashFlowEntry({ type: 'income', amount: newApp.chargedAmount, description: `Receita de ativação: ${newApp.name} para ${clientData.name}`, clientId: clientData._tempId, clientName: clientData.name, sourceApplicationId: sourceAppId });
+                }
+                if (newApp.activationCost && newApp.activationCost > 0) {
+                    await addCashFlowEntry({ type: 'expense', amount: newApp.activationCost, description: `Custo de ativação: ${newApp.name} para ${clientData.name}`, clientId: clientData._tempId, clientName: clientData.name, sourceApplicationId: sourceAppId });
+                }
+            }
         }
-      });
     };
     
     if (previousClientState?.applications && clientData.applications) {
-      handleAppActivationCashFlow(previousClientState.applications, clientData.applications);
+      await handleAppActivationCashFlow(previousClientState.applications, clientData.applications);
     }
-
-
-    if (!options?.skipCashFlow && clientData.status === 'Active' && previousClientState?.status !== 'Active' && clientData.plans) {
+      
+      if (!options?.skipCashFlow && clientData.status === 'Active' && previousClientState?.status !== 'Active' && clientData.plans) {
         const totalAmount = clientData.plans.reduce((sum, plan) => sum + (plan.isCourtesy ? 0 : plan.planValue), 0);
         if (totalAmount > 0) {
-            addCashFlowEntry({
+            await addCashFlowEntry({
                 type: 'income',
                 amount: totalAmount,
                 description: `Assinatura inicial - ${clientData.name}`,
@@ -252,224 +203,183 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             });
         }
         
-        setServers(prevServers => {
-            const updatedServers = [...prevServers];
-            let cashFlowEntries: Omit<CashFlowEntry, 'id' | 'date'>[] = [];
+        // This part needs careful handling of state updates
+        const serversToUpdate = new Map<string, Server>();
+        const cashFlowPromises: Promise<void>[] = [];
 
-            clientData.plans?.forEach(plan => {
-                const serverIndex = updatedServers.findIndex(s => s.id === plan.panel.id);
-                if (serverIndex !== -1) {
-                    const server = updatedServers[serverIndex];
-                    const creditsToConsume = 1; 
-
-                    const purchaseTransactions = (server.transactions || [])
-                        .filter(t => t.type === 'purchase')
-                        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-                    let costOfConsumption = 0;
-                    if (purchaseTransactions.length > 0) {
-                        costOfConsumption = creditsToConsume * purchaseTransactions[0].unitValue;
-                    }
-
-                    const consumptionTransaction: Omit<Transaction, 'id' | 'date'> = {
-                        type: 'consumption',
-                        credits: -creditsToConsume,
-                        description: `Consumo para cliente ${clientData.name} (${plan.plan.name})`,
-                        totalValue: -costOfConsumption,
-                        unitValue: costOfConsumption,
-                    };
-                    
-                    const newTransaction: Transaction = {
-                        ...consumptionTransaction,
-                        id: `trans_${Date.now()}_${Math.random()}`,
-                        date: new Date().toISOString(),
-                    };
-
-                    const updatedTransactions = [newTransaction, ...(server.transactions || [])];
-                    const newCreditStock = updatedTransactions.reduce((acc, trans) => acc + trans.credits, 0);
-
-                    updatedServers[serverIndex] = { ...server, transactions: updatedTransactions, creditStock: newCreditStock };
-
-                     if (costOfConsumption > 0) {
-                        cashFlowEntries.push({
-                            type: 'expense',
-                            amount: costOfConsumption,
-                            description: `Custo do crédito: ${clientData.name} (${plan.plan.name})`,
-                            clientId: clientData._tempId,
-                            clientName: clientData.name,
-                            sourceTransactionId: newTransaction.id,
-                        });
-                    }
+        clientData.plans?.forEach(plan => {
+            const serverToUpdate = servers.find(s => s.id === plan.panel.id);
+            if (serverToUpdate) {
+                const creditsToConsume = 1;
+                const purchaseTransactions = (serverToUpdate.transactions || []).filter(t => t.type === 'purchase').sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+                let costOfConsumption = 0;
+                if (purchaseTransactions.length > 0) {
+                    costOfConsumption = creditsToConsume * purchaseTransactions[0].unitValue;
                 }
-            });
-            
-            if (cashFlowEntries.length > 0) {
-                setCashFlow(prevCashFlow => {
-                    const newEntries = cashFlowEntries.map(entry => ({
-                        ...entry,
-                        id: `cf_${Date.now()}_${Math.random()}`,
-                        date: new Date().toISOString(),
-                    }));
-                    const updatedCashFlow = [...newEntries, ...prevCashFlow];
-                    return updatedCashFlow;
-                });
-            }
-            return updatedServers;
-        });
-    }
-    
-    setClients(prevClients => {
-       const updatedClients = prevClients.map(c => 
-        (c._tempId === clientData._tempId) ? { ...c, ...clientData } : c
-      );
-       return updatedClients;
-    });
-  }, [clients, addCashFlowEntry]);
 
-  const deleteClient = useCallback((tempId: string) => {
-    setClients(prevClients => {
-      const updatedClients = prevClients.filter(c => c._tempId !== tempId);
-      return updatedClients;
-    });
+                const newTransaction: Transaction = {
+                    type: 'consumption',
+                    credits: -creditsToConsume,
+                    description: `Consumo para cliente ${clientData.name} (${plan.plan.name})`,
+                    totalValue: -costOfConsumption,
+                    unitValue: costOfConsumption,
+                    id: `trans_${Date.now()}_${Math.random()}`,
+                    date: new Date().toISOString(),
+                };
+
+                const updatedTransactions = [newTransaction, ...(serverToUpdate.transactions || [])];
+                const newCreditStock = updatedTransactions.reduce((acc, trans) => acc + trans.credits, 0);
+
+                const updatedServer = { ...serverToUpdate, transactions: updatedTransactions, creditStock: newCreditStock };
+                serversToUpdate.set(serverToUpdate.id, updatedServer);
+
+                if (costOfConsumption > 0) {
+                    cashFlowPromises.push(addCashFlowEntry({
+                        type: 'expense',
+                        amount: costOfConsumption,
+                        description: `Custo do crédito: ${clientData.name} (${plan.plan.name})`,
+                        clientId: clientData._tempId,
+                        clientName: clientData.name,
+                        sourceTransactionId: newTransaction.id,
+                    }));
+                }
+            }
+        });
+
+        const batch = writeBatch(db);
+        serversToUpdate.forEach((server, id) => {
+            batch.set(doc(serversCol, id), server, { merge: true });
+        });
+        await Promise.all([batch.commit(), ...cashFlowPromises]);
+
+        setServers(prevServers => prevServers.map(s => serversToUpdate.get(s.id) || s));
+    }
+    }, [clients, servers, addCashFlowEntry]
+  );
+  
+  const deleteClient = useCallback(async (tempId: string) => {
+    await deleteDoc(doc(clientsCol, tempId));
+    setClients(prevClients => prevClients.filter(c => c._tempId !== tempId));
   }, []);
 
-  const addServer = useCallback((serverData: Server & { hasInitialPurchase?: boolean; initialCredits?: number; initialPurchaseValue?: number }) => {
-    const newServerId = `S${(Math.random() * 100).toFixed(0).padStart(2, '0')}`;
-    let initialTransactions: Transaction[] = [];
-    let creditStock = 0;
-    
-    if (serverData.hasInitialPurchase && serverData.initialCredits && serverData.initialPurchaseValue !== undefined) {
-      const unitValue = serverData.initialCredits > 0 ? serverData.initialPurchaseValue / serverData.initialCredits : 0;
-      const initialPurchase: Transaction = {
-        id: `trans_${Date.now()}_${Math.random()}`,
-        date: new Date().toISOString(),
-        type: 'purchase',
-        credits: serverData.initialCredits,
-        totalValue: serverData.initialPurchaseValue,
-        unitValue: unitValue,
-        description: t('initialPurchase'),
-      };
-      initialTransactions.push(initialPurchase);
-      creditStock = serverData.initialCredits;
+  const addServer = useCallback(
+    async (serverData: Server & { hasInitialPurchase?: boolean; initialCredits?: number; initialPurchaseValue?: number }) => {
+      const newServerId = `S${Date.now()}${(Math.random() * 100).toFixed(0).padStart(3, '0')}`;
+      let initialTransactions: Transaction[] = [];
+      let creditStock = 0;
 
-      if (serverData.initialPurchaseValue > 0) {
-        addCashFlowEntry({
-          type: 'expense',
-          amount: serverData.initialPurchaseValue,
-          description: `Compra de créditos: ${serverData.name}`,
-          sourceTransactionId: initialPurchase.id
-        });
+      if (serverData.hasInitialPurchase && serverData.initialCredits && serverData.initialPurchaseValue !== undefined) {
+        const unitValue = serverData.initialCredits > 0 ? serverData.initialPurchaseValue / serverData.initialCredits : 0;
+        const initialPurchase: Transaction = {
+          id: `trans_${Date.now()}_${Math.random()}`,
+          date: new Date().toISOString(),
+          type: 'purchase',
+          credits: serverData.initialCredits,
+          totalValue: serverData.initialPurchaseValue,
+          unitValue: unitValue,
+          description: t('initialPurchase'),
+        };
+        initialTransactions.push(initialPurchase);
+        creditStock = serverData.initialCredits;
+
+        if (serverData.initialPurchaseValue > 0) {
+          await addCashFlowEntry({
+            type: 'expense',
+            amount: serverData.initialPurchaseValue,
+            description: `Compra de créditos: ${serverData.name}`,
+            sourceTransactionId: initialPurchase.id,
+          });
+        }
       }
-    }
 
-
-    setServers(prevServers => {
-        const newServer: Server = {
+      const newServer: Server = {
         ...serverData,
         id: newServerId,
         status: 'Online',
         subServers: serverData.subServers || [],
         transactions: initialTransactions,
-        creditStock: creditStock
-        };
-        const updatedServers = [newServer, ...prevServers];
-        return updatedServers;
-    });
-    
-    if (serverData.paymentType === 'postpaid' && serverData.panelValue && serverData.panelValue > 0) {
-      addCashFlowEntry({
-        type: 'expense',
-        amount: serverData.panelValue,
-        description: `Pagamento do painel: ${serverData.name}`,
-        sourceServerId: newServerId
-      });
-    }
+        creditStock: creditStock,
+      };
 
-  }, [addCashFlowEntry, t]);
-
-  const updateServer = useCallback((serverData: Server) => {
+      await setDoc(doc(serversCol, newServer.id), newServer);
+      setServers(prevServers => [newServer, ...prevServers]);
+      
+      if (serverData.paymentType === 'postpaid' && serverData.panelValue && serverData.panelValue > 0) {
+        await addCashFlowEntry({
+          type: 'expense',
+          amount: serverData.panelValue,
+          description: `Pagamento do painel: ${serverData.name}`,
+          sourceServerId: newServerId,
+        });
+      }
+    },
+    [addCashFlowEntry, t]
+  );
+  
+  const updateServer = useCallback(async (serverData: Server) => {
     const oldServer = servers.find(s => s.id === serverData.id);
     
-    setServers(prevServers => {
-      const updatedServers = prevServers.map(s => (s.id === serverData.id ? {...s, ...serverData} : s));
-      return updatedServers;
-    });
+    await setDoc(doc(serversCol, serverData.id), serverData, { merge: true });
+    setServers(prevServers => prevServers.map(s => (s.id === serverData.id ? serverData : s)));
     
     if (serverData.paymentType === 'postpaid' && serverData.panelValue && serverData.panelValue > 0) {
       if (!oldServer || oldServer.panelValue !== serverData.panelValue) {
-        setCashFlow(prev => {
-          const newFlow = prev.filter(entry => !(entry.sourceServerId === serverData.id && entry.description.includes('Pagamento do painel')));
-          const newEntry: CashFlowEntry = {
-            id: `cf_${Date.now()}_${Math.random()}`,
-            date: new Date().toISOString(),
-            type: 'expense',
-            amount: serverData.panelValue!,
-            description: `Pagamento do painel: ${serverData.name}`,
-            sourceServerId: serverData.id
-          };
-          return [newEntry, ...newFlow];
+        const existingEntries = cashFlow.filter(entry => entry.sourceServerId === serverData.id && entry.description.includes('Pagamento do painel'));
+        const batch = writeBatch(db);
+        existingEntries.forEach(entry => batch.delete(doc(cashFlowCol, entry.id)));
+        await batch.commit();
+
+        await addCashFlowEntry({
+          type: 'expense',
+          amount: serverData.panelValue!,
+          description: `Pagamento do painel: ${serverData.name}`,
+          sourceServerId: serverData.id
         });
       }
-    } else if (serverData.paymentType !== 'postpaid') {
-      setCashFlow(prev => prev.filter(entry => !(entry.sourceServerId === serverData.id && entry.description.includes('Pagamento do painel'))));
+    } else if (serverData.paymentType !== 'postpaid' && oldServer?.paymentType === 'postpaid') {
+        const existingEntries = cashFlow.filter(entry => entry.sourceServerId === serverData.id && entry.description.includes('Pagamento do painel'));
+        const batch = writeBatch(db);
+        existingEntries.forEach(entry => batch.delete(doc(cashFlowCol, entry.id)));
+        await batch.commit();
+        setCashFlow(prev => prev.filter(entry => !(entry.sourceServerId === serverData.id && entry.description.includes('Pagamento do painel'))));
     }
-
-  }, [servers]);
-
-  const deleteServer = useCallback((serverId: string) => {
-    const clientsUsingServer = clients.filter(client => 
-        client.plans?.some(plan => plan.panel.id === serverId)
-    );
-
+  }, [servers, cashFlow, addCashFlowEntry]);
+  
+  const deleteServer = useCallback(async (serverId: string) => {
+    const clientsUsingServer = clients.filter(client => client.plans?.some(plan => plan.panel.id === serverId));
     if (clientsUsingServer.length > 0) {
-        toast({
-            title: t('success'),
-            description: t('deleteServerWarningDescription', { count: clientsUsingServer.length }),
-        });
+        toast({ title: t('deleteServerWarningTitle'), description: t('deleteServerWarningDescription', { count: clientsUsingServer.length }) });
     }
-
-    setServers(prevServers => {
-      const updatedServers = prevServers.filter(s => s.id !== serverId);
-      return updatedServers;
-    });
+    await deleteDoc(doc(serversCol, serverId));
+    setServers(prevServers => prevServers.filter(s => s.id !== serverId));
   }, [clients, t, toast]);
+  
+  const addTestToClient = useCallback(async (clientId: string, testData: Omit<Test, 'creationDate'>) => {
+    const client = clients.find(c => c._tempId === clientId);
+    if (!client) return;
 
-  const addTestToClient = useCallback((clientId: string, testData: Omit<Test, 'creationDate'>) => {
     const newTest: Test = {
       ...testData,
       creationDate: new Date().toISOString(),
     };
-    setClients(prev => {
-        const updatedClients = prev.map(client => {
-            if (client.id === clientId || client._tempId === clientId) {
-              return { ...client, tests: [...(client.tests || []), newTest] };
-            }
-            return client;
-        });
-        return updatedClients;
-      }
+    
+    const updatedTests = [...(client.tests || []), newTest];
+    const updatedClient = { ...client, tests: updatedTests };
+
+    await updateClient(updatedClient);
+  }, [clients, updateClient]);
+  
+  const updateTestInClient = useCallback(async (clientId: string, testCreationDate: string, updatedTest: Partial<Test>) => {
+    const client = clients.find(c => c._tempId === clientId);
+    if (!client) return;
+    
+    const newTests = (client.tests || []).map(test =>
+      test.creationDate === testCreationDate ? { ...test, ...updatedTest } : test
     );
-  }, []);
+    await updateClient({ ...client, tests: newTests });
+  }, [clients, updateClient]);
 
-  const updateTestInClient = useCallback((clientId: string, testCreationDate: string, updatedTest: Partial<Test>) => {
-    setClients(prev => {
-      const updatedClients = prev.map(client => {
-        if (client._tempId === clientId) {
-          const newTests = (client.tests || []).map(test => {
-            if (test.creationDate === testCreationDate) {
-              return { ...test, ...updatedTest };
-            }
-            return test;
-          });
-          return { ...client, tests: newTests };
-        }
-        return client;
-      });
-      return updatedClients;
-    });
-  }, []);
-
-  const addTransactionToServer = useCallback((serverId: string, transactionData: Omit<Transaction, 'id' | 'date'>) => {
+  const addTransactionToServer = useCallback(async (serverId: string, transactionData: Omit<Transaction, 'id' | 'date'>) => {
     const server = servers.find(s => s.id === serverId);
     if (!server) return;
 
@@ -478,71 +388,53 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const finalQuantity = transactionData.credits;
 
     if (currentStock + finalQuantity < 0) {
-      toast({
-          variant: "destructive",
-          title: t('validationError'),
-          description: t('negativeStockError'),
-      });
+      toast({ variant: "destructive", title: t('validationError'), description: t('negativeStockError') });
       return;
     }
-
-    const newTransactionId = `trans_${Date.now()}_${Math.random()}`;
-
-    setServers(prevServers => {
-      const updatedServers = prevServers.map(s => {
-        if (s.id === serverId) {
-          const newTransaction: Transaction = {
-            ...transactionData,
-            credits: finalQuantity,
-            id: newTransactionId,
-            date: new Date().toISOString(),
-          };
-          
-          let updatedTransactions = [newTransaction, ...(s.transactions || [])];
-          
-          const newCreditStock = s.creditStock + newTransaction.credits;
-
-          return { ...s, transactions: updatedTransactions, creditStock: newCreditStock };
-        }
-        return s;
-      });
-      return updatedServers;
-    });
+    
+    const newTransaction: Transaction = {
+        ...transactionData,
+        id: `trans_${Date.now()}_${Math.random()}`,
+        date: new Date().toISOString(),
+    };
+    
+    const updatedTransactions = [newTransaction, ...(server.transactions || [])];
+    const newCreditStock = server.creditStock + newTransaction.credits;
+    
+    await updateServer({ ...server, transactions: updatedTransactions, creditStock: newCreditStock });
 
     if (transactionData.totalValue !== 0) {
-        addCashFlowEntry({
+        await addCashFlowEntry({
             type: transactionData.totalValue > 0 ? 'expense' : 'income',
             amount: Math.abs(transactionData.totalValue),
             description: `${transactionData.description} - ${serverName}`,
-            sourceTransactionId: newTransactionId,
+            sourceTransactionId: newTransaction.id,
         });
     }
-  }, [addCashFlowEntry, servers, t, toast]);
-
-  const addNote = useCallback((noteData: Omit<Note, 'id' | 'createdAt'>) => {
+  }, [servers, t, toast, updateServer, addCashFlowEntry]);
+  
+  const addNote = useCallback(async (noteData: Omit<Note, 'id' | 'createdAt'>) => {
     const newNote: Note = {
       ...noteData,
       id: `note_${Date.now()}_${Math.random()}`,
       createdAt: new Date().toISOString(),
     };
+    await setDoc(doc(notesCol, newNote.id), newNote);
     setNotes(prev => [newNote, ...prev]);
   }, []);
-
-  const updateNote = useCallback((noteData: Note) => {
-    setNotes(prev => prev.map(n => n.id === noteData.id ? noteData : n));
+  
+  const updateNote = useCallback(async (noteData: Note) => {
+    await setDoc(doc(notesCol, noteData.id), noteData, { merge: true });
+    setNotes(prev => prev.map(n => (n.id === noteData.id ? noteData : n)));
   }, []);
 
-  const deleteNote = useCallback((noteId: string) => {
+  const deleteNote = useCallback(async (noteId: string) => {
+    await deleteDoc(doc(notesCol, noteId));
     setNotes(prev => prev.filter(n => n.id !== noteId));
   }, []);
-  
+
   const exportData = useCallback(() => {
-    const dataToExport = {
-      clients,
-      servers,
-      cashFlow,
-      notes,
-    };
+    const dataToExport = { clients, servers, cashFlow, notes };
     const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -553,49 +445,52 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    toast({
-        title: t('backupExportedSuccess'),
-        description: t('backupExportedSuccessDescription'),
-    })
+    toast({ title: t('backupExportedSuccess'), description: t('backupExportedSuccessDescription') });
   }, [clients, servers, cashFlow, notes, t, toast]);
-
-  const importData = useCallback((file: File) => {
+  
+  const importData = useCallback(async (file: File) => {
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       try {
         const result = event.target?.result;
-        if (typeof result !== 'string') {
-          throw new Error('File could not be read');
-        }
-        const importedData = JSON.parse(result);
+        if (typeof result !== 'string') throw new Error('File could not be read');
         
-        // Basic validation
-        if (Array.isArray(importedData.clients) && Array.isArray(importedData.servers) && Array.isArray(importedData.cashFlow) && Array.isArray(importedData.notes)) {
-          setClients(importedData.clients);
-          setServers(importedData.servers);
-          setCashFlow(importedData.cashFlow);
-          setNotes(importedData.notes);
-          toast({
-              title: t('backupImportedSuccess'),
-              description: t('backupImportedSuccessDescription'),
-          });
-        } else {
-          throw new Error('Invalid backup file format');
+        const importedData = JSON.parse(result);
+        if ( !Array.isArray(importedData.clients) || !Array.isArray(importedData.servers) || !Array.isArray(importedData.cashFlow) || !Array.isArray(importedData.notes) ) {
+            throw new Error('Invalid backup file format');
         }
+
+        const batch = writeBatch(db);
+
+        // Clear existing data
+        const existingDocs = await Promise.all([ getDocs(clientsCol), getDocs(serversCol), getDocs(cashFlowCol), getDocs(notesCol) ]);
+        existingDocs.forEach(snapshot => snapshot.forEach(doc => batch.delete(doc.ref)));
+        
+        // Add new data
+        importedData.clients.forEach((item: Client) => batch.set(doc(clientsCol, item._tempId), item));
+        importedData.servers.forEach((item: Server) => batch.set(doc(serversCol, item.id), item));
+        importedData.cashFlow.forEach((item: CashFlowEntry) => batch.set(doc(cashFlowCol, item.id), item));
+        importedData.notes.forEach((item: Note) => batch.set(doc(notesCol, item.id), item));
+
+        await batch.commit();
+        
+        // Update state
+        setClients(importedData.clients);
+        setServers(importedData.servers);
+        setCashFlow(importedData.cashFlow);
+        setNotes(importedData.notes);
+
+        toast({ title: t('backupImportedSuccess'), description: t('backupImportedSuccessDescription') });
+
       } catch (error) {
         console.error('Failed to import data:', error);
-        toast({
-            variant: "destructive",
-            title: t('backupImportFailed'),
-            description: t('backupImportFailedDescription'),
-        });
+        toast({ variant: "destructive", title: t('backupImportFailed'), description: t('backupImportFailedDescription') });
       }
     };
     reader.readAsText(file);
   }, [t, toast]);
-
-
-  const value = {
+  
+  const value: DataContextType = {
     clients,
     servers,
     cashFlow,
@@ -620,8 +515,10 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     exportData,
     importData,
   };
-  
-  return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
+
+  return (
+    <DataContext.Provider value={value}>{children}</DataContext.Provider>
+  );
 };
 
 export const useData = (): DataContextType => {
