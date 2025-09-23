@@ -1,39 +1,8 @@
 # Settings to manage and configure a Firebase App Hosting backend.
 # https://firebase.google.com/docs/app-hosting/configure
-# For more information on how to build and serve your app, see
-# https://firebase.google.com/docs/app-hosting/deploy-nextjs
+framework: nextjs
 runConfig:
   cpu: 1
-  maxInstances: 1
-  minInstances: 0
-  concurrency: 100
-  ingress: all
-  vpcConnector: null
-  vpcConnectorEgress: all-traffic
-framework: nextjs
-gcpProject: studio-6237275854-f92e7
-repository: null
-backendId: studio-6237275854-f92e7-nextjs-backend
-location: us-central1
-labels: {}
-env: []
-secrets: {}
-discovery:
-  buildSystem: next
-  runCommand: npm run start
-  buildpackVersion: null
-  buildpack: null
-  baseDir: /
-  publicDir: public
-  npmrc: false
-  ci:
-    git:
-      provider: GITHUB
-      repositoryUri: ""
-      rootDirectory: /
-      branch: ""
-    pushedBy: null
-    commit: ""
-    tag: ""
-    pr: ""
-  version: ""
+  maxInstances: 2
+# Optional. The minimum number of instances to keep running.
+# minInstances: 1
