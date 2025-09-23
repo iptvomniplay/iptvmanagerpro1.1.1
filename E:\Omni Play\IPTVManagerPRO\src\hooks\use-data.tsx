@@ -256,8 +256,71 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setNotes(prev => prev.filter(n => n.id !== noteId));
   }), [getCollections, user]);
   
-  const exportData = useCallback(() => { /* ... unchanged ... */ }, [clients, servers, cashFlow, notes, t, toast]);
-  const importData = useCallback((file: File) => { /* ... needs to be adapted for authenticated user ... */ }, [getCollections, user, toast, t]);
+  const exportData = useCallback(() => {
+    if (!user) {
+      toast({ variant: 'destructive', title: 'Não autenticado' });
+      return;
+    }
+    const dataToExport = { clients, servers, cashFlow, notes };
+    const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const date = format(new Date(), 'yyyy-MM-dd');
+    link.download = `iptv-manager-pro-backup-${date}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast({ title: t('backupExportedSuccess'), description: t('backupExportedSuccessDescription') });
+  }, [clients, servers, cashFlow, notes, t, toast, user]);
+  
+  const importData = useCallback(async (file: File) => {
+    if (!user) {
+      toast({ variant: 'destructive', title: 'Não autenticado' });
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const result = event.target?.result;
+        if (typeof result !== 'string') throw new Error('File could not be read');
+        
+        const importedData = JSON.parse(result);
+        if ( !Array.isArray(importedData.clients) || !Array.isArray(importedData.servers) || !Array.isArray(importedData.cashFlow) || !Array.isArray(importedData.notes) ) {
+            throw new Error('Invalid backup file format');
+        }
+        
+        const { clientsCol, serversCol, cashFlowCol, notesCol } = getCollections(user.uid);
+        const batch = writeBatch(db);
+
+        // Clear existing data
+        const existingDocs = await Promise.all([ getDocs(clientsCol), getDocs(serversCol), getDocs(cashFlowCol), getDocs(notesCol) ]);
+        existingDocs.forEach(snapshot => snapshot.forEach(doc => batch.delete(doc.ref)));
+        
+        // Add new data
+        importedData.clients.forEach((item: Client) => batch.set(doc(clientsCol, item._tempId), item));
+        importedData.servers.forEach((item: Server) => batch.set(doc(serversCol, item.id), item));
+        importedData.cashFlow.forEach((item: CashFlowEntry) => batch.set(doc(cashFlowCol, item.id), item));
+        importedData.notes.forEach((item: Note) => batch.set(doc(notesCol, item.id), item));
+
+        await batch.commit();
+        
+        // Update state
+        setClients(importedData.clients);
+        setServers(importedData.servers);
+        setCashFlow(importedData.cashFlow);
+        setNotes(importedData.notes);
+
+        toast({ title: t('backupImportedSuccess'), description: t('backupImportedSuccessDescription') });
+
+      } catch (error) {
+        console.error('Failed to import data:', error);
+        toast({ variant: "destructive", title: t('backupImportFailed'), description: t('backupImportFailedDescription') });
+      }
+    };
+    reader.readAsText(file);
+  }, [getCollections, user, t, toast]);
 
   const value = {
     clients, servers, cashFlow, notes, isDataLoaded, isAuthenticated, user,
