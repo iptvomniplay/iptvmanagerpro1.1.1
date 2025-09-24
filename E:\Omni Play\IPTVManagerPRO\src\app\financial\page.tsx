@@ -37,7 +37,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
-import { ArrowUp, MoreHorizontal, Edit, Trash2, Eye, EyeOff, ChevronsUpDown } from 'lucide-react';
+import { ArrowUp, Landmark, MoreHorizontal, Edit, Trash2, Eye, EyeOff, ChevronsUpDown } from 'lucide-react';
 import { format, parseISO, isWithinInterval, startOfDay, endOfDay, startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { EntryModal } from './components/entry-modal';

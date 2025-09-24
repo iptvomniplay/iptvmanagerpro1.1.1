@@ -146,5 +146,3 @@ function StockPageContent() {
 export default function StockPage() {
     return <StockPageContent />;
 }
-
-    

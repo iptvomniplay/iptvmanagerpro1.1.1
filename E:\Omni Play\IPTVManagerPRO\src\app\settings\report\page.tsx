@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -203,4 +204,8 @@ export default function ReportPage() {
                             }
                         }
                     `}</style>
-                </
+                </ThemeProvider>
+            </DataProvider>
+        </LanguageProvider>
+    );
+}

@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { StickyNote, ChevronRight, Bot } from 'lucide-react';
 import Link from 'next/link';
 
-function UtilitiesPageContent() {
+export default function UtilitiesPage() {
   const { t } = useLanguage();
 
   return (
@@ -47,9 +47,3 @@ function UtilitiesPageContent() {
     </div>
   );
 }
-
-export default function UtilitiesPage() {
-    return <UtilitiesPageContent />;
-}
-
-    

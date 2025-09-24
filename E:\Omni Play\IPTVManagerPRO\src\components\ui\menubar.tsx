@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -251,4 +252,6 @@ export {
   MenubarSubContent,
   MenubarSubTrigger,
   MenubarGroup,
-  MenubarSub
+  MenubarSub,
+  MenubarShortcut,
+}

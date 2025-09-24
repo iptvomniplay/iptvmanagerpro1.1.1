@@ -241,20 +241,36 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
   const addTransactionToServer = useCallback(async (serverId: string, transactionData: Omit<Transaction, 'id' | 'date'>) => {
     const server = servers.find(s => s.id === serverId);
     if (!server) return;
+
+    const serverName = server.name;
     const currentStock = server.creditStock;
-    if (currentStock + transactionData.credits < 0) {
+    const finalQuantity = transactionData.credits;
+
+    if (currentStock + finalQuantity < 0) {
       toast({ variant: "destructive", title: t('validationError'), description: t('negativeStockError') });
       return;
     }
+    
     const newTransaction: Transaction = {
         ...transactionData,
         id: `trans_${Date.now()}_${Math.random()}`,
         date: new Date().toISOString(),
     };
+    
     const updatedTransactions = [newTransaction, ...(server.transactions || [])];
-    const newCreditStock = updatedTransactions.reduce((acc, trans) => acc + trans.credits, 0);
+    const newCreditStock = server.creditStock + newTransaction.credits;
+    
     await updateServer({ ...server, transactions: updatedTransactions, creditStock: newCreditStock });
-  }, [servers, t, toast, updateServer]);
+
+    if (transactionData.totalValue !== 0) {
+        await addCashFlowEntry({
+            type: transactionData.totalValue > 0 ? 'expense' : 'income',
+            amount: Math.abs(transactionData.totalValue),
+            description: `${transactionData.description} - ${serverName}`,
+            sourceTransactionId: newTransaction.id,
+        });
+    }
+  }, [servers, t, toast, updateServer, addCashFlowEntry]);
   
   const addNote = useCallback(withAuthCheck(async (noteData: Omit<Note, 'id' | 'createdAt'>) => {
     const { notesCol } = getCollections(auth.currentUser!.uid);
@@ -349,5 +365,3 @@ export const useData = (): DataContextType => {
   }
   return context;
 };
-
-    

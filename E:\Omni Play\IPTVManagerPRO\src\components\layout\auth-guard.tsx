@@ -29,13 +29,13 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
-  if (!isAuthenticated) {
-     return (
+  if (isAuthenticated) {
+    return <AppLayout>{children}</AppLayout>;
+  }
+
+  return (
       <div className="flex h-screen w-screen items-center justify-center">
         <p>Redirecionando para o login...</p>
       </div>
-    );
-  }
-  
-  return <AppLayout>{children}</AppLayout>;
+  );
 }
