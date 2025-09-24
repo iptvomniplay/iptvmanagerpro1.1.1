@@ -2,20 +2,18 @@
 'use client';
 
 import * as React from 'react';
-import { useData } from '@/hooks/use-data';
-import { usePathname, useRouter } from 'next/navigation';
 import AppLayout from './app-layout';
+import { usePathname } from 'next/navigation';
+import { useData } from '@/hooks/use-data';
+
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isDataLoaded } = useData();
-  const router = useRouter();
   const pathname = usePathname();
+  const { isDataLoaded } = useData();
 
-  React.useEffect(() => {
-    if (isDataLoaded && !isAuthenticated && pathname !== '/login') {
-      router.replace('/login');
-    }
-  }, [isDataLoaded, isAuthenticated, router, pathname]);
+  if (pathname === '/login') {
+    return <>{children}</>;
+  }
 
   if (!isDataLoaded) {
     return (
@@ -25,17 +23,5 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (pathname === '/login') {
-    return <>{children}</>;
-  }
-
-  if (!isAuthenticated) {
-     return (
-      <div className="flex h-screen w-screen items-center justify-center">
-        <p>Redirecionando para o login...</p>
-      </div>
-    );
-  }
-  
   return <AppLayout>{children}</AppLayout>;
 }
