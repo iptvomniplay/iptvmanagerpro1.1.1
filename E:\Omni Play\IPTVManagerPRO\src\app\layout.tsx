@@ -43,10 +43,10 @@ export default function RootLayout({
             <DashboardSettingsProvider>
               <DataProvider>
                 <ClientOnly>{children}</ClientOnly>
+                <Toaster />
               </DataProvider>
             </DashboardSettingsProvider>
           </LanguageProvider>
-          <Toaster />
         </ThemeProvider>
       </body>
     </html>

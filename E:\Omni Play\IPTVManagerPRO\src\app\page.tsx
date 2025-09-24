@@ -233,7 +233,7 @@ function Dashboard() {
   );
 }
 
-export default function DashboardPage() {
+export default function HomePage() {
     return (
         <AppLayout>
             <Dashboard />

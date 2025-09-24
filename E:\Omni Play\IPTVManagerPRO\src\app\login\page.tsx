@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -8,16 +9,23 @@ import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
-  const { signIn, isAuthenticated } = useData();
+  const { signIn, isAuthenticated, isDataLoaded } = useData();
   const { t } = useLanguage();
   const router = useRouter();
 
   React.useEffect(() => {
-    if (isAuthenticated) {
-      router.push('/');
+    if (isDataLoaded && isAuthenticated) {
+      router.replace('/');
     }
-  }, [isAuthenticated, router]);
+  }, [isDataLoaded, isAuthenticated, router]);
 
+  if (!isDataLoaded || isAuthenticated) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center">
+        <p>Carregando...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
