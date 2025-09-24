@@ -25,7 +25,11 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!isAuthenticated && pathname !== '/login') {
+  if (pathname === '/login') {
+    return <>{children}</>;
+  }
+
+  if (!isAuthenticated) {
      return (
       <div className="flex h-screen w-screen items-center justify-center">
         <p>Redirecionando para o login...</p>
@@ -33,11 +37,5 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
   
-  if (pathname === '/login') {
-    return <>{children}</>;
-  }
-
   return <AppLayout>{children}</AppLayout>;
 }
-
-    
