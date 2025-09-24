@@ -12,6 +12,7 @@ import Header from './header';
 import { useData } from '@/hooks/use-data';
 import { usePathname } from 'next/navigation';
 import LoginPage from '@/app/login/page';
+import { CreditCard } from 'lucide-react';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { isAuthenticated, isDataLoaded } = useData();
@@ -21,18 +22,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     // Você pode mostrar um spinner de carregamento aqui
     return <div className="flex h-screen w-screen items-center justify-center">Carregando...</div>;
   }
-
-  if (!isAuthenticated && pathname !== '/login') {
-    return <LoginPage />;
-  }
-  
-  if (isAuthenticated && pathname === '/login') {
-    // Redireciona se já estiver autenticado e na página de login
-    return null; 
-  }
   
   if (!isAuthenticated) {
-     return <>{children}</>;
+     return <LoginPage />;
   }
 
   return (

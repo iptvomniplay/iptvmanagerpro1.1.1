@@ -5,10 +5,19 @@ import { useData } from '@/hooks/use-data';
 import { Button } from '@/components/ui/button';
 import { Tv2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
-  const { signIn } = useData();
+  const { signIn, isAuthenticated } = useData();
   const { t } = useLanguage();
+  const router = useRouter();
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/');
+    }
+  }, [isAuthenticated, router]);
+
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">

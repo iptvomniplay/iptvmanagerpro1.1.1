@@ -96,18 +96,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setIsAuthenticated(!!currentUser);
       if (currentUser) {
         fetchData(currentUser.uid);
-        if(pathname === '/login'){
-          router.push('/');
-        }
       } else {
         setIsDataLoaded(true); // Allow rendering of login page
-        if (pathname !== '/login') {
-          router.push('/login');
-        }
       }
     });
     return () => unsubscribe();
-  }, [fetchData, router, pathname]);
+  }, [fetchData]);
 
   const signIn = async () => {
     const provider = new GoogleAuthProvider();
