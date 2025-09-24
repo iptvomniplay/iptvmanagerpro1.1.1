@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -11,19 +12,25 @@ import SidebarNav from './sidebar-nav';
 import Header from './header';
 import { useData } from '@/hooks/use-data';
 import { usePathname } from 'next/navigation';
-import LoginPage from '@/app/login/page';
+import { useRouter } from 'next/navigation';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { isAuthenticated, isDataLoaded } = useData();
+  const router = useRouter();
   const pathname = usePathname();
 
-  if (!isDataLoaded) {
-    // Você pode mostrar um spinner de carregamento aqui
-    return <div className="flex h-screen w-screen items-center justify-center">Carregando...</div>;
-  }
-  
-  if (!isAuthenticated) {
-     return <LoginPage />;
+  React.useEffect(() => {
+    if (isDataLoaded && !isAuthenticated) {
+      router.push('/login');
+    }
+  }, [isDataLoaded, isAuthenticated, router]);
+
+  if (!isDataLoaded || !isAuthenticated) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center">
+        Carregando...
+      </div>
+    );
   }
 
   return (

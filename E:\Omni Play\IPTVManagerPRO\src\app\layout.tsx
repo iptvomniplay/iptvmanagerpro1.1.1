@@ -1,7 +1,6 @@
 
 import type { Metadata } from 'next';
 import './globals.css';
-import AppLayout from '@/components/layout/app-layout';
 import { Toaster } from '@/components/ui/toaster';
 import { LanguageProvider } from '@/hooks/use-language';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -42,11 +41,9 @@ export default function RootLayout({
         >
           <LanguageProvider>
             <DashboardSettingsProvider>
-                <DataProvider>
-                  <ClientOnly>
-                    <AppLayout>{children}</AppLayout>
-                  </ClientOnly>
-                </DataProvider>
+              <DataProvider>
+                <ClientOnly>{children}</ClientOnly>
+              </DataProvider>
             </DashboardSettingsProvider>
           </LanguageProvider>
           <Toaster />
