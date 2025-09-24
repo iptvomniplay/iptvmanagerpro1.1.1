@@ -7,6 +7,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import ClientOnly from '@/components/client-only';
 import { DashboardSettingsProvider } from '@/hooks/use-dashboard-settings';
 import { DataProvider } from '@/hooks/use-data';
+import { AuthGuard } from '@/components/layout/auth-guard';
 
 export const metadata: Metadata = {
   title: 'IPTV Manager Pro',
@@ -42,7 +43,9 @@ export default function RootLayout({
           <LanguageProvider>
             <DashboardSettingsProvider>
               <DataProvider>
-                <ClientOnly>{children}</ClientOnly>
+                <ClientOnly>
+                  <AuthGuard>{children}</AuthGuard>
+                </ClientOnly>
                 <Toaster />
               </DataProvider>
             </DashboardSettingsProvider>
@@ -52,3 +55,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+    

@@ -4,7 +4,6 @@
 import * as React from 'react';
 import Link from 'next/link';
 import {
-  ArrowRight,
   Server,
   Users,
   UserX,
@@ -26,7 +25,7 @@ import {
 import { useLanguage } from '@/hooks/use-language';
 import { useData } from '@/hooks/use-data';
 import { useDashboardSettings } from '@/hooks/use-dashboard-settings';
-import { subDays, startOfMonth, startOfYear, isWithinInterval, add, differenceInDays, isFuture, parseISO, isToday, endOfDay, startOfDay } from 'date-fns';
+import { subDays, startOfMonth, startOfYear, isWithinInterval, add, isFuture, parseISO, isToday, endOfDay, startOfDay } from 'date-fns';
 import type { PlanPeriod } from '@/lib/types';
 import AppLayout from '@/components/layout/app-layout';
 
@@ -240,3 +239,5 @@ export default function HomePage() {
         </AppLayout>
     );
 }
+
+    

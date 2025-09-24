@@ -33,7 +33,6 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { add, isFuture, parseISO } from 'date-fns';
-import AppLayout from '@/components/layout/app-layout';
 
 function SubscriptionPageContent() {
   const { t } = useLanguage();
@@ -327,9 +326,7 @@ function SubscriptionPageContent() {
 }
 
 export default function SubscriptionPage() {
-    return (
-        <AppLayout>
-            <SubscriptionPageContent />
-        </AppLayout>
-    );
+    return <SubscriptionPageContent />;
 }
+
+    

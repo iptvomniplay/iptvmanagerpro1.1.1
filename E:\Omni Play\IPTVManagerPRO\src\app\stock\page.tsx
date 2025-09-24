@@ -18,7 +18,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { DeleteServerAlert } from '../servers/components/delete-server-alert';
-import AppLayout from '@/components/layout/app-layout';
 
 
 function StockPageContent() {
@@ -145,9 +144,7 @@ function StockPageContent() {
 }
 
 export default function StockPage() {
-    return (
-        <AppLayout>
-            <StockPageContent />
-        </AppLayout>
-    )
+    return <StockPageContent />;
 }
+
+    

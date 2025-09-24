@@ -49,7 +49,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import AppLayout from '@/components/layout/app-layout';
 
 
 type CardVisibilityState = {
@@ -433,9 +432,7 @@ function FinancialPageContent() {
 }
 
 export default function FinancialPage() {
-    return (
-        <AppLayout>
-            <FinancialPageContent />
-        </AppLayout>
-    );
+    return <FinancialPageContent />;
 }
+
+    

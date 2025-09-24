@@ -1,6 +1,4 @@
 
-
-
 'use client';
 
 import {
@@ -36,7 +34,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import AppLayout from '@/components/layout/app-layout';
 
 
 function SettingsPageContent() {
@@ -569,9 +566,7 @@ function SettingsPageContent() {
 }
 
 export default function SettingsPage() {
-    return (
-        <AppLayout>
-            <SettingsPageContent />
-        </AppLayout>
-    );
+    return <SettingsPageContent />;
 }
+
+    

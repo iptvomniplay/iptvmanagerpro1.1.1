@@ -13,7 +13,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { StickyNote, ChevronRight, Bot } from 'lucide-react';
 import Link from 'next/link';
-import AppLayout from '@/components/layout/app-layout';
 
 function UtilitiesPageContent() {
   const { t } = useLanguage();
@@ -50,9 +49,7 @@ function UtilitiesPageContent() {
 }
 
 export default function UtilitiesPage() {
-    return (
-        <AppLayout>
-            <UtilitiesPageContent />
-        </AppLayout>
-    );
+    return <UtilitiesPageContent />;
 }
+
+    

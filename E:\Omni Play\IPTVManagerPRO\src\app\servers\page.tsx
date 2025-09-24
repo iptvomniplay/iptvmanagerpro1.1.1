@@ -11,14 +11,6 @@ import { useLanguage } from '@/hooks/use-language';
 import { useRouter } from 'next/navigation';
 import { useData } from '@/hooks/use-data';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -39,7 +31,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import AppLayout from '@/components/layout/app-layout';
 
 const ServerRatingDisplay = ({ server }: { server: Server }) => {
   const { t } = useLanguage();
@@ -317,9 +308,7 @@ function ServersPageContent() {
 }
 
 export default function ServersPage() {
-    return (
-        <AppLayout>
-            <ServersPageContent />
-        </AppLayout>
-    )
+    return <ServersPageContent />;
 }
+
+    
