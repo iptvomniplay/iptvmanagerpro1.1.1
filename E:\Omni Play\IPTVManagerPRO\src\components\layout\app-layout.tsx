@@ -11,13 +11,11 @@ import {
 import SidebarNav from './sidebar-nav';
 import Header from './header';
 import { useData } from '@/hooks/use-data';
-import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { isAuthenticated, isDataLoaded } = useData();
   const router = useRouter();
-  const pathname = usePathname();
 
   React.useEffect(() => {
     if (isDataLoaded && !isAuthenticated) {

@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -48,6 +49,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import AppLayout from '@/components/layout/app-layout';
 
 
 type CardVisibilityState = {
@@ -58,7 +60,7 @@ type CardVisibilityState = {
   transactions: boolean;
 };
 
-export default function FinancialPage() {
+function FinancialPageContent() {
   const { t, language } = useLanguage();
   const { cashFlow, addCashFlowEntry, updateCashFlowEntry, deleteCashFlowEntry } = useData();
   const { financialPeriodFilter, financialTypeFilter } = useDashboardSettings();
@@ -428,4 +430,12 @@ export default function FinancialPage() {
       </AlertDialog>
     </>
   );
+}
+
+export default function FinancialPage() {
+    return (
+        <AppLayout>
+            <FinancialPageContent />
+        </AppLayout>
+    );
 }

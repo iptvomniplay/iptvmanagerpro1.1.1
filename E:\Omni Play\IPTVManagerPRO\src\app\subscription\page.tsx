@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -32,8 +33,9 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { add, isFuture, parseISO } from 'date-fns';
+import AppLayout from '@/components/layout/app-layout';
 
-export default function SubscriptionPage() {
+function SubscriptionPageContent() {
   const { t } = useLanguage();
   const router = useRouter();
   const { clients, updateClient } = useData();
@@ -322,4 +324,12 @@ export default function SubscriptionPage() {
 
     </div>
   );
+}
+
+export default function SubscriptionPage() {
+    return (
+        <AppLayout>
+            <SubscriptionPageContent />
+        </AppLayout>
+    );
 }

@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -38,6 +39,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import AppLayout from '@/components/layout/app-layout';
 
 const ServerRatingDisplay = ({ server }: { server: Server }) => {
   const { t } = useLanguage();
@@ -90,7 +92,7 @@ const ServerRatingDisplay = ({ server }: { server: Server }) => {
 };
 
 
-export default function ServersPage() {
+function ServersPageContent() {
   const { t } = useLanguage();
   const router = useRouter();
   const { servers, clients, updateServer, deleteServer, addTransactionToServer } = useData();
@@ -312,4 +314,12 @@ export default function ServersPage() {
       )}
     </>
   );
+}
+
+export default function ServersPage() {
+    return (
+        <AppLayout>
+            <ServersPageContent />
+        </AppLayout>
+    )
 }

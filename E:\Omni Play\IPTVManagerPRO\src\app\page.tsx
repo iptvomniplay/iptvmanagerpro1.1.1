@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -27,9 +28,9 @@ import { useData } from '@/hooks/use-data';
 import { useDashboardSettings } from '@/hooks/use-dashboard-settings';
 import { subDays, startOfMonth, startOfYear, isWithinInterval, add, differenceInDays, isFuture, parseISO, isToday, endOfDay, startOfDay } from 'date-fns';
 import type { PlanPeriod } from '@/lib/types';
-import { cn } from '@/lib/utils';
+import AppLayout from '@/components/layout/app-layout';
 
-export default function Dashboard() {
+function Dashboard() {
   const { t } = useLanguage();
   const { clients, servers } = useData();
   const { newSubscriptionsPeriod, expirationWarningDays } = useDashboardSettings();
@@ -230,4 +231,12 @@ export default function Dashboard() {
       </div>
     </div>
   );
+}
+
+export default function DashboardPage() {
+    return (
+        <AppLayout>
+            <Dashboard />
+        </AppLayout>
+    );
 }
