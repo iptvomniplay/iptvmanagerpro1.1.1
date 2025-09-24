@@ -11,12 +11,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  React.useEffect(() => {
-    if (isDataLoaded && !isAuthenticated && pathname !== '/login') {
-      router.replace('/login');
-    }
-  }, [isDataLoaded, isAuthenticated, router, pathname]);
-
+  // Temporarily bypass authentication to allow direct access to the app.
   if (!isDataLoaded) {
     return (
       <div className="flex h-screen w-screen items-center justify-center">
@@ -25,17 +20,5 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (pathname === '/login') {
-    return <>{children}</>;
-  }
-
-  if (isAuthenticated) {
-    return <AppLayout>{children}</AppLayout>;
-  }
-
-  return (
-      <div className="flex h-screen w-screen items-center justify-center">
-        <p>Redirecionando para o login...</p>
-      </div>
-  );
+  return <AppLayout>{children}</AppLayout>;
 }
