@@ -2,10 +2,8 @@
 
 import * as React from 'react';
 import { useLanguage } from '@/hooks/use-language';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Tv2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { Tv2 } from 'lucide-react';
 
 export default function LoginPage() {
   const { t } = useLanguage();
@@ -16,6 +14,7 @@ export default function LoginPage() {
     router.replace('/');
   }, [router]);
 
+  // Exibe uma mensagem de carregamento enquanto o redirecionamento ocorre.
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
       <div className="mx-auto flex w-full max-w-sm flex-col items-center justify-center space-y-8 text-center">
