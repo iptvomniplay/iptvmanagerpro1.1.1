@@ -1,8 +1,5 @@
-# Settings to manage and configure a Firebase App Hosting backend.
 # https://firebase.google.com/docs/app-hosting/configure
 framework: nextjs
 runConfig:
   cpu: 1
   maxInstances: 2
-# Optional. The minimum number of instances to keep running.
-# minInstances: 1
