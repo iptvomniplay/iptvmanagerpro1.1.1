@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, {
@@ -50,6 +49,7 @@ interface DataContextType {
   setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
   exportData: () => void;
   importData: (file: File) => void;
+  signOut: () => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -84,6 +84,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
   
   const { toast } = useToast();
   const { t } = useLanguage();
+  const router = useRouter();
 
   useEffect(() => {
     setClients(loadFromLocalStorage('clients_data', []));
@@ -407,6 +408,16 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
     };
     reader.readAsText(file);
   }, [t, toast]);
+
+  const signOut = useCallback(() => {
+    // Apenas limpa os dados locais, já que não há login real
+    setClients([]);
+    setServers([]);
+    setCashFlow([]);
+    setNotes([]);
+    // Redireciona para uma página "limpa", já que o login não existe mais
+    router.push('/');
+  }, [router]);
   
   const value: DataContextType = {
     clients,
@@ -432,6 +443,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
     setNotes,
     exportData,
     importData,
+    signOut,
   };
 
   return (
@@ -446,5 +458,3 @@ export const useData = (): DataContextType => {
   }
   return context;
 };
-
-    
