@@ -2,7 +2,7 @@
 'use client';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { User, Bell } from 'lucide-react';
+import { User, Bell, LogOut } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,9 +14,11 @@ import {
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/hooks/use-language';
+import { useData } from '@/hooks/use-data';
 
 export default function Header() {
   const { t } = useLanguage();
+  const { signOut } = useData();
 
   return (
     <header className={cn("sticky top-0 z-10 flex h-auto items-center gap-4 border-b px-6 py-6 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-8", "bg-background ")}>
@@ -43,6 +45,11 @@ export default function Header() {
               <Link href="/settings">{t('settings')}</Link>
             </DropdownMenuItem>
             <DropdownMenuItem>{t('support')}</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={signOut}>
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>{t('logout')}</span>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

@@ -30,7 +30,7 @@ export default function SidebarNav() {
   };
 
   const links = [
-    { href: '/dashboard', label: t('home'), icon: Home },
+    { href: '/', label: t('home'), icon: Home },
     { href: '/clients', label: t('clients'), icon: Users },
     { href: '/servers', label: t('servers'), icon: Server },
     { href: '/subscription', label: t('subscription'), icon: CreditCard },
@@ -53,7 +53,7 @@ export default function SidebarNav() {
             className="h-20 w-20 rounded-lg"
             asChild
           >
-            <Link href="/dashboard" onClick={handleLinkClick}>
+            <Link href="/" onClick={handleLinkClick}>
               <Tv2 className="h-12 w-12 text-primary" />
               <span className="sr-only">IPTV Manager Pro</span>
             </Link>
@@ -71,7 +71,7 @@ export default function SidebarNav() {
                   <SidebarMenuButton
                     asChild
                     size="lg"
-                    isActive={pathname.startsWith(link.href)}
+                    isActive={pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href))}
                     tooltip={{ children: link.label }}
                     className="h-20"
                   >

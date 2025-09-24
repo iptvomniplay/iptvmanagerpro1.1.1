@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { LanguageProvider } from '@/hooks/use-language';
 import { ThemeProvider } from '@/components/theme-provider';
 import ClientOnly from '@/components/client-only';
+import { DashboardSettingsProvider } from '@/hooks/use-dashboard-settings';
 import { DataProvider } from '@/hooks/use-data';
 
 export const metadata: Metadata = {
@@ -39,12 +40,12 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <LanguageProvider>
-            <DataProvider>
-              <ClientOnly>
-                {children}
-              </ClientOnly>
-              <Toaster />
-            </DataProvider>
+            <DashboardSettingsProvider>
+              <DataProvider>
+                <ClientOnly>{children}</ClientOnly>
+                <Toaster />
+              </DataProvider>
+            </DashboardSettingsProvider>
           </LanguageProvider>
         </ThemeProvider>
       </body>
