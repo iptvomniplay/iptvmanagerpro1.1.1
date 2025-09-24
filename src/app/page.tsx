@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -233,11 +232,10 @@ function Dashboard() {
   );
 }
 
-
 export default function HomePage() {
-  return (
-    <AppLayout>
-      <Dashboard />
-    </AppLayout>
-  );
+    return (
+        <AppLayout>
+            <Dashboard />
+        </AppLayout>
+    );
 }
