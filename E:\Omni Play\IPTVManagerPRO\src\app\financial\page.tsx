@@ -37,11 +37,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
-import { DollarSign, ArrowDownUp, ArrowUp, ArrowDown, Landmark, MoreHorizontal, Edit, Trash2, Eye, EyeOff, ChevronDown, ChevronsUpDown } from 'lucide-react';
+import { ArrowUp, MoreHorizontal, Edit, Trash2, Eye, EyeOff, ChevronsUpDown } from 'lucide-react';
 import { format, parseISO, isWithinInterval, startOfDay, endOfDay, startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { EntryModal } from './components/entry-modal';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useDashboardSettings } from '@/hooks/use-dashboard-settings';
 import { cn } from '@/lib/utils';
 import {
@@ -49,7 +48,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-
 
 type CardVisibilityState = {
   revenue: boolean;
@@ -59,7 +57,7 @@ type CardVisibilityState = {
   transactions: boolean;
 };
 
-function FinancialPageContent() {
+export default function FinancialPage() {
   const { t, language } = useLanguage();
   const { cashFlow, addCashFlowEntry, updateCashFlowEntry, deleteCashFlowEntry } = useData();
   const { financialPeriodFilter, financialTypeFilter } = useDashboardSettings();
@@ -430,9 +428,3 @@ function FinancialPageContent() {
     </>
   );
 }
-
-export default function FinancialPage() {
-    return <FinancialPageContent />;
-}
-
-    

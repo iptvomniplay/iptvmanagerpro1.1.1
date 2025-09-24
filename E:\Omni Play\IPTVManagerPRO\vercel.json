@@ -1,4 +1,6 @@
 {
-  "framework": "nextjs",
-  "buildCommand": "npm run build"
+  "version": 2,
+  "builds": [
+    { "src": "package.json", "use": "@vercel/next" }
+  ]
 }

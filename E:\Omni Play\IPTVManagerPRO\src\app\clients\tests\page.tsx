@@ -27,7 +27,6 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { add, isFuture, parseISO } from 'date-fns';
-import AppLayout from '@/components/layout/app-layout';
 
 type ClientWithTest = {
   client: Client;
@@ -180,55 +179,53 @@ export default function ViewTestsPage() {
   };
 
   return (
-    <AppLayout>
-      <div className="space-y-8">
-        <Card>
+    <div className="space-y-8">
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('testes')}</CardTitle>
+          <CardDescription>
+            {t('testManagementDescription')}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col sm:flex-row gap-4">
+          <Button onClick={() => setIsTestModalOpen(true)} size="lg">
+            {t('addTest')}
+          </Button>
+        </CardContent>
+      </Card>
+      <Card>
           <CardHeader>
-            <CardTitle>{t('testes')}</CardTitle>
-            <CardDescription>
-              {t('testManagementDescription')}
-            </CardDescription>
+              <CardTitle>{t('statusDosTestes')}</CardTitle>
+              <CardDescription>
+                {activeTab === 'inProgress' ? t('testsInProgress') : t('testsConducted')}
+              </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col sm:flex-row gap-4">
-            <Button onClick={() => setIsTestModalOpen(true)} size="lg">
-              {t('addTest')}
-            </Button>
+          <CardContent className="space-y-4">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="inProgress">{t('testsInProgress')}</TabsTrigger>
+                      <TabsTrigger value="expired">{t('expiredTests')}</TabsTrigger>
+                  </TabsList>
+                  <div className="relative w-full max-w-sm mt-4">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                      <Input
+                          type="search"
+                          placeholder={t('searchClientPlaceholder')}
+                          className="pl-10"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          autoComplete="off"
+                      />
+                  </div>
+                  <TabsContent value="inProgress" className="mt-4">
+                      <TestList tests={testsInProgress} onUpdateClient={updateClient} onViewDetails={handleViewDetails} onUpdateTest={updateTestInClient} />
+                  </TabsContent>
+                  <TabsContent value="expired" className="mt-4">
+                      <TestList tests={expiredTests} onUpdateClient={updateClient} onViewDetails={handleViewDetails} isExpiredList={true} onUpdateTest={updateTestInClient} />
+                  </TabsContent>
+              </Tabs>
           </CardContent>
-        </Card>
-        <Card>
-            <CardHeader>
-                <CardTitle>{t('statusDosTestes')}</CardTitle>
-                <CardDescription>
-                  {activeTab === 'inProgress' ? t('testsInProgress') : t('testsConducted')}
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="inProgress">{t('testsInProgress')}</TabsTrigger>
-                        <TabsTrigger value="expired">{t('expiredTests')}</TabsTrigger>
-                    </TabsList>
-                    <div className="relative w-full max-w-sm mt-4">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                        <Input
-                            type="search"
-                            placeholder={t('searchClientPlaceholder')}
-                            className="pl-10"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            autoComplete="off"
-                        />
-                    </div>
-                    <TabsContent value="inProgress" className="mt-4">
-                        <TestList tests={testsInProgress} onUpdateClient={updateClient} onViewDetails={handleViewDetails} onUpdateTest={updateTestInClient} />
-                    </TabsContent>
-                    <TabsContent value="expired" className="mt-4">
-                        <TestList tests={expiredTests} onUpdateClient={updateClient} onViewDetails={handleViewDetails} isExpiredList={true} onUpdateTest={updateTestInClient} />
-                    </TabsContent>
-                </Tabs>
-            </CardContent>
-        </Card>
-      </div>
+      </Card>
       <TestModal isOpen={isTestModalOpen} onClose={() => setIsTestModalOpen(false)} />
       
        {selectedClient && (
@@ -258,6 +255,6 @@ export default function ViewTestsPage() {
             </AlertDialogContent>
         </AlertDialog>
       )}
-    </AppLayout>
+    </div>
   );
 }
