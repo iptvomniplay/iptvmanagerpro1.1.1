@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, {
@@ -35,7 +34,6 @@ import { app } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 
 const db = getFirestore(app);
-const auth = getAuth(app);
 
 interface DataContextType {
   clients: Client[];
@@ -62,13 +60,15 @@ interface DataContextType {
   setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
   exportData: () => void;
   importData: (file: File) => void;
-  // Auth related functions
+  isAuthenticated: boolean; // Mantido para compatibilidade, mas sempre será true
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
-  isAuthenticated: boolean;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
+
+// Mock User ID para persistência local sem login
+const LOCAL_USER_ID = 'local-user';
 
 export const DataProvider: React.FC<{ children: ReactNode }> = ({
   children,
@@ -78,13 +78,13 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
   const [cashFlow, setCashFlow] = useState<CashFlowEntry[]>([]);
   const [notes, setNotes] = useState<Note[]>([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  
+  // O usuário é simulado e a autenticação é sempre considerada verdadeira.
+  const [user] = useState<User | null>({ uid: LOCAL_USER_ID } as User);
+  const isAuthenticated = true;
+
   const { toast } = useToast();
   const { t } = useLanguage();
-  const router = useRouter();
-  
-  // Force authentication for direct access
-  const isAuthenticated = true;
 
   const getCollections = useCallback((userId: string) => {
     const userDocRef = doc(db, 'users', userId);
@@ -97,11 +97,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   useEffect(() => {
-    // Mock a user to bypass login, but still load data if a user were present
-    const mockUser = { uid: 'temp-local-user' } as User;
-    setUser(mockUser);
-    
-    const { clientsCol, serversCol, cashFlowCol, notesCol } = getCollections(mockUser.uid);
+    const { clientsCol, serversCol, cashFlowCol, notesCol } = getCollections(LOCAL_USER_ID);
     const fetchData = async () => {
         try {
           const [clientsSnapshot, serversSnapshot, cashFlowSnapshot, notesSnapshot] = await Promise.all([
@@ -125,46 +121,41 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
   }, [getCollections, toast]);
 
   const signIn = async () => {
-    toast({ title: "Login Desativado", description: "O login está temporariamente desativado." });
+    toast({ title: "Login Desativado", description: "O login está desativado para acesso direto." });
   };
 
   const signOutUser = async () => {
-     toast({ title: "Logout Desativado", description: "O logout está temporariamente desativado." });
+     toast({ title: "Logout Desativado", description: "O logout está desativado." });
   };
 
   const withAuthCheck = useCallback(<T extends any[]>(func: (...args: T) => Promise<any>) => {
     return async (...args: T) => {
-      // Always act as if there is a current user
-      const currentUser = user || { uid: 'temp-local-user' };
-      if (!currentUser) {
-        toast({ variant: 'destructive', title: 'Não autenticado' });
-        return;
-      }
+      // Como a autenticação está desativada, executa a função diretamente.
       return func(...args);
     };
-  }, [toast, user]);
+  }, []);
 
   const addCashFlowEntry = useCallback(withAuthCheck(async (entryData: Omit<CashFlowEntry, 'id' | 'date'>) => {
-      const { cashFlowCol } = getCollections(user!.uid);
+      const { cashFlowCol } = getCollections(LOCAL_USER_ID);
       const newEntry: CashFlowEntry = { ...entryData, id: `cf_${Date.now()}_${Math.random()}`, date: new Date().toISOString() };
       await setDoc(doc(cashFlowCol, newEntry.id), newEntry);
       setCashFlow(prev => [newEntry, ...prev]);
-  }), [getCollections, user]);
+  }), [getCollections]);
   
   const updateCashFlowEntry = useCallback(withAuthCheck(async (entryData: CashFlowEntry) => {
-    const { cashFlowCol } = getCollections(user!.uid);
+    const { cashFlowCol } = getCollections(LOCAL_USER_ID);
     await setDoc(doc(cashFlowCol, entryData.id), entryData, { merge: true });
     setCashFlow(prev => prev.map(entry => entry.id === entryData.id ? entryData : entry));
-  }), [getCollections, user]);
+  }), [getCollections]);
 
   const deleteCashFlowEntry = useCallback(withAuthCheck(async (entryId: string) => {
-      const { cashFlowCol } = getCollections(user!.uid);
+      const { cashFlowCol } = getCollections(LOCAL_USER_ID);
       await deleteDoc(doc(cashFlowCol, entryId));
       setCashFlow(prev => prev.filter(entry => entry.id !== entryId));
-  }), [getCollections, user]);
+  }), [getCollections]);
 
   const addClient = useCallback(withAuthCheck(async (clientData: Omit<Client, 'registeredDate' | 'plans' | '_tempId'>) => {
-    const { clientsCol } = getCollections(user!.uid);
+    const { clientsCol } = getCollections(LOCAL_USER_ID);
     const _tempId = `temp_${Date.now()}_${Math.random()}`;
     const newClient: Client = {
       ...(clientData as Client),
@@ -176,39 +167,39 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
     };
     await setDoc(doc(clientsCol, newClient._tempId), newClient);
     setClients(prev => [newClient, ...prev]);
-  }), [getCollections, user]);
+  }), [getCollections]);
 
   const updateClient = useCallback(withAuthCheck(async (clientData: Client, options?: { skipCashFlow?: boolean }) => {
-    const { clientsCol, serversCol } = getCollections(user!.uid);
+    const { clientsCol } = getCollections(LOCAL_USER_ID);
     await setDoc(doc(clientsCol, clientData._tempId), clientData, { merge: true });
     setClients(prevClients => prevClients.map(c => (c._tempId === clientData._tempId ? clientData : c)));
-  }), [getCollections, user]);
+  }), [getCollections]);
   
   const deleteClient = useCallback(withAuthCheck(async (tempId: string) => {
-    const { clientsCol } = getCollections(user!.uid);
+    const { clientsCol } = getCollections(LOCAL_USER_ID);
     await deleteDoc(doc(clientsCol, tempId));
     setClients(prev => prev.filter(c => c._tempId !== tempId));
-  }), [getCollections, user]);
+  }), [getCollections]);
 
   const addServer = useCallback(withAuthCheck(async (serverData: Server & { hasInitialPurchase?: boolean; initialCredits?: number; initialPurchaseValue?: number }) => {
-    const { serversCol } = getCollections(user!.uid);
+    const { serversCol } = getCollections(LOCAL_USER_ID);
     const newServerId = `S${Date.now()}${(Math.random() * 100).toFixed(0).padStart(3, '0')}`;
     const newServer: Server = { ...serverData, id: newServerId, status: 'Online' };
     await setDoc(doc(serversCol, newServer.id), newServer);
     setServers(prev => [newServer, ...prev]);
-  }), [getCollections, user]);
+  }), [getCollections]);
 
   const updateServer = useCallback(withAuthCheck(async (serverData: Server) => {
-    const { serversCol } = getCollections(user!.uid);
+    const { serversCol } = getCollections(LOCAL_USER_ID);
     await setDoc(doc(serversCol, serverData.id), serverData, { merge: true });
     setServers(prev => prev.map(s => (s.id === serverData.id ? serverData : s)));
-  }), [getCollections, user]);
+  }), [getCollections]);
   
   const deleteServer = useCallback(withAuthCheck(async (serverId: string) => {
-      const { serversCol } = getCollections(user!.uid);
+      const { serversCol } = getCollections(LOCAL_USER_ID);
       await deleteDoc(doc(serversCol, serverId));
       setServers(prev => prev.filter(s => s.id !== serverId));
-  }), [getCollections, user]);
+  }), [getCollections]);
   
   const addTestToClient = useCallback(async (clientId: string, testData: Omit<Test, 'creationDate'>) => {
       const client = clients.find(c => c._tempId === clientId);
@@ -260,26 +251,25 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
   }, [servers, t, toast, updateServer, addCashFlowEntry]);
   
   const addNote = useCallback(withAuthCheck(async (noteData: Omit<Note, 'id' | 'createdAt'>) => {
-    const { notesCol } = getCollections(user!.uid);
+    const { notesCol } = getCollections(LOCAL_USER_ID);
     const newNote: Note = { ...noteData, id: `note_${Date.now()}_${Math.random()}`, createdAt: new Date().toISOString() };
     await setDoc(doc(notesCol, newNote.id), newNote);
     setNotes(prev => [newNote, ...prev]);
-  }), [getCollections, user]);
+  }), [getCollections]);
 
   const updateNote = useCallback(withAuthCheck(async (noteData: Note) => {
-    const { notesCol } = getCollections(user!.uid);
+    const { notesCol } = getCollections(LOCAL_USER_ID);
     await setDoc(doc(notesCol, noteData.id), noteData, { merge: true });
     setNotes(prev => prev.map(n => (n.id === noteData.id ? noteData : n)));
-  }), [getCollections, user]);
+  }), [getCollections]);
 
   const deleteNote = useCallback(withAuthCheck(async (noteId: string) => {
-    const { notesCol } = getCollections(user!.uid);
+    const { notesCol } = getCollections(LOCAL_USER_ID);
     await deleteDoc(doc(notesCol, noteId));
     setNotes(prev => prev.filter(n => n.id !== noteId));
-  }), [getCollections, user]);
+  }), [getCollections]);
   
   const exportData = useCallback(() => {
-    if (!user) return;
     const dataToExport = { clients, servers, cashFlow, notes };
     const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -291,10 +281,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
     URL.revokeObjectURL(url);
     link.remove();
     toast({ title: t('backupExportedSuccess'), description: t('backupExportedSuccessDescription') });
-  }, [clients, servers, cashFlow, notes, t, toast, user]);
+  }, [clients, servers, cashFlow, notes, t, toast]);
   
   const importData = useCallback(async (file: File) => {
-    if (!user) return;
     const reader = new FileReader();
     reader.onload = async (event) => {
       try {
@@ -306,7 +295,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
             throw new Error('Invalid backup file format');
         }
         
-        const { clientsCol, serversCol, cashFlowCol, notesCol } = getCollections(user.uid);
+        const { clientsCol, serversCol, cashFlowCol, notesCol } = getCollections(LOCAL_USER_ID);
         const batch = writeBatch(db);
 
         const existingSnapshots = await Promise.all([ getDocs(clientsCol), getDocs(serversCol), getDocs(cashFlowCol), getDocs(notesCol) ]);
@@ -331,7 +320,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
       }
     };
     reader.readAsText(file);
-  }, [getCollections, t, toast, user]);
+  }, [getCollections, t, toast]);
 
   return (
     <DataContext.Provider value={{

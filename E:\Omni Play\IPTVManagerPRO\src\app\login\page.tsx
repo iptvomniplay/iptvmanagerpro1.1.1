@@ -1,11 +1,10 @@
-
 'use client';
 
 import * as React from 'react';
-import { Tv2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Tv2 } from 'lucide-react';
 
 export default function LoginPage() {
   const { t } = useLanguage();
