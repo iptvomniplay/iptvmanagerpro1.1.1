@@ -18,10 +18,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { DeleteServerAlert } from '../servers/components/delete-server-alert';
-import AppLayout from '@/components/layout/app-layout';
 
 
-function StockPageContent() {
+export default function StockPage() {
   const { t } = useLanguage();
   const { servers, addTransactionToServer, deleteServer } = useData();
   const router = useRouter();
@@ -142,12 +141,4 @@ function StockPageContent() {
       )}
     </>
   );
-}
-
-export default function StockPage() {
-    return (
-        <AppLayout>
-            <StockPageContent />
-        </AppLayout>
-    )
 }

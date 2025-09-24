@@ -20,9 +20,8 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { NotePrintModal } from '../components/note-print-modal';
-import AppLayout from '@/components/layout/app-layout';
 
-function NotepadPageContent() {
+export default function NotepadPage() {
   const { t } = useLanguage();
   const { notes, addNote, updateNote, deleteNote, setNotes } = useData();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -137,12 +136,4 @@ function NotepadPageContent() {
       </AlertDialog>
     </>
   );
-}
-
-export default function NotepadPage() {
-    return (
-        <AppLayout>
-            <NotepadPageContent />
-        </AppLayout>
-    );
 }

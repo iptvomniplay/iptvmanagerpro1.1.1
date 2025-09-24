@@ -34,10 +34,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import AppLayout from '@/components/layout/app-layout';
 
 
-function SettingsPageContent() {
+export default function SettingsPage() {
   const { language, setLanguage, t } = useLanguage();
   const { theme, setTheme } = useTheme();
   const { clients, servers, exportData, importData } = useData();
@@ -564,12 +563,4 @@ function SettingsPageContent() {
       </AlertDialog>
     </>
   );
-}
-
-export default function SettingsPage() {
-    return (
-        <AppLayout>
-            <SettingsPageContent />
-        </AppLayout>
-    );
 }
