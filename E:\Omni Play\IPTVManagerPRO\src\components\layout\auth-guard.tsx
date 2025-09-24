@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -8,3 +9,5 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   // bypassando completamente qualquer verificação de autenticação.
   return <AppLayout>{children}</AppLayout>;
 }
+
+    
