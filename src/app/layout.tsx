@@ -1,12 +1,10 @@
 
 import type { Metadata } from 'next';
 import './globals.css';
-import AppLayout from '@/components/layout/app-layout';
 import { Toaster } from '@/components/ui/toaster';
 import { LanguageProvider } from '@/hooks/use-language';
 import { ThemeProvider } from '@/components/theme-provider';
 import ClientOnly from '@/components/client-only';
-import { DashboardSettingsProvider } from '@/hooks/use-dashboard-settings';
 import { DataProvider } from '@/hooks/use-data';
 
 export const metadata: Metadata = {
@@ -41,15 +39,13 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <LanguageProvider>
-            <DashboardSettingsProvider>
+            <DataProvider>
               <ClientOnly>
-                <DataProvider>
-                  <AppLayout>{children}</AppLayout>
-                </DataProvider>
+                {children}
               </ClientOnly>
-            </DashboardSettingsProvider>
+              <Toaster />
+            </DataProvider>
           </LanguageProvider>
-          <Toaster />
         </ThemeProvider>
       </body>
     </html>

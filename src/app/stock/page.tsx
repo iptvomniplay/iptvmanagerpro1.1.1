@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -17,9 +18,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { DeleteServerAlert } from '../servers/components/delete-server-alert';
+import AppLayout from '@/components/layout/app-layout';
 
 
-export default function StockPage() {
+function StockPageContent() {
   const { t } = useLanguage();
   const { servers, addTransactionToServer, deleteServer } = useData();
   const router = useRouter();
@@ -140,4 +142,12 @@ export default function StockPage() {
       )}
     </>
   );
+}
+
+export default function StockPage() {
+    return (
+        <AppLayout>
+            <StockPageContent />
+        </AppLayout>
+    )
 }

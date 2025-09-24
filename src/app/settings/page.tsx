@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import {
@@ -35,9 +34,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import AppLayout from '@/components/layout/app-layout';
 
 
-export default function SettingsPage() {
+function SettingsPageContent() {
   const { language, setLanguage, t } = useLanguage();
   const { theme, setTheme } = useTheme();
   const { clients, servers, exportData, importData } = useData();
@@ -564,4 +564,12 @@ export default function SettingsPage() {
       </AlertDialog>
     </>
   );
+}
+
+export default function SettingsPage() {
+    return (
+        <AppLayout>
+            <SettingsPageContent />
+        </AppLayout>
+    );
 }

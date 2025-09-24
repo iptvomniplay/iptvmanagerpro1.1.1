@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -19,8 +20,9 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { NotePrintModal } from '../components/note-print-modal';
+import AppLayout from '@/components/layout/app-layout';
 
-export default function NotepadPage() {
+function NotepadPageContent() {
   const { t } = useLanguage();
   const { notes, addNote, updateNote, deleteNote, setNotes } = useData();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -135,4 +137,12 @@ export default function NotepadPage() {
       </AlertDialog>
     </>
   );
+}
+
+export default function NotepadPage() {
+    return (
+        <AppLayout>
+            <NotepadPageContent />
+        </AppLayout>
+    );
 }

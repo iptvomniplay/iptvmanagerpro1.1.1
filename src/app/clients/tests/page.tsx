@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -26,6 +27,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { add, isFuture, parseISO } from 'date-fns';
+import AppLayout from '@/components/layout/app-layout';
 
 type ClientWithTest = {
   client: Client;
@@ -178,7 +180,7 @@ export default function ViewTestsPage() {
   };
 
   return (
-    <>
+    <AppLayout>
       <div className="space-y-8">
         <Card>
           <CardHeader>
@@ -256,6 +258,6 @@ export default function ViewTestsPage() {
             </AlertDialogContent>
         </AlertDialog>
       )}
-    </>
+    </AppLayout>
   );
 }

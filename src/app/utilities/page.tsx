@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -12,8 +13,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { StickyNote, ChevronRight, Bot } from 'lucide-react';
 import Link from 'next/link';
+import AppLayout from '@/components/layout/app-layout';
 
-export default function UtilitiesPage() {
+function UtilitiesPageContent() {
   const { t } = useLanguage();
 
   return (
@@ -45,4 +47,12 @@ export default function UtilitiesPage() {
       </div>
     </div>
   );
+}
+
+export default function UtilitiesPage() {
+    return (
+        <AppLayout>
+            <UtilitiesPageContent />
+        </AppLayout>
+    );
 }
