@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useData } from '@/hooks/use-data';
 import { useParams } from 'next/navigation';
 import { useMemo } from 'react';
-import AppLayout from '@/components/layout/app-layout';
 
 export default function EditServerPage() {
   const { t } = useLanguage();
@@ -18,21 +17,19 @@ export default function EditServerPage() {
   const server = useMemo(() => servers.find((s) => s.id === params.id) || null, [servers, params.id]);
 
   return (
-    <AppLayout>
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t('editServer')}</h1>
-        </div>
-         <Card>
-            <CardHeader>
-                <CardTitle>{t('editServer')}</CardTitle>
-                <CardDescription>{t('editServerDescription')}</CardDescription>
-            </CardHeader>
-            <CardContent>
-               <ServerForm server={server} />
-            </CardContent>
-        </Card>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">{t('editServer')}</h1>
       </div>
-    </AppLayout>
+       <Card>
+          <CardHeader>
+              <CardTitle>{t('editServer')}</CardTitle>
+              <CardDescription>{t('editServerDescription')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+             <ServerForm server={server} />
+          </CardContent>
+      </Card>
+    </div>
   );
 }

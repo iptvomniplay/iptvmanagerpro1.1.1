@@ -83,7 +83,7 @@ const ServerRatingDisplay = ({ server }: { server: Server }) => {
 };
 
 
-function ServersPageContent() {
+export default function ServersPage() {
   const { t } = useLanguage();
   const router = useRouter();
   const { servers, clients, updateServer, deleteServer, addTransactionToServer } = useData();
@@ -306,9 +306,3 @@ function ServersPageContent() {
     </>
   );
 }
-
-export default function ServersPage() {
-    return <ServersPageContent />;
-}
-
-    
