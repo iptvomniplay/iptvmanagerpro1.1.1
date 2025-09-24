@@ -1,18 +1,41 @@
 
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  ReactNode,
+  useEffect,
+} from 'react';
 import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, User } from 'firebase/auth';
-import { getFirestore, collection, doc, getDocs, setDoc, deleteDoc, writeBatch, query, where } from 'firebase/firestore';
-import type { Client, Server, Test, Transaction, CashFlowEntry, Note, Application } from '@/lib/types';
-import { format } from 'date-fns';
+import {
+  getFirestore,
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+  deleteDoc,
+  writeBatch,
+} from 'firebase/firestore';
+import type {
+  Client,
+  Server,
+  Test,
+  Transaction,
+  CashFlowEntry,
+  Note,
+  Application,
+} from '@/lib/types';
+import { format, parseISO } from 'date-fns';
 import { useToast } from './use-toast';
 import { useLanguage } from './use-language';
 import { app } from '@/lib/firebase';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
-const auth = getAuth(app);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 interface DataContextType {
   clients: Client[];
@@ -20,11 +43,8 @@ interface DataContextType {
   cashFlow: CashFlowEntry[];
   notes: Note[];
   isDataLoaded: boolean;
-  isAuthenticated: boolean;
   user: User | null;
-  signIn: () => Promise<void>;
-  signOut: () => Promise<void>;
-  addClient: (clientData: Omit<Client, 'registeredDate' | 'plans' | '_tempId' | 'id'>) => Promise<void>;
+  addClient: (clientData: Omit<Client, 'registeredDate' | 'plans' | '_tempId'>) => Promise<void>;
   updateClient: (clientData: Client, options?: { skipCashFlow?: boolean }) => Promise<void>;
   deleteClient: (clientId: string) => Promise<void>;
   addServer: (serverData: Server) => Promise<void>;
@@ -42,22 +62,28 @@ interface DataContextType {
   setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
   exportData: () => void;
   importData: (file: File) => void;
+  // Auth related functions
+  signIn: () => Promise<void>;
+  signOut: () => Promise<void>;
+  isAuthenticated: boolean;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
-export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const DataProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [clients, setClients] = useState<Client[]>([]);
   const [servers, setServers] = useState<Server[]>([]);
   const [cashFlow, setCashFlow] = useState<CashFlowEntry[]>([]);
   const [notes, setNotes] = useState<Note[]>([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { toast } = useToast();
   const { t } = useLanguage();
   const router = useRouter();
-  const pathname = usePathname();
+  
+  const isAuthenticated = !!user;
 
   const getCollections = useCallback((userId: string) => {
     const userDocRef = doc(db, 'users', userId);
@@ -69,40 +95,37 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
   }, []);
 
-  const fetchData = useCallback(async (userId: string) => {
-    setIsDataLoaded(false);
-    const { clientsCol, serversCol, cashFlowCol, notesCol } = getCollections(userId);
-    try {
-      const [clientsSnapshot, serversSnapshot, cashFlowSnapshot, notesSnapshot] = await Promise.all([
-        getDocs(clientsCol),
-        getDocs(serversCol),
-        getDocs(cashFlowCol),
-        getDocs(notesCol),
-      ]);
-      setClients(clientsSnapshot.docs.map(doc => doc.data() as Client));
-      setServers(serversSnapshot.docs.map(doc => doc.data() as Server));
-      setCashFlow(cashFlowSnapshot.docs.map(doc => doc.data() as CashFlowEntry));
-      setNotes(notesSnapshot.docs.map(doc => doc.data() as Note));
-    } catch (error) {
-      console.error("Failed to load data from Firestore", error);
-      toast({ variant: "destructive", title: "Erro ao carregar dados", description: "Não foi possível buscar os dados da nuvem." });
-    } finally {
-      setIsDataLoaded(true);
-    }
-  }, [getCollections, toast]);
-
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
-      setIsAuthenticated(!!currentUser);
       if (currentUser) {
-        fetchData(currentUser.uid);
+        const { clientsCol, serversCol, cashFlowCol, notesCol } = getCollections(currentUser.uid);
+        try {
+          const [clientsSnapshot, serversSnapshot, cashFlowSnapshot, notesSnapshot] = await Promise.all([
+            getDocs(clientsCol),
+            getDocs(serversCol),
+            getDocs(cashFlowCol),
+            getDocs(notesCol),
+          ]);
+          setClients(clientsSnapshot.docs.map(doc => doc.data() as Client));
+          setServers(serversSnapshot.docs.map(doc => doc.data() as Server));
+          setCashFlow(cashFlowSnapshot.docs.map(doc => doc.data() as CashFlowEntry));
+          setNotes(notesSnapshot.docs.map(doc => doc.data() as Note));
+        } catch (error) {
+          console.error("Failed to load data from Firestore", error);
+          toast({ variant: "destructive", title: "Erro ao carregar dados" });
+        }
       } else {
-        setIsDataLoaded(true); // Allow rendering of login page
+        // Clear data when user logs out
+        setClients([]);
+        setServers([]);
+        setCashFlow([]);
+        setNotes([]);
       }
+      setIsDataLoaded(true);
     });
     return () => unsubscribe();
-  }, [fetchData]);
+  }, [getCollections, toast]);
 
   const signIn = async () => {
     const provider = new GoogleAuthProvider();
@@ -118,47 +141,43 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const signOutUser = async () => {
     try {
       await signOut(auth);
-      setClients([]);
-      setServers([]);
-      setCashFlow([]);
-      setNotes([]);
       router.push('/login');
     } catch (error) {
       console.error("Sign out failed", error);
     }
   };
 
-  const withAuthCheck = useCallback(<T extends any[]>(func: (...args: T) => Promise<void>) => {
+  const withAuthCheck = useCallback(<T extends any[]>(func: (...args: T) => Promise<any>) => {
     return async (...args: T) => {
-      if (!user) {
+      if (!auth.currentUser) {
         toast({ variant: 'destructive', title: 'Não autenticado' });
         return;
       }
       return func(...args);
     };
-  }, [user, toast]);
+  }, [toast]);
 
   const addCashFlowEntry = useCallback(withAuthCheck(async (entryData: Omit<CashFlowEntry, 'id' | 'date'>) => {
-      const { cashFlowCol } = getCollections(user!.uid);
+      const { cashFlowCol } = getCollections(auth.currentUser!.uid);
       const newEntry: CashFlowEntry = { ...entryData, id: `cf_${Date.now()}_${Math.random()}`, date: new Date().toISOString() };
       await setDoc(doc(cashFlowCol, newEntry.id), newEntry);
       setCashFlow(prev => [newEntry, ...prev]);
-  }), [getCollections, user]);
+  }), [getCollections]);
   
   const updateCashFlowEntry = useCallback(withAuthCheck(async (entryData: CashFlowEntry) => {
-    const { cashFlowCol } = getCollections(user!.uid);
+    const { cashFlowCol } = getCollections(auth.currentUser!.uid);
     await setDoc(doc(cashFlowCol, entryData.id), entryData, { merge: true });
     setCashFlow(prev => prev.map(entry => entry.id === entryData.id ? entryData : entry));
-  }), [getCollections, user]);
+  }), [getCollections]);
 
   const deleteCashFlowEntry = useCallback(withAuthCheck(async (entryId: string) => {
-      const { cashFlowCol } = getCollections(user!.uid);
+      const { cashFlowCol } = getCollections(auth.currentUser!.uid);
       await deleteDoc(doc(cashFlowCol, entryId));
       setCashFlow(prev => prev.filter(entry => entry.id !== entryId));
-  }), [getCollections, user]);
+  }), [getCollections]);
 
   const addClient = useCallback(withAuthCheck(async (clientData: Omit<Client, 'registeredDate' | 'plans' | '_tempId'>) => {
-    const { clientsCol } = getCollections(user!.uid);
+    const { clientsCol } = getCollections(auth.currentUser!.uid);
     const _tempId = `temp_${Date.now()}_${Math.random()}`;
     const newClient: Client = {
       ...(clientData as Client),
@@ -170,91 +189,94 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
     await setDoc(doc(clientsCol, newClient._tempId), newClient);
     setClients(prev => [newClient, ...prev]);
-  }), [getCollections, user]);
+  }), [getCollections]);
 
   const updateClient = useCallback(withAuthCheck(async (clientData: Client, options?: { skipCashFlow?: boolean }) => {
-    const { clientsCol, serversCol } = getCollections(user!.uid);
-    const previousClientState = clients.find(c => c._tempId === clientData._tempId);
-
+    const { clientsCol, serversCol } = getCollections(auth.currentUser!.uid);
     await setDoc(doc(clientsCol, clientData._tempId), clientData, { merge: true });
     setClients(prevClients => prevClients.map(c => (c._tempId === clientData._tempId ? clientData : c)));
-    
-    // Logic for cash flow and server updates remains largely the same but uses async/await and Firestore calls
-    // (This part is complex and needs to be carefully adapted)
-  }), [clients, getCollections, user, addCashFlowEntry]);
+  }), [getCollections]);
   
   const deleteClient = useCallback(withAuthCheck(async (tempId: string) => {
-    const { clientsCol } = getCollections(user!.uid);
+    const { clientsCol } = getCollections(auth.currentUser!.uid);
     await deleteDoc(doc(clientsCol, tempId));
     setClients(prev => prev.filter(c => c._tempId !== tempId));
-  }), [getCollections, user]);
+  }), [getCollections]);
 
   const addServer = useCallback(withAuthCheck(async (serverData: Server & { hasInitialPurchase?: boolean; initialCredits?: number; initialPurchaseValue?: number }) => {
-    const { serversCol } = getCollections(user!.uid);
+    const { serversCol } = getCollections(auth.currentUser!.uid);
     const newServerId = `S${Date.now()}${(Math.random() * 100).toFixed(0).padStart(3, '0')}`;
-    // ... logic to create initial transactions and cash flow entries using addCashFlowEntry
-    const newServer: Server = { ...serverData, id: newServerId, status: 'Online', /*... rest of the properties */ };
+    const newServer: Server = { ...serverData, id: newServerId, status: 'Online' };
     await setDoc(doc(serversCol, newServer.id), newServer);
     setServers(prev => [newServer, ...prev]);
-  }), [getCollections, user, addCashFlowEntry, t]);
+  }), [getCollections]);
 
   const updateServer = useCallback(withAuthCheck(async (serverData: Server) => {
-    const { serversCol } = getCollections(user!.uid);
+    const { serversCol } = getCollections(auth.currentUser!.uid);
     await setDoc(doc(serversCol, serverData.id), serverData, { merge: true });
     setServers(prev => prev.map(s => (s.id === serverData.id ? serverData : s)));
-     // ... logic to update related cash flow entries
-  }), [getCollections, user, addCashFlowEntry]);
+  }), [getCollections]);
   
   const deleteServer = useCallback(withAuthCheck(async (serverId: string) => {
-      // ... same logic as before, just using async/await
-      const { serversCol } = getCollections(user!.uid);
+      const { serversCol } = getCollections(auth.currentUser!.uid);
       await deleteDoc(doc(serversCol, serverId));
       setServers(prev => prev.filter(s => s.id !== serverId));
-  }), [getCollections, user, clients, t, toast]);
+  }), [getCollections]);
   
-  const addTestToClient = useCallback(withAuthCheck(async (clientId: string, testData: Omit<Test, 'creationDate'>) => {
+  const addTestToClient = useCallback(async (clientId: string, testData: Omit<Test, 'creationDate'>) => {
       const client = clients.find(c => c._tempId === clientId);
       if (!client) return;
       const newTest: Test = { ...testData, creationDate: new Date().toISOString() };
       const updatedClient = { ...client, tests: [...(client.tests || []), newTest] };
       await updateClient(updatedClient);
-  }), [clients, updateClient, user]);
+  }, [clients, updateClient]);
   
-  const updateTestInClient = useCallback(withAuthCheck(async (clientId: string, testCreationDate: string, updatedTest: Partial<Test>) => {
+  const updateTestInClient = useCallback(async (clientId: string, testCreationDate: string, updatedTest: Partial<Test>) => {
     const client = clients.find(c => c._tempId === clientId);
     if (!client) return;
     const newTests = (client.tests || []).map(test => test.creationDate === testCreationDate ? { ...test, ...updatedTest } : test);
     await updateClient({ ...client, tests: newTests });
-  }), [clients, updateClient, user]);
+  }, [clients, updateClient]);
 
-  const addTransactionToServer = useCallback(withAuthCheck(async (serverId: string, transactionData: Omit<Transaction, 'id' | 'date'>) => {
-      // ... similar logic as before, using updateServer
-  }), [servers, t, toast, updateServer, addCashFlowEntry, user]);
+  const addTransactionToServer = useCallback(async (serverId: string, transactionData: Omit<Transaction, 'id' | 'date'>) => {
+    const server = servers.find(s => s.id === serverId);
+    if (!server) return;
+    const currentStock = server.creditStock;
+    if (currentStock + transactionData.credits < 0) {
+      toast({ variant: "destructive", title: t('validationError'), description: t('negativeStockError') });
+      return;
+    }
+    const newTransaction: Transaction = {
+        ...transactionData,
+        id: `trans_${Date.now()}_${Math.random()}`,
+        date: new Date().toISOString(),
+    };
+    const updatedTransactions = [newTransaction, ...(server.transactions || [])];
+    const newCreditStock = updatedTransactions.reduce((acc, trans) => acc + trans.credits, 0);
+    await updateServer({ ...server, transactions: updatedTransactions, creditStock: newCreditStock });
+  }, [servers, t, toast, updateServer]);
   
   const addNote = useCallback(withAuthCheck(async (noteData: Omit<Note, 'id' | 'createdAt'>) => {
-    const { notesCol } = getCollections(user!.uid);
+    const { notesCol } = getCollections(auth.currentUser!.uid);
     const newNote: Note = { ...noteData, id: `note_${Date.now()}_${Math.random()}`, createdAt: new Date().toISOString() };
     await setDoc(doc(notesCol, newNote.id), newNote);
     setNotes(prev => [newNote, ...prev]);
-  }), [getCollections, user]);
+  }), [getCollections]);
 
   const updateNote = useCallback(withAuthCheck(async (noteData: Note) => {
-    const { notesCol } = getCollections(user!.uid);
+    const { notesCol } = getCollections(auth.currentUser!.uid);
     await setDoc(doc(notesCol, noteData.id), noteData, { merge: true });
     setNotes(prev => prev.map(n => (n.id === noteData.id ? noteData : n)));
-  }), [getCollections, user]);
+  }), [getCollections]);
 
   const deleteNote = useCallback(withAuthCheck(async (noteId: string) => {
-    const { notesCol } = getCollections(user!.uid);
+    const { notesCol } = getCollections(auth.currentUser!.uid);
     await deleteDoc(doc(notesCol, noteId));
     setNotes(prev => prev.filter(n => n.id !== noteId));
-  }), [getCollections, user]);
+  }), [getCollections]);
   
   const exportData = useCallback(() => {
-    if (!user) {
-      toast({ variant: 'destructive', title: 'Não autenticado' });
-      return;
-    }
+    if (!auth.currentUser) return;
     const dataToExport = { clients, servers, cashFlow, notes };
     const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -262,18 +284,14 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     link.href = url;
     const date = format(new Date(), 'yyyy-MM-dd');
     link.download = `iptv-manager-pro-backup-${date}.json`;
-    document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    link.remove();
     toast({ title: t('backupExportedSuccess'), description: t('backupExportedSuccessDescription') });
-  }, [clients, servers, cashFlow, notes, t, toast, user]);
+  }, [clients, servers, cashFlow, notes, t, toast]);
   
   const importData = useCallback(async (file: File) => {
-    if (!user) {
-      toast({ variant: 'destructive', title: 'Não autenticado' });
-      return;
-    }
+    if (!auth.currentUser) return;
     const reader = new FileReader();
     reader.onload = async (event) => {
       try {
@@ -281,18 +299,16 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (typeof result !== 'string') throw new Error('File could not be read');
         
         const importedData = JSON.parse(result);
-        if ( !Array.isArray(importedData.clients) || !Array.isArray(importedData.servers) || !Array.isArray(importedData.cashFlow) || !Array.isArray(importedData.notes) ) {
+        if (!Array.isArray(importedData.clients) || !Array.isArray(importedData.servers) || !Array.isArray(importedData.cashFlow) || !Array.isArray(importedData.notes)) {
             throw new Error('Invalid backup file format');
         }
         
-        const { clientsCol, serversCol, cashFlowCol, notesCol } = getCollections(user.uid);
+        const { clientsCol, serversCol, cashFlowCol, notesCol } = getCollections(auth.currentUser!.uid);
         const batch = writeBatch(db);
 
-        // Clear existing data
-        const existingDocs = await Promise.all([ getDocs(clientsCol), getDocs(serversCol), getDocs(cashFlowCol), getDocs(notesCol) ]);
-        existingDocs.forEach(snapshot => snapshot.forEach(doc => batch.delete(doc.ref)));
+        const existingSnapshots = await Promise.all([ getDocs(clientsCol), getDocs(serversCol), getDocs(cashFlowCol), getDocs(notesCol) ]);
+        existingSnapshots.forEach(snapshot => snapshot.forEach(doc => batch.delete(doc.ref)));
         
-        // Add new data
         importedData.clients.forEach((item: Client) => batch.set(doc(clientsCol, item._tempId), item));
         importedData.servers.forEach((item: Server) => batch.set(doc(serversCol, item.id), item));
         importedData.cashFlow.forEach((item: CashFlowEntry) => batch.set(doc(cashFlowCol, item.id), item));
@@ -300,31 +316,30 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         await batch.commit();
         
-        // Update state
         setClients(importedData.clients);
         setServers(importedData.servers);
         setCashFlow(importedData.cashFlow);
         setNotes(importedData.notes);
 
         toast({ title: t('backupImportedSuccess'), description: t('backupImportedSuccessDescription') });
-
       } catch (error) {
         console.error('Failed to import data:', error);
         toast({ variant: "destructive", title: t('backupImportFailed'), description: t('backupImportFailedDescription') });
       }
     };
     reader.readAsText(file);
-  }, [getCollections, user, t, toast]);
+  }, [getCollections, t, toast]);
 
-  const value: DataContextType = {
-    clients, servers, cashFlow, notes, isDataLoaded, isAuthenticated, user,
-    signIn, signOut: signOutUser, addClient, updateClient, deleteClient, addServer, updateServer,
-    deleteServer, addTestToClient, updateTestInClient, addTransactionToServer,
-    addCashFlowEntry, updateCashFlowEntry, deleteCashFlowEntry, addNote,
-    updateNote, deleteNote, setNotes, exportData, importData,
-  };
-
-  return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
+  return (
+    <DataContext.Provider value={{
+      clients, servers, cashFlow, notes, isDataLoaded, user,
+      addClient, updateClient, deleteClient, addServer, updateServer,
+      deleteServer, addTestToClient, updateTestInClient, addTransactionToServer,
+      addCashFlowEntry, updateCashFlowEntry, deleteCashFlowEntry, addNote,
+      updateNote, deleteNote, setNotes, exportData, importData,
+      signIn, signOut: signOutUser, isAuthenticated,
+    }}>{children}</DataContext.Provider>
+  );
 };
 
 export const useData = (): DataContextType => {
@@ -334,3 +349,5 @@ export const useData = (): DataContextType => {
   }
   return context;
 };
+
+    
