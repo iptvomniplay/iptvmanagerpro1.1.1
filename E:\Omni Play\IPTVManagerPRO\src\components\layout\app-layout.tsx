@@ -12,7 +12,6 @@ import Header from './header';
 import { useData } from '@/hooks/use-data';
 import { usePathname } from 'next/navigation';
 import LoginPage from '@/app/login/page';
-import { CreditCard } from 'lucide-react';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { isAuthenticated, isDataLoaded } = useData();
