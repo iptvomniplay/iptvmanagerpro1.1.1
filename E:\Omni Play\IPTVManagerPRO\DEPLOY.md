@@ -1,52 +1,53 @@
-# Como Publicar Sua Aplicação na Nuvem
+# Como Publicar Sua Aplicação na Vercel (Grátis)
 
-Este guia mostra os passos para publicar (fazer o deploy) da sua aplicação na internet usando o Firebase App Hosting. Uma vez publicado, seu projeto terá um link público e poderá ser acessado de qualquer lugar.
+Este guia mostra os passos para publicar (fazer o deploy) da sua aplicação na internet usando a **Vercel**. Este método é **100% gratuito** para projetos pessoais e não exige cartão de crédito. Uma vez publicado, seu projeto terá um link público e poderá ser acessado de qualquer lugar.
 
 ## Pré-requisitos
 
-Antes de começar, você precisa ter duas coisas instaladas no seu computador:
-
-1.  **Node.js:** Essencial para rodar o ambiente de desenvolvimento e as ferramentas. Se não tiver, baixe e instale a partir do [site oficial do Node.js](https://nodejs.org/). **Escolha a versão LTS**, que é a mais estável.
-2.  **Firebase CLI:** A ferramenta de linha de comando do Firebase para gerenciar e publicar seus projetos.
+1.  **Conta no GitHub:** Você precisará de uma conta no [GitHub](https://github.com) para armazenar seu código.
+2.  **Conta na Vercel:** Crie uma conta gratuita na [Vercel](https://vercel.com/signup) usando sua conta do GitHub.
 
 ---
 
 ## Passo a Passo para o Deploy
 
-Siga estes 3 passos no terminal (prompt de comando) do seu computador.
+### Passo 1: Enviar seu código para o GitHub
 
-### Passo 1: Instalar o Firebase CLI
+Se seu código ainda não está em um repositório do GitHub, siga estes passos. Se já estiver, pule para o Passo 2.
 
-Se você nunca instalou a ferramenta antes, execute o seguinte comando. (Se já tiver, pode pular este passo).
+1.  **Crie um novo repositório no GitHub:**
+    *   Vá para o [GitHub](https://github.com/new) e crie um novo repositório. Pode ser público ou privado. Não adicione `README` ou `.gitignore`, pois seu projeto já os possui.
 
-```bash
-npm install -g firebase-tools
-```
-Este comando usa o `npm` (que vem com o Node.js) para instalar a ferramenta do Firebase globalmente no seu sistema.
+2.  **Conecte sua pasta local ao repositório do GitHub:**
+    *   No seu terminal, dentro da pasta `E:\Omni Play\IPTVManagerPRO`, execute os seguintes comandos, **substituindo `SEU-USUARIO` e `NOME-DO-REPOSITORIO`** com os seus dados do GitHub:
 
-### Passo 2: Fazer Login na sua Conta Google
+    ```bash
+    git init
+    git add .
+    git commit -m "Primeiro commit"
+    git branch -M main
+    git remote add origin https://github.com/SEU-USUARIO/NOME-DO-REPOSITORIO.git
+    git push -u origin main
+    ```
 
-Agora, conecte a ferramenta à sua conta do Firebase.
+### Passo 2: Fazer o Deploy na Vercel
 
-```bash
-firebase login
-```
-Este comando abrirá uma janela no seu navegador para que você possa fazer login com segurança na sua conta Google.
+1.  **Acesse seu Dashboard da Vercel:**
+    *   Faça login na [Vercel](https://vercel.com/dashboard).
 
-### Passo 3: Publicar a Aplicação
+2.  **Importe seu Projeto:**
+    *   Clique em **"Add New... > Project"**.
+    *   Na seção **"Import Git Repository"**, encontre o repositório que você acabou de criar/atualizar e clique em **"Import"**.
 
-Este é o comando final que envia sua aplicação para a nuvem.
+3.  **Configure e Publique:**
+    *   A Vercel irá detectar automaticamente que é um projeto Next.js. Você **não precisa** configurar nada.
+    *   Apenas clique no botão **"Deploy"**.
 
-Primeiro, navegue no seu terminal até a pasta raiz do seu projeto (a pasta que contém arquivos como `package.json` e `apphosting.yaml`).
+A Vercel irá construir e publicar sua aplicação. Ao final, ela mostrará a URL pública do seu projeto. Exemplo: `https://seu-projeto.vercel.app`
 
-Depois, execute o comando:
+Pronto! Sua aplicação está online, de graça.
 
-```bash
-firebase deploy
-```
-
-O terminal mostrará o progresso. Ao final, ele exibirá a **URL de Hospedagem (Hosting URL)**. Este é o link público da sua aplicação!
-
-Exemplo: `https://seu-projeto-12345.web.app`
-
-Pronto! Sua aplicação está online.
+---
+**IMPORTANTE:**
+*   A partir de agora, qualquer `git push` que você fizer para a branch `main` no GitHub irá automaticamente gerar um novo deploy na Vercel.
+*   Você não precisa mais usar os comandos `firebase` para este projeto.

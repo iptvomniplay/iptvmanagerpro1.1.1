@@ -1,5 +1,0 @@
-# https://firebase.google.com/docs/app-hosting/configure
-framework: nextjs
-runConfig:
-  cpu: 1
-  maxInstances: 2

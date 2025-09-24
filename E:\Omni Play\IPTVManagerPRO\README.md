@@ -1,6 +1,6 @@
 # IPTV Manager Pro
 
-Bem-vindo ao **IPTV Manager Pro**, uma solução completa construída com Next.js e Firebase para o gerenciamento ponta a ponta do seu negócio de IPTV. Esta aplicação foi projetada para transformar a complexidade da gestão em um fluxo de trabalho simples e automatizado.
+Bem-vindo ao **IPTV Manager Pro**, uma solução completa construída com Next.js para o gerenciamento ponta a ponta do seu negócio de IPTV. Esta aplicação foi projetada para transformar a complexidade da gestão em um fluxo de trabalho simples e automatizado.
 
 ## Funcionalidades Principais
 
@@ -13,11 +13,11 @@ Bem-vindo ao **IPTV Manager Pro**, uma solução completa construída com Next.j
 - **Utilitários Práticos**: Inclui um bloco de notas integrado para anotações rápidas e gerenciamento de informações importantes.
 - **Sistema de Relatórios**: Gere relatórios detalhados sobre clientes, assinaturas, testes e estatísticas de uso para tomar decisões baseadas em dados.
 
-## Publicando na Nuvem com Firebase App Hosting
+## Publicando na Nuvem com Vercel (Grátis)
 
-Este projeto está pronto para ser publicado na nuvem.
+Este projeto está pronto para ser publicado na nuvem de forma gratuita usando a Vercel, a plataforma dos criadores do Next.js.
 
-Para fazer o deploy, utilize o comando `firebase deploy` em seu terminal (com o Firebase CLI instalado e autenticado). As configurações no arquivo `apphosting.yaml` instruirão o Firebase a construir e hospedar sua aplicação, tornando-a acessível globalmente.
+Para fazer o deploy, siga os passos no arquivo **DEPLOY.md**.
 
 ## Primeiros Passos (Desenvolvimento Local)
 
@@ -27,4 +27,4 @@ Para rodar a aplicação em seu ambiente local:
 npm run dev
 ```
 
-Abra [http://localhost:9002](http://localhost:9002) em seu navegador para ver o resultado.
+Abra [http://localhost:3000](http://localhost:3000) em seu navegador para ver o resultado.
